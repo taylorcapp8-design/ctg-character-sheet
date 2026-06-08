@@ -51,6 +51,8 @@ body.theme-umbra {
   --olive: #101418;
   --olive2: #181c22;
   --olive3: #222830;
+  --olive-dark: #111620;
+  --olive-mid: #19202a;
   --bg: #070a0d;
   --panel: #0c1014;
   --border: rgba(168,180,192,0.2);
@@ -86,6 +88,8 @@ body.theme-ember {
   --olive: #180808;
   --olive2: #220c0c;
   --olive3: #2c1210;
+  --olive-dark: #150808;
+  --olive-mid: #1e0e0e;
   --bg: #060404;
   --panel: #0e0606;
   --border: rgba(196,58,40,0.28);
@@ -121,6 +125,8 @@ body.theme-deep {
   --olive: #06101a;
   --olive2: #0a1828;
   --olive3: #0e2032;
+  --olive-dark: #071018;
+  --olive-mid: #0c1822;
   --bg: #030810;
   --panel: #060c16;
   --border: rgba(68,153,204,0.24);
@@ -156,6 +162,8 @@ body.theme-scorch {
   --olive: #180e06;
   --olive2: #201408;
   --olive3: #281c0c;
+  --olive-dark: #150a06;
+  --olive-mid: #1e1008;
   --bg: #0a0604;
   --panel: #100806;
   --border: rgba(204,119,32,0.27);
@@ -191,6 +199,8 @@ body.theme-arcane {
   --olive: #0c0814;
   --olive2: #14101e;
   --olive3: #1c1828;
+  --olive-dark: #0e0a16;
+  --olive-mid: #16121e;
   --bg: #050408;
   --panel: #0a080e;
   --border: rgba(153,102,204,0.27);
@@ -226,6 +236,8 @@ body.theme-verdant {
   --olive: #041410;
   --olive2: #081c14;
   --olive3: #0c201a;
+  --olive-dark: #051210;
+  --olive-mid: #091a14;
   --bg: #020a08;
   --panel: #060e0a;
   --border: rgba(68,187,112,0.24);
@@ -261,6 +273,8 @@ body.theme-slate {
   --olive: #080e10;
   --olive2: #0c1618;
   --olive3: #141e20;
+  --olive-dark: #070e12;
+  --olive-mid: #0d1618;
   --bg: #040a0c;
   --panel: #080e10;
   --border: rgba(62,184,176,0.24);

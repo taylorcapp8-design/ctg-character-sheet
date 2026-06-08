@@ -21,13 +21,6 @@
     try { localStorage.setItem('ctg-theme', id); } catch (e) {}
     var existing = document.body.className.replace(/theme-\S+/g, '').trim();
     document.body.className = id ? (existing + ' ' + id).trim() : existing;
-    // Update theme-color meta
-    var metaTC = document.querySelector('meta[name="theme-color"]');
-    var th = THEMES.find(function (t) { return t.id === id; });
-    if (metaTC && th) {
-      // Darken the accent a bit for the meta tag
-      metaTC.setAttribute('content', id ? '#080a04' : '#080a04');
-    }
     // Update dots
     document.querySelectorAll('.theme-dot').forEach(function (dot) {
       dot.classList.toggle('active', dot.dataset.theme === id);
