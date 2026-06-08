@@ -208,9 +208,63 @@ body{
 .dice-rolling{animation:diceRoll 0.35s ease;}
 
 @media print{.hub-topbar,.corner-ornament,.dice-float-btn,.dice-panel{display:none!important;}body{background:#fff!important;color:#000!important;}}
+
+/* ── LOGIN MODAL ── */
+.login-modal{position:fixed;inset:0;z-index:2000;background:rgba(4,5,2,0.96);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.login-panel{background:var(--bg);border:1px solid rgba(192,152,24,0.55);width:100%;max-width:380px;clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 10px,100% calc(100% - 10px),calc(100% - 10px) 100%,10px 100%,0 calc(100% - 10px),0 10px);position:relative;margin:16px;}
+.login-panel::before{content:'';position:absolute;inset:2px;border:1px solid rgba(192,152,24,0.1);pointer-events:none;z-index:0;}
+.login-hdr{background:rgba(0,0,0,0.5);border-bottom:1px solid rgba(192,152,24,0.18);padding:20px 24px 16px;text-align:center;position:relative;z-index:1;}
+.login-pre{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:5px;color:var(--gold-dim);margin-bottom:6px;}
+.login-title{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:8px;color:var(--gold);text-shadow:0 0 30px rgba(192,152,24,0.4);}
+.login-sub{font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:3px;color:var(--text-dim);margin-top:3px;}
+.login-body{padding:22px 24px;position:relative;z-index:1;}
+.login-field{margin-bottom:16px;}
+.login-lbl{display:block;font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:3px;color:var(--gold-dim);margin-bottom:5px;}
+.login-input{width:100%;background:rgba(0,0,0,0.5);border:1px solid rgba(192,152,24,0.28);color:var(--text-bright);font-family:'Share Tech Mono',monospace;font-size:1rem;letter-spacing:2px;padding:9px 12px;outline:none;transition:border-color 0.2s;}
+.login-input:focus{border-color:var(--gold);}
+.login-input::placeholder{color:var(--text-dim);font-size:0.72rem;letter-spacing:1px;}
+.login-btn{width:100%;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:5px;padding:11px;cursor:pointer;transition:all 0.2s;clip-path:polygon(5px 0,calc(100% - 5px) 0,100% 5px,100% calc(100% - 5px),calc(100% - 5px) 100%,5px 100%,0 calc(100% - 5px),0 5px);}
+.login-btn:hover{background:rgba(192,152,24,0.1);border-color:var(--gold);}
+.login-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.login-error{font-family:'Share Tech Mono',monospace;font-size:0.58rem;color:#cc4444;letter-spacing:1px;margin-top:8px;min-height:1.2em;text-align:center;}
+.login-note{font-family:'Share Tech Mono',monospace;font-size:0.49rem;color:var(--text-dim);margin-top:14px;line-height:1.65;text-align:center;border-top:1px solid rgba(192,152,24,0.1);padding-top:12px;}
+.login-offline{display:block;text-align:center;margin-top:8px;font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);cursor:pointer;background:none;border:none;transition:color 0.2s;text-decoration:underline;text-underline-offset:2px;}
+.login-offline:hover{color:var(--text);}
+
+/* ── CLOUD STATUS BAR ── */
+.cloud-bar{width:100%;max-width:860px;display:none;align-items:center;gap:12px;padding:7px 18px;background:var(--panel);border:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);letter-spacing:1px;margin-bottom:10px;position:relative;z-index:1;clip-path:polygon(4px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,0 calc(100% - 4px),0 4px);}
+.cloud-bar.visible{display:flex;}
+.cloud-user{color:var(--gold);}
+.cloud-sync-lbl{color:var(--text-dim);}
+.cloud-sync-val{color:var(--gold-dim);}
 </style>
 </head>
 <body>
+
+<!-- LOGIN MODAL -->
+<div class="login-modal" id="login-modal" style="display:none;">
+  <div class="login-panel">
+    <div class="login-hdr">
+      <div class="login-pre">CTG · SECURE ACCESS</div>
+      <div class="login-title">Access Dossier</div>
+      <div class="login-sub">OPERATIVE IDENTIFICATION REQUIRED</div>
+    </div>
+    <div class="login-body">
+      <div class="login-field">
+        <label class="login-lbl" for="login-user">Operative Handle</label>
+        <input id="login-user" type="text" class="login-input" placeholder="username..." maxlength="32" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="login-field">
+        <label class="login-lbl" for="login-pin">Access PIN</label>
+        <input id="login-pin" type="password" class="login-input" placeholder="4-digit PIN..." maxlength="4" inputmode="numeric" autocomplete="off">
+      </div>
+      <button id="login-btn" class="login-btn" onclick="ctgLogin()">Access Dossier</button>
+      <div id="login-error" class="login-error"></div>
+      <div class="login-note">New handle? Your dossier is created on first access.&nbsp; PIN is plain text — this is a hobby sheet, not a vault.</div>
+      <button class="login-offline" onclick="ctgOffline()">↓ Continue offline (local only)</button>
+    </div>
+  </div>
+</div>
 
 <!-- TOP BAR — theme switcher injected here -->
 <div id="ctg-nav-bar" class="hub-topbar">
@@ -239,6 +293,15 @@ body{
   </div>
   <div class="char-code-name" id="char-code-name"></div>
   <div class="char-stat-strip" id="char-stat-strip"></div>
+</div>
+
+<!-- CLOUD STATUS BAR (visible when logged in) -->
+<div class="cloud-bar" id="cloud-bar">
+  <span>Operative:</span>
+  <span class="cloud-user" id="cloud-user">—</span>
+  <span class="cloud-sync-lbl" style="margin-left:auto;">Last synced:</span>
+  <span class="cloud-sync-val"><span id="last-synced">never</span></span>
+  <button class="save-btn danger" style="padding:4px 10px;font-size:0.52rem;" onclick="ctgLogout()">Log Out</button>
 </div>
 
 <!-- PAGE CARDS -->
@@ -489,6 +552,133 @@ function clearAll() {
   };
 })();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="ctg-sync.js"></script>
 <script src="ctg-theme.js"></script>
+<script>
+// ── LOGIN / LOGOUT UI ──────────────────────────────────────────────────
+(function () {
+  function showCloudBar(username) {
+    var bar = document.getElementById('cloud-bar');
+    var userEl = document.getElementById('cloud-user');
+    if (bar) bar.classList.add('visible');
+    if (userEl) userEl.textContent = username;
+    if (window.ctgSync) window.ctgSync.updateLastSyncedDisplay();
+  }
+
+  function refreshIndexData() {
+    try {
+      var n = localStorage.getItem('ctg-char-name');
+      if (n) {
+        var ni = document.getElementById('hub-char-name');
+        if (ni) ni.value = n;
+      }
+    } catch (e) {}
+    try {
+      var p1raw = localStorage.getItem('ctg-p1');
+      if (p1raw) {
+        var p1 = JSON.parse(p1raw);
+        var codeEl = document.getElementById('char-code-name');
+        if (codeEl) {
+          if (p1.cd) codeEl.innerHTML = 'Code Name: <b>' + p1.cd + '</b>';
+          else codeEl.textContent = '';
+        }
+        var strip = document.getElementById('char-stat-strip');
+        if (strip) {
+          var updated = localStorage.getItem('ctg-last-updated');
+          var count = localStorage.getItem('ctg-edit-count');
+          var parts = [];
+          if (updated) {
+            var d = new Date(updated);
+            var diff = Date.now() - d.getTime();
+            var mins = Math.floor(diff / 60000);
+            var hrs = Math.floor(mins / 60);
+            var days = Math.floor(hrs / 24);
+            var lbl = days > 0 ? days + 'd ago' : hrs > 0 ? hrs + 'h ago' : mins > 0 ? mins + 'm ago' : 'just now';
+            parts.push('<span class="char-stat-item">Last Edited: <b>' + lbl + '</b></span>');
+          }
+          if (count && parseInt(count) > 0)
+            parts.push('<span class="char-stat-item">Edit Sessions: <b>' + count + '</b></span>');
+          if (parts.length) strip.innerHTML = parts.join('<span style="color:rgba(192,152,24,0.2)">·</span>');
+        }
+      }
+    } catch (e) {}
+    var checks = [
+      { id: 'dot-p1', key: 'ctg-p1' },
+      { id: 'dot-p2', key: 'ctg-p2' },
+      { id: 'dot-p3', key: 'ctg-faculties' },
+      { id: 'dot-p4', key: 'ctg-p4' },
+      { id: 'dot-p5', key: 'ctg-skills' },
+    ];
+    checks.forEach(function (c) {
+      try {
+        var row = document.getElementById(c.id);
+        if (!row) return;
+        var dot = row.querySelector('.card-data-dot');
+        var lbl = row.querySelector('.card-data-label');
+        var val = localStorage.getItem(c.key);
+        if (val) { dot.classList.add('has-data'); lbl.textContent = 'Data saved'; }
+        else { dot.classList.remove('has-data'); lbl.textContent = 'No data'; }
+      } catch (e) {}
+    });
+    if (window.ctgSync) window.ctgSync.updateLastSyncedDisplay();
+  }
+
+  window.ctgLogin = async function () {
+    var u = document.getElementById('login-user').value.trim();
+    var p = document.getElementById('login-pin').value.trim();
+    var errEl = document.getElementById('login-error');
+    var btn = document.getElementById('login-btn');
+    errEl.textContent = '';
+    if (!u) { errEl.textContent = '⟡ Enter an operative handle'; return; }
+    if (!/^\d{4}$/.test(p)) { errEl.textContent = '⟡ PIN must be exactly 4 digits'; return; }
+    btn.textContent = 'Connecting...';
+    btn.disabled = true;
+    try {
+      var result = await window.ctgSync.login(u, p);
+      document.getElementById('login-modal').style.display = 'none';
+      showCloudBar(u);
+      if (!result.isNew) refreshIndexData();
+      window.ctgSync.start();
+    } catch (e) {
+      errEl.textContent = '⟡ ' + e.message;
+    } finally {
+      btn.textContent = 'Access Dossier';
+      btn.disabled = false;
+    }
+  };
+
+  window.ctgOffline = function () {
+    document.getElementById('login-modal').style.display = 'none';
+  };
+
+  window.ctgLogout = function () {
+    window.ctgSync.logout();
+    document.getElementById('cloud-bar').classList.remove('visible');
+    document.getElementById('login-modal').style.display = 'flex';
+    document.getElementById('login-user').value = '';
+    document.getElementById('login-pin').value = '';
+    document.getElementById('login-error').textContent = '';
+  };
+
+  // ── Init ──────────────────────────────────────────────────────────────
+  function init() {
+    var user = window.ctgSync && window.ctgSync.getUser();
+    if (!user) {
+      document.getElementById('login-modal').style.display = 'flex';
+    } else {
+      showCloudBar(user);
+    }
+  }
+
+  // Enter key shortcuts on login fields
+  var userFld = document.getElementById('login-user');
+  var pinFld = document.getElementById('login-pin');
+  if (userFld) userFld.addEventListener('keydown', function (e) { if (e.key === 'Enter') pinFld.focus(); });
+  if (pinFld) pinFld.addEventListener('keydown', function (e) { if (e.key === 'Enter') window.ctgLogin(); });
+
+  init();
+})();
+</script>
 </body>
 </html>
