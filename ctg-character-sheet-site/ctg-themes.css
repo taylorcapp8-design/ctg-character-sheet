@@ -1,0 +1,286 @@
+/* ═══════════════════════════════════════════════════════
+   CTG THEME SYSTEM — 8 visual variants
+   Inject after page <style> block; body class controls theme.
+   Default (no class) = Gallahad (olive/gold)
+═══════════════════════════════════════════════════════ */
+
+/* ── THEME SWITCHER UI ── */
+.theme-sw {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding: 0 10px;
+  border-left: 1px solid rgba(200,160,32,0.12);
+  margin-left: 4px;
+}
+.theme-dot {
+  width: 10px;
+  height: 10px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.08);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  background: #444;
+  padding: 0;
+}
+.theme-dot:hover {
+  transform: scale(1.4);
+  border-color: rgba(255,255,255,0.3);
+}
+.theme-dot.active {
+  border-color: rgba(255,255,255,0.7);
+  box-shadow: 0 0 6px currentColor;
+  transform: scale(1.15);
+}
+/* Small tooltip via title attribute — no extra markup needed */
+
+/* ═══════════════════════════════════════════════════════
+   THEME 1: GALLAHAD — Olive & Gold (default, no class)
+   Military-gritty, field operator, tactical amber
+════════════════════════════════════════════════════════*/
+/* Already defined in :root on each page — no override needed */
+
+/* ═══════════════════════════════════════════════════════
+   THEME 2: UMBRA — Shadow Silver
+   Shadow ops, noir, covert extraction
+════════════════════════════════════════════════════════*/
+body.theme-umbra {
+  --gold: #a8b4c0;
+  --gold2: #c8d8e4;
+  --gold-dim: #3a4450;
+  --olive: #101418;
+  --olive2: #181c22;
+  --olive3: #222830;
+  --bg: #070a0d;
+  --panel: #0c1014;
+  --border: rgba(168,180,192,0.2);
+  --text: #8ca0b0;
+  --text-dim: #3a4a58;
+  --text-bright: #c8dce8;
+  --red: #8b3a3a;
+  --red2: #cc4444;
+  background-color: #070a0d;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 15% 15%, rgba(18,28,40,0.65) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 80%, rgba(24,34,48,0.3) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(168,180,192,0.012) 40px, rgba(168,180,192,0.012) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(168,180,192,0.012) 40px, rgba(168,180,192,0.012) 41px);
+}
+body.theme-umbra .ctg-nav {
+  background: rgba(7,10,13,0.97);
+  border-bottom-color: rgba(168,180,192,0.15);
+}
+body.theme-umbra .ctg-nav a { color: #3a4a58; }
+body.theme-umbra .ctg-nav a:hover,
+body.theme-umbra .ctg-nav a.active { color: #a8b4c0; }
+body.theme-umbra .ctg-nav a.active { border-bottom-color: #a8b4c0; }
+
+/* ═══════════════════════════════════════════════════════
+   THEME 3: EMBER — Blood & Iron
+   Front-line combatant, brutal, hardened
+════════════════════════════════════════════════════════*/
+body.theme-ember {
+  --gold: #c43a28;
+  --gold2: #e45540;
+  --gold-dim: #6a1a10;
+  --olive: #180808;
+  --olive2: #220c0c;
+  --olive3: #2c1210;
+  --bg: #060404;
+  --panel: #0e0606;
+  --border: rgba(196,58,40,0.28);
+  --text: #c08878;
+  --text-dim: #603838;
+  --text-bright: #f0c0b0;
+  --red: #8b1a1a;
+  --red2: #ee2200;
+  background-color: #060404;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 15% 15%, rgba(58,14,12,0.65) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 80%, rgba(80,10,10,0.3) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(196,58,40,0.013) 40px, rgba(196,58,40,0.013) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(196,58,40,0.013) 40px, rgba(196,58,40,0.013) 41px);
+}
+body.theme-ember .ctg-nav {
+  background: rgba(6,4,4,0.97);
+  border-bottom-color: rgba(196,58,40,0.2);
+}
+body.theme-ember .ctg-nav a { color: #603838; }
+body.theme-ember .ctg-nav a:hover,
+body.theme-ember .ctg-nav a.active { color: #c43a28; }
+body.theme-ember .ctg-nav a.active { border-bottom-color: #c43a28; }
+
+/* ═══════════════════════════════════════════════════════
+   THEME 4: DEEP — Naval Intelligence
+   Maritime ops, cold precision, encrypted signals
+════════════════════════════════════════════════════════*/
+body.theme-deep {
+  --gold: #4499cc;
+  --gold2: #66ccee;
+  --gold-dim: #1a446a;
+  --olive: #06101a;
+  --olive2: #0a1828;
+  --olive3: #0e2032;
+  --bg: #030810;
+  --panel: #060c16;
+  --border: rgba(68,153,204,0.24);
+  --text: #7ab4d4;
+  --text-dim: #2a4862;
+  --text-bright: #b8dcf8;
+  --red: #882040;
+  --red2: #bb2244;
+  background-color: #030810;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 15% 15%, rgba(8,28,60,0.7) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 80%, rgba(6,40,80,0.3) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(68,153,204,0.012) 40px, rgba(68,153,204,0.012) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(68,153,204,0.012) 40px, rgba(68,153,204,0.012) 41px);
+}
+body.theme-deep .ctg-nav {
+  background: rgba(3,8,16,0.97);
+  border-bottom-color: rgba(68,153,204,0.18);
+}
+body.theme-deep .ctg-nav a { color: #2a4862; }
+body.theme-deep .ctg-nav a:hover,
+body.theme-deep .ctg-nav a.active { color: #4499cc; }
+body.theme-deep .ctg-nav a.active { border-bottom-color: #4499cc; }
+
+/* ═══════════════════════════════════════════════════════
+   THEME 5: SCORCH — Wasteland Rust
+   Post-collapse survivor, burned-out roads, dust
+════════════════════════════════════════════════════════*/
+body.theme-scorch {
+  --gold: #cc7720;
+  --gold2: #e89930;
+  --gold-dim: #663308;
+  --olive: #180e06;
+  --olive2: #201408;
+  --olive3: #281c0c;
+  --bg: #0a0604;
+  --panel: #100806;
+  --border: rgba(204,119,32,0.27);
+  --text: #c09058;
+  --text-dim: #604820;
+  --text-bright: #f0c870;
+  --red: #8b3a10;
+  --red2: #cc3300;
+  background-color: #0a0604;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 15% 15%, rgba(58,26,8,0.7) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 80%, rgba(80,20,6,0.3) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(204,119,32,0.014) 40px, rgba(204,119,32,0.014) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(204,119,32,0.014) 40px, rgba(204,119,32,0.014) 41px);
+}
+body.theme-scorch .ctg-nav {
+  background: rgba(10,6,4,0.97);
+  border-bottom-color: rgba(204,119,32,0.18);
+}
+body.theme-scorch .ctg-nav a { color: #604820; }
+body.theme-scorch .ctg-nav a:hover,
+body.theme-scorch .ctg-nav a.active { color: #cc7720; }
+body.theme-scorch .ctg-nav a.active { border-bottom-color: #cc7720; }
+
+/* ═══════════════════════════════════════════════════════
+   THEME 6: ARCANE — Void Protocol
+   Forbidden tech, occult ops, psychic division
+════════════════════════════════════════════════════════*/
+body.theme-arcane {
+  --gold: #9966cc;
+  --gold2: #bb88ee;
+  --gold-dim: #441166;
+  --olive: #0c0814;
+  --olive2: #14101e;
+  --olive3: #1c1828;
+  --bg: #050408;
+  --panel: #0a080e;
+  --border: rgba(153,102,204,0.27);
+  --text: #b090c8;
+  --text-dim: #504060;
+  --text-bright: #e8c8ff;
+  --red: #993366;
+  --red2: #cc2266;
+  background-color: #050408;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 15% 15%, rgba(28,10,50,0.7) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 80%, rgba(50,8,80,0.3) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(153,102,204,0.012) 40px, rgba(153,102,204,0.012) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(153,102,204,0.012) 40px, rgba(153,102,204,0.012) 41px);
+}
+body.theme-arcane .ctg-nav {
+  background: rgba(5,4,8,0.97);
+  border-bottom-color: rgba(153,102,204,0.18);
+}
+body.theme-arcane .ctg-nav a { color: #504060; }
+body.theme-arcane .ctg-nav a:hover,
+body.theme-arcane .ctg-nav a.active { color: #9966cc; }
+body.theme-arcane .ctg-nav a.active { border-bottom-color: #9966cc; }
+
+/* ═══════════════════════════════════════════════════════
+   THEME 7: VERDANT — Jungle Ops
+   Deep cover, tracker, overgrown fortifications
+════════════════════════════════════════════════════════*/
+body.theme-verdant {
+  --gold: #44bb70;
+  --gold2: #66dd90;
+  --gold-dim: #11552a;
+  --olive: #041410;
+  --olive2: #081c14;
+  --olive3: #0c201a;
+  --bg: #020a08;
+  --panel: #060e0a;
+  --border: rgba(68,187,112,0.24);
+  --text: #70c090;
+  --text-dim: #285038;
+  --text-bright: #b0f0d0;
+  --red: #8b3030;
+  --red2: #cc2200;
+  background-color: #020a08;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 15% 15%, rgba(8,38,24,0.7) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 80%, rgba(6,50,20,0.3) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(68,187,112,0.011) 40px, rgba(68,187,112,0.011) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(68,187,112,0.011) 40px, rgba(68,187,112,0.011) 41px);
+}
+body.theme-verdant .ctg-nav {
+  background: rgba(2,10,8,0.97);
+  border-bottom-color: rgba(68,187,112,0.16);
+}
+body.theme-verdant .ctg-nav a { color: #285038; }
+body.theme-verdant .ctg-nav a:hover,
+body.theme-verdant .ctg-nav a.active { color: #44bb70; }
+body.theme-verdant .ctg-nav a.active { border-bottom-color: #44bb70; }
+
+/* ═══════════════════════════════════════════════════════
+   THEME 8: SLATE — Industrial Teal
+   Clean-room tech, encrypted HQ, secure comms
+════════════════════════════════════════════════════════*/
+body.theme-slate {
+  --gold: #3eb8b0;
+  --gold2: #55d8d0;
+  --gold-dim: #1a5450;
+  --olive: #080e10;
+  --olive2: #0c1618;
+  --olive3: #141e20;
+  --bg: #040a0c;
+  --panel: #080e10;
+  --border: rgba(62,184,176,0.24);
+  --text: #80c0bc;
+  --text-dim: #2c5050;
+  --text-bright: #c0e8e4;
+  --red: #8b3020;
+  --red2: #cc2200;
+  background-color: #040a0c;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 15% 15%, rgba(6,26,32,0.7) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 80%, rgba(8,40,50,0.3) 0%, transparent 60%),
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(62,184,176,0.011) 40px, rgba(62,184,176,0.011) 41px),
+    repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(62,184,176,0.011) 40px, rgba(62,184,176,0.011) 41px);
+}
+body.theme-slate .ctg-nav {
+  background: rgba(4,10,12,0.97);
+  border-bottom-color: rgba(62,184,176,0.16);
+}
+body.theme-slate .ctg-nav a { color: #2c5050; }
+body.theme-slate .ctg-nav a:hover,
+body.theme-slate .ctg-nav a.active { color: #3eb8b0; }
+body.theme-slate .ctg-nav a.active { border-bottom-color: #3eb8b0; }

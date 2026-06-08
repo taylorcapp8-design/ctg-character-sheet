@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080a04">
+<link rel="stylesheet" href="ctg-themes.css">
+<title>CTG — Character Sheet · Page II</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400;700&family=Cinzel+Decorative:wght@400;700&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c09818; --gold-light: #ddb828; --gold-dim: #604808;
+    --olive: #3a4020; --olive-dark: #151a08; --olive-mid: #1e2410;
+    --red: #6a1010; --red-bright: #aa1800;
+    --bg: #080a04; --panel: #0d1006; --panel2: #1a1e0c;
+    --border: rgba(192,152,24,0.22); --border-bright: rgba(192,152,24,0.55);
+    --text: #c4b870; --text-dim: #524e2c; --text-bright: #e8d490;
+    --suit-spade: #7898aa; --suit-club: #7a9868; --suit-heart: #b02828; --suit-diamond: #4470aa;
+    --ef-green: #509850;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(28,35,10,0.9) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 45% at 5% 95%, rgba(80,12,12,0.3) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 45% at 95% 5%, rgba(28,40,10,0.3) 0%, transparent 60%),
+      repeating-linear-gradient(0deg,transparent,transparent 52px,rgba(192,152,24,0.016) 52px,rgba(192,152,24,0.016) 53px),
+      repeating-linear-gradient(90deg,transparent,transparent 52px,rgba(192,152,24,0.016) 52px,rgba(192,152,24,0.016) 53px);
+    color: var(--text); font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh; padding: 20px;
+  }
+  .sheet { max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
+  .outer-frame { border:1px solid rgba(200,160,32,0.12); padding:16px; position:relative; }
+  .outer-frame::before { content:'◈'; position:absolute; top:8px; left:12px; color:var(--gold-dim); font-size:0.7rem; }
+  .outer-frame::after  { content:'◈'; position:absolute; bottom:8px; right:12px; color:var(--gold-dim); font-size:0.7rem; }
+
+  /* CORNER ORNAMENTS */
+  .corner-ornament { position:fixed; width:80px; height:80px; pointer-events:none; z-index:0; opacity:0.18; }
+  .corner-ornament svg { width:100%; height:100%; }
+  .co-tl { top:10px; left:10px; }
+  .co-tr { top:10px; right:10px; transform:scaleX(-1); }
+  .co-bl { bottom:10px; left:10px; transform:scaleY(-1); }
+  .co-br { bottom:10px; right:10px; transform:scale(-1); }
+
+  /* HEADER */
+  .sheet-header { text-align:center; margin-bottom:20px; position:relative; padding:24px 0 16px; }
+  .sheet-header::before { content:''; position:absolute; bottom:0; left:10%; right:10%; height:1px;
+    background:linear-gradient(90deg,transparent,var(--gold),var(--gold-light),var(--gold),transparent); }
+  .ctg-badge { font-family:'Bebas Neue',sans-serif; font-size:0.75rem; letter-spacing:6px; color:var(--gold-dim); margin-bottom:6px; }
+  .sheet-title { font-family:'Bebas Neue',sans-serif; font-size:2.4rem; color:var(--gold); letter-spacing:4px; text-shadow:0 0 30px rgba(200,160,32,0.3); margin-bottom:4px; }
+  .sheet-sub { font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:var(--text-dim); letter-spacing:3px; }
+  .wing-divider { display:flex; align-items:center; justify-content:center; gap:12px; margin:12px 0 20px; }
+  .wing-divider .line { flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--gold-dim)); }
+  .wing-divider .line.r { background:linear-gradient(90deg,var(--gold-dim),transparent); }
+  .wing-divider .emblem { color:var(--gold); font-size:1rem; opacity:0.7; }
+
+  /* PANEL */
+  .panel { background:var(--panel); border:1px solid var(--border); position:relative; padding:16px; margin-bottom:14px; }
+  .panel::before { content:''; position:absolute; inset:2px; border:1px solid rgba(200,160,32,0.08); pointer-events:none; }
+  .panel.cut-corners { clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px); }
+  .panel-title { font-family:'Bebas Neue',sans-serif; font-size:0.85rem; letter-spacing:5px; color:var(--gold-dim); text-transform:uppercase; margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; }
+  .panel-title .suit-icon { font-size:0.75rem; }
+  .panel-note { font-family:'Share Tech Mono',monospace; font-size:0.6rem; color:var(--text-dim); font-style:italic; margin-top:-6px; margin-bottom:10px; letter-spacing:0.5px; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .panel { animation:fadeUp 0.4s ease both; }
+
+  /* TWO-COL */
+  .two-col { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+
+  /* ARMOUR */
+  .armour-slot {
+    display:grid; grid-template-columns:90px 1fr 60px;
+    gap:10px; align-items:center;
+    background:var(--olive-dark); border:1px solid var(--border);
+    padding:8px 12px; margin-bottom:6px; transition:border-color 0.2s;
+  }
+  .armour-slot:hover { border-color:rgba(200,160,32,0.5); }
+  .armour-loc { font-family:'Share Tech Mono',monospace; font-size:0.58rem; letter-spacing:2px; color:var(--text-dim); text-transform:uppercase; }
+  .armour-input {
+    background:transparent; border:none; border-bottom:1px solid var(--border);
+    color:var(--text-bright); font-family:'Rajdhani',sans-serif; font-size:0.9rem;
+    padding:2px 0; outline:none; width:100%; transition:border-color 0.2s;
+  }
+  .armour-input:focus { border-color:var(--gold); }
+  .armour-input::placeholder { color:var(--text-dim); font-size:0.75rem; }
+  .ef-mod-wrap { display:flex; flex-direction:column; align-items:center; gap:2px; }
+  .ef-mod-label { font-family:'Share Tech Mono',monospace; font-size:0.5rem; color:var(--text-dim); letter-spacing:1px; }
+  .ef-mod-input {
+    background:transparent; border:1px solid rgba(109,176,109,0.3);
+    color:var(--ef-green); font-family:'Cinzel',serif; font-size:1rem;
+    text-align:center; width:44px; padding:2px; outline:none; transition:border-color 0.2s;
+  }
+  .ef-mod-input:focus { border-color:var(--ef-green); }
+  .armour-total { display:flex; justify-content:flex-end; align-items:center; gap:10px; margin-top:8px; padding-top:8px; border-top:1px solid var(--border); font-family:'Cinzel',serif; }
+  .armour-total-label { font-size:0.65rem; color:var(--text-dim); letter-spacing:2px; }
+  .armour-total-val { font-size:1.2rem; color:var(--ef-green); }
+
+  /* BELT CHARMS */
+  .charm-slot { background:var(--olive-dark); border:1px solid var(--border); padding:10px 12px; margin-bottom:6px; transition:border-color 0.2s; }
+  .charm-slot:hover { border-color:rgba(200,160,32,0.5); }
+  .charm-row { display:flex; gap:10px; align-items:center; margin-bottom:6px; }
+  .charm-label { font-family:'Share Tech Mono',monospace; font-size:0.55rem; color:var(--text-dim); letter-spacing:2px; min-width:80px; }
+  .charm-input {
+    flex:1; background:transparent; border:none; border-bottom:1px solid var(--border);
+    color:var(--text-bright); font-family:'Rajdhani',sans-serif; font-size:0.9rem;
+    padding:2px 0; outline:none; transition:border-color 0.2s;
+  }
+  .charm-input:focus { border-color:var(--gold); }
+  .charm-input::placeholder { color:var(--text-dim); font-size:0.75rem; }
+  .charm-quirk-label { font-family:'Share Tech Mono',monospace; font-size:0.5rem; color:var(--gold-dim); letter-spacing:2px; margin-bottom:3px; }
+  .charm-quirk-input {
+    width:100%; background:rgba(0,0,0,0.2); border:1px solid var(--border);
+    color:var(--text); font-family:'Rajdhani',sans-serif; font-size:0.85rem;
+    padding:5px 8px; outline:none; resize:vertical; min-height:40px; transition:border-color 0.2s;
+  }
+  .charm-quirk-input:focus { border-color:var(--gold); }
+  .add-btn {
+    background:transparent; border:1px dashed var(--border); color:var(--text-dim);
+    font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:2px;
+    padding:7px; width:100%; cursor:pointer; transition:all 0.2s; margin-top:4px;
+  }
+  .add-btn:hover { border-color:var(--gold); color:var(--gold); }
+
+  /* INVENTORY */
+  .inventory-list { list-style:none; }
+  .inventory-item { display:grid; grid-template-columns:20px 1fr auto; gap:8px; align-items:center; border-bottom:1px solid rgba(200,160,32,0.08); padding:6px 4px; transition:background 0.15s; }
+  .inventory-item:hover { background:rgba(200,160,32,0.03); }
+  .item-bullet { color:var(--gold-dim); font-family:'Share Tech Mono',monospace; font-size:0.7rem; text-align:center; }
+  .item-input {
+    background:transparent; border:none; border-bottom:1px solid transparent;
+    color:var(--text); font-family:'Rajdhani',sans-serif; font-size:0.9rem;
+    padding:2px 0; outline:none; width:100%; transition:border-color 0.2s;
+  }
+  .item-input:focus { border-color:var(--border); }
+  .item-input::placeholder { color:rgba(122,112,80,0.4); }
+  .item-del { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:0.75rem; opacity:0; transition:opacity 0.2s; font-family:'Share Tech Mono',monospace; padding:2px 4px; }
+  .inventory-item:hover .item-del { opacity:1; }
+  .item-del:hover { color:var(--red-bright); }
+
+  /* MULA */
+  .mula-block {
+    background:var(--olive-dark); border:1px solid rgba(200,160,32,0.4);
+    padding:12px 16px; display:flex; align-items:center; gap:16px;
+    clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0 calc(100% - 6px),0 6px);
+  }
+  .mula-label { font-family:'Cinzel',serif; font-size:0.7rem; letter-spacing:3px; color:var(--gold-dim); }
+  .mula-input {
+    background:transparent; border:none; border-bottom:2px solid var(--gold-dim);
+    color:var(--gold); font-family:'Cinzel',serif; font-size:2rem;
+    width:120px; outline:none; text-align:center; transition:border-color 0.2s;
+  }
+  .mula-input:focus { border-color:var(--gold); }
+  .mula-note { font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:var(--text-dim); font-style:italic; flex:1; }
+
+  /* FOOTER */
+  .sheet-footer { text-align:center; margin-top:20px; padding-top:14px; border-top:1px solid var(--border); font-family:'Share Tech Mono',monospace; font-size:0.55rem; letter-spacing:3px; color:var(--text-dim); }
+  .sheet-footer .suits { font-size:0.8rem; margin-bottom:4px; }
+  .sheet-footer .suits span:nth-child(1) { color:var(--suit-spade); }
+  .sheet-footer .suits span:nth-child(2) { color:var(--suit-club); }
+  .sheet-footer .suits span:nth-child(3) { color:var(--suit-heart); }
+  .sheet-footer .suits span:nth-child(4) { color:var(--suit-diamond); }
+
+  @media(max-width:600px) {
+    body { padding:10px; }
+    .two-col { grid-template-columns:1fr; }
+    .armour-slot { grid-template-columns:70px 1fr 50px; }
+  }
+
+  /* PRINT */
+  @media print {
+    .ctg-nav, .corner-ornament, .dice-float-btn, .dice-panel, .add-btn, .item-del { display:none !important; }
+    body { background:#fff !important; color:#000 !important; padding:0 !important; }
+    .outer-frame { border:none !important; padding:0 !important; }
+    .outer-frame::before, .outer-frame::after { display:none; }
+    .panel { background:#fff !important; border:1px solid #ccc !important; break-inside:avoid; }
+    .panel::before { display:none; }
+    .panel-title { color:#333 !important; border-color:#ccc !important; }
+    .armour-input, .ef-mod-input, .charm-input, .charm-quirk-input, .item-input, .mula-input { color:#000 !important; border-color:#999 !important; }
+    .two-col { display:block !important; }
+    .two-col > * { margin-bottom:10px; }
+    @page { margin:1.5cm; }
+  }
+
+  /* DICE */
+  .dice-float-btn { position:fixed; bottom:20px; right:20px; z-index:500; width:44px; height:44px; background:var(--olive-dark); border:1px solid var(--gold-dim); color:var(--gold); font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px); transition:all 0.2s; box-shadow:0 4px 20px rgba(0,0,0,0.5); }
+  .dice-float-btn:hover { background:var(--olive-mid); border-color:var(--gold); box-shadow:0 0 16px rgba(192,152,24,0.2); }
+  .dice-panel { position:fixed; bottom:74px; right:20px; z-index:500; width:210px; background:#0d1006; border:1px solid rgba(192,152,24,0.45); padding:14px; display:none; clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px); box-shadow:0 8px 32px rgba(0,0,0,0.7); }
+  .dice-panel.open { display:block; }
+  .dice-panel-title { font-family:'Bebas Neue',sans-serif; font-size:0.85rem; letter-spacing:5px; color:var(--gold-dim); margin-bottom:10px; }
+  .dice-btns { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:10px; }
+  .die-btn { background:transparent; border:1px solid var(--border); color:var(--text); font-family:'Share Tech Mono',monospace; font-size:0.62rem; letter-spacing:1px; padding:6px 4px; cursor:pointer; transition:all 0.2s; clip-path:polygon(3px 0,calc(100% - 3px) 0,100% 3px,100% calc(100% - 3px),calc(100% - 3px) 100%,3px 100%,0 calc(100% - 3px),0 3px); }
+  .die-btn:hover { border-color:var(--gold); color:var(--gold); background:rgba(192,152,24,0.08); }
+  .dice-result-area { border:1px solid var(--border); background:rgba(0,0,0,0.3); padding:10px; text-align:center; margin-bottom:8px; min-height:52px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .dice-result-num { font-family:'Cinzel',serif; font-size:2rem; color:var(--gold); line-height:1; transition:color 0.2s; }
+  .dice-result-die { font-family:'Share Tech Mono',monospace; font-size:0.5rem; color:var(--text-dim); letter-spacing:2px; }
+  .dice-history { list-style:none; }
+  .dice-history li { font-family:'Share Tech Mono',monospace; font-size:0.52rem; color:var(--text-dim); padding:2px 0; border-bottom:1px solid rgba(192,152,24,0.06); }
+  .dice-history li:last-child { border-bottom:none; }
+  .dice-history li b { color:var(--gold); }
+  @keyframes diceRoll { 0%{transform:scale(0.6) rotate(-20deg);opacity:0} 60%{transform:scale(1.2) rotate(8deg)} 100%{transform:scale(1) rotate(0);opacity:1} }
+  .dice-rolling { animation:diceRoll 0.35s ease; }
+
+  /* NAV */
+  .ctg-nav { position:sticky;top:0;z-index:100;background:rgba(6,8,2,0.98);border-bottom:1px solid rgba(200,160,32,0.25);backdrop-filter:blur(6px);display:flex;align-items:center;padding:0 16px;height:40px;font-family:'Share Tech Mono',monospace;font-size:0.58rem;letter-spacing:2px; }
+  .ctg-nav-home { color:#c8a020;text-decoration:none;font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:3px;padding-right:16px;border-right:1px solid rgba(200,160,32,0.2);margin-right:8px;white-space:nowrap; }
+  .ctg-nav-home:hover { color:#e8c040; }
+  .ctg-nav a { color:#7a7050;text-decoration:none;padding:0 10px;height:100%;display:flex;align-items:center;border-right:1px solid rgba(200,160,32,0.1);transition:color .15s,background .15s;white-space:nowrap; }
+  .ctg-nav a:hover { color:#d4c88a;background:rgba(200,160,32,0.05); }
+  .ctg-nav a.active { color:#c8a020;border-bottom:2px solid #c8a020; }
+  .ctg-nav-name { margin-left:auto;font-family:'Cinzel',serif;font-size:0.65rem;color:#c8a020;opacity:0.8;padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px; }
+  .ctg-nav-saved { font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:#c8a020;opacity:0;transition:opacity 0.4s;padding-right:8px;white-space:nowrap; }
+  .ctg-nav-saved.show { opacity:1; }
+</style>
+</head>
+<body>
+
+<nav class="ctg-nav">
+  <a class="ctg-nav-home" href="index.html">CTG</a>
+  <a href="p1.html" id="nav-p1">I · Stats</a>
+  <a href="p2.html" id="nav-p2">II · Inventory</a>
+  <a href="p3.html" id="nav-p3">III · Faculties</a>
+  <a href="p4.html" id="nav-p4">IV · Arsenal</a>
+  <a href="p5.html" id="nav-p5">V · Skills</a>
+  <span class="ctg-nav-name" id="nav-char-name">Operative</span>
+  <span class="ctg-nav-saved" id="nav-saved">Saved ✓</span>
+</nav>
+<script>(function(){
+  var pg=location.pathname.split('/').pop()||'index.html';
+  var m={'p1.html':'nav-p1','p2.html':'nav-p2','p3.html':'nav-p3','p4.html':'nav-p4','p5.html':'nav-p5'};
+  var id=m[pg];if(id){var el=document.getElementById(id);if(el)el.classList.add('active');}
+  try{var n=localStorage.getItem('ctg-char-name');if(n)document.getElementById('nav-char-name').textContent=n;}catch(e){}
+})();</script>
+
+<!-- Corner ornaments -->
+<div class="corner-ornament co-tl"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><path d="M8 2 L8 8 L2 8" stroke="#c8a020" stroke-width="0.5" opacity="0.5"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
+<div class="corner-ornament co-tr"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
+<div class="corner-ornament co-bl"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
+<div class="corner-ornament co-br"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
+
+<div class="sheet">
+<div class="outer-frame">
+
+  <div class="sheet-header">
+    <div class="ctg-badge">Call To Gallahad</div>
+    <div class="sheet-title">Inventory &amp; Armour</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:6px;color:var(--gold-dim);margin-top:2px;">— PAGE II —</div>
+    <div class="sheet-sub">◈ &nbsp; operational record — page ii &nbsp; ◈</div>
+  </div>
+  <div class="wing-divider">
+    <div class="line"></div><div class="emblem">♠ ♣ ♥ ♦</div><div class="line r"></div>
+  </div>
+
+  <div class="two-col">
+    <!-- LEFT: EXTRA FLESH + BELT CHARMS -->
+    <div>
+      <div class="panel cut-corners">
+        <div class="panel-title"><span class="suit-icon" style="color:var(--suit-spade)">♠</span>Extra Flesh</div>
+        <div class="panel-note">Soft flesh? Pad it with more.</div>
+        <div class="armour-slot">
+          <div class="armour-loc">🪖 Head</div>
+          <input class="armour-input" type="text" id="armour-head-name" value="Change Name" placeholder="Armour name...">
+          <div class="ef-mod-wrap"><div class="ef-mod-label">EF +</div><input class="ef-mod-input" type="number" value="0" min="0" id="ef-head"></div>
+        </div>
+        <div class="armour-slot">
+          <div class="armour-loc">🧥 Torso</div>
+          <input class="armour-input" type="text" id="armour-torso-name" value="Rubbish Slicks" placeholder="Armour name...">
+          <div class="ef-mod-wrap"><div class="ef-mod-label">EF +</div><input class="ef-mod-input" type="number" value="0" min="0" id="ef-torso"></div>
+        </div>
+        <div class="armour-slot">
+          <div class="armour-loc">💪 Arms</div>
+          <input class="armour-input" type="text" id="armour-arms-name" value="Garbage Pads" placeholder="Armour name...">
+          <div class="ef-mod-wrap"><div class="ef-mod-label">EF +</div><input class="ef-mod-input" type="number" value="0" min="0" id="ef-arms"></div>
+        </div>
+        <div class="armour-slot">
+          <div class="armour-loc">🦵 Legs</div>
+          <input class="armour-input" type="text" id="armour-legs-name" value="Two diff. Winter Socks" placeholder="Armour name...">
+          <div class="ef-mod-wrap"><div class="ef-mod-label">EF +</div><input class="ef-mod-input" type="number" value="0" min="0" id="ef-legs"></div>
+        </div>
+        <div class="armour-total">
+          <span class="armour-total-label">Total EF</span>
+          <span class="armour-total-val" id="ef-total">+0</span>
+        </div>
+      </div>
+
+      <div class="panel cut-corners">
+        <div class="panel-title"><span class="suit-icon" style="color:var(--gold)">◈</span>Belt Charms</div>
+        <div class="panel-note">People throw away useful things. Don't they read the stats?</div>
+        <div id="charms-list"></div>
+        <button class="add-btn" onclick="addCharm()">+ Add Belt Charm</button>
+      </div>
+    </div>
+
+    <!-- RIGHT: INVENTORY + MULA -->
+    <div>
+      <div class="panel cut-corners">
+        <div class="panel-title"><span class="suit-icon" style="color:var(--suit-club)">♣</span>Inventory</div>
+        <div class="panel-note">Your sack of goodies.</div>
+        <ul class="inventory-list" id="inventory-list"></ul>
+        <button class="add-btn" style="margin-top:8px;" onclick="addItem()">+ Add Item</button>
+      </div>
+
+      <div class="panel cut-corners">
+        <div class="panel-title"><span class="suit-icon" style="color:var(--gold)">◈</span>Mula</div>
+        <div class="mula-block">
+          <div class="mula-label">₩</div>
+          <input class="mula-input" type="number" value="26" min="0" id="mula-val">
+          <div class="mula-note">Yea yea, make it rain — but not too much. These are your life savings.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet-footer">
+    <div class="suits"><span>♠</span>&nbsp;<span>♣</span>&nbsp;<span>♥</span>&nbsp;<span>♦</span></div>
+    CALL TO GALLAHAD &nbsp;·&nbsp; INVENTORY &amp; ARMOUR &nbsp;·&nbsp; PAGE II
+  </div>
+</div>
+</div>
+
+<!-- DICE ROLLER -->
+<button class="dice-float-btn" id="dice-toggle" title="Roll Dice">◈</button>
+<div class="dice-panel" id="dice-panel">
+  <div class="dice-panel-title">Dice Roller</div>
+  <div class="dice-btns">
+    <button class="die-btn" onclick="ctgRoll(4)">D4</button>
+    <button class="die-btn" onclick="ctgRoll(6)">D6</button>
+    <button class="die-btn" onclick="ctgRoll(8)">D8</button>
+    <button class="die-btn" onclick="ctgRoll(10)">D10</button>
+    <button class="die-btn" onclick="ctgRoll(12)">D12</button>
+    <button class="die-btn" onclick="ctgRoll(20)">D20</button>
+  </div>
+  <div class="dice-result-area">
+    <div class="dice-result-num" id="dice-num">—</div>
+    <div class="dice-result-die" id="dice-die">select a die</div>
+  </div>
+  <ul class="dice-history" id="dice-history"></ul>
+</div>
+
+<script>
+  // EF Total
+  function recalcEF() {
+    const ids = ['ef-head','ef-torso','ef-arms','ef-legs'];
+    const total = ids.reduce((s,id) => s + (parseInt(document.getElementById(id).value)||0), 0);
+    document.getElementById('ef-total').textContent = (total >= 0 ? '+' : '') + total;
+  }
+  document.querySelectorAll('[id^="ef-"]').forEach(el => el.addEventListener('input', recalcEF));
+
+  // Save Flash
+  function ctgSaved() {
+    var el = document.getElementById('nav-saved');
+    if (el) { el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(function(){ el.classList.remove('show'); }, 1800); }
+    try {
+      localStorage.setItem('ctg-last-updated', new Date().toISOString());
+      var cnt = parseInt(localStorage.getItem('ctg-edit-count') || '0') + 1;
+      localStorage.setItem('ctg-edit-count', String(cnt));
+    } catch(e) {}
+  }
+
+  // Inventory
+  function addItem(val, skipSave) {
+    const li = document.createElement('li');
+    li.className = 'inventory-item';
+    li.innerHTML = `<span class="item-bullet">◆</span><input class="item-input" type="text" value="${val||''}" placeholder="Item..."><button class="item-del" onclick="this.closest('li').remove();schedSave2();" title="Remove">✕</button>`;
+    document.getElementById('inventory-list').appendChild(li);
+    li.querySelector('.item-input').addEventListener('input', schedSave2);
+    if (!skipSave) schedSave2();
+  }
+
+  // Belt charms
+  function addCharm(name, quirk, skipSave) {
+    const div = document.createElement('div');
+    div.className = 'charm-slot';
+    div.innerHTML = `
+      <div class="charm-row">
+        <span class="charm-label">Charm</span>
+        <input class="charm-input" type="text" placeholder="Charm name..." value="${name||''}">
+        <button style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.75rem;margin-left:6px;transition:color 0.2s;" onmouseover="this.style.color='#aa1800'" onmouseout="this.style.color=''" onclick="this.closest('.charm-slot').remove();schedSave2();">✕</button>
+      </div>
+      <div class="charm-quirk-label">Special Quirk</div>
+      <textarea class="charm-quirk-input" placeholder="Quirk description...">${quirk||''}</textarea>`;
+    document.getElementById('charms-list').appendChild(div);
+    div.querySelectorAll('input,textarea').forEach(el => el.addEventListener('input', schedSave2));
+    if (!skipSave) schedSave2();
+  }
+
+  // Save/Load
+  function saveP2() {
+    try {
+      const armour = {
+        head: { name: document.getElementById('armour-head-name')?.value||'', ef: document.getElementById('ef-head')?.value||'0' },
+        torso: { name: document.getElementById('armour-torso-name')?.value||'', ef: document.getElementById('ef-torso')?.value||'0' },
+        arms: { name: document.getElementById('armour-arms-name')?.value||'', ef: document.getElementById('ef-arms')?.value||'0' },
+        legs: { name: document.getElementById('armour-legs-name')?.value||'', ef: document.getElementById('ef-legs')?.value||'0' },
+      };
+      const charms = [...document.querySelectorAll('.charm-slot')].map(s => ({
+        name: s.querySelector('.charm-input')?.value||'',
+        quirk: s.querySelector('.charm-quirk-input')?.value||'',
+      }));
+      const inventory = [...document.querySelectorAll('#inventory-list .item-input')].map(i => i.value);
+      const mula = document.getElementById('mula-val')?.value||'0';
+      const data = { armour, charms, inventory, mula };
+      localStorage.setItem('ctg-p2', JSON.stringify(data));
+      ctgSaved();
+    } catch(e) {}
+  }
+
+  function loadP2() {
+    try {
+      const raw = localStorage.getItem('ctg-p2');
+      if (!raw) {
+        // Load defaults
+        const defaultCharms = [{ name:'Useless Miscoloured Shoe String', quirk:'You may change the shoe string on your boots once per encounter.' }];
+        defaultCharms.forEach(c => addCharm(c.name, c.quirk, true));
+        const defaultItems = ['1× Large Stim (Healing)','1× Gun-Brella','1× Toothpick','1× Ink-Dipped Calamari','1× Rotten Supplies','2× Shotgun Ammo','1× Pistol Silencer'];
+        defaultItems.forEach(i => addItem(i, true));
+        return;
+      }
+      const d = JSON.parse(raw);
+      if (d.armour) {
+        ['head','torso','arms','legs'].forEach(k => {
+          const nameEl = document.getElementById('armour-' + k + '-name');
+          const efEl = document.getElementById('ef-' + k);
+          if (nameEl && d.armour[k]) nameEl.value = d.armour[k].name;
+          if (efEl && d.armour[k]) efEl.value = d.armour[k].ef;
+        });
+        recalcEF();
+      }
+      if (d.charms && d.charms.length) d.charms.forEach(c => addCharm(c.name, c.quirk, true));
+      else addCharm('Useless Miscoloured Shoe String', 'You may change the shoe string on your boots once per encounter.', true);
+      if (d.inventory && d.inventory.length) d.inventory.forEach(i => addItem(i, true));
+      else { ['1× Large Stim (Healing)','1× Gun-Brella','1× Toothpick','1× Ink-Dipped Calamari','1× Rotten Supplies','2× Shotgun Ammo','1× Pistol Silencer'].forEach(i => addItem(i, true)); }
+      if (d.mula) document.getElementById('mula-val').value = d.mula;
+    } catch(e) {}
+  }
+
+  let _saveTimer2 = null;
+  function schedSave2() { clearTimeout(_saveTimer2); _saveTimer2 = setTimeout(saveP2, 400); }
+  document.addEventListener('input', schedSave2);
+  document.addEventListener('change', schedSave2);
+
+  loadP2();
+  recalcEF();
+
+  // Dice Roller
+  (function(){
+    var log=[];
+    var panel=document.getElementById('dice-panel');
+    var btn=document.getElementById('dice-toggle');
+    btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
+    document.addEventListener('click',function(e){
+      if(panel.classList.contains('open')&&!panel.contains(e.target)&&e.target!==btn)
+        panel.classList.remove('open');
+    });
+    window.ctgRoll=function(sides){
+      var r=Math.floor(Math.random()*sides)+1;
+      var numEl=document.getElementById('dice-num');
+      var dieEl=document.getElementById('dice-die');
+      numEl.textContent=r; dieEl.textContent='d'+sides;
+      numEl.style.color=r===sides?'#ddb828':r===1?'#aa1800':'#c09818';
+      numEl.classList.remove('dice-rolling'); void numEl.offsetWidth; numEl.classList.add('dice-rolling');
+      log.unshift({sides:sides,roll:r}); if(log.length>5)log.pop();
+      document.getElementById('dice-history').innerHTML=log.map(function(e){return '<li><b>'+e.roll+'</b> on d'+e.sides+'</li>';}).join('');
+    };
+  })();
+</script>
+<script src="ctg-theme.js"></script>
+</body>
+</html>

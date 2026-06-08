@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080a04">
+<link rel="stylesheet" href="ctg-themes.css">
+<title>CTG — Character Sheet · Page I</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400;700&family=Cinzel+Decorative:wght@400;700&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #c09818;
+    --gold-light: #ddb828;
+    --gold-dim: #604808;
+    --olive: #3a4020;
+    --olive-dark: #151a08;
+    --olive-mid: #1e2410;
+    --red: #6a1010;
+    --red-bright: #aa1800;
+    --bg: #080a04;
+    --panel: #0d1006;
+    --panel2: #1a1e0c;
+    --border: rgba(192,152,24,0.22);
+    --border-bright: rgba(192,152,24,0.55);
+    --text: #c4b870;
+    --text-dim: #524e2c;
+    --text-bright: #e8d490;
+    --suit-spade: #7898aa;
+    --suit-club: #7a9868;
+    --suit-heart: #b02828;
+    --suit-diamond: #4470aa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    background-image:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(28,35,10,0.9) 0%, transparent 70%),
+      radial-gradient(ellipse 45% 45% at 5% 95%, rgba(80,12,12,0.3) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 45% at 95% 5%, rgba(28,40,10,0.3) 0%, transparent 60%),
+      repeating-linear-gradient(0deg,transparent,transparent 52px,rgba(192,152,24,0.016) 52px,rgba(192,152,24,0.016) 53px),
+      repeating-linear-gradient(90deg,transparent,transparent 52px,rgba(192,152,24,0.016) 52px,rgba(192,152,24,0.016) 53px);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  /* ═══ CORNER ORNAMENTS ═══ */
+  .corner-ornament {
+    position: fixed; width: 80px; height: 80px;
+    pointer-events: none; z-index: 0; opacity: 0.18;
+  }
+  .corner-ornament svg { width: 100%; height: 100%; }
+  .co-tl { top: 10px; left: 10px; }
+  .co-tr { top: 10px; right: 10px; transform: scaleX(-1); }
+  .co-bl { bottom: 10px; left: 10px; transform: scaleY(-1); }
+  .co-br { bottom: 10px; right: 10px; transform: scale(-1); }
+
+  /* ═══ PAGE WRAPPER ═══ */
+  .sheet { max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
+
+  /* ═══ HEADER ═══ */
+  .sheet-header { text-align: center; margin-bottom: 20px; position: relative; padding: 24px 0 16px; }
+  .sheet-header::before {
+    content: ''; position: absolute; bottom: 0; left: 10%; right: 10%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+  }
+  .ctg-badge { font-family: 'Cinzel Decorative', serif; font-size: 0.65rem; letter-spacing: 6px; color: var(--gold-dim); text-transform: uppercase; margin-bottom: 6px; }
+  .sheet-title { font-family: 'Cinzel Decorative', serif; font-size: 1.8rem; color: var(--gold); letter-spacing: 4px; text-shadow: 0 0 30px rgba(200,160,32,0.3); margin-bottom: 4px; }
+  .sheet-sub { font-family: 'Share Tech Mono', monospace; font-size: 0.65rem; color: var(--text-dim); letter-spacing: 3px; }
+
+  /* ═══ WING DIVIDER ═══ */
+  .wing-divider { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 12px 0 20px; }
+  .wing-divider .line { flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-dim)); }
+  .wing-divider .line.r { background: linear-gradient(90deg, var(--gold-dim), transparent); }
+  .wing-divider .emblem { color: var(--gold); font-size: 1rem; opacity: 0.7; }
+
+  /* ═══ PANELS ═══ */
+  .panel { background: var(--panel); border: 1px solid var(--border); position: relative; padding: 16px; }
+  .panel::before { content: ''; position: absolute; inset: 2px; border: 1px solid rgba(200,160,32,0.08); pointer-events: none; }
+  .panel-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem; letter-spacing: 5px;
+    color: var(--gold-dim); text-transform: uppercase;
+    margin-bottom: 12px; padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .panel-title .suit-icon { font-size: 0.75rem; }
+  .panel.cut-corners { clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0 calc(100% - 8px), 0 8px); }
+
+  /* ═══ IDENTITY BLOCK ═══ */
+  .identity-grid { display: grid; grid-template-columns: 120px 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+  .portrait-box {
+    aspect-ratio: 1; border: 1px solid var(--border-bright);
+    background: var(--olive-dark); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; overflow: hidden; transition: border-color 0.2s;
+  }
+  .portrait-box:hover { border-color: var(--gold); }
+  .portrait-box img { width: 100%; height: 100%; object-fit: cover; }
+  .portrait-placeholder { display: flex; flex-direction: column; align-items: center; gap: 6px; color: var(--text-dim); font-size: 0.65rem; text-align: center; font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
+  .portrait-placeholder span { font-size: 1.8rem; opacity: 0.4; }
+  .portrait-input { display: none; }
+
+  .identity-fields { display: flex; flex-direction: column; gap: 8px; }
+  .field-group { display: flex; flex-direction: column; gap: 2px; }
+  .field-label { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; letter-spacing: 2px; color: var(--gold-dim); text-transform: uppercase; }
+  .field-input {
+    background: transparent; border: none; border-bottom: 1px solid var(--border);
+    color: var(--text-bright); font-family: 'Cinzel', serif; font-size: 0.9rem;
+    padding: 3px 0; outline: none; width: 100%; transition: border-color 0.2s;
+  }
+  .field-input:focus { border-color: var(--gold); }
+  .field-input::placeholder { color: var(--text-dim); font-size: 0.75rem; }
+  .field-textarea {
+    background: rgba(0,0,0,0.2); border: 1px solid var(--border);
+    color: var(--text); font-family: 'Rajdhani', sans-serif; font-size: 0.85rem;
+    padding: 6px 8px; outline: none; width: 100%; resize: vertical; min-height: 60px;
+    transition: border-color 0.2s; line-height: 1.4;
+  }
+  .field-textarea:focus { border-color: var(--gold); }
+
+  /* ═══ VITALS STRIP ═══ */
+  .vitals-strip { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .vital-box {
+    background: var(--olive-dark); border: 1px solid var(--border); padding: 10px 8px;
+    text-align: center; position: relative;
+    clip-path: polygon(6px 0, calc(100% - 6px) 0, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px), 0 6px);
+  }
+  .vital-label { font-family: 'Share Tech Mono', monospace; font-size: 0.5rem; letter-spacing: 2px; color: var(--gold-dim); display: block; margin-bottom: 4px; }
+  .vital-input { background: transparent; border: none; color: var(--gold); font-family: 'Cinzel', serif; font-size: 1.3rem; text-align: center; width: 100%; outline: none; transition: color 0.2s; }
+  .vital-box.harth { border-color: rgba(200,160,32,0.5); }
+  .vital-box.ef { border-color: rgba(100,180,100,0.3); }
+  .vital-box.ef .vital-input { color: #6db06d; }
+
+  /* HP pips */
+  .hp-pips { display: flex; justify-content: center; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .hp-pip {
+    width: 14px; height: 14px; border: 1px solid var(--gold-dim); background: transparent;
+    cursor: pointer; transition: background 0.15s;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+  .hp-pip.filled { background: var(--gold); }
+  .hp-pip.ef-pip { border-color: #4a8a4a; }
+  .hp-pip.ef-pip.filled { background: #6db06d; }
+
+  /* ═══ STATS TABLE ═══ */
+  .stats-table-wrap { overflow-x: auto; }
+  .stats-table { width: 100%; border-collapse: collapse; margin-bottom: 4px; min-width: 240px; }
+  .stats-table th { font-family: 'Share Tech Mono', monospace; font-size: 0.52rem; letter-spacing: 2px; color: var(--gold-dim); text-transform: uppercase; padding: 4px 6px; text-align: center; border-bottom: 1px solid var(--border); }
+  .stats-table th.stat-name-col { text-align: left; }
+  .stats-table td { padding: 5px 6px; text-align: center; border-bottom: 1px solid rgba(200,160,32,0.08); }
+  .stats-table tr:hover td { background: rgba(200,160,32,0.04); }
+  .stat-name { font-family: 'Cinzel', serif; font-size: 0.75rem; color: var(--text-bright); text-align: left; }
+  .stat-name .stat-icon { margin-right: 6px; opacity: 0.6; }
+  .stat-val { font-family: 'Cinzel', serif; font-size: 1rem; color: var(--gold); }
+  .stat-sp { font-family: 'Share Tech Mono', monospace; font-size: 0.75rem; color: #6db06d; }
+  .stat-input { background: transparent; border: none; color: var(--gold); font-family: 'Cinzel', serif; font-size: 1rem; text-align: center; width: 36px; outline: none; transition: border-color 0.2s; }
+  .stat-input:focus { border-bottom: 1px solid var(--gold); }
+  .standard-array { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; color: var(--text-dim); text-align: right; margin-top: 6px; letter-spacing: 1px; }
+  .standard-array span { color: var(--gold-dim); }
+
+  /* ═══ TWO COLUMN ═══ */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+
+  /* ═══ CARD COMBAT ═══ */
+  .suit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .suit-card {
+    background: var(--olive-dark); border: 1px solid var(--border);
+    padding: 8px 10px; display: flex; align-items: center; gap: 8px;
+    clip-path: polygon(4px 0, calc(100% - 4px) 0, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0 calc(100% - 4px), 0 4px);
+    transition: border-color 0.2s;
+  }
+  .suit-sym { font-size: 1.4rem; line-height: 1; }
+  .suit-name { font-family: 'Cinzel', serif; font-size: 0.7rem; color: var(--text-bright); margin-bottom: 1px; }
+  .suit-desc { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; color: var(--text-dim); letter-spacing: 1px; }
+  .suit-card.spade { border-color: rgba(168,184,200,0.3); }
+  .suit-card.spade .suit-sym { color: var(--suit-spade); }
+  .suit-card.club { border-color: rgba(152,170,136,0.3); }
+  .suit-card.club .suit-sym { color: var(--suit-club); }
+  .suit-card.heart { border-color: rgba(204,68,68,0.3); }
+  .suit-card.heart .suit-sym { color: var(--suit-heart); }
+  .suit-card.diamond { border-color: rgba(102,153,204,0.3); }
+  .suit-card.diamond .suit-sym { color: var(--suit-diamond); }
+
+  /* ═══ CONSUMABLES ═══ */
+  .consumables-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .consumable { background: var(--olive-dark); border: 1px solid var(--border); padding: 8px 6px; text-align: center; transition: border-color 0.2s; }
+  .consumable-name { font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; letter-spacing: 1px; color: var(--text-dim); margin-bottom: 6px; text-transform: uppercase; }
+  .consumable-counter { display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .counter-btn {
+    background: var(--olive-mid); border: 1px solid var(--border); color: var(--gold);
+    font-family: 'Cinzel', serif; font-size: 0.8rem; width: 20px; height: 20px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  }
+  .counter-btn:hover { background: var(--olive); border-color: var(--gold); }
+  .counter-val { font-family: 'Cinzel', serif; font-size: 1.1rem; color: var(--gold); min-width: 20px; text-align: center; }
+
+  /* ═══ EQUIPMENT ═══ */
+  .equipment-slot {
+    background: var(--olive-dark); border: 1px solid var(--border); padding: 10px 12px;
+    margin-bottom: 8px; display: grid; grid-template-columns: 80px 1fr 1fr;
+    gap: 10px; align-items: center; transition: border-color 0.2s;
+  }
+  .equipment-slot:hover { border-color: rgba(200,160,32,0.5); }
+  .slot-label { font-family: 'Share Tech Mono', monospace; font-size: 0.6rem; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+  .slot-icon { font-size: 1rem; margin-right: 4px; opacity: 0.5; }
+  .equip-input {
+    background: transparent; border: none; border-bottom: 1px solid var(--border);
+    color: var(--text-bright); font-family: 'Rajdhani', sans-serif; font-size: 0.9rem;
+    padding: 2px 0; outline: none; width: 100%; transition: border-color 0.2s;
+  }
+  .equip-input:focus { border-color: var(--gold); }
+  .equip-input::placeholder { color: var(--text-dim); font-size: 0.75rem; }
+
+  /* ═══ NOTES ═══ */
+  .notes-area {
+    width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--border);
+    color: var(--text); font-family: 'Share Tech Mono', monospace; font-size: 0.78rem;
+    padding: 10px; outline: none; resize: vertical; min-height: 80px;
+    line-height: 1.6; letter-spacing: 0.5px; transition: border-color 0.2s;
+  }
+  .notes-area:focus { border-color: var(--gold); }
+
+  /* ═══ LEVEL BADGE ═══ */
+  .level-badge {
+    position: absolute; top: -1px; right: 16px;
+    background: var(--red); border: 1px solid rgba(192,152,24,0.5);
+    padding: 5px 18px; font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem;
+    letter-spacing: 5px; color: var(--gold);
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0 calc(100% - 6px));
+    text-shadow: 0 0 10px rgba(192,152,24,0.4);
+  }
+
+  /* ═══ PAGE FOOTER ═══ */
+  .sheet-footer { text-align: center; margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--border); font-family: 'Share Tech Mono', monospace; font-size: 0.55rem; letter-spacing: 3px; color: var(--text-dim); }
+  .sheet-footer .suits { font-size: 0.8rem; margin-bottom: 4px; }
+  .sheet-footer .suits span:nth-child(1) { color: var(--suit-spade); }
+  .sheet-footer .suits span:nth-child(2) { color: var(--suit-club); }
+  .sheet-footer .suits span:nth-child(3) { color: var(--suit-heart); }
+  .sheet-footer .suits span:nth-child(4) { color: var(--suit-diamond); }
+
+  /* ═══ OUTER FRAME ═══ */
+  .outer-frame { border: 1px solid rgba(200,160,32,0.12); padding: 16px; position: relative; }
+  .outer-frame::before { content: '◈'; position: absolute; top: 8px; left: 12px; color: var(--gold-dim); font-size: 0.7rem; }
+  .outer-frame::after { content: '◈'; position: absolute; bottom: 8px; right: 12px; color: var(--gold-dim); font-size: 0.7rem; }
+
+  /* ═══ ANIMATIONS ═══ */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .panel { animation: fadeUp 0.4s ease both; }
+  .panel:nth-child(1) { animation-delay: 0.05s; }
+  .panel:nth-child(2) { animation-delay: 0.1s; }
+  .panel:nth-child(3) { animation-delay: 0.15s; }
+  .panel:nth-child(4) { animation-delay: 0.2s; }
+
+  /* ═══ RESPONSIVE ═══ */
+  @media (max-width: 600px) {
+    body { padding: 10px; }
+    .identity-grid { grid-template-columns: 80px 1fr; }
+    .identity-grid .identity-fields:last-child { grid-column: 1 / -1; }
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .vitals-strip { grid-template-columns: 1fr 1fr; }
+    .stats-table-wrap { overflow-x: auto; }
+    .stats-table th, .stats-table td { padding: 4px 3px; }
+    .equipment-slot { grid-template-columns: 70px 1fr; }
+    .equipment-slot .equip-input:last-child { grid-column: 1 / -1; }
+    .consumables-grid { grid-template-columns: repeat(2, 1fr); }
+    .suit-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ═══ PRINT ═══ */
+  @media print {
+    .ctg-nav, .corner-ornament, .dice-float-btn, .dice-panel { display: none !important; }
+    body { background: #fff !important; color: #000 !important; padding: 0 !important; }
+    .outer-frame { border: none !important; padding: 0 !important; }
+    .outer-frame::before, .outer-frame::after { display: none; }
+    .panel { background: #fff !important; border: 1px solid #ccc !important; break-inside: avoid; margin-bottom: 8px !important; }
+    .panel::before { display: none; }
+    .panel-title { color: #333 !important; border-color: #ccc !important; }
+    .sheet-footer { color: #333 !important; border-color: #ccc !important; }
+    .counter-btn, button { display: none !important; }
+    input, textarea { color: #000 !important; border-color: #999 !important; }
+    .vital-input { color: #000 !important; }
+    .stat-input { color: #333 !important; }
+    .equip-input { color: #000 !important; }
+    .notes-area { color: #000 !important; }
+    .stat-sp { color: #333 !important; }
+    .two-col { display: block !important; }
+    .two-col > * { margin-bottom: 10px; }
+    .hp-pip { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .hp-pip.filled { background: #888 !important; }
+    @page { margin: 1.5cm; }
+  }
+
+  /* ═══ DICE ROLLER ═══ */
+  .dice-float-btn {
+    position: fixed; bottom: 20px; right: 20px; z-index: 500;
+    width: 44px; height: 44px; background: var(--olive-dark); border: 1px solid var(--gold-dim);
+    color: var(--gold); font-size: 1.2rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    clip-path: polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px);
+    transition: all 0.2s; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  .dice-float-btn:hover { background: var(--olive-mid); border-color: var(--gold); box-shadow: 0 0 16px rgba(192,152,24,0.2); }
+  .dice-panel {
+    position: fixed; bottom: 74px; right: 20px; z-index: 500; width: 210px;
+    background: #0d1006; border: 1px solid rgba(192,152,24,0.45); padding: 14px; display: none;
+    clip-path: polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+  }
+  .dice-panel.open { display: block; }
+  .dice-panel-title { font-family: 'Bebas Neue', sans-serif; font-size: 0.85rem; letter-spacing: 5px; color: var(--gold-dim); margin-bottom: 10px; }
+  .dice-btns { display: grid; grid-template-columns: repeat(3,1fr); gap: 5px; margin-bottom: 10px; }
+  .die-btn {
+    background: transparent; border: 1px solid var(--border); color: var(--text);
+    font-family: 'Share Tech Mono', monospace; font-size: 0.62rem; letter-spacing: 1px;
+    padding: 6px 4px; cursor: pointer; transition: all 0.2s;
+    clip-path: polygon(3px 0,calc(100% - 3px) 0,100% 3px,100% calc(100% - 3px),calc(100% - 3px) 100%,3px 100%,0 calc(100% - 3px),0 3px);
+  }
+  .die-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(192,152,24,0.08); }
+  .dice-result-area {
+    border: 1px solid var(--border); background: rgba(0,0,0,0.3); padding: 10px;
+    text-align: center; margin-bottom: 8px; min-height: 52px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .dice-result-num { font-family: 'Cinzel', serif; font-size: 2rem; color: var(--gold); line-height: 1; transition: color 0.2s; }
+  .dice-result-die { font-family: 'Share Tech Mono', monospace; font-size: 0.5rem; color: var(--text-dim); letter-spacing: 2px; }
+  .dice-history { list-style: none; }
+  .dice-history li { font-family: 'Share Tech Mono', monospace; font-size: 0.52rem; color: var(--text-dim); padding: 2px 0; border-bottom: 1px solid rgba(192,152,24,0.06); }
+  .dice-history li:last-child { border-bottom: none; }
+  .dice-history li b { color: var(--gold); }
+  @keyframes diceRoll { 0%{transform:scale(0.6) rotate(-20deg);opacity:0} 60%{transform:scale(1.2) rotate(8deg)} 100%{transform:scale(1) rotate(0);opacity:1} }
+  .dice-rolling { animation: diceRoll 0.35s ease; }
+
+  /* ═══ NAV ═══ */
+  .ctg-nav { position:sticky;top:0;z-index:100;background:rgba(6,8,2,0.98);border-bottom:1px solid rgba(200,160,32,0.25);backdrop-filter:blur(6px);display:flex;align-items:center;padding:0 16px;height:40px;font-family:'Share Tech Mono',monospace;font-size:0.58rem;letter-spacing:2px; }
+  .ctg-nav-home { color:#c8a020;text-decoration:none;font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:3px;padding-right:16px;border-right:1px solid rgba(200,160,32,0.2);margin-right:8px;white-space:nowrap; }
+  .ctg-nav-home:hover { color:#e8c040; }
+  .ctg-nav a { color:#7a7050;text-decoration:none;padding:0 10px;height:100%;display:flex;align-items:center;border-right:1px solid rgba(200,160,32,0.1);transition:color .15s,background .15s;white-space:nowrap; }
+  .ctg-nav a:hover { color:#d4c88a;background:rgba(200,160,32,0.05); }
+  .ctg-nav a.active { color:#c8a020;border-bottom:2px solid #c8a020; }
+  .ctg-nav-name { margin-left:auto;font-family:'Cinzel',serif;font-size:0.65rem;color:#c8a020;opacity:0.8;padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px; }
+  .ctg-nav-saved { font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:#c8a020;opacity:0;transition:opacity 0.4s;padding-right:8px;white-space:nowrap; }
+  .ctg-nav-saved.show { opacity:1; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="ctg-nav">
+  <a class="ctg-nav-home" href="index.html">CTG</a>
+  <a href="p1.html" id="nav-p1">I · Stats</a>
+  <a href="p2.html" id="nav-p2">II · Inventory</a>
+  <a href="p3.html" id="nav-p3">III · Faculties</a>
+  <a href="p4.html" id="nav-p4">IV · Arsenal</a>
+  <a href="p5.html" id="nav-p5">V · Skills</a>
+  <span class="ctg-nav-name" id="nav-char-name">Operative</span>
+  <span class="ctg-nav-saved" id="nav-saved">Saved ✓</span>
+</nav>
+<script>(function(){
+  var pg=location.pathname.split('/').pop()||'index.html';
+  var m={'p1.html':'nav-p1','p2.html':'nav-p2','p3.html':'nav-p3','p4.html':'nav-p4','p5.html':'nav-p5'};
+  var id=m[pg];if(id){var el=document.getElementById(id);if(el)el.classList.add('active');}
+  try{var n=localStorage.getItem('ctg-char-name');if(n)document.getElementById('nav-char-name').textContent=n;}catch(e){}
+})();</script>
+
+<!-- Corner ornaments -->
+<div class="corner-ornament co-tl">
+  <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/>
+    <path d="M8 2 L8 8 L2 8" stroke="#c8a020" stroke-width="0.5" opacity="0.5"/>
+    <circle cx="2" cy="2" r="2" fill="#c8a020"/>
+  </svg>
+</div>
+<div class="corner-ornament co-tr">
+  <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/>
+    <circle cx="2" cy="2" r="2" fill="#c8a020"/>
+  </svg>
+</div>
+<div class="corner-ornament co-bl">
+  <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/>
+    <circle cx="2" cy="2" r="2" fill="#c8a020"/>
+  </svg>
+</div>
+<div class="corner-ornament co-br">
+  <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/>
+    <circle cx="2" cy="2" r="2" fill="#c8a020"/>
+  </svg>
+</div>
+
+<div class="sheet">
+  <div class="outer-frame">
+
+    <!-- HEADER -->
+    <div class="sheet-header">
+      <div class="ctg-badge">Call To Gallahad</div>
+      <div class="sheet-title">Character Dossier</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:6px;color:var(--gold-dim);margin-top:2px;">— PAGE I —</div>
+      <div class="sheet-sub">◈ &nbsp; operational record — page i &nbsp; ◈</div>
+    </div>
+
+    <div class="wing-divider">
+      <div class="line"></div>
+      <div class="emblem">♠ ♣ ♥ ♦</div>
+      <div class="line r"></div>
+    </div>
+
+    <!-- IDENTITY -->
+    <div class="panel cut-corners" style="margin-bottom:14px; position:relative;">
+      <div class="level-badge">LEVEL <span id="level-display">1</span></div>
+      <div class="panel-title">
+        <span class="suit-icon" style="color:var(--gold)">◈</span>
+        Operative Identity
+      </div>
+      <div class="identity-grid">
+        <div>
+          <div class="portrait-box" id="portrait-box" onclick="document.getElementById('portrait-upload').click()">
+            <div class="portrait-placeholder" id="portrait-placeholder">
+              <span>⊕</span>
+              <div>UPLOAD<br>PORTRAIT</div>
+            </div>
+            <img id="portrait-img" style="display:none;" alt="Character portrait">
+          </div>
+          <input type="file" id="portrait-upload" class="portrait-input" accept="image/*">
+        </div>
+        <div class="identity-fields">
+          <div class="field-group">
+            <div class="field-label">Character Name</div>
+            <input type="text" class="field-input" id="char-name" placeholder="Full name..." style="font-size:1.1rem;">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Code Name</div>
+            <input type="text" class="field-input" id="code-name" placeholder="Designation..." style="color: var(--suit-heart);">
+          </div>
+          <div class="field-group">
+            <div class="field-label">Level</div>
+            <input type="number" class="field-input" value="1" min="1" id="level-input" style="width:60px;" oninput="document.getElementById('level-display').textContent=this.value">
+          </div>
+        </div>
+        <div class="identity-fields">
+          <div class="field-group" style="flex:1">
+            <div class="field-label">Operative Description</div>
+            <textarea class="field-textarea" id="op-desc" placeholder="Background, appearance, notes on your operative..."></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VITALS -->
+    <div class="panel cut-corners" style="margin-bottom:14px;">
+      <div class="panel-title">
+        <span class="suit-icon" style="color:var(--suit-heart)">♥</span>
+        Vitals
+      </div>
+      <div class="vitals-strip">
+        <div class="vital-box harth" style="grid-column: span 2;">
+          <span class="vital-label">Harth (HP)</span>
+          <div style="display:flex; align-items:baseline; justify-content:center; gap:6px;">
+            <input type="number" class="vital-input" value="6" id="harth-cur" min="0" style="font-size:2rem; width:60px;" oninput="updatePips()">
+            <span style="color:var(--gold-dim); font-family:'Cinzel',serif; font-size:1rem;">/</span>
+            <input type="number" class="vital-input" value="6" id="harth-max" min="1" style="font-size:1.2rem; width:50px; color:var(--gold-dim);" oninput="updatePips()">
+          </div>
+          <div class="hp-pips" id="harth-pips"></div>
+        </div>
+        <div class="vital-box ef">
+          <span class="vital-label">EF</span>
+          <input type="number" class="vital-input" value="0" min="0" id="ef-val" oninput="updateEFPips()">
+          <div class="hp-pips" id="ef-pips"></div>
+        </div>
+        <div class="vital-box" style="border-color: rgba(168,184,200,0.3);">
+          <span class="vital-label" style="color: rgba(168,184,200,0.5);">Stim S</span>
+          <div class="consumable-counter" style="margin-top:4px;">
+            <button class="counter-btn" onclick="adjustCounter('stims', -1)">−</button>
+            <span class="counter-val" id="stims-val" style="color:var(--suit-spade)">0</span>
+            <button class="counter-btn" onclick="adjustCounter('stims', 1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS + CONSUMABLES -->
+    <div class="two-col" style="margin-bottom:14px;">
+      <div class="panel cut-corners">
+        <div class="panel-title">
+          <span class="suit-icon" style="color:var(--suit-club)">♣</span>
+          Attributes
+        </div>
+        <div class="stats-table-wrap">
+          <table class="stats-table">
+            <thead>
+              <tr>
+                <th class="stat-name-col">Attribute</th>
+                <th>Score</th>
+                <th>Skill Pts</th>
+              </tr>
+            </thead>
+            <tbody id="stats-body"></tbody>
+          </table>
+        </div>
+        <div class="standard-array">Standard Array: <span>5, 4, 3, 3, 2, 1, 0</span></div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:14px;">
+        <div class="panel cut-corners">
+          <div class="panel-title">
+            <span class="suit-icon" style="color:var(--gold)">◈</span>
+            Supplies
+          </div>
+          <div class="consumables-grid">
+            <div class="consumable">
+              <div class="consumable-name">Stim L</div>
+              <div class="consumable-counter">
+                <button class="counter-btn" onclick="adjustCounter('stiml', -1)">−</button>
+                <span class="counter-val" id="stiml-val">1</span>
+                <button class="counter-btn" onclick="adjustCounter('stiml', 1)">+</button>
+              </div>
+            </div>
+            <div class="consumable">
+              <div class="consumable-name">Ammo</div>
+              <div class="consumable-counter">
+                <button class="counter-btn" onclick="adjustCounter('ammo', -1)">−</button>
+                <span class="counter-val" id="ammo-val" style="color:var(--suit-club)">0</span>
+                <button class="counter-btn" onclick="adjustCounter('ammo', 1)">+</button>
+              </div>
+            </div>
+            <div class="consumable" style="grid-column: span 2;">
+              <div class="consumable-name">Pack</div>
+              <div class="consumable-counter">
+                <button class="counter-btn" onclick="adjustCounter('pack', -1)">−</button>
+                <span class="counter-val" id="pack-val">2</span>
+                <button class="counter-btn" onclick="adjustCounter('pack', 1)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel cut-corners">
+          <div class="panel-title">
+            <span class="suit-icon" style="color:var(--gold)">◈</span>
+            Card Combat
+          </div>
+          <div class="suit-grid">
+            <div class="suit-card spade"><div class="suit-sym">♠</div><div class="suit-info"><div class="suit-name">Spades</div><div class="suit-desc">Defence</div></div></div>
+            <div class="suit-card club"><div class="suit-sym">♣</div><div class="suit-info"><div class="suit-name">Clubs</div><div class="suit-desc">Attacks</div></div></div>
+            <div class="suit-card heart"><div class="suit-sym">♥</div><div class="suit-info"><div class="suit-name">Hearts</div><div class="suit-desc">Wild</div></div></div>
+            <div class="suit-card diamond"><div class="suit-sym">♦</div><div class="suit-info"><div class="suit-name">Diamonds</div><div class="suit-desc">Magic</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EQUIPMENT -->
+    <div class="panel cut-corners" style="margin-bottom:14px;">
+      <div class="panel-title">
+        <span class="suit-icon" style="color:var(--suit-club)">♣</span>
+        Equipment
+      </div>
+      <div class="equipment-slot">
+        <div class="slot-label"><span class="slot-icon">⚔</span>Main Hand</div>
+        <input type="text" class="equip-input" id="equip-main-name" placeholder="Weapon name...">
+        <input type="text" class="equip-input" id="equip-main-notes" placeholder="Ability / notes...">
+      </div>
+      <div class="equipment-slot">
+        <div class="slot-label"><span class="slot-icon">🛡</span>Secondary</div>
+        <input type="text" class="equip-input" id="equip-sec-name" placeholder="Item name...">
+        <input type="text" class="equip-input" id="equip-sec-notes" placeholder="Ability / notes...">
+      </div>
+      <div class="equipment-slot" style="border-style:dashed; border-color:rgba(200,160,32,0.2);">
+        <div class="slot-label" style="color: rgba(200,160,32,0.4)">⟡ Oddity</div>
+        <input type="text" class="equip-input" id="equip-odd-name" placeholder="Oddity item...">
+        <input type="text" class="equip-input" id="equip-odd-notes" placeholder="Ability / notes...">
+      </div>
+    </div>
+
+    <!-- NOTES -->
+    <div class="panel cut-corners" style="margin-bottom:0;">
+      <div class="panel-title">
+        <span class="suit-icon" style="color:var(--text-dim)">◈</span>
+        Field Notes
+      </div>
+      <textarea class="notes-area" id="field-notes" placeholder="Mission notes, intel, personal log..."></textarea>
+    </div>
+
+    <div class="sheet-footer">
+      <div class="suits"><span>♠</span>&nbsp;<span>♣</span>&nbsp;<span>♥</span>&nbsp;<span>♦</span></div>
+      CALL TO GALLAHAD &nbsp;·&nbsp; CHARACTER DOSSIER &nbsp;·&nbsp; PAGE I
+    </div>
+
+  </div>
+</div>
+
+<!-- DICE ROLLER -->
+<button class="dice-float-btn" id="dice-toggle" title="Roll Dice">◈</button>
+<div class="dice-panel" id="dice-panel">
+  <div class="dice-panel-title">Dice Roller</div>
+  <div class="dice-btns">
+    <button class="die-btn" onclick="ctgRoll(4)">D4</button>
+    <button class="die-btn" onclick="ctgRoll(6)">D6</button>
+    <button class="die-btn" onclick="ctgRoll(8)">D8</button>
+    <button class="die-btn" onclick="ctgRoll(10)">D10</button>
+    <button class="die-btn" onclick="ctgRoll(12)">D12</button>
+    <button class="die-btn" onclick="ctgRoll(20)">D20</button>
+  </div>
+  <div class="dice-result-area">
+    <div class="dice-result-num" id="dice-num">—</div>
+    <div class="dice-result-die" id="dice-die">select a die</div>
+  </div>
+  <ul class="dice-history" id="dice-history"></ul>
+</div>
+
+<script>
+  // ── Stats data ──
+  const STATS = [
+    { name: 'Force',     icon: '♣', score: 5 },
+    { name: 'Finess',    icon: '♦', score: 4 },
+    { name: 'Endurance', icon: '♠', score: 3 },
+    { name: 'Logic',     icon: '◈', score: 3 },
+    { name: 'Sense',     icon: '◉', score: 2 },
+    { name: 'Velvet',    icon: '♥', score: 0 },
+    { name: 'Shine',     icon: '✦', score: 1 },
+  ];
+  function spFloor(score) { return Math.floor(score / 2); }
+
+  function buildStatsTable() {
+    const tbody = document.getElementById('stats-body');
+    STATS.forEach((stat, i) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="stat-name"><span class="stat-icon">${stat.icon}</span>${stat.name}</td>
+        <td><input type="number" class="stat-input" value="${stat.score}" min="0" max="9" id="stat-${i}" oninput="updateSP(${i})"></td>
+        <td class="stat-sp" id="sp-${i}">${spFloor(stat.score)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+  function updateSP(i) {
+    const val = parseInt(document.getElementById(`stat-${i}`).value) || 0;
+    document.getElementById(`sp-${i}`).textContent = spFloor(val);
+  }
+
+  // ── HP Pips ──
+  function updatePips() {
+    const cur = parseInt(document.getElementById('harth-cur').value) || 0;
+    const max = parseInt(document.getElementById('harth-max').value) || 6;
+    const container = document.getElementById('harth-pips');
+    container.innerHTML = '';
+    for (let i = 0; i < max; i++) {
+      const pip = document.createElement('div');
+      pip.className = 'hp-pip' + (i < cur ? ' filled' : '');
+      pip.onclick = () => {
+        document.getElementById('harth-cur').value = i < cur ? i : i + 1;
+        updatePips(); schedSave();
+      };
+      container.appendChild(pip);
+    }
+  }
+  function updateEFPips() {
+    const val = parseInt(document.getElementById('ef-val').value) || 0;
+    const container = document.getElementById('ef-pips');
+    container.innerHTML = '';
+    for (let i = 0; i < Math.max(val, 3); i++) {
+      const pip = document.createElement('div');
+      pip.className = 'hp-pip ef-pip' + (i < val ? ' filled' : '');
+      pip.onclick = () => {
+        document.getElementById('ef-val').value = i < val ? i : i + 1;
+        updateEFPips(); schedSave();
+      };
+      container.appendChild(pip);
+    }
+  }
+
+  // ── Counters ──
+  const counters = { stims: 0, stiml: 1, ammo: 0, pack: 2 };
+  function adjustCounter(key, delta) {
+    counters[key] = Math.max(0, counters[key] + delta);
+    document.getElementById(key + '-val').textContent = counters[key];
+    schedSave();
+  }
+  function updateCounterDisplays() {
+    ['stims','stiml','ammo','pack'].forEach(k => {
+      const el = document.getElementById(k + '-val');
+      if (el) el.textContent = counters[k];
+    });
+  }
+
+  // ── Portrait upload ──
+  document.getElementById('portrait-upload').addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+      const img = document.getElementById('portrait-img');
+      img.src = ev.target.result;
+      img.style.display = 'block';
+      document.getElementById('portrait-placeholder').style.display = 'none';
+      try { localStorage.setItem('ctg-p1-portrait', ev.target.result); } catch(e) {}
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ── Save Flash ──
+  function ctgSaved() {
+    var el = document.getElementById('nav-saved');
+    if (el) { el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(function(){ el.classList.remove('show'); }, 1800); }
+    try {
+      localStorage.setItem('ctg-last-updated', new Date().toISOString());
+      var cnt = parseInt(localStorage.getItem('ctg-edit-count') || '0') + 1;
+      localStorage.setItem('ctg-edit-count', String(cnt));
+    } catch(e) {}
+  }
+
+  // ── Save/Load ──
+  function saveP1() {
+    const data = {
+      cn: document.getElementById('char-name')?.value || '',
+      cd: document.getElementById('code-name')?.value || '',
+      lv: document.getElementById('level-input')?.value || '1',
+      od: document.getElementById('op-desc')?.value || '',
+      hc: document.getElementById('harth-cur')?.value || '6',
+      hm: document.getElementById('harth-max')?.value || '6',
+      ef: document.getElementById('ef-val')?.value || '0',
+      st: { stims: counters.stims, stiml: counters.stiml, ammo: counters.ammo, pack: counters.pack },
+      em: [document.getElementById('equip-main-name')?.value||'', document.getElementById('equip-main-notes')?.value||''],
+      es: [document.getElementById('equip-sec-name')?.value||'', document.getElementById('equip-sec-notes')?.value||''],
+      eo: [document.getElementById('equip-odd-name')?.value||'', document.getElementById('equip-odd-notes')?.value||''],
+      fn: document.getElementById('field-notes')?.value || '',
+      stats: STATS.map((_, i) => parseInt(document.getElementById('stat-' + i)?.value) || 0),
+    };
+    try {
+      localStorage.setItem('ctg-p1', JSON.stringify(data));
+      if (data.cn) {
+        localStorage.setItem('ctg-char-name', data.cn);
+        document.getElementById('nav-char-name').textContent = data.cn;
+      }
+      ctgSaved();
+    } catch(e) {}
+  }
+
+  function loadP1() {
+    try {
+      const cn = localStorage.getItem('ctg-char-name') || '';
+      if (cn) {
+        const el = document.getElementById('char-name');
+        if (el) el.value = cn;
+        document.getElementById('nav-char-name').textContent = cn;
+      }
+      const portrait = localStorage.getItem('ctg-p1-portrait');
+      if (portrait) {
+        const img = document.getElementById('portrait-img');
+        img.src = portrait; img.style.display = 'block';
+        document.getElementById('portrait-placeholder').style.display = 'none';
+      }
+      const raw = localStorage.getItem('ctg-p1');
+      if (!raw) return;
+      const d = JSON.parse(raw);
+      if (d.cd) document.getElementById('code-name').value = d.cd;
+      if (d.lv) { document.getElementById('level-input').value = d.lv; document.getElementById('level-display').textContent = d.lv; }
+      if (d.od) document.getElementById('op-desc').value = d.od;
+      if (d.hc) document.getElementById('harth-cur').value = d.hc;
+      if (d.hm) document.getElementById('harth-max').value = d.hm;
+      if (d.ef) document.getElementById('ef-val').value = d.ef;
+      if (d.st) { Object.assign(counters, d.st); updateCounterDisplays(); }
+      if (d.em) { document.getElementById('equip-main-name').value=d.em[0]; document.getElementById('equip-main-notes').value=d.em[1]; }
+      if (d.es) { document.getElementById('equip-sec-name').value=d.es[0]; document.getElementById('equip-sec-notes').value=d.es[1]; }
+      if (d.eo) { document.getElementById('equip-odd-name').value=d.eo[0]; document.getElementById('equip-odd-notes').value=d.eo[1]; }
+      if (d.fn) document.getElementById('field-notes').value = d.fn;
+      if (d.stats) {
+        d.stats.forEach((v, i) => {
+          const el = document.getElementById('stat-' + i);
+          if (el) { el.value = v; updateSP(i); }
+        });
+      }
+    } catch(e) {}
+  }
+
+  let _saveTimer = null;
+  function schedSave() { clearTimeout(_saveTimer); _saveTimer = setTimeout(saveP1, 400); }
+  document.addEventListener('input', schedSave);
+  document.addEventListener('change', schedSave);
+
+  // ── Init ──
+  buildStatsTable();
+  loadP1();
+  updatePips();
+  updateEFPips();
+
+  // ── Dice Roller ──
+  (function(){
+    var log=[];
+    var panel=document.getElementById('dice-panel');
+    var btn=document.getElementById('dice-toggle');
+    btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
+    document.addEventListener('click',function(e){
+      if(panel.classList.contains('open')&&!panel.contains(e.target)&&e.target!==btn)
+        panel.classList.remove('open');
+    });
+    window.ctgRoll=function(sides){
+      var r=Math.floor(Math.random()*sides)+1;
+      var numEl=document.getElementById('dice-num');
+      var dieEl=document.getElementById('dice-die');
+      numEl.textContent=r;
+      dieEl.textContent='d'+sides;
+      numEl.style.color=r===sides?'#ddb828':r===1?'#aa1800':'#c09818';
+      numEl.classList.remove('dice-rolling');
+      void numEl.offsetWidth;
+      numEl.classList.add('dice-rolling');
+      log.unshift({sides:sides,roll:r});
+      if(log.length>5)log.pop();
+      document.getElementById('dice-history').innerHTML=log.map(function(e){return '<li><b>'+e.roll+'</b> on d'+e.sides+'</li>';}).join('');
+    };
+  })();
+</script>
+<script src="ctg-theme.js"></script>
+</body>
+</html>
