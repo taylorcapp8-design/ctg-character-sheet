@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTG — Identity &amp; Stats · Section I</title>
+<link rel="stylesheet" href="ctg-alt.css">
+<style>
+/* ── IDENTITY GRID ── */
+.id-grid { display:grid; grid-template-columns:110px 1fr 1fr; gap:16px; margin-bottom:16px; }
+.photo-box {
+  aspect-ratio:1; border:1px solid rgba(28,26,20,.35);
+  background:var(--paper-dk); display:flex; align-items:center; justify-content:center;
+  cursor:pointer; overflow:hidden; position:relative; transition:border-color .2s;
+}
+.photo-box:hover { border-color:var(--red); }
+.photo-box img { width:100%; height:100%; object-fit:cover; }
+.photo-placeholder { display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--ink-dim); font-size:.58rem; letter-spacing:1px; text-align:center; }
+.photo-placeholder span { font-size:1.4rem; opacity:.3; }
+
+/* VITALS — HP boxes */
+.vitals-row { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:10px; margin-bottom:16px; }
+.vital-cell { background:var(--paper-dk); border:1px solid rgba(28,26,20,.22); padding:10px 8px; text-align:center; }
+.vital-lbl { font-size:.48rem; letter-spacing:2px; color:var(--ink-dim); display:block; margin-bottom:5px; text-transform:uppercase; }
+.vital-in { background:transparent; border:none; color:var(--ink); font-family:'Special Elite',serif; font-size:1.4rem; text-align:center; width:100%; outline:none; }
+.vital-cell.hp-cell { border:var(--rule); }
+.vital-cell.ef-cell { border-color:var(--green); }
+.vital-cell.ef-cell .vital-in { color:var(--green); }
+
+/* HP PIPS */
+.pip-row { display:flex; justify-content:center; flex-wrap:wrap; gap:4px; margin-top:6px; }
+.hp-pip {
+  width:13px; height:13px; border:1px solid rgba(28,26,20,.35);
+  background:transparent; cursor:pointer; transition:background .12s;
+}
+.hp-pip.filled { background:var(--ink); }
+.hp-pip.ef-pip { border-color:var(--green); }
+.hp-pip.ef-pip.filled { background:var(--green); }
+
+/* STATS TABLE */
+.stats-tbl { width:100%; border-collapse:collapse; margin-bottom:4px; }
+.stats-tbl th { font-size:.5rem; letter-spacing:2px; color:var(--ink-dim); text-transform:uppercase; padding:4px 8px; text-align:center; border-bottom:var(--rule); }
+.stats-tbl th.left { text-align:left; }
+.stats-tbl td { padding:5px 8px; border-bottom:1px solid rgba(28,26,20,.1); text-align:center; vertical-align:middle; }
+.stats-tbl tr:hover td { background:rgba(28,26,20,.03); }
+.stat-name { font-family:'Special Elite',serif; font-size:.8rem; color:var(--ink); text-align:left; }
+.stat-icon-td { width:20px; font-size:.8rem; }
+.stat-in { background:transparent; border:none; border-bottom:1px solid rgba(28,26,20,.25); color:var(--navy); font-family:'Special Elite',serif; font-size:1rem; text-align:center; width:40px; outline:none; transition:border-color .2s; }
+.stat-in:focus { border-color:var(--red); }
+.stat-sp { font-family:'Courier Prime',monospace; font-size:.75rem; color:var(--green); font-weight:700; }
+.std-array { font-size:.58rem; color:var(--ink-dim); text-align:right; margin-top:5px; letter-spacing:.5px; }
+
+/* COUNTERS */
+.counter-row { display:flex; align-items:center; justify-content:center; gap:8px; }
+.ctr-btn {
+  background:var(--paper-dk); border:1px solid rgba(28,26,20,.25);
+  color:var(--ink); font-family:'Courier Prime',monospace;
+  font-size:.85rem; width:22px; height:22px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s;
+}
+.ctr-btn:hover { background:var(--ink); color:var(--paper); }
+.ctr-val { font-family:'Special Elite',serif; font-size:1.1rem; color:var(--ink); min-width:22px; text-align:center; }
+
+/* CONSUMABLES */
+.cons-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.cons-cell { background:var(--paper-dk); border:1px solid rgba(28,26,20,.18); padding:8px 5px; text-align:center; }
+.cons-name { font-size:.52rem; letter-spacing:1px; color:var(--ink-dim); margin-bottom:6px; text-transform:uppercase; }
+
+/* EQUIPMENT */
+.equip-row {
+  border-bottom:1px solid rgba(28,26,20,.12); padding:9px 4px;
+  display:grid; grid-template-columns:80px 1fr 1fr; gap:10px; align-items:center;
+}
+.equip-row:first-child { border-top:1px solid rgba(28,26,20,.12); }
+.equip-slot-lbl { font-size:.58rem; letter-spacing:1px; color:var(--ink-dim); }
+
+/* SUIT GRID */
+.suit-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+.suit-row { display:flex; align-items:center; gap:8px; padding:6px 8px; background:var(--paper-dk); border:1px solid rgba(28,26,20,.15); }
+.suit-sym { font-size:1.2rem; }
+.suit-info-name { font-family:'Special Elite',serif; font-size:.72rem; color:var(--navy); }
+.suit-info-desc { font-size:.58rem; color:var(--ink-dim); }
+
+/* LEVEL BADGE */
+.level-badge {
+  display:inline-block; background:var(--ink);
+  color:var(--paper); font-family:'Special Elite',serif;
+  font-size:.75rem; letter-spacing:4px; padding:4px 14px;
+  position:absolute; top:-1px; right:14px;
+}
+
+@media(max-width:620px){
+  .id-grid{grid-template-columns:80px 1fr; }
+  .id-grid > :last-child{grid-column:1/-1;}
+  .vitals-row{grid-template-columns:1fr 1fr;}
+  .cons-grid{grid-template-columns:1fr 1fr;}
+  .equip-row{grid-template-columns:65px 1fr;}
+  .equip-row .field-in:last-child{grid-column:1/-1;}
+  .suit-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav class="ctg-nav" id="ctg-nav-bar">
+  <a class="ctg-nav-home" href="index.html">CTG</a>
+  <a href="p1.html" id="nav-p1">I · Stats</a>
+  <a href="p2.html" id="nav-p2">II · Inventory</a>
+  <a href="p3.html" id="nav-p3">III · Faculties</a>
+  <a href="p4.html" id="nav-p4">IV · Arsenal</a>
+  <a href="p5.html" id="nav-p5">V · Skills</a>
+  <span class="ctg-nav-name" id="nav-char-name">Operative</span>
+  <span class="ctg-nav-saved" id="nav-saved">Saved ✓</span>
+</nav>
+<script>(function(){
+  var m={'p1.html':'nav-p1','p2.html':'nav-p2','p3.html':'nav-p3','p4.html':'nav-p4','p5.html':'nav-p5'};
+  var id=m[location.pathname.split('/').pop()];if(id){var el=document.getElementById(id);if(el)el.classList.add('active');}
+  try{var n=localStorage.getItem('ctg-char-name');if(n)document.getElementById('nav-char-name').textContent=n;}catch(e){}
+})();</script>
+
+<div class="wrapper">
+  <div class="stamp-block"><span class="stamp">Operative Record</span></div>
+
+  <div class="page-masthead">
+    <div class="masthead-pre">Call To Gallahad · Operative File</div>
+    <div class="masthead-title">Identity &amp; Stats</div>
+    <div class="masthead-divider">
+      <div class="dl"></div><div class="dt">— Section I —</div><div class="dl"></div>
+    </div>
+  </div>
+
+  <!-- IDENTITY -->
+  <div class="panel thick" style="position:relative;">
+    <span class="level-badge">Level <span id="level-display">1</span></span>
+    <div class="section-head"><span class="sh-icon">◈</span>Operative Identity</div>
+    <div class="id-grid">
+      <div>
+        <div class="photo-box" id="portrait-box" onclick="document.getElementById('portrait-upload').click()">
+          <div class="photo-placeholder" id="portrait-placeholder"><span>⊕</span><div>Photo<br>Attached</div></div>
+          <img id="portrait-img" style="display:none;" alt="Portrait">
+        </div>
+        <input type="file" id="portrait-upload" style="display:none;" accept="image/*">
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div><label class="field-lbl">Character Name</label><input type="text" class="field-in" id="char-name" placeholder="Full name..." style="font-size:1.05rem;"></div>
+        <div><label class="field-lbl">Code Name</label><input type="text" class="field-in" id="code-name" placeholder="Designation..." style="color:var(--red);"></div>
+        <div><label class="field-lbl">Level</label><input type="number" class="field-in" id="level-input" value="1" min="1" style="width:60px;" oninput="document.getElementById('level-display').textContent=this.value"></div>
+      </div>
+      <div>
+        <label class="field-lbl">Operative Description</label>
+        <textarea class="field-ta" id="op-desc" placeholder="Background, appearance, notes..." style="min-height:90px;"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- VITALS -->
+  <div class="panel">
+    <div class="section-head"><span class="sh-icon" style="color:var(--red);">♥</span>Vitals</div>
+    <div class="vitals-row">
+      <div class="vital-cell hp-cell" style="grid-column:span 2;">
+        <span class="vital-lbl">Harth (HP)</span>
+        <div style="display:flex;align-items:baseline;justify-content:center;gap:6px;">
+          <input type="number" class="vital-in" id="harth-cur" value="6" min="0" style="font-size:2rem;width:60px;" oninput="updatePips()">
+          <span style="color:var(--ink-dim);font-family:'Special Elite',serif;font-size:1rem;">/</span>
+          <input type="number" class="vital-in" id="harth-max" value="6" min="1" style="font-size:1.2rem;width:50px;color:var(--ink-mid);" oninput="updatePips()">
+        </div>
+        <div class="pip-row" id="harth-pips"></div>
+      </div>
+      <div class="vital-cell ef-cell">
+        <span class="vital-lbl">EF</span>
+        <input type="number" class="vital-in" id="ef-val" value="0" min="0" oninput="updateEFPips()">
+        <div class="pip-row" id="ef-pips"></div>
+      </div>
+      <div class="vital-cell" style="border-color:rgba(100,120,180,.3);">
+        <span class="vital-lbl">Stim S</span>
+        <div class="counter-row" style="margin-top:6px;">
+          <button class="ctr-btn" onclick="adjustCounter('stims',-1)">−</button>
+          <span class="ctr-val" id="stims-val" style="color:var(--navy);">0</span>
+          <button class="ctr-btn" onclick="adjustCounter('stims',1)">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS + SUPPLIES -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="section-head"><span class="sh-icon">♣</span>Attributes</div>
+      <table class="stats-tbl">
+        <thead><tr><th class="left" colspan="2">Attribute</th><th>Score</th><th>Skill Pts</th></tr></thead>
+        <tbody id="stats-body"></tbody>
+      </table>
+      <div class="std-array">Standard Array: <span style="color:var(--ink-mid);">5, 4, 3, 3, 2, 1, 0</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="panel">
+        <div class="section-head"><span class="sh-icon">◈</span>Supplies</div>
+        <div class="cons-grid">
+          <div class="cons-cell"><div class="cons-name">Stim L</div><div class="counter-row"><button class="ctr-btn" onclick="adjustCounter('stiml',-1)">−</button><span class="ctr-val" id="stiml-val">1</span><button class="ctr-btn" onclick="adjustCounter('stiml',1)">+</button></div></div>
+          <div class="cons-cell"><div class="cons-name">Ammo</div><div class="counter-row"><button class="ctr-btn" onclick="adjustCounter('ammo',-1)">−</button><span class="ctr-val" id="ammo-val" style="color:var(--navy);">0</span><button class="ctr-btn" onclick="adjustCounter('ammo',1)">+</button></div></div>
+          <div class="cons-cell" style="grid-column:span 2;"><div class="cons-name">Pack</div><div class="counter-row"><button class="ctr-btn" onclick="adjustCounter('pack',-1)">−</button><span class="ctr-val" id="pack-val">2</span><button class="ctr-btn" onclick="adjustCounter('pack',1)">+</button></div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="section-head"><span class="sh-icon">◈</span>Card Combat</div>
+        <div class="suit-grid">
+          <div class="suit-row"><span class="suit-sym" style="color:#6a8899;">♠</span><div><div class="suit-info-name">Spades</div><div class="suit-info-desc">Defence</div></div></div>
+          <div class="suit-row"><span class="suit-sym" style="color:#5a7850;">♣</span><div><div class="suit-info-name">Clubs</div><div class="suit-info-desc">Attacks</div></div></div>
+          <div class="suit-row"><span class="suit-sym" style="color:var(--red);">♥</span><div><div class="suit-info-name">Hearts</div><div class="suit-info-desc">Wild</div></div></div>
+          <div class="suit-row"><span class="suit-sym" style="color:var(--navy);">♦</span><div><div class="suit-info-name">Diamonds</div><div class="suit-info-desc">Magic</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EQUIPMENT -->
+  <div class="panel">
+    <div class="section-head"><span class="sh-icon">♣</span>Equipment</div>
+    <div class="equip-row"><span class="equip-slot-lbl">⚔ Main Hand</span><input type="text" class="field-in" id="equip-main-name" placeholder="Weapon name..."><input type="text" class="field-in" id="equip-main-notes" placeholder="Ability / notes..."></div>
+    <div class="equip-row"><span class="equip-slot-lbl">🛡 Secondary</span><input type="text" class="field-in" id="equip-sec-name" placeholder="Item name..."><input type="text" class="field-in" id="equip-sec-notes" placeholder="Ability / notes..."></div>
+    <div class="equip-row" style="border-color:rgba(28,26,20,.06);"><span class="equip-slot-lbl" style="color:var(--ink-dim);">⟡ Oddity</span><input type="text" class="field-in" id="equip-odd-name" placeholder="Oddity item..."><input type="text" class="field-in" id="equip-odd-notes" placeholder="Ability / notes..."></div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="panel">
+    <div class="section-head"><span class="sh-icon">◈</span>Field Notes</div>
+    <textarea class="field-ta" id="field-notes" placeholder="Mission notes, intel, personal log..." style="min-height:90px;"></textarea>
+  </div>
+
+  <div class="page-footer">Call To Gallahad &nbsp;·&nbsp; Operative Record &nbsp;·&nbsp; Section I</div>
+</div>
+
+<button class="dice-float-btn" id="dice-toggle" title="Roll Dice">D</button>
+<div class="dice-panel" id="dice-panel">
+  <div class="dice-panel-title">Dice Roller</div>
+  <div class="dice-btns"><button class="die-btn" onclick="ctgRoll(4)">D4</button><button class="die-btn" onclick="ctgRoll(6)">D6</button><button class="die-btn" onclick="ctgRoll(8)">D8</button><button class="die-btn" onclick="ctgRoll(10)">D10</button><button class="die-btn" onclick="ctgRoll(12)">D12</button><button class="die-btn" onclick="ctgRoll(20)">D20</button></div>
+  <div class="dice-result-area"><div class="dice-result-num" id="dice-num">—</div><div class="dice-result-die" id="dice-die">select a die</div></div>
+  <ul class="dice-history" id="dice-history"></ul>
+</div>
+
+<script>
+const STATS=[{name:'Force',icon:'♣',score:5},{name:'Finess',icon:'♦',score:4},{name:'Endurance',icon:'♠',score:3},{name:'Logic',icon:'◈',score:3},{name:'Sense',icon:'◉',score:2},{name:'Velvet',icon:'♥',score:0},{name:'Shine',icon:'✦',score:1}];
+function spFloor(s){return Math.floor(s/2);}
+function buildStatsTable(){
+  const tb=document.getElementById('stats-body');
+  STATS.forEach((stat,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="stat-icon-td">${stat.icon}</td><td class="stat-name">${stat.name}</td><td><input type="number" class="stat-in" value="${stat.score}" min="0" max="9" id="stat-${i}" oninput="updateSP(${i})"></td><td class="stat-sp" id="sp-${i}">${spFloor(stat.score)}</td>`;
+    tb.appendChild(tr);
+  });
+}
+function updateSP(i){const v=parseInt(document.getElementById('stat-'+i).value)||0;document.getElementById('sp-'+i).textContent=spFloor(v);}
+
+function updatePips(){
+  const cur=parseInt(document.getElementById('harth-cur').value)||0;
+  const max=parseInt(document.getElementById('harth-max').value)||6;
+  const c=document.getElementById('harth-pips');c.innerHTML='';
+  for(let i=0;i<max;i++){const p=document.createElement('div');p.className='hp-pip'+(i<cur?' filled':'');p.onclick=()=>{document.getElementById('harth-cur').value=i<cur?i:i+1;updatePips();schedSave();};c.appendChild(p);}
+}
+function updateEFPips(){
+  const val=parseInt(document.getElementById('ef-val').value)||0;
+  const c=document.getElementById('ef-pips');c.innerHTML='';
+  for(let i=0;i<Math.max(val,3);i++){const p=document.createElement('div');p.className='hp-pip ef-pip'+(i<val?' filled':'');p.onclick=()=>{document.getElementById('ef-val').value=i<val?i:i+1;updateEFPips();schedSave();};c.appendChild(p);}
+}
+
+const counters={stims:0,stiml:1,ammo:0,pack:2};
+function adjustCounter(k,d){counters[k]=Math.max(0,counters[k]+d);document.getElementById(k+'-val').textContent=counters[k];schedSave();}
+function updateCounterDisplays(){['stims','stiml','ammo','pack'].forEach(k=>{const el=document.getElementById(k+'-val');if(el)el.textContent=counters[k];});}
+
+document.getElementById('portrait-upload').addEventListener('change',function(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=function(ev){const img=document.getElementById('portrait-img');img.src=ev.target.result;img.style.display='block';document.getElementById('portrait-placeholder').style.display='none';try{localStorage.setItem('ctg-p1-portrait',ev.target.result);}catch(e){}};
+  r.readAsDataURL(f);
+});
+
+function ctgSaved(){
+  var el=document.getElementById('nav-saved');
+  if(el){el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},1800);}
+  try{localStorage.setItem('ctg-last-updated',new Date().toISOString());var cnt=parseInt(localStorage.getItem('ctg-edit-count')||'0')+1;localStorage.setItem('ctg-edit-count',String(cnt));}catch(e){}
+}
+
+function saveP1(){
+  const data={cn:document.getElementById('char-name')?.value||'',cd:document.getElementById('code-name')?.value||'',lv:document.getElementById('level-input')?.value||'1',od:document.getElementById('op-desc')?.value||'',hc:document.getElementById('harth-cur')?.value||'6',hm:document.getElementById('harth-max')?.value||'6',ef:document.getElementById('ef-val')?.value||'0',st:{stims:counters.stims,stiml:counters.stiml,ammo:counters.ammo,pack:counters.pack},em:[document.getElementById('equip-main-name')?.value||'',document.getElementById('equip-main-notes')?.value||''],es:[document.getElementById('equip-sec-name')?.value||'',document.getElementById('equip-sec-notes')?.value||''],eo:[document.getElementById('equip-odd-name')?.value||'',document.getElementById('equip-odd-notes')?.value||''],fn:document.getElementById('field-notes')?.value||'',stats:STATS.map((_,i)=>parseInt(document.getElementById('stat-'+i)?.value)||0)};
+  try{localStorage.setItem('ctg-p1',JSON.stringify(data));if(data.cn){localStorage.setItem('ctg-char-name',data.cn);document.getElementById('nav-char-name').textContent=data.cn;}ctgSaved();}catch(e){}
+}
+
+function loadP1(){
+  try{
+    const cn=localStorage.getItem('ctg-char-name')||'';
+    if(cn){document.getElementById('char-name').value=cn;document.getElementById('nav-char-name').textContent=cn;}
+    const portrait=localStorage.getItem('ctg-p1-portrait');
+    if(portrait){const img=document.getElementById('portrait-img');img.src=portrait;img.style.display='block';document.getElementById('portrait-placeholder').style.display='none';}
+    const raw=localStorage.getItem('ctg-p1');if(!raw)return;
+    const d=JSON.parse(raw);
+    if(d.cd)document.getElementById('code-name').value=d.cd;
+    if(d.lv){document.getElementById('level-input').value=d.lv;document.getElementById('level-display').textContent=d.lv;}
+    if(d.od)document.getElementById('op-desc').value=d.od;
+    if(d.hc)document.getElementById('harth-cur').value=d.hc;
+    if(d.hm)document.getElementById('harth-max').value=d.hm;
+    if(d.ef)document.getElementById('ef-val').value=d.ef;
+    if(d.st){Object.assign(counters,d.st);updateCounterDisplays();}
+    if(d.em){document.getElementById('equip-main-name').value=d.em[0];document.getElementById('equip-main-notes').value=d.em[1];}
+    if(d.es){document.getElementById('equip-sec-name').value=d.es[0];document.getElementById('equip-sec-notes').value=d.es[1];}
+    if(d.eo){document.getElementById('equip-odd-name').value=d.eo[0];document.getElementById('equip-odd-notes').value=d.eo[1];}
+    if(d.fn)document.getElementById('field-notes').value=d.fn;
+    if(d.stats){d.stats.forEach((v,i)=>{const el=document.getElementById('stat-'+i);if(el){el.value=v;updateSP(i);}});}
+  }catch(e){}
+}
+
+let _saveTimer=null;
+function schedSave(){clearTimeout(_saveTimer);_saveTimer=setTimeout(saveP1,400);}
+document.addEventListener('input',schedSave);document.addEventListener('change',schedSave);
+
+buildStatsTable();loadP1();updatePips();updateEFPips();
+
+(function(){
+  var log=[],panel=document.getElementById('dice-panel'),btn=document.getElementById('dice-toggle');
+  btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
+  document.addEventListener('click',function(e){if(panel.classList.contains('open')&&!panel.contains(e.target)&&e.target!==btn)panel.classList.remove('open');});
+  window.ctgRoll=function(sides){
+    var r=Math.floor(Math.random()*sides)+1;
+    var ne=document.getElementById('dice-num'),de=document.getElementById('dice-die');
+    ne.textContent=r;de.textContent='d'+sides;
+    ne.style.color=r===sides?'#8b0000':r===1?'#1a2a4a':'#1c1a14';
+    ne.classList.remove('dice-rolling');void ne.offsetWidth;ne.classList.add('dice-rolling');
+    log.unshift({sides:sides,roll:r});if(log.length>5)log.pop();
+    document.getElementById('dice-history').innerHTML=log.map(function(e){return '<li><b>'+e.roll+'</b> on d'+e.sides+'</li>';}).join('');
+  };
+})();
+</script>
+<script src="../ctg-sync.js"></script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTG — Core Faculties · Section III</title>
+<link rel="stylesheet" href="ctg-alt.css">
+<style>
+.active-bar {
+  border:var(--rule); padding:12px 16px; margin-bottom:20px;
+  background:var(--paper-dk); display:flex; align-items:flex-start; gap:16px; flex-wrap:wrap;
+}
+.active-bar-lbl { font-size:.58rem; letter-spacing:3px; color:var(--ink-dim); margin-bottom:6px; }
+.active-rule { font-size:.6rem; color:var(--ink-mid); font-style:italic; }
+.active-slots { display:flex; gap:10px; flex:1; flex-wrap:wrap; }
+.active-slot {
+  flex:1; min-width:140px; border:1px solid rgba(28,26,20,.3); padding:8px 12px;
+  text-align:center; min-height:36px; font-family:'Special Elite',serif;
+  font-size:.88rem; color:var(--ink); display:flex; align-items:center; justify-content:center;
+  background:var(--paper-wh); transition:border-color .2s;
+}
+.active-slot.empty { color:var(--ink-dim); font-family:'Courier Prime',monospace; font-size:.62rem; letter-spacing:2px; font-style:italic; }
+.active-slot.filled { border-color:var(--navy); color:var(--navy); }
+
+/* FACULTY GRID */
+.faculty-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.faculty-card {
+  background:var(--paper-wh); border:1px solid rgba(28,26,20,.22);
+  position:relative; transition:border-color .2s;
+}
+.faculty-card.active-card { border:var(--rule); }
+.faculty-card.active-card::after {
+  content:'ACTIVE'; position:absolute; top:8px; right:8px;
+  font-size:.44rem; letter-spacing:2px; color:var(--paper);
+  background:var(--red); padding:2px 6px;
+}
+.faculty-hdr {
+  padding:10px 12px 8px; border-bottom:1px solid rgba(28,26,20,.15);
+  display:flex; align-items:center; gap:8px;
+}
+.faculty-icon { font-size:1rem; }
+.faculty-name { font-family:'Special Elite',serif; font-size:1rem; color:var(--ink); letter-spacing:2px; }
+.faculty-note { font-size:.6rem; color:var(--ink-dim); padding:6px 12px 8px; border-bottom:1px solid rgba(28,26,20,.08); line-height:1.4; font-style:italic; }
+
+.tuning-list { padding:8px 10px; }
+.tuning-entry {
+  padding:7px 8px; margin-bottom:5px;
+  border:1px solid rgba(28,26,20,.12); background:var(--paper);
+  cursor:pointer; transition:all .15s; position:relative;
+}
+.tuning-entry:hover { border-color:rgba(28,26,20,.35); }
+.tuning-entry.selected { background:var(--paper-dk); border-color:var(--ink); border-left:3px solid var(--red); }
+.tuning-entry.strikethrough { opacity:.3; }
+.tuning-entry.strikethrough .tuning-name { text-decoration:line-through; }
+.tuning-name { font-family:'Special Elite',serif; font-size:.72rem; color:var(--navy); margin-bottom:3px; }
+.tuning-actions { font-size:.56rem; color:var(--ink-mid); line-height:1.4; }
+.tuning-actions strong { color:var(--ink); }
+
+.select-rule { padding:8px 12px; border-top:1px solid rgba(28,26,20,.1); font-size:.52rem; color:var(--ink-dim); display:flex; align-items:center; gap:6px; }
+.select-dot { width:8px; height:8px; border:1px solid rgba(28,26,20,.35); display:inline-block; }
+.select-dot.on { background:var(--red); border-color:var(--red); }
+
+@media(max-width:700px){.faculty-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:480px){.faculty-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<nav class="ctg-nav" id="ctg-nav-bar">
+  <a class="ctg-nav-home" href="index.html">CTG</a>
+  <a href="p1.html" id="nav-p1">I · Stats</a>
+  <a href="p2.html" id="nav-p2">II · Inventory</a>
+  <a href="p3.html" id="nav-p3">III · Faculties</a>
+  <a href="p4.html" id="nav-p4">IV · Arsenal</a>
+  <a href="p5.html" id="nav-p5">V · Skills</a>
+  <span class="ctg-nav-name" id="nav-char-name">Operative</span>
+  <span class="ctg-nav-saved" id="nav-saved">Saved ✓</span>
+</nav>
+<script>(function(){var m={'p1.html':'nav-p1','p2.html':'nav-p2','p3.html':'nav-p3','p4.html':'nav-p4','p5.html':'nav-p5'};var id=m[location.pathname.split('/').pop()];if(id){var el=document.getElementById(id);if(el)el.classList.add('active');}try{var n=localStorage.getItem('ctg-char-name');if(n)document.getElementById('nav-char-name').textContent=n;}catch(e){}})();</script>
+
+<div class="wrapper">
+  <div class="stamp-block"><span class="stamp">Training Record</span></div>
+
+  <div class="page-masthead">
+    <div class="masthead-pre">Call To Gallahad · Operative File</div>
+    <div class="masthead-title">Core Faculties</div>
+    <div class="masthead-divider"><div class="dl"></div><div class="dt">— Section III —</div><div class="dl"></div></div>
+  </div>
+
+  <div class="active-bar">
+    <div>
+      <div class="active-bar-lbl">Active Faculties</div>
+      <div class="active-rule">Max 2 active · Switch once per encounter free</div>
+    </div>
+    <div class="active-slots">
+      <div class="active-slot empty" id="active-1">— Slot I —</div>
+      <div class="active-slot empty" id="active-2">— Slot II —</div>
+    </div>
+  </div>
+
+  <div class="faculty-grid" id="faculty-grid"></div>
+
+  <div class="page-footer">Call To Gallahad &nbsp;·&nbsp; Core Faculties &nbsp;·&nbsp; Section III</div>
+</div>
+
+<button class="dice-float-btn" id="dice-toggle" title="Roll Dice">D</button>
+<div class="dice-panel" id="dice-panel">
+  <div class="dice-panel-title">Dice Roller</div>
+  <div class="dice-btns"><button class="die-btn" onclick="ctgRoll(4)">D4</button><button class="die-btn" onclick="ctgRoll(6)">D6</button><button class="die-btn" onclick="ctgRoll(8)">D8</button><button class="die-btn" onclick="ctgRoll(10)">D10</button><button class="die-btn" onclick="ctgRoll(12)">D12</button><button class="die-btn" onclick="ctgRoll(20)">D20</button></div>
+  <div class="dice-result-area"><div class="dice-result-num" id="dice-num">—</div><div class="dice-result-die" id="dice-die">select a die</div></div>
+  <ul class="dice-history" id="dice-history"></ul>
+</div>
+
+<script>
+const FACULTIES=[
+  {id:'force',name:'Force',icon:'♣',note:'Raw physical output: smashing, grappling, kicking doors in.',tuning:[{name:'Large Handed',actions:'Smash doors, throw barrels, grapple massive Marionettes, break objects.',strikethrough:true},{name:'Rusty Anchor',actions:'Hold your ground, resist pushes, brace for heavy attacks.'},{name:'Bull Wit Da Horn',actions:'Sprint into action, slam through obstacles, chase fleeing threats.'}]},
+  {id:'finess',name:'Finesse',icon:'♦',note:'Control and precision: lockpicking, surgery, shooting, sleight-of-hand.',tuning:[{name:'Long Fingernails',actions:'Thread small mechanisms, pick locks, operate delicate machinery, snipe weak points.'},{name:"Shadow's Shadow",actions:'Move quietly, slip past guards, shadow objects, avoid notice.'},{name:'Glover',actions:'Multi-action precision, manipulate multiple devices, perform sequences.',strikethrough:true}]},
+  {id:'sense',name:'Sense',icon:'◉',note:'Perception and awareness: tracking, spotting danger, reading body language.',tuning:[{name:'Starved Hound',actions:'Identify hidden Marionettes, trace unusual movements, follow traces.',strikethrough:true},{name:'Hawk-Eagle Eyes',actions:'Spot ambushes, identify danger, read room layout quickly.',strikethrough:true},{name:'Large Drums',actions:'Listen to distant sounds, detect machinery cues, anticipate enemy intentions.',strikethrough:true}]},
+  {id:'logic',name:'Logic',icon:'◈',note:'Processing and problem solving: repairing, decoding, planning, strategy.',tuning:[{name:'A Smart Thief?',actions:'See weaknesses in structures, plan environmental solutions, reroute machinery.',strikethrough:true},{name:'Plague Surgeon',actions:'Repair engines, disable Marionette mechanisms, solve delicate problems.'},{name:'Folder Mind',actions:'Observe sequences, predict Marionette routines, find weaknesses in plans.'}]},
+  {id:'velvet',name:'Velvet',icon:'♥',note:'Social gravity: intimidation, leadership, charm, lying.',tuning:[{name:'Silver and Steel',actions:'Convince others, defuse tension, rally allies, manipulate Marionettes emotionally.',strikethrough:true},{name:'Bronze and Woah',actions:'Force compliance, scare off rivals, establish authority.'},{name:'Turned Around Mirror',actions:'Reflect moods, mirror speech or gesture to manipulate outcomes.'}]},
+  {id:'endure',name:'Endure',icon:'♠',note:'Pain tolerance and resilience: surviving poison, holding breath, resisting panic.',tuning:[{name:'Steel Jaw, Low Brim',actions:'Resist panic, ignore distractions, remain composed during chaos.',strikethrough:true},{name:'Cutting Board',actions:'Shake off damage, survive hazardous conditions, resist toxins.'},{name:'Tongue-less',actions:'Consume the worst, perform impossible feats of endurance. Drink seawater.'}]},
+];
+
+const state={selected:{},active:[null,null]};
+(function(){try{const raw=localStorage.getItem('ctg-faculties');if(raw){const s=JSON.parse(raw);if(s.selected)state.selected=s.selected;if(s.active)state.active=s.active;return;}}catch(e){}state.selected['force']=1;state.selected['finess']=0;state.active=['force','finess'];})();
+
+function saveFaculties(){try{localStorage.setItem('ctg-faculties',JSON.stringify({selected:state.selected,active:state.active}));ctgSaved();}catch(e){}}
+function ctgSaved(){var el=document.getElementById('nav-saved');if(el){el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},1800);}try{localStorage.setItem('ctg-last-updated',new Date().toISOString());var cnt=parseInt(localStorage.getItem('ctg-edit-count')||'0')+1;localStorage.setItem('ctg-edit-count',String(cnt));}catch(e){}}
+function getActiveCount(){return state.active.filter(Boolean).length;}
+function updateActiveBar(){['active-1','active-2'].forEach((id,i)=>{const el=document.getElementById(id);const fid=state.active[i];if(fid){const fac=FACULTIES.find(f=>f.id===fid);const tidx=state.selected[fid];const tname=(tidx!=null)?fac.tuning[tidx].name:'(no tuning)';el.textContent=fac.icon+' '+fac.name+' · '+tname;el.className='active-slot filled';}else{el.textContent='— Slot '+['I','II'][i]+' —';el.className='active-slot empty';}});}
+
+function buildGrid(){
+  const grid=document.getElementById('faculty-grid');grid.innerHTML='';
+  FACULTIES.forEach(fac=>{
+    const isActive=state.active.includes(fac.id);
+    const card=document.createElement('div');
+    card.className='faculty-card'+(isActive?' active-card':'');card.id='card-'+fac.id;
+    const selectedIdx=state.selected[fac.id];
+    card.innerHTML=`<div class="faculty-hdr"><span class="faculty-icon">${fac.icon}</span><span class="faculty-name">${fac.name}</span></div><div class="faculty-note">${fac.note}</div><div class="tuning-list" id="tuning-${fac.id}">${fac.tuning.map((t,i)=>`<div class="tuning-entry ${t.strikethrough&&selectedIdx!==i?'strikethrough':''} ${selectedIdx===i?'selected':''}" onclick="selectTuning('${fac.id}',${i})" id="tuning-${fac.id}-${i}"><div class="tuning-name">${t.name}</div><div class="tuning-actions"><strong>Actions:</strong> ${t.actions}</div></div>`).join('')}</div><div class="select-rule"><span class="select-dot ${isActive?'on':''}" id="ind-${fac.id}"></span><span>${isActive?'ACTIVE — click tuning to switch':'Click tuning to select · click again to activate'}</span></div>`;
+    grid.appendChild(card);
+  });
+}
+
+function selectTuning(facId,tIdx){
+  const fac=FACULTIES.find(f=>f.id===facId);
+  const prev=state.selected[facId];const isActive=state.active.includes(facId);
+  if(prev===tIdx){state.selected[facId]=null;if(isActive){const slot=state.active.indexOf(facId);state.active[slot]=null;}}
+  else{state.selected[facId]=tIdx;if(!isActive){const emptySlot=state.active.indexOf(null);if(emptySlot!==-1)state.active[emptySlot]=facId;else{state.active[0]=state.active[1];state.active[1]=facId;}}}
+  buildGrid();updateActiveBar();saveFaculties();
+}
+
+buildGrid();updateActiveBar();
+
+(function(){var log=[],panel=document.getElementById('dice-panel'),btn=document.getElementById('dice-toggle');btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});document.addEventListener('click',function(e){if(panel.classList.contains('open')&&!panel.contains(e.target)&&e.target!==btn)panel.classList.remove('open');});window.ctgRoll=function(sides){var r=Math.floor(Math.random()*sides)+1;var ne=document.getElementById('dice-num'),de=document.getElementById('dice-die');ne.textContent=r;de.textContent='d'+sides;ne.style.color=r===sides?'#8b0000':r===1?'#1a2a4a':'#1c1a14';ne.classList.remove('dice-rolling');void ne.offsetWidth;ne.classList.add('dice-rolling');log.unshift({sides:sides,roll:r});if(log.length>5)log.pop();document.getElementById('dice-history').innerHTML=log.map(function(e){return '<li><b>'+e.roll+'</b> on d'+e.sides+'</li>';}).join('');};})();
+</script>
+<script src="../ctg-sync.js"></script>
+</body>
+</html>
