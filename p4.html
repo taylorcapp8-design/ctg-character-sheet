@@ -3,438 +3,203 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080a04">
-<link rel="stylesheet" href="ctg-themes.css">
-<title>CTG — Character Sheet · Page IV</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400;700&family=Cinzel+Decorative:wght@400;700&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#050508">
+<title>CTG — Arsenal & Provisions</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --gold: #c09818; --gold-light: #ddb828; --gold-dim: #604808;
-    --olive: #3a4020; --olive-dark: #151a08; --olive-mid: #1e2410;
-    --red: #6a1010; --red-bright: #aa1800;
-    --bg: #080a04; --panel: #0d1006;
-    --border: rgba(192,152,24,0.22); --border-bright: rgba(192,152,24,0.55);
-    --text: #c4b870; --text-dim: #524e2c; --text-bright: #e8d490;
-    --suit-spade: #7898aa; --suit-club: #7a9868; --suit-heart: #b02828; --suit-diamond: #4470aa;
-    --melee-col: rgba(204,68,68,0.15); --ranged-col: rgba(102,153,204,0.12); --food-col: rgba(109,176,109,0.1);
-    --brass: #b87333; --string: #7a9a7a; --flicker: #6699cc; --semi: #c8a020; --rechargeable: #6db06d;
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    background: var(--bg);
-    background-image:
-      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(28,35,10,0.9) 0%, transparent 70%),
-      radial-gradient(ellipse 45% 45% at 5% 95%, rgba(80,12,12,0.3) 0%, transparent 60%),
-      radial-gradient(ellipse 45% 45% at 95% 5%, rgba(28,40,10,0.3) 0%, transparent 60%),
-      repeating-linear-gradient(0deg,transparent,transparent 52px,rgba(192,152,24,0.016) 52px,rgba(192,152,24,0.016) 53px),
-      repeating-linear-gradient(90deg,transparent,transparent 52px,rgba(192,152,24,0.016) 52px,rgba(192,152,24,0.016) 53px);
-    color: var(--text); font-family: 'Rajdhani', sans-serif; min-height: 100vh; padding: 20px;
-  }
-  .sheet { max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
-  .outer-frame { border:1px solid rgba(192,152,24,0.18); box-shadow:inset 0 0 60px rgba(0,0,0,0.6),0 0 40px rgba(0,0,0,0.8); padding:16px; position:relative; }
-  .outer-frame::before { content:'◈'; position:absolute; top:8px; left:12px; color:var(--gold-dim); font-size:0.7rem; }
-  .outer-frame::after  { content:'◈'; position:absolute; bottom:8px; right:12px; color:var(--gold-dim); font-size:0.7rem; }
-
-  /* CORNER ORNAMENTS */
-  .corner-ornament { position:fixed; width:80px; height:80px; pointer-events:none; z-index:0; opacity:0.18; }
-  .corner-ornament svg { width:100%; height:100%; }
-  .co-tl { top:10px; left:10px; }
-  .co-tr { top:10px; right:10px; transform:scaleX(-1); }
-  .co-bl { bottom:10px; left:10px; transform:scaleY(-1); }
-  .co-br { bottom:10px; right:10px; transform:scale(-1); }
-
-  /* HEADER */
-  .sheet-header { text-align:center; margin-bottom:20px; position:relative; padding:24px 0 16px; }
-  .sheet-header::before { content:''; position:absolute; bottom:0; left:10%; right:10%; height:1px; background:linear-gradient(90deg,transparent,var(--gold),var(--gold-light),var(--gold),transparent); }
-  .ctg-badge { font-family:'Bebas Neue',sans-serif; font-size:0.75rem; letter-spacing:6px; color:var(--gold-dim); margin-bottom:6px; }
-  .sheet-title { font-family:'Bebas Neue',sans-serif; font-size:2.4rem; color:var(--gold); letter-spacing:4px; text-shadow:0 0 30px rgba(200,160,32,0.3); margin-bottom:4px; }
-  .sheet-sub { font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:var(--text-dim); letter-spacing:3px; }
-  .wing-divider { display:flex; align-items:center; justify-content:center; gap:12px; margin:12px 0 20px; }
-  .wing-divider .line { flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--gold-dim)); }
-  .wing-divider .line.r { background:linear-gradient(90deg,var(--gold-dim),transparent); }
-  .wing-divider .emblem { color:var(--gold); font-size:1rem; opacity:0.7; }
-
-  /* SECTION HEADER */
-  .section-head { font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:6px; color:var(--gold-dim); text-transform:uppercase; display:flex; align-items:center; gap:10px; margin-bottom:12px; padding-bottom:6px; border-bottom:1px solid var(--border); }
-  .section-head .suit { font-size:0.9rem; }
-
-  /* WEAPON CARD */
-  .weapon-card { position:relative; background:var(--panel); border:1px solid var(--border); margin-bottom:12px; overflow:hidden; transition:border-color 0.2s; }
-  .weapon-card:hover { border-color:rgba(200,160,32,0.5); }
-  .weapon-card::before { content:''; position:absolute; inset:2px; border:1px solid rgba(200,160,32,0.06); pointer-events:none; }
-  .weapon-card.melee { border-left:3px solid var(--suit-heart); background:linear-gradient(90deg,var(--melee-col),var(--panel)); }
-  .weapon-card.ranged { border-left:3px solid var(--suit-diamond); background:linear-gradient(90deg,var(--ranged-col),var(--panel)); }
-  .weapon-head { padding:10px 14px 8px; display:flex; align-items:flex-start; gap:12px; border-bottom:1px solid rgba(200,160,32,0.1); }
-  .weapon-name-block { flex:1; }
-  .weapon-name { font-family:'Bebas Neue',sans-serif; font-size:1.2rem; color:var(--text-bright); letter-spacing:3px; margin-bottom:3px; }
-  .weapon-desc { font-family:'Rajdhani',sans-serif; font-size:0.82rem; color:var(--text-dim); line-height:1.4; font-style:italic; }
-  .weapon-stats { display:flex; gap:6px; flex-shrink:0; flex-wrap:wrap; justify-content:flex-end; }
-  .wstat { text-align:center; padding:4px 8px; background:var(--olive-dark); border:1px solid var(--border); clip-path:polygon(4px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,0 calc(100% - 4px),0 4px); }
-  .wstat-val { font-family:'Cinzel',serif; font-size:1rem; color:var(--gold); display:block; line-height:1; }
-  .wstat-label { font-family:'Share Tech Mono',monospace; font-size:0.48rem; letter-spacing:1px; color:var(--text-dim); }
-  .weapon-tags { display:flex; flex-wrap:wrap; gap:4px; padding:6px 14px; border-bottom:1px solid rgba(200,160,32,0.06); }
-  .tag { font-family:'Share Tech Mono',monospace; font-size:0.5rem; letter-spacing:1px; padding:2px 7px; border:1px solid; clip-path:polygon(3px 0,calc(100% - 3px) 0,100% 3px,100% calc(100% - 3px),calc(100% - 3px) 100%,3px 100%,0 calc(100% - 3px),0 3px); }
-  .tag.melee-tag { color:var(--suit-heart); border-color:rgba(204,68,68,0.4); background:rgba(204,68,68,0.06); }
-  .tag.ranged-tag { color:var(--suit-diamond); border-color:rgba(102,153,204,0.4); background:rgba(102,153,204,0.06); }
-  .tag.brass-tag { color:var(--brass); border-color:rgba(184,115,51,0.4); background:rgba(184,115,51,0.06); }
-  .tag.string-tag { color:var(--string); border-color:rgba(122,154,122,0.4); background:rgba(122,154,122,0.06); }
-  .tag.flicker-tag { color:var(--flicker); border-color:rgba(102,153,204,0.4); background:rgba(102,153,204,0.06); }
-  .tag.semi-tag { color:var(--semi); border-color:rgba(200,160,32,0.4); background:rgba(200,160,32,0.06); }
-  .tag.auto-tag { color:#e88; border-color:rgba(232,136,136,0.4); background:rgba(232,136,136,0.06); }
-  .tag.dist-tag { color:var(--text-dim); border-color:rgba(200,160,32,0.2); }
-  .weapon-quirk { padding:8px 14px 10px; }
-  .quirk-label { font-family:'Share Tech Mono',monospace; font-size:0.5rem; letter-spacing:2px; color:var(--gold-dim); margin-bottom:4px; }
-  .quirk-name { font-family:'Bebas Neue',sans-serif; font-size:0.95rem; color:var(--gold); letter-spacing:2px; margin-bottom:3px; }
-  .quirk-text { font-family:'Rajdhani',sans-serif; font-size:0.85rem; color:var(--text); line-height:1.4; }
-  .quirk-sub { font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:var(--text-dim); margin-top:4px; font-style:italic; }
-  .mode-block { margin-top:6px; padding:6px 10px; background:var(--olive-dark); border:1px solid rgba(200,160,32,0.15); border-left:2px solid var(--gold-dim); }
-  .mode-name { font-family:'Cinzel',serif; font-size:0.7rem; color:var(--gold-dim); margin-bottom:2px; }
-  .mode-text { font-family:'Share Tech Mono',monospace; font-size:0.56rem; color:var(--text-dim); line-height:1.5; }
-
-  /* FOOD / CONSUMABLES */
-  .food-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
-  .food-card { background:var(--panel); border:1px solid rgba(109,176,109,0.25); background:linear-gradient(160deg,var(--food-col),var(--panel)); position:relative; overflow:hidden; transition:border-color 0.2s; }
-  .food-card:hover { border-color:rgba(109,176,109,0.5); }
-  .food-card::before { content:''; position:absolute; inset:2px; border:1px solid rgba(109,176,109,0.05); pointer-events:none; }
-  .food-card.depleted { opacity:0.4; filter:grayscale(0.6); }
-  .food-head { padding:10px 12px 6px; border-bottom:1px solid rgba(109,176,109,0.15); }
-  .food-name { font-family:'Cinzel',serif; font-size:0.85rem; color:var(--text-bright); margin-bottom:2px; }
-  .food-type-row { display:flex; align-items:center; gap:6px; }
-  .food-type-tag { font-family:'Share Tech Mono',monospace; font-size:0.48rem; letter-spacing:1px; color:var(--rechargeable); border:1px solid rgba(109,176,109,0.3); padding:1px 5px; }
-  .food-harth { font-family:'Cinzel',serif; font-size:0.75rem; color:var(--suit-heart); }
-  .food-flavor { padding:6px 12px; font-family:'Share Tech Mono',monospace; font-size:0.54rem; color:var(--text-dim); line-height:1.5; font-style:italic; border-bottom:1px solid rgba(109,176,109,0.1); }
-  .food-quirk { padding:8px 12px 10px; }
-  .food-quirk-label { font-family:'Share Tech Mono',monospace; font-size:0.48rem; letter-spacing:2px; color:var(--gold-dim); margin-bottom:3px; }
-  .food-quirk-text { font-family:'Rajdhani',sans-serif; font-size:0.82rem; color:var(--text); line-height:1.4; }
-  .food-quip { font-family:'Share Tech Mono',monospace; font-size:0.55rem; color:var(--rechargeable); margin-top:5px; font-style:italic; opacity:0.8; }
-  .food-footer { padding:6px 12px 8px; border-top:1px solid rgba(109,176,109,0.1); display:flex; align-items:center; justify-content:space-between; }
-  .food-charge-label { font-family:'Share Tech Mono',monospace; font-size:0.5rem; letter-spacing:1px; color:var(--text-dim); }
-  .charge-toggle { width:16px; height:16px; border-radius:50%; border:1px solid rgba(109,176,109,0.5); background:transparent; cursor:pointer; transition:all 0.2s; display:inline-block; }
-  .charge-toggle.charged { background:var(--rechargeable); border-color:var(--rechargeable); box-shadow:0 0 6px rgba(109,176,109,0.4); }
-
-  /* FOOTER */
-  .sheet-footer { text-align:center; margin-top:20px; padding-top:14px; border-top:1px solid var(--border); font-family:'Share Tech Mono',monospace; font-size:0.55rem; letter-spacing:3px; color:var(--text-dim); }
-  .sheet-footer .suits { font-size:0.8rem; margin-bottom:4px; }
-  .sheet-footer .suits span:nth-child(1) { color:var(--suit-spade); }
-  .sheet-footer .suits span:nth-child(2) { color:var(--suit-club); }
-  .sheet-footer .suits span:nth-child(3) { color:var(--suit-heart); }
-  .sheet-footer .suits span:nth-child(4) { color:var(--suit-diamond); }
-
-  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-  .weapon-card, .food-card { animation:fadeUp 0.35s ease both; }
-
-  @media(max-width:700px) { .food-grid { grid-template-columns:1fr 1fr; } }
-  @media(max-width:480px) { .food-grid { grid-template-columns:1fr; } .weapon-card { margin-bottom:10px; } body { padding:10px; } }
-
-  /* PRINT */
-  @media print {
-    .ctg-nav, .corner-ornament, .dice-float-btn, .dice-panel, .charge-toggle { display:none !important; }
-    body { background:#fff !important; color:#000 !important; padding:0 !important; }
-    .outer-frame { border:none !important; padding:0 !important; }
-    .outer-frame::before, .outer-frame::after { display:none; }
-    .weapon-card, .food-card { background:#fff !important; border:1px solid #ccc !important; break-inside:avoid; }
-    .weapon-card::before, .food-card::before { display:none; }
-    .food-grid { grid-template-columns:1fr 1fr !important; }
-    @page { margin:1.5cm; }
-  }
-
-  /* DICE */
-  .dice-float-btn { position:fixed; bottom:20px; right:20px; z-index:500; width:44px; height:44px; background:var(--olive-dark); border:1px solid var(--gold-dim); color:var(--gold); font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px); transition:all 0.2s; box-shadow:0 4px 20px rgba(0,0,0,0.5); }
-  .dice-float-btn:hover { background:var(--olive-mid); border-color:var(--gold); }
-  .dice-panel { position:fixed; bottom:74px; right:20px; z-index:500; width:210px; background:#0d1006; border:1px solid rgba(192,152,24,0.45); padding:14px; display:none; clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px); box-shadow:0 8px 32px rgba(0,0,0,0.7); }
-  .dice-panel.open { display:block; }
-  .dice-panel-title { font-family:'Bebas Neue',sans-serif; font-size:0.85rem; letter-spacing:5px; color:var(--gold-dim); margin-bottom:10px; }
-  .dice-btns { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:10px; }
-  .die-btn { background:transparent; border:1px solid var(--border); color:var(--text); font-family:'Share Tech Mono',monospace; font-size:0.62rem; letter-spacing:1px; padding:6px 4px; cursor:pointer; transition:all 0.2s; clip-path:polygon(3px 0,calc(100% - 3px) 0,100% 3px,100% calc(100% - 3px),calc(100% - 3px) 100%,3px 100%,0 calc(100% - 3px),0 3px); }
-  .die-btn:hover { border-color:var(--gold); color:var(--gold); background:rgba(192,152,24,0.08); }
-  .dice-result-area { border:1px solid var(--border); background:rgba(0,0,0,0.3); padding:10px; text-align:center; margin-bottom:8px; min-height:52px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-  .dice-result-num { font-family:'Cinzel',serif; font-size:2rem; color:var(--gold); line-height:1; }
-  .dice-result-die { font-family:'Share Tech Mono',monospace; font-size:0.5rem; color:var(--text-dim); letter-spacing:2px; }
-  .dice-history { list-style:none; }
-  .dice-history li { font-family:'Share Tech Mono',monospace; font-size:0.52rem; color:var(--text-dim); padding:2px 0; border-bottom:1px solid rgba(192,152,24,0.06); }
-  .dice-history li:last-child { border-bottom:none; }
-  .dice-history li b { color:var(--gold); }
-  @keyframes diceRoll { 0%{transform:scale(0.6) rotate(-20deg);opacity:0} 60%{transform:scale(1.2) rotate(8deg)} 100%{transform:scale(1) rotate(0);opacity:1} }
-  .dice-rolling { animation:diceRoll 0.35s ease; }
-
-  /* NAV */
-  .ctg-nav { position:sticky;top:0;z-index:100;background:rgba(6,8,2,0.98);border-bottom:1px solid rgba(200,160,32,0.25);backdrop-filter:blur(6px);display:flex;align-items:center;padding:0 16px;height:40px;font-family:'Share Tech Mono',monospace;font-size:0.58rem;letter-spacing:2px; }
-  .ctg-nav-home { color:#c8a020;text-decoration:none;font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:3px;padding-right:16px;border-right:1px solid rgba(200,160,32,0.2);margin-right:8px;white-space:nowrap; }
-  .ctg-nav-home:hover { color:#e8c040; }
-  .ctg-nav a { color:#7a7050;text-decoration:none;padding:0 10px;height:100%;display:flex;align-items:center;border-right:1px solid rgba(200,160,32,0.1);transition:color .15s,background .15s;white-space:nowrap; }
-  .ctg-nav a:hover { color:#d4c88a;background:rgba(200,160,32,0.05); }
-  .ctg-nav a.active { color:#c8a020;border-bottom:2px solid #c8a020; }
-  .ctg-nav-name { margin-left:auto;font-family:'Cinzel',serif;font-size:0.65rem;color:#c8a020;opacity:0.8;padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px; }
-  .ctg-nav-saved { font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:#c8a020;opacity:0;transition:opacity 0.4s;padding-right:8px;white-space:nowrap; }
-  .ctg-nav-saved.show { opacity:1; }
+:root{
+  --bg:#050508;--bg2:#080b0f;--panel:#0a0d0a;
+  --purple:#7c3aed;--purple2:#9d5ff5;--purple-dim:#3d1a7a;--purple-glow:rgba(124,58,237,0.2);
+  --green:#1a4a1a;--green2:#2d6e2d;--green3:#4a9a4a;--green-glow:rgba(74,154,74,0.15);
+  --gold:#c8a020;--text:#c8d4c0;--text-dim:#4a5444;--text-bright:#e8f0e0;--red:#cc2200;
+  --border:rgba(124,58,237,0.25);--border2:rgba(124,58,237,0.5);
+  --melee:#cc2200;--ranged:#9d5ff5;--brass:#b87333;--string:#7a9a7a;--flicker:#5588bb;--food:#4a9a4a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);background-image:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(60,26,122,0.18) 0%,transparent 60%),radial-gradient(ellipse 50% 50% at 0% 100%,rgba(26,74,26,0.15) 0%,transparent 55%),repeating-linear-gradient(0deg,transparent,transparent 54px,rgba(124,58,237,0.02) 54px,rgba(124,58,237,0.02) 55px),repeating-linear-gradient(90deg,transparent,transparent 54px,rgba(124,58,237,0.02) 54px,rgba(124,58,237,0.02) 55px);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;}
+.ctg-nav{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:2px solid var(--purple);display:flex;align-items:center;padding:0 18px;height:46px;font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;animation:navDrop .25s ease both;}
+@keyframes navDrop{from{transform:translateY(-100%);}to{transform:translateY(0);}}
+.ctg-nav-home{color:var(--purple2);text-decoration:none;font-family:'Black Han Sans',sans-serif;font-size:1.1rem;letter-spacing:3px;padding-right:18px;margin-right:10px;text-shadow:0 0 12px var(--purple-glow);}
+.ctg-nav-links{display:flex;height:100%;}
+.ctg-nav a{color:var(--text-dim);text-decoration:none;padding:0 14px;height:100%;display:flex;align-items:center;transition:all .15s;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);}
+.ctg-nav a:hover{color:var(--text-bright);background:var(--purple-glow);}
+.ctg-nav a.active{color:#fff;background:var(--purple);font-weight:700;}
+.nav-char-name{margin-left:auto;color:var(--green3);font-size:0.6rem;letter-spacing:1px;}
+.nav-char-name span{color:var(--text-dim);}
+.save-flash{margin-left:14px;color:var(--green3);opacity:0;transition:opacity .3s;font-size:0.58rem;}
+.save-flash.show{opacity:1;}
+.page-wrap{animation:pageIn .3s ease-out both;}
+@keyframes pageIn{from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);}}
+.page-wrap.exit{animation:pageOut .2s ease-in both;}
+@keyframes pageOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-40px);}}
+.sheet{max-width:980px;margin:0 auto;padding:24px 20px 60px;position:relative;}
+.sheet::before{content:'';position:absolute;left:8px;top:24px;bottom:60px;width:2px;background:linear-gradient(180deg,var(--purple),transparent 80%);}
+.sheet-header{position:relative;padding:10px 0 22px 24px;margin-bottom:18px;}
+.head-tag{font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:5px;color:var(--purple2);margin-bottom:4px;}
+.sheet-title{font-family:'Black Han Sans',sans-serif;font-size:2.6rem;color:var(--text-bright);letter-spacing:2px;line-height:0.95;text-shadow:3px 3px 0 var(--purple-dim);}
+.sheet-title em{color:var(--purple2);font-style:normal;}
+.head-stamp{display:inline-block;margin-top:6px;font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:4px;color:var(--green3);border:1px solid var(--green2);padding:2px 10px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);}
+.sec-label{display:inline-flex;align-items:center;gap:8px;background:var(--purple-dim);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:5px;padding:5px 20px 5px 14px;margin-bottom:14px;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);}
+.sec-label .mk{color:var(--purple2);font-size:0.75rem;}
+.sec-label.mt{margin-top:26px;}
+/* weapon card */
+.weapon-card{position:relative;background:var(--panel);border:1px solid var(--border);margin-bottom:12px;overflow:hidden;transition:border-color .2s;clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%);animation:panelIn .4s ease both;}
+@keyframes panelIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.weapon-card:hover{border-color:var(--border2);}
+.weapon-card.melee{border-left:3px solid var(--melee);}
+.weapon-card.ranged{border-left:3px solid var(--ranged);}
+.weapon-head{padding:11px 16px 8px;display:flex;align-items:flex-start;gap:12px;border-bottom:1px solid var(--border);}
+.weapon-name-block{flex:1;}
+.weapon-name{font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;color:var(--text-bright);margin-bottom:3px;}
+.weapon-desc{font-family:'Rajdhani',sans-serif;font-size:0.82rem;color:var(--text-dim);line-height:1.4;font-style:italic;}
+.weapon-stats{display:flex;gap:6px;flex-shrink:0;}
+.wstat{text-align:center;padding:5px 10px;background:var(--bg2);border:1px solid var(--border);clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%);}
+.wstat-val{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--green3);display:block;line-height:1;}
+.wstat-label{font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:var(--text-dim);}
+.weapon-tags{display:flex;flex-wrap:wrap;gap:4px;padding:7px 16px;border-bottom:1px solid var(--border);}
+.tag{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;padding:2px 8px;border:1px solid;clip-path:polygon(3px 0,100% 0,calc(100% - 3px) 100%,0 100%);}
+.tag.melee-tag{color:var(--melee);border-color:rgba(204,34,0,0.4);}
+.tag.ranged-tag{color:var(--ranged);border-color:var(--border2);}
+.tag.brass-tag{color:var(--brass);border-color:rgba(184,115,51,0.4);}
+.tag.string-tag{color:var(--string);border-color:rgba(122,154,122,0.4);}
+.tag.flicker-tag{color:var(--flicker);border-color:rgba(85,136,187,0.4);}
+.tag.semi-tag{color:var(--gold);border-color:rgba(200,160,32,0.4);}
+.tag.auto-tag{color:#e88;border-color:rgba(232,136,136,0.4);}
+.tag.dist-tag{color:var(--text-dim);border-color:var(--border);}
+.weapon-quirk{padding:9px 16px 11px;}
+.quirk-label{font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:2px;color:var(--purple2);margin-bottom:4px;}
+.quirk-name{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--green3);margin-bottom:3px;}
+.quirk-text{font-family:'Rajdhani',sans-serif;font-size:0.85rem;color:var(--text);line-height:1.4;}
+.quirk-sub{font-family:'Share Tech Mono',monospace;font-size:0.56rem;color:var(--text-dim);margin-top:4px;font-style:italic;}
+.mode-block{margin-top:6px;padding:6px 10px;background:var(--bg2);border-left:2px solid var(--purple-dim);}
+.mode-name{font-family:'Bebas Neue',sans-serif;font-size:0.8rem;letter-spacing:1px;color:var(--purple2);margin-bottom:2px;}
+.mode-text{font-family:'Share Tech Mono',monospace;font-size:0.54rem;color:var(--text-dim);line-height:1.5;}
+.mode-text strong{color:var(--green3);}
+/* food */
+.food-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.food-card{background:var(--panel);border:1px solid rgba(74,154,74,0.3);border-top:2px solid var(--green2);position:relative;overflow:hidden;transition:all .2s;clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%);animation:panelIn .4s ease both;}
+.food-card:hover{border-color:rgba(74,154,74,0.6);}
+.food-card.depleted{opacity:0.4;filter:grayscale(0.6);}
+.food-head{padding:10px 12px 6px;border-bottom:1px solid rgba(74,154,74,0.2);}
+.food-name{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--text-bright);margin-bottom:3px;}
+.food-type-row{display:flex;align-items:center;gap:6px;}
+.food-type-tag{font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:var(--green3);border:1px solid rgba(74,154,74,0.3);padding:1px 5px;}
+.food-harth{font-family:'Bebas Neue',sans-serif;font-size:0.8rem;color:var(--red);}
+.food-flavor{padding:6px 12px;font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);line-height:1.5;font-style:italic;border-bottom:1px solid rgba(74,154,74,0.1);}
+.food-quirk{padding:8px 12px 10px;}
+.food-quirk-text{font-family:'Rajdhani',sans-serif;font-size:0.82rem;color:var(--text);line-height:1.4;}
+.food-quirk-text strong{color:var(--purple2);}
+.food-quip{font-family:'Share Tech Mono',monospace;font-size:0.54rem;color:var(--green3);margin-top:5px;font-style:italic;opacity:0.8;}
+.food-footer{padding:6px 12px 8px;border-top:1px solid rgba(74,154,74,0.1);display:flex;align-items:center;justify-content:space-between;}
+.food-charge-label{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);}
+.charge-toggle{width:16px;height:16px;border:1px solid rgba(74,154,74,0.5);background:transparent;cursor:pointer;transition:all .15s;transform:rotate(45deg);}
+.charge-toggle.charged{background:var(--green3);box-shadow:0 0 6px var(--green-glow);}
+.sheet-footer{text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:3px;color:var(--text-dim);}
+.sheet-footer .suits{font-size:0.85rem;margin-bottom:5px;letter-spacing:6px;}
+.sheet-footer .suits .s1{color:#7898aa;}.sheet-footer .suits .s2{color:var(--green3);}.sheet-footer .suits .s3{color:var(--red);}.sheet-footer .suits .s4{color:var(--purple2);}
+@media(max-width:700px){.food-grid{grid-template-columns:1fr;}.weapon-head{flex-direction:column;}.sheet-title{font-size:2rem;}}
+@media print{body{background:#fff;color:#000;}.ctg-nav{display:none!important;}.weapon-card,.food-card{break-inside:avoid;}.sheet::before{display:none;}}
 </style>
 </head>
 <body>
-
-<nav class="ctg-nav" id="ctg-nav-bar">
-  <a class="ctg-nav-home" href="index.html">CTG</a>
-  <a href="p1.html" id="nav-p1">I · Stats</a>
-  <a href="p2.html" id="nav-p2">II · Inventory</a>
-  <a href="p3.html" id="nav-p3">III · Faculties</a>
-  <a href="p4.html" id="nav-p4">IV · Arsenal</a>
-  <a href="p5.html" id="nav-p5">V · Skills</a>
-  <span class="ctg-nav-name" id="nav-char-name">Operative</span>
-  <span class="ctg-nav-saved" id="nav-saved">Saved ✓</span>
+<nav class="ctg-nav">
+  <a class="ctg-nav-home" href="index.html" data-nav>CTG</a>
+  <div class="ctg-nav-links">
+    <a href="p1.html" data-nav>I·STATS</a>
+    <a href="p2.html" data-nav>II·GEAR</a>
+    <a href="p3.html" data-nav>III·FAC</a>
+    <a href="p4.html" class="active">IV·ARMS</a>
+    <a href="p5.html" data-nav>V·SKILL</a>
+  </div>
+  <div class="nav-char-name" id="nav-name"><span>OPERATIVE //</span> —</div>
+  <span class="save-flash" id="save-flash">SAVED ✓</span>
 </nav>
-<script>(function(){
-  var pg=location.pathname.split('/').pop()||'index.html';
-  var m={'p1.html':'nav-p1','p2.html':'nav-p2','p3.html':'nav-p3','p4.html':'nav-p4','p5.html':'nav-p5'};
-  var id=m[pg];if(id){var el=document.getElementById(id);if(el)el.classList.add('active');}
-  try{var n=localStorage.getItem('ctg-char-name');if(n)document.getElementById('nav-char-name').textContent=n;}catch(e){}
-})();</script>
 
-<!-- Corner ornaments -->
-<div class="corner-ornament co-tl"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><path d="M8 2 L8 8 L2 8" stroke="#c8a020" stroke-width="0.5" opacity="0.5"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-<div class="corner-ornament co-tr"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-<div class="corner-ornament co-bl"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-<div class="corner-ornament co-br"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-
+<div class="page-wrap" id="page-wrap">
 <div class="sheet">
-<div class="outer-frame">
-
   <div class="sheet-header">
-    <div class="ctg-badge">Call To Gallahad</div>
-    <div class="sheet-title">Arsenal &amp; Provisions</div>
-    <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:6px;color:var(--gold-dim);margin-top:2px;">— PAGE IV —</div>
-    <div class="sheet-sub">◈ &nbsp; operational record — page iv &nbsp; ◈</div>
-  </div>
-  <div class="wing-divider">
-    <div class="line"></div><div class="emblem">♠ ♣ ♥ ♦</div><div class="line r"></div>
+    <div class="head-tag">CALL TO GALLAHAD // OPERATIONAL RECORD</div>
+    <div class="sheet-title">ARSENAL &amp; <em>PROVISIONS</em></div>
+    <div class="head-stamp">PAGE IV</div>
   </div>
 
-  <div class="section-head"><span class="suit" style="color:var(--suit-club)">♣</span> Weapons</div>
+  <div class="sec-label"><span class="mk">♣</span>WEAPONS</div>
 
   <div class="weapon-card melee">
-    <div class="weapon-head">
-      <div class="weapon-name-block">
-        <div class="weapon-name">Toothpick</div>
-        <div class="weapon-desc">A needle-thin rapier with a small incense chamber in the guard. It constantly smells faintly of burnt cinnamon and lost animal friends.</div>
-      </div>
-      <div class="weapon-stats"><div class="wstat"><span class="wstat-val">1</span><span class="wstat-label">DMG</span></div></div>
-    </div>
+    <div class="weapon-head"><div class="weapon-name-block"><div class="weapon-name">Toothpick</div><div class="weapon-desc">A needle-thin rapier with a small incense chamber in the guard. Smells faintly of burnt cinnamon and lost animal friends.</div></div><div class="weapon-stats"><div class="wstat"><span class="wstat-val">1</span><span class="wstat-label">DMG</span></div></div></div>
     <div class="weapon-tags"><span class="tag melee-tag">Melee</span><span class="tag brass-tag">Brass</span><span class="tag string-tag">String</span></div>
-    <div class="weapon-quirk">
-      <div class="quirk-label">Special Quirk</div>
-      <div class="quirk-name">"Mind The Strings"</div>
-      <div class="quirk-text">When you successfully counter an attack and strike back with this weapon it will not consume your Reaction.</div>
-    </div>
+    <div class="weapon-quirk"><div class="quirk-label">SPECIAL QUIRK</div><div class="quirk-name">"Mind The Strings"</div><div class="quirk-text">When you successfully counter an attack and strike back with this weapon it will not consume your Reaction.</div></div>
   </div>
 
   <div class="weapon-card ranged">
-    <div class="weapon-head">
-      <div class="weapon-name-block">
-        <div class="weapon-name">Dockwhistle Argument</div>
-        <div class="weapon-desc">A long-barrelled flintlock with three tiny brass whistles along the top. It wheezes before firing — like it's clearing its throat, readying a banter.</div>
-      </div>
-      <div class="weapon-stats"><div class="wstat"><span class="wstat-val">1</span><span class="wstat-label">DMG</span></div></div>
-    </div>
+    <div class="weapon-head"><div class="weapon-name-block"><div class="weapon-name">Dockwhistle Argument</div><div class="weapon-desc">A long-barrelled flintlock with three tiny brass whistles. It wheezes before firing — like it's clearing its throat.</div></div><div class="weapon-stats"><div class="wstat"><span class="wstat-val">1</span><span class="wstat-label">DMG</span></div></div></div>
     <div class="weapon-tags"><span class="tag dist-tag">Close</span><span class="tag dist-tag">Medium</span><span class="tag ranged-tag">Ranged</span><span class="tag string-tag">String</span></div>
-    <div class="weapon-quirk">
-      <div class="quirk-label">Special Quirk</div>
-      <div class="quirk-name">"State Your Case"</div>
-      <div class="quirk-text">When you successfully land a Crit and choose the head you cannot deal lower than 2 points of damage. If you miss, the whistle lets out a disapproving toot.</div>
-    </div>
+    <div class="weapon-quirk"><div class="quirk-label">SPECIAL QUIRK</div><div class="quirk-name">"State Your Case"</div><div class="quirk-text">When you land a Crit and choose the head you cannot deal lower than 2 damage. If you miss, the whistle lets out a disapproving toot.</div></div>
   </div>
 
   <div class="weapon-card melee">
-    <div class="weapon-head">
-      <div class="weapon-name-block">
-        <div class="weapon-name">Hunter's Bloody Axe</div>
-        <div class="weapon-desc">A large wooden axe with a menacing bit of metal on top. Big, Bloody, and ready for fun.</div>
-      </div>
-      <div class="weapon-stats"><div class="wstat"><span class="wstat-val">1</span><span class="wstat-label">DMG</span></div></div>
-    </div>
+    <div class="weapon-head"><div class="weapon-name-block"><div class="weapon-name">Hunter's Bloody Axe</div><div class="weapon-desc">A large wooden axe with a menacing bit of metal on top. Big, Bloody, and ready for fun.</div></div><div class="weapon-stats"><div class="wstat"><span class="wstat-val">1</span><span class="wstat-label">DMG</span></div></div></div>
     <div class="weapon-tags"><span class="tag melee-tag">Melee</span><span class="tag brass-tag">Brass</span></div>
-    <div class="weapon-quirk">
-      <div class="quirk-label">Special Quirk</div>
-      <div class="quirk-name">"Red Painted"</div>
-      <div class="quirk-text">When you kill an enemy creature you may gain an additional action. The red paint seems to make it faster.</div>
-    </div>
+    <div class="weapon-quirk"><div class="quirk-label">SPECIAL QUIRK</div><div class="quirk-name">"Red Painted"</div><div class="quirk-text">When you kill an enemy creature you may gain an additional action. The red paint seems to make it faster.</div></div>
   </div>
 
   <div class="weapon-card ranged">
-    <div class="weapon-head">
-      <div class="weapon-name-block">
-        <div class="weapon-name">The Newsletter</div>
-        <div class="weapon-desc">A flat-barrelled sniper rifle with three levels of magnification. When the trigger's pulled, you're sure it delivers the message.</div>
-      </div>
-      <div class="weapon-stats"><div class="wstat"><span class="wstat-val">2</span><span class="wstat-label">DMG</span></div></div>
-    </div>
+    <div class="weapon-head"><div class="weapon-name-block"><div class="weapon-name">The Newsletter</div><div class="weapon-desc">A flat-barrelled sniper rifle with three levels of magnification. When the trigger's pulled, it delivers the message.</div></div><div class="weapon-stats"><div class="wstat"><span class="wstat-val">2</span><span class="wstat-label">DMG</span></div></div></div>
     <div class="weapon-tags"><span class="tag dist-tag">Far</span><span class="tag ranged-tag">Ranged</span><span class="tag flicker-tag">Flicker</span></div>
-    <div class="weapon-quirk">
-      <div class="quirk-label">Special Quirk</div>
-      <div class="quirk-name">"Letter Opener"</div>
-      <div class="quirk-text">When you make an attack Out Of Combat with this weapon it deals double the damage.</div>
-      <div class="quirk-sub">Like a message from an old friend you wished to forget.</div>
-    </div>
+    <div class="weapon-quirk"><div class="quirk-label">SPECIAL QUIRK</div><div class="quirk-name">"Letter Opener"</div><div class="quirk-text">When you make an attack Out Of Combat with this weapon it deals double damage.</div><div class="quirk-sub">Like a message from an old friend you wished to forget.</div></div>
   </div>
 
-  <div class="weapon-card ranged" style="border-color:rgba(200,160,32,0.5);">
-    <div class="weapon-head">
-      <div class="weapon-name-block">
-        <div class="weapon-name">Gun-Brella</div>
-        <div class="weapon-desc">A rifle barrel used as the handle — the umbrella folds out after taking a shot, ready to make it rain.</div>
-      </div>
-      <div class="weapon-stats"><div class="wstat"><span class="wstat-val">1</span><span class="wstat-label">DMG</span></div></div>
-    </div>
+  <div class="weapon-card ranged" style="border-color:var(--border2);">
+    <div class="weapon-head"><div class="weapon-name-block"><div class="weapon-name">Gun-Brella</div><div class="weapon-desc">A rifle barrel used as the handle — the umbrella folds out after a shot, ready to make it rain.</div></div><div class="weapon-stats"><div class="wstat"><span class="wstat-val">1</span><span class="wstat-label">DMG</span></div></div></div>
     <div class="weapon-tags"><span class="tag dist-tag">Medium</span><span class="tag ranged-tag">Ranged</span><span class="tag semi-tag">Semi</span><span class="tag auto-tag">Auto 4</span><span class="tag string-tag">String</span></div>
-    <div class="weapon-quirk">
-      <div class="quirk-label">Special Quirk</div>
-      <div class="quirk-name">"Weather Forecast"</div>
-      <div class="quirk-text">Use an Action and a ♥ Hearts Card to switch modes on your turn. <em>For when the forecast calls for mild hostility.</em></div>
-      <div class="mode-block"><div class="mode-name">☔ Heavy Rain — Auto Mode</div><div class="mode-text">Roll D6s up to the Auto value (4). All 5s &amp; 6s hit the target; the rest miss.</div></div>
-      <div class="mode-block" style="border-left-color:var(--suit-spade);margin-top:6px;"><div class="mode-name" style="color:var(--suit-spade)">🌂 Spitting — Semi Mode</div><div class="mode-text">Successfully landing a shot deploys the umbrella mechanism — a large circular/octagonal shield at the gun's end, granting <strong style="color:var(--gold)">Advance</strong> to Defence Checks.</div></div>
+    <div class="weapon-quirk"><div class="quirk-label">SPECIAL QUIRK</div><div class="quirk-name">"Weather Forecast"</div><div class="quirk-text">Use an Action and a ♥ Hearts Card to switch modes on your turn.</div>
+      <div class="mode-block"><div class="mode-name">☔ Heavy Rain — Auto</div><div class="mode-text">Roll D6s up to the Auto value (4). All 5s &amp; 6s hit; the rest miss.</div></div>
+      <div class="mode-block" style="border-left-color:#7898aa;margin-top:6px;"><div class="mode-name" style="color:#7898aa;">🌂 Spitting — Semi</div><div class="mode-text">Landing a shot deploys the umbrella shield, granting <strong>Advance</strong> to Defence Checks.</div></div>
     </div>
   </div>
 
-  <!-- FOOD / PROVISIONS -->
-  <div class="section-head" style="margin-top:24px;"><span class="suit" style="color:var(--rechargeable)">◈</span> Provisions — Rechargeable Consumables</div>
-
+  <div class="sec-label mt"><span class="mk">◈</span>PROVISIONS — RECHARGEABLE</div>
   <div class="food-grid" id="food-grid">
     <div class="food-card" id="food-0">
-      <div class="food-head">
-        <div class="food-name">Lemon-Static Eel Rinds</div>
-        <div class="food-type-row"><span class="food-type-tag">Rechargeable</span><span class="food-harth">♥ 2 Harth</span></div>
-      </div>
-      <div class="food-flavor">Sour · Salty · Glassy-crunch · Slightly electric on the tongue</div>
-      <div class="food-quirk">
-        <div class="food-quirk-label">Special Quirk</div>
-        <div class="food-quirk-text">As a Free Reaction, shoot electricity from your fingertips — inflict <strong>Shock</strong> on an enemy creature in your distance. Shock forces the target to withdraw their current card and redraw; if unable, they skip their turn.</div>
-        <div class="food-quip">"Zap your tongue. Respect the eel."</div>
-      </div>
-      <div class="food-footer"><span class="food-charge-label">Charged</span><span class="charge-toggle charged" id="charge-0" onclick="toggleCharge(0)"></span></div>
+      <div class="food-head"><div class="food-name">Lemon-Static Eel Rinds</div><div class="food-type-row"><span class="food-type-tag">Rechargeable</span><span class="food-harth">♥ 2</span></div></div>
+      <div class="food-flavor">Sour · Salty · Glassy-crunch · Slightly electric</div>
+      <div class="food-quirk"><div class="food-quirk-text">As a Free Reaction, shoot electricity from your fingertips — inflict <strong>Shock</strong> on an enemy in range. They withdraw their current card and redraw; if unable, they skip their turn.</div><div class="food-quip">"Zap your tongue. Respect the eel."</div></div>
+      <div class="food-footer"><span class="food-charge-label">CHARGED</span><span class="charge-toggle charged" id="charge-0" onclick="toggleCharge(0)"></span></div>
     </div>
-
     <div class="food-card" id="food-1">
-      <div class="food-head">
-        <div class="food-name">Ink-Dipped Calamari</div>
-        <div class="food-type-row"><span class="food-type-tag">Rechargeable</span><span class="food-harth">♥ 2 Harth</span></div>
-      </div>
-      <div class="food-flavor">Savory-sweet · Ocean-deep · Faint licorice bitterness · Ink stains lips black for hours</div>
-      <div class="food-quirk">
-        <div class="food-quirk-label">Special Quirk</div>
-        <div class="food-quirk-text">Your blood turns into a viscous black — it is slightly concerning. Discard up to 2 Cards from your Hand and Redraw them.</div>
-        <div class="food-quip">"Pop it. Ink it. Regret nothing."</div>
-      </div>
-      <div class="food-footer"><span class="food-charge-label">Charged</span><span class="charge-toggle charged" id="charge-1" onclick="toggleCharge(1)"></span></div>
+      <div class="food-head"><div class="food-name">Ink-Dipped Calamari</div><div class="food-type-row"><span class="food-type-tag">Rechargeable</span><span class="food-harth">♥ 2</span></div></div>
+      <div class="food-flavor">Savory-sweet · Ocean-deep · Licorice · Stains lips black</div>
+      <div class="food-quirk"><div class="food-quirk-text">Your blood turns viscous black. Discard up to 2 Cards from your Hand and Redraw them.</div><div class="food-quip">"Pop it. Ink it. Regret nothing."</div></div>
+      <div class="food-footer"><span class="food-charge-label">CHARGED</span><span class="charge-toggle charged" id="charge-1" onclick="toggleCharge(1)"></span></div>
     </div>
-
     <div class="food-card" id="food-2">
-      <div class="food-head">
-        <div class="food-name">Coal-Fire Tentacle Twist</div>
-        <div class="food-type-row"><span class="food-type-tag">Rechargeable</span><span class="food-harth">♥ 1 Harth</span></div>
-      </div>
+      <div class="food-head"><div class="food-name">Coal-Fire Tentacle Twist</div><div class="food-type-row"><span class="food-type-tag">Rechargeable</span><span class="food-harth">♥ 1</span></div></div>
       <div class="food-flavor">Burnt sugar · Ash · Peppered salt · Chewy</div>
-      <div class="food-quirk">
-        <div class="food-quirk-label">Special Quirk</div>
-        <div class="food-quirk-text">Breathe flame from your fingertips — make attacks with ♦ Diamond Cards using your Flicker that inflict <strong>Burn</strong>. On Burn, roll a D6: Evens = target takes 1 more damage; Odds = nothing.</div>
-        <div class="food-quip">"Chewy enough to fight back!"</div>
-      </div>
-      <div class="food-footer"><span class="food-charge-label">Charged</span><span class="charge-toggle charged" id="charge-2" onclick="toggleCharge(2)"></span></div>
+      <div class="food-quirk"><div class="food-quirk-text">Breathe flame from your fingertips — attack with ♦ Diamond Cards using your Flicker to inflict <strong>Burn</strong>. Roll D6: Evens = +1 damage, Odds = nothing.</div><div class="food-quip">"Chewy enough to fight back!"</div></div>
+      <div class="food-footer"><span class="food-charge-label">CHARGED</span><span class="charge-toggle charged" id="charge-2" onclick="toggleCharge(2)"></span></div>
     </div>
   </div>
 
   <div class="sheet-footer">
-    <div class="suits"><span>♠</span>&nbsp;<span>♣</span>&nbsp;<span>♥</span>&nbsp;<span>♦</span></div>
-    CALL TO GALLAHAD &nbsp;·&nbsp; ARSENAL &amp; PROVISIONS &nbsp;·&nbsp; PAGE IV
+    <div class="suits"><span class="s1">♠</span><span class="s2">♣</span><span class="s3">♥</span><span class="s4">♦</span></div>
+    CALL TO GALLAHAD · ARSENAL &amp; PROVISIONS · PAGE IV
   </div>
 </div>
-</div>
-
-<!-- DICE ROLLER -->
-<button class="dice-float-btn" id="dice-toggle" title="Roll Dice">◈</button>
-<div class="dice-panel" id="dice-panel">
-  <div class="dice-panel-title">Dice Roller</div>
-  <div class="dice-btns">
-    <button class="die-btn" onclick="ctgRoll(4)">D4</button>
-    <button class="die-btn" onclick="ctgRoll(6)">D6</button>
-    <button class="die-btn" onclick="ctgRoll(8)">D8</button>
-    <button class="die-btn" onclick="ctgRoll(10)">D10</button>
-    <button class="die-btn" onclick="ctgRoll(12)">D12</button>
-    <button class="die-btn" onclick="ctgRoll(20)">D20</button>
-  </div>
-  <div class="dice-result-area">
-    <div class="dice-result-num" id="dice-num">—</div>
-    <div class="dice-result-die" id="dice-die">select a die</div>
-  </div>
-  <ul class="dice-history" id="dice-history"></ul>
 </div>
 
 <script>
-  function ctgSaved() {
-    var el = document.getElementById('nav-saved');
-    if (el) { el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(function(){ el.classList.remove('show'); }, 1800); }
-    try {
-      localStorage.setItem('ctg-last-updated', new Date().toISOString());
-      var cnt = parseInt(localStorage.getItem('ctg-edit-count')||'0')+1;
-      localStorage.setItem('ctg-edit-count', String(cnt));
-    } catch(e) {}
-  }
-
-  function toggleCharge(i) {
-    const toggle = document.getElementById('charge-' + i);
-    const card = document.getElementById('food-' + i);
-    toggle.classList.toggle('charged');
-    card.classList.toggle('depleted', !toggle.classList.contains('charged'));
-    saveCharges();
-  }
-
-  function saveCharges() {
-    try {
-      const charges = [0,1,2].map(i => document.getElementById('charge-'+i)?.classList.contains('charged'));
-      localStorage.setItem('ctg-p4', JSON.stringify({ charges }));
-      ctgSaved();
-    } catch(e) {}
-  }
-
-  function loadCharges() {
-    try {
-      const raw = localStorage.getItem('ctg-p4');
-      if (!raw) return;
-      const d = JSON.parse(raw);
-      if (d.charges) {
-        d.charges.forEach((charged, i) => {
-          const toggle = document.getElementById('charge-' + i);
-          const card = document.getElementById('food-' + i);
-          if (!toggle || !card) return;
-          if (charged) { toggle.classList.add('charged'); card.classList.remove('depleted'); }
-          else { toggle.classList.remove('charged'); card.classList.add('depleted'); }
-        });
-      }
-    } catch(e) {}
-  }
-
-  loadCharges();
-
-  // Dice Roller
-  (function(){
-    var log=[];
-    var panel=document.getElementById('dice-panel');
-    var btn=document.getElementById('dice-toggle');
-    btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
-    document.addEventListener('click',function(e){
-      if(panel.classList.contains('open')&&!panel.contains(e.target)&&e.target!==btn)
-        panel.classList.remove('open');
-    });
-    window.ctgRoll=function(sides){
-      var r=Math.floor(Math.random()*sides)+1;
-      var numEl=document.getElementById('dice-num');
-      var dieEl=document.getElementById('dice-die');
-      numEl.textContent=r; dieEl.textContent='d'+sides;
-      numEl.style.color=r===sides?'#ddb828':r===1?'#aa1800':'#c09818';
-      numEl.classList.remove('dice-rolling'); void numEl.offsetWidth; numEl.classList.add('dice-rolling');
-      log.unshift({sides:sides,roll:r}); if(log.length>5)log.pop();
-      document.getElementById('dice-history').innerHTML=log.map(function(e){return '<li><b>'+e.roll+'</b> on d'+e.sides+'</li>';}).join('');
-    };
-  })();
+function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
+const charges=[true,true,true];
+(function(){const s=load('ctg-food-charges');if(s){const d=JSON.parse(s);d.forEach((c,i)=>{charges[i]=c;if(!c){document.getElementById('charge-'+i).classList.remove('charged');document.getElementById('food-'+i).classList.add('depleted');}});}})();
+function toggleCharge(i){
+  charges[i]=!charges[i];
+  document.getElementById('charge-'+i).classList.toggle('charged',charges[i]);
+  document.getElementById('food-'+i).classList.toggle('depleted',!charges[i]);
+  try{localStorage.setItem('ctg-food-charges',JSON.stringify(charges));localStorage.setItem('ctg-last-edit',Date.now());flashSaved();}catch(e){}
+}
+(function(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();
+document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="ctg-sync.js"></script>
-<script src="ctg-theme.js"></script>
 </body>
 </html>
