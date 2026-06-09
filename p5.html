@@ -3,168 +3,584 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#050508">
-<title>CTG — Skill Tree</title>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="ctg.css">
+<meta name="theme-color" content="#080a04">
+<link rel="stylesheet" href="ctg-themes.css">
+<title>CTG — Skills · Page V</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400;700&family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#c8a020;--gold2:#e8c040;--gold-dim:#5a4a08;
+  --olive:#1e2210;--olive2:#2a3018;--olive3:#3a4020;
+  --red:#8b1a1a;--red2:#cc2200;
+  --bg:#090b05;--panel:#111408;
+  --border:rgba(200,160,32,0.28);
+  --text:#cfc080;--text-dim:#6a6040;--text-bright:#f0e0a0;
+  --spade:#8aaabb;--club:#8aaa78;--heart:#cc3333;--diamond:#5588bb;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse 60% 40% at 15% 15%,rgba(58,64,20,0.5) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 85% 80%,rgba(100,20,20,0.2) 0%,transparent 60%),
+    repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(200,160,32,0.015) 40px,rgba(200,160,32,0.015) 41px),
+    repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(200,160,32,0.015) 40px,rgba(200,160,32,0.015) 41px);
+  color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;padding:0 0 60px;
+}
+
+/* CORNER ORNAMENTS */
+.corner-ornament{position:fixed;width:80px;height:80px;pointer-events:none;z-index:0;opacity:0.18;}
+.corner-ornament svg{width:100%;height:100%;}
+.co-tl{top:10px;left:10px;}.co-tr{top:10px;right:10px;transform:scaleX(-1);}
+.co-bl{bottom:10px;left:10px;transform:scaleY(-1);}.co-br{bottom:10px;right:10px;transform:scale(-1);}
+
+/* NAV */
+.ctg-nav{position:sticky;top:0;z-index:100;background:rgba(9,11,5,0.97);border-bottom:1px solid rgba(200,160,32,0.2);backdrop-filter:blur(8px);display:flex;align-items:center;padding:0 20px;height:42px;font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;}
+.ctg-nav-home{color:var(--gold);text-decoration:none;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:4px;padding-right:18px;border-right:1px solid rgba(200,160,32,0.2);margin-right:10px;}
+.ctg-nav a{color:var(--text-dim);text-decoration:none;padding:0 10px;height:100%;display:flex;align-items:center;transition:color .15s;border-right:1px solid rgba(200,160,32,0.08);}
+.ctg-nav a:hover,.ctg-nav a.active{color:var(--gold);}
+.ctg-nav a.active{border-bottom:2px solid var(--gold);}
+.ctg-nav-name{margin-left:auto;font-family:'Cinzel',serif;font-size:0.65rem;color:var(--gold);opacity:0.8;padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;}
+.ctg-nav-saved{font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--gold);opacity:0;transition:opacity 0.4s;padding-right:8px;white-space:nowrap;}
+.ctg-nav-saved.show{opacity:1;}
+
+/* PAGE HEADER */
+.page-head{padding:32px 32px 20px;position:relative;display:flex;align-items:flex-end;justify-content:space-between;border-bottom:1px solid var(--border);overflow:hidden;}
+.page-head::before{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+.page-head::after{content:'';position:absolute;top:-40px;right:60px;width:2px;height:200px;background:linear-gradient(180deg,transparent,rgba(200,160,32,0.12),transparent);transform:rotate(15deg);}
+.head-label{font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:5px;color:var(--gold-dim);margin-bottom:6px;}
+.head-title{font-family:'Bebas Neue',sans-serif;font-size:3.2rem;color:var(--gold);letter-spacing:6px;line-height:1;text-shadow:0 0 40px rgba(200,160,32,0.2);}
+.head-sub{font-family:'Share Tech Mono',monospace;font-size:0.58rem;color:var(--text-dim);letter-spacing:2px;margin-top:4px;}
+.head-right{text-align:right;}
+.head-rule{font-family:'Share Tech Mono',monospace;font-size:0.56rem;color:var(--text-dim);line-height:1.8;letter-spacing:1px;}
+.head-rule strong{color:var(--gold-dim);}
+
+/* BUDGET STRIP */
+.budget-strip{display:flex;gap:0;border-bottom:1px solid var(--border);background:rgba(0,0,0,0.3);overflow-x:auto;}
+.budget-cell{flex:1;min-width:80px;padding:10px 12px;border-right:1px solid var(--border);position:relative;overflow:hidden;transition:background .2s;}
+.budget-cell:last-child{border-right:none;}
+.budget-cell::before{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--col);opacity:0.5;transform:scaleX(0);transform-origin:left;transition:transform .4s ease;}
+.budget-cell.has-points::before{transform:scaleX(1);}
+.budget-cell.over{background:rgba(139,26,26,0.15);}
+.budget-cell.over::before{background:var(--red2);}
+.b-name{font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:3px;color:var(--text-dim);display:block;margin-bottom:3px;}
+.b-counts{font-family:'Share Tech Mono',monospace;font-size:0.7rem;display:flex;align-items:baseline;gap:3px;}
+.b-spent{color:var(--col);}
+.b-sep,.b-total{color:var(--text-dim);}
+.b-pips{display:flex;gap:2px;margin-top:5px;flex-wrap:wrap;}
+.b-pip{width:7px;height:7px;border:1px solid rgba(200,160,32,0.2);background:transparent;transform:rotate(45deg);}
+.b-pip.on{background:var(--col);border-color:var(--col);}
+.b-pip.over{background:var(--red2);border-color:var(--red2);}
+
+/* TREE AREA */
+.tree-area{padding:28px 24px;overflow-x:auto;}
+.tree-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:0;overflow-x:auto;align-items:center;}
+.tree-tab{padding:10px 20px;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:3px;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;border-right:1px solid var(--border);transition:all .15s;white-space:nowrap;background:transparent;}
+.tree-tab:hover{color:var(--text);background:rgba(200,160,32,0.04);}
+.tree-tab.active{color:var(--col);border-bottom-color:var(--col);background:rgba(200,160,32,0.06);}
+
+/* Reset button */
+.tree-reset-btn{margin-left:auto;background:transparent;border:1px solid rgba(200,160,32,0.2);color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:2px;padding:6px 14px;cursor:pointer;transition:all 0.2s;white-space:nowrap;flex-shrink:0;}
+.tree-reset-btn:hover{border-color:var(--red2);color:#cc4444;}
+
+/* TREE CANVAS */
+.tree-canvas-wrap{position:relative;min-height:420px;margin-top:16px;}
+.tree-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:visible;}
+.tree-nodes{position:relative;z-index:1;display:flex;flex-direction:column;gap:0;min-width:600px;}
+
+/* Rows */
+.tree-row{display:flex;align-items:flex-start;justify-content:center;gap:16px;padding:8px 0 20px;position:relative;}
+.tree-row-label{position:absolute;left:0;top:50%;transform:translateY(-50%);font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:3px;color:var(--text-dim);opacity:0.5;}
+
+/* SKILL NODE */
+.skill-node{width:160px;flex-shrink:0;position:relative;cursor:pointer;transition:transform .15s;}
+.skill-node:hover:not(.node-locked):not(.node-prereq){transform:translateY(-2px);}
+.node-body{background:var(--panel);border:1px solid rgba(200,160,32,0.2);padding:10px 11px 9px;position:relative;overflow:hidden;transition:border-color .2s,background .2s,box-shadow .2s;clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 10px,100% calc(100% - 10px),calc(100% - 10px) 100%,10px 100%,0 calc(100% - 10px),0 10px);}
+.node-body::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--col,var(--gold)),transparent);opacity:0;transition:opacity .2s;}
+.skill-node:hover .node-body::before{opacity:1;}
+.skill-node.node-selected .node-body{border-color:var(--col,var(--gold));background:rgba(200,160,32,0.08);box-shadow:0 0 16px rgba(200,160,32,0.15),inset 0 0 20px rgba(200,160,32,0.04);}
+.skill-node.node-selected .node-body::before{opacity:1;}
+.skill-node.node-locked .node-body{opacity:0.3;}
+.skill-node.node-prereq .node-body{opacity:0.45;}
+
+/* Node selection pulse animation */
+@keyframes nodeSelect{0%{transform:scale(1)}30%{transform:scale(1.05)}70%{transform:scale(0.98)}100%{transform:scale(1)}}
+@keyframes nodeGlow{0%{box-shadow:0 0 0 rgba(200,160,32,0)}50%{box-shadow:0 0 24px rgba(200,160,32,0.5),inset 0 0 24px rgba(200,160,32,0.1)}100%{box-shadow:0 0 16px rgba(200,160,32,0.15),inset 0 0 20px rgba(200,160,32,0.04)}}
+.node-just-selected .node-body{animation:nodeSelect 0.4s ease,nodeGlow 0.6s ease;}
+
+/* Corner accent */
+.node-corner{position:absolute;top:3px;right:3px;width:8px;height:8px;border-top:1px solid var(--col,var(--gold));border-right:1px solid var(--col,var(--gold));opacity:0;transition:opacity .2s;}
+.skill-node.node-selected .node-corner,.skill-node:hover .node-corner{opacity:0.8;}
+.node-tier-row{display:flex;gap:3px;margin-bottom:5px;}
+.node-tier-dot{width:6px;height:6px;border-radius:50%;border:1px solid rgba(200,160,32,0.3);background:transparent;}
+.node-tier-dot.on{background:var(--col,var(--gold));border-color:var(--col,var(--gold));box-shadow:0 0 4px var(--col,var(--gold));}
+.node-name{font-family:'Cinzel',serif;font-size:0.72rem;color:var(--text-bright);line-height:1.3;margin-bottom:4px;display:flex;align-items:flex-start;justify-content:space-between;gap:4px;}
+.node-cost{font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--gold);background:rgba(200,160,32,0.12);border:1px solid rgba(200,160,32,0.25);padding:1px 4px;flex-shrink:0;margin-top:1px;}
+.node-desc{font-family:'Rajdhani',sans-serif;font-size:0.75rem;color:var(--text-dim);line-height:1.35;}
+.node-check{position:absolute;bottom:5px;right:7px;font-family:'Share Tech Mono',monospace;font-size:0.55rem;color:var(--col,var(--gold));opacity:0;transition:opacity .2s;}
+.skill-node.node-selected .node-check{opacity:1;}
+.node-lock{position:absolute;top:6px;right:7px;font-size:0.6rem;color:var(--text-dim);opacity:0.5;}
+
+/* SVG CONNECTORS */
+.connector{stroke:rgba(200,160,32,0.15);stroke-width:1.5;fill:none;stroke-dasharray:4,3;}
+.connector.dim{stroke:rgba(200,160,32,0.08);}
+/* Shimmer animation on active connectors */
+@keyframes connectorShimmer{
+  0%{stroke:rgba(220,190,60,0.95);stroke-width:3;stroke-dasharray:none}
+  60%{stroke:rgba(200,160,32,0.7);stroke-width:2;stroke-dasharray:none}
+  100%{stroke-width:1.5;stroke-dasharray:none}
+}
+.connector.active{stroke-dasharray:none;animation:connectorShimmer 0.7s ease forwards;}
+
+/* TOOLTIP */
+.skill-tooltip{position:fixed;z-index:200;background:#0d1006;border:1px solid var(--gold-dim);padding:10px 14px;max-width:240px;pointer-events:none;opacity:0;transition:opacity .15s;clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0 calc(100% - 6px),0 6px);}
+.skill-tooltip.show{opacity:1;}
+.tt-name{font-family:'Cinzel',serif;font-size:0.8rem;color:var(--gold);margin-bottom:5px;}
+.tt-desc{font-family:'Rajdhani',sans-serif;font-size:0.82rem;color:var(--text);line-height:1.4;}
+.tt-cost{font-family:'Share Tech Mono',monospace;font-size:0.55rem;color:var(--text-dim);margin-top:5px;}
+
+/* SPEND SUMMARY */
+.spend-summary{text-align:center;padding:16px 24px;font-family:'Share Tech Mono',monospace;font-size:0.62rem;letter-spacing:2px;color:var(--text-dim);border-top:1px solid var(--border);}
+.spend-summary span{color:var(--gold);}
+
+/* FOOTER */
+.page-foot{text-align:center;padding:20px;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:3px;color:var(--text-dim);}
+.page-foot .s1{color:var(--spade);}.page-foot .s2{color:var(--club);}
+.page-foot .s3{color:var(--heart);}.page-foot .s4{color:var(--diamond);}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px;}
+
+@media(max-width:700px){
+  .tree-tab{padding:8px 12px;font-size:0.75rem;}
+  .page-head{flex-direction:column;gap:12px;align-items:flex-start;}
+  .head-right{text-align:left;}
+  .tree-area{padding:16px 8px;overflow-x:auto;}
+  .tree-nodes{min-width:600px;}
+  .tree-canvas-wrap{overflow-x:auto;}
+}
+
+/* PRINT */
+@media print{
+  .ctg-nav,.corner-ornament,.dice-float-btn,.dice-panel,.tree-reset-btn{display:none!important;}
+  body{background:#fff!important;color:#000!important;}
+  .page-head,.budget-strip{border-color:#ccc!important;}
+  .node-body{background:#fff!important;border:1px solid #ccc!important;}
+  .node-body::before{display:none;}
+  .skill-node.node-selected .node-body{background:#f0f0f0!important;border-color:#333!important;}
+  .skill-node.node-locked,.skill-node.node-prereq{opacity:0.4;}
+  @page{margin:1.5cm;}
+}
+
+/* DICE */
+.dice-float-btn{position:fixed;bottom:20px;right:20px;z-index:500;width:44px;height:44px;background:#151a08;border:1px solid #604808;color:#c09818;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px);transition:all 0.2s;box-shadow:0 4px 20px rgba(0,0,0,0.5);}
+.dice-float-btn:hover{background:#1e2410;border-color:#c09818;}
+.dice-panel{position:fixed;bottom:74px;right:20px;z-index:500;width:210px;background:#0d1006;border:1px solid rgba(192,152,24,0.45);padding:14px;display:none;clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px);box-shadow:0 8px 32px rgba(0,0,0,0.7);}
+.dice-panel.open{display:block;}
+.dice-panel-title{font-family:'Bebas Neue',sans-serif;font-size:0.85rem;letter-spacing:5px;color:#604808;margin-bottom:10px;}
+.dice-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:10px;}
+.die-btn{background:transparent;border:1px solid rgba(200,160,32,0.22);color:#c4b870;font-family:'Share Tech Mono',monospace;font-size:0.62rem;letter-spacing:1px;padding:6px 4px;cursor:pointer;transition:all 0.2s;clip-path:polygon(3px 0,calc(100% - 3px) 0,100% 3px,100% calc(100% - 3px),calc(100% - 3px) 100%,3px 100%,0 calc(100% - 3px),0 3px);}
+.die-btn:hover{border-color:#c09818;color:#c09818;background:rgba(192,152,24,0.08);}
+.dice-result-area{border:1px solid rgba(200,160,32,0.22);background:rgba(0,0,0,0.3);padding:10px;text-align:center;margin-bottom:8px;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.dice-result-num{font-family:'Cinzel',serif;font-size:2rem;color:#c09818;line-height:1;}
+.dice-result-die{font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:#524e2c;letter-spacing:2px;}
+.dice-history{list-style:none;}
+.dice-history li{font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:#524e2c;padding:2px 0;border-bottom:1px solid rgba(192,152,24,0.06);}
+.dice-history li:last-child{border-bottom:none;}
+.dice-history li b{color:#c09818;}
+@keyframes diceRoll{0%{transform:scale(0.6) rotate(-20deg);opacity:0}60%{transform:scale(1.2) rotate(8deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.dice-rolling{animation:diceRoll 0.35s ease;}
+</style>
 </head>
 <body>
-<nav class="ctg-nav">
-  <a class="ctg-nav-home" href="index.html" data-nav>CTG</a>
-  <div class="ctg-nav-links">
-    <a href="p1.html" data-nav>I·STATS</a>
-    <a href="p2.html" data-nav>II·GEAR</a>
-    <a href="p3.html" data-nav>III·FAC</a>
-    <a href="p4.html" data-nav>IV·ARMS</a>
-    <a href="p5.html" class="active">V·SKILL</a>
-  </div>
-  <div class="nav-char-name" id="nav-name"><span>OPERATIVE //</span> —</div>
-  <span class="save-flash" id="save-flash">SAVED ✓</span>
+
+<nav class="ctg-nav" id="ctg-nav-bar">
+  <a class="ctg-nav-home" href="index.html">CTG</a>
+  <a href="p1.html" id="nav-p1">I · Stats</a>
+  <a href="p2.html" id="nav-p2">II · Inventory</a>
+  <a href="p3.html" id="nav-p3">III · Faculties</a>
+  <a href="p4.html" id="nav-p4">IV · Arsenal</a>
+  <a href="p5.html" id="nav-p5" class="active">V · Skills</a>
+  <span class="ctg-nav-name" id="nav-char-name">Operative</span>
+  <span class="ctg-nav-saved" id="nav-saved">Saved ✓</span>
 </nav>
+<script>(function(){
+  try{var n=localStorage.getItem('ctg-char-name');if(n)document.getElementById('nav-char-name').textContent=n;}catch(e){}
+})();</script>
 
-<div class="page-wrap" id="page-wrap">
-  <div class="page-head">
-    <div class="head-tag">CALL TO GALLAHAD // OPERATIONAL RECORD</div>
-    <div class="sheet-title">SKILL <em>TREE</em></div>
-    <div class="head-stamp">PAGE V</div>
+<!-- Corner ornaments -->
+<div class="corner-ornament co-tl"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><path d="M8 2 L8 8 L2 8" stroke="#c8a020" stroke-width="0.5" opacity="0.5"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
+<div class="corner-ornament co-tr"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
+<div class="corner-ornament co-bl"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
+<div class="corner-ornament co-br"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
+
+<div class="page-head">
+  <div class="head-left">
+    <div class="head-label">CALL TO GALLAHAD · OPERATIONAL RECORD</div>
+    <div class="head-title">SKILL TREE</div>
+    <div class="head-sub">◈ &nbsp; select a category · click nodes to unlock &nbsp; ◈</div>
   </div>
-
-  <div class="budget-strip" id="budget-strip"></div>
-
-  <div class="tree-layout">
-    <div class="tree-sidebar" id="tree-sidebar"></div>
-    <div class="tree-canvas">
-      <div class="tree-canvas-inner">
-        <svg class="tree-svg" id="tree-svg"></svg>
-        <div class="tree-nodes" id="tree-nodes"></div>
-      </div>
+  <div class="head-right">
+    <div class="head-rule">
+      <strong>Cost 1pt</strong> — standard skill<br>
+      <strong>Cost 2–3pt</strong> — shown on node<br>
+      <strong>Tiered ●●●</strong> — unlock in order<br>
+      <strong>Locked ⊘</strong> — unmet requirement
     </div>
-  </div>
-
-  <div class="tree-foot">
-    <div class="tree-summary" id="tree-summary"></div>
-    <button class="reset-btn" onclick="resetCol()">⌫ RESET THIS TREE</button>
-  </div>
-
-  <div class="page-foot">
-    <span class="s1">♠</span> <span class="s2">♣</span> <span class="s3">♥</span> <span class="s4">♦</span><br>
-    CALL TO GALLAHAD · SKILL TREE · PAGE V
   </div>
 </div>
 
-<div class="tip" id="tip"><div class="tip-name" id="tip-name"></div><div class="tip-desc" id="tip-desc"></div><div class="tip-cost" id="tip-cost"></div></div>
+<div class="budget-strip" id="budget-strip"></div>
+
+<div class="tree-area">
+  <div class="tree-tabs" id="tree-tabs">
+    <!-- tabs + reset btn rendered here -->
+  </div>
+  <div class="tree-canvas-wrap" id="tree-canvas-wrap">
+    <svg class="tree-svg" id="tree-svg"></svg>
+    <div class="tree-nodes" id="tree-nodes"></div>
+  </div>
+</div>
+
+<div class="spend-summary" id="spend-summary"></div>
+
+<div class="skill-tooltip" id="tooltip">
+  <div class="tt-name" id="tt-name"></div>
+  <div class="tt-desc" id="tt-desc"></div>
+  <div class="tt-cost" id="tt-cost"></div>
+</div>
+
+<div class="page-foot">
+  <span class="s1">♠</span>&nbsp;<span class="s2">♣</span>&nbsp;<span class="s3">♥</span>&nbsp;<span class="s4">♦</span><br>
+  CALL TO GALLAHAD · SKILL TREE · PAGE V
+</div>
+
+<!-- DICE ROLLER -->
+<button class="dice-float-btn" id="dice-toggle" title="Roll Dice">◈</button>
+<div class="dice-panel" id="dice-panel">
+  <div class="dice-panel-title">Dice Roller</div>
+  <div class="dice-btns">
+    <button class="die-btn" onclick="ctgRoll(4)">D4</button>
+    <button class="die-btn" onclick="ctgRoll(6)">D6</button>
+    <button class="die-btn" onclick="ctgRoll(8)">D8</button>
+    <button class="die-btn" onclick="ctgRoll(10)">D10</button>
+    <button class="die-btn" onclick="ctgRoll(12)">D12</button>
+    <button class="die-btn" onclick="ctgRoll(20)">D20</button>
+  </div>
+  <div class="dice-result-area">
+    <div class="dice-result-num" id="dice-num">—</div>
+    <div class="dice-result-die" id="dice-die">select a die</div>
+  </div>
+  <ul class="dice-history" id="dice-history"></ul>
+</div>
 
 <script>
-const COLS=[
-  {id:'force',label:'Force',icon:'♣',color:'#cc4444',stat:5,rows:[
-    [{id:'tb1',name:'Tavern Brawler I',tier:1,tiers:3,cost:1,desc:'Gain Advance on Unarmed melee attacks.'},{id:'gorey',name:'Gorey',cost:1,desc:'Rip off a limb (weaker targets) on a Critical.'},{id:'1togo',name:'1 to Go',cost:1,desc:'Counter at the same time as being attacked in melee.'}],
-    [{id:'tb2',name:'Tavern Brawler II',tier:2,tiers:3,cost:1,req:['tb1'],desc:'Gain Advantage on Unarmed melee attacks.'}],
-    [{id:'tb3',name:'Tavern Brawler III',tier:3,tiers:3,cost:1,req:['tb2'],desc:'Gain Advance Advantage on Unarmed melee attacks.'}]]},
-  {id:'finess',label:'Finesse',icon:'♦',color:'#5588bb',stat:4,rows:[
-    [{id:'ls1',name:'Lock-Smith I',tier:1,tiers:2,cost:1,desc:'Your Tick range increases by 1.'},{id:'sneaky',name:'Sneaky Bullfish',cost:1,desc:'Move a Distance without using a card.'},{id:'mistersmooth',name:'Mister Smooth',cost:1,desc:'Use Finesse as base for defensive checks.'}],
-    [{id:'ls2',name:'Lock-Smith II',tier:2,tiers:2,cost:1,req:['ls1'],desc:'Your Tick range increases by 2.'},{id:'slick',name:'Slick',cost:1,desc:'Use 2 cards for Defence but cannot counter.'},{id:'nightkiller',name:'Night Killer',cost:1,desc:'Double Damage attacking before seen.'}],
-    [{id:'bulletcritic',name:'Bullet Critic',cost:2,desc:'Target two body parts on a Critical.'},{id:'gunbeater',name:'Gun Beater',cost:1,desc:'Automatic guns roll an Additional Dice.'}]]},
-  {id:'endurance',label:'Endurance',icon:'♠',color:'#8aabbb',stat:3,rows:[
-    [{id:'td1',name:'Tavern Defender I',tier:1,tiers:3,cost:1,desc:'Gain Advance when defending.'},{id:'boozehound',name:'Booze Hound',cost:1,desc:'No negative effects from alcohol.'},{id:'stimlegend',name:'Stim Legend',cost:1,desc:'Medical Stim heals 2 health points.'}],
-    [{id:'td2',name:'Tavern Defender II',tier:2,tiers:3,cost:1,req:['td1'],desc:'Gain Advantage when defending.'},{id:'drunktrain',name:'Drunken Trainer',tier:1,tiers:3,cost:1,req:['boozehound'],desc:'Advance on melee while drunk.'},{id:'mistakemaker',name:'Mistake Maker',cost:1,desc:'Add Spades to Defence vs counters, no Reaction.'}],
-    [{id:'td3',name:'Tavern Defender III',tier:3,tiers:3,cost:1,req:['td2'],desc:'Advance Advantage when defending.'},{id:'drunkmaster',name:'Drunken Master',tier:2,tiers:3,cost:1,req:['drunktrain'],desc:'Advantage on melee while drunk.'}],
-    [{id:'drunkshifu',name:'Drunken Shifu',tier:3,tiers:3,cost:1,req:['drunkmaster'],desc:'Advanced Advantage on melee while drunk.'}]]},
-  {id:'logic',label:'Logic',icon:'◈',color:'#9d5ff5',stat:3,rows:[
-    [{id:'goblinkg',name:'Goblin King',cost:1,desc:'Junk rounds become neutral, not negative.'},{id:'hs1',name:'Hack-Smith I',tier:1,tiers:2,cost:1,desc:'Your Guess count increases by 1.'},{id:'wandsmith',name:'Wandering Smith',cost:1,desc:'Modify weapons without a workbench.'}],
-    [{id:'lonescient',name:'Lone Scientist',cost:1,desc:'Research without a workbench.'},{id:'hs2',name:'Hack-Smith II',tier:2,tiers:2,cost:1,req:['hs1'],desc:'Your Guess count increases by 2.'},{id:'labmade',name:'Lab Made',cost:2,desc:'Immediately gain Additional 2 Harth.'}]]},
-  {id:'sense',label:'Sense',icon:'◉',color:'#4a9a4a',stat:2,rows:[
-    [{id:'lr1',name:'Long Ranger I',tier:1,tiers:3,cost:1,desc:'Advance shooting Far enemies.'},{id:'precshot',name:'Precise Shot',cost:2,desc:"Gun's Range decreases a Distance."},{id:'hh1',name:'Head Hunter I',tier:1,tiers:4,cost:1,desc:'Crit to head: min 2 damage even on a 1.'}],
-    [{id:'lr2',name:'Long Ranger II',tier:2,tiers:3,cost:1,req:['lr1'],desc:'Advantage shooting Far enemies.'},{id:'predict',name:'Predictable',cost:2,desc:'First attack acts like a Critical.'},{id:'hh2',name:'Head Hunter II',tier:2,tiers:4,cost:1,req:['hh1'],desc:'Crit to head: min 3 damage even on a 1.'}],
-    [{id:'lr3',name:'Long Ranger III',tier:3,tiers:3,cost:1,req:['lr2'],desc:'Advanced Advantage shooting Far.'},{id:'bulletpitch',name:'Bullet Pitcher',cost:1,desc:'Counter Ranged out of max distance.'},{id:'hh3',name:'Head Hunter III',tier:3,tiers:4,cost:1,req:['hh2'],desc:'Crit to head: min 4 damage even on a 1.'}],
-    [{id:'inscope',name:'In My Scope',cost:3,desc:"Gun's range increases a Distance."},{id:'hh4',name:'Head Hunter IV',tier:4,tiers:4,cost:1,req:['hh3'],desc:'Crit to head: always max damage.'}]]},
-  {id:'shine',label:'Shine',icon:'✦',color:'#bb88ee',stat:1,rows:[
-    [{id:'fourleaf',name:'Four Leafed Looter',cost:1,desc:'Reroll once on loot — must take new roll.'},{id:'cheater',name:'Cheater',cost:2,desc:'Land a Critical on a natural 19 or 20.'}],
-    [{id:'fiveleaf',name:'Five Leafed Looter',cost:1,req:['fourleaf'],desc:'Reroll once on loot — choose either result.'}]]},
+// ═══ DATA ═══
+const COLS = [
+  { id:'force', label:'Force', icon:'♣', color:'#cc4444', stat:5, rows:[
+    [ {id:'tb1',name:'Tavern Brawler I',tier:1,tiers:3,cost:1,desc:'Gain Advance when making Unarmed melee attacks.'},
+      {id:'gorey',name:'Gorey',cost:1,desc:'You may Rip off a limb (weaker targets) when landing a Critical.'},
+      {id:'1togo',name:'1 to Go',cost:1,desc:'When in Melee combat you may make a counter at the same time as being attacked.'} ],
+    [ {id:'tb2',name:'Tavern Brawler II',tier:2,tiers:3,cost:1,req:['tb1'],desc:'Gain Advantage when making Unarmed melee attacks.'} ],
+    [ {id:'tb3',name:'Tavern Brawler III',tier:3,tiers:3,cost:1,req:['tb2'],desc:'Gain Advance Advantage when making Unarmed melee attacks.'} ],
+  ]},
+  { id:'finess', label:'Finesse', icon:'♦', color:'#5588bb', stat:4, rows:[
+    [ {id:'ls1',name:'Lock-Smith I',tier:1,tiers:2,cost:1,desc:'Your Tick range increases by 1.'},
+      {id:'sneaky',name:'Sneaky Bullfish',cost:1,desc:'Move a Distance without using a card. Cannot equip with Raging Bullfish.'},
+      {id:'mistersmooth',name:'Mister Smooth',cost:1,desc:'Use your Finesse as your base for defensive checks. Armour still adds on top.'} ],
+    [ {id:'ls2',name:'Lock-Smith II',tier:2,tiers:2,cost:1,req:['ls1'],desc:'Your Tick range increases by 2.'},
+      {id:'slick',name:'Slick',cost:1,desc:'Use 2 cards for Defence checks but you cannot counter attack.'},
+      {id:'nightkiller',name:'Night Killer',cost:1,desc:'Deal Double Damage when attacking before seen. Targets cannot scream for help.'} ],
+    [ {id:'bulletcritic',name:'Bullet Critic',cost:2,desc:'Target two separate body parts when landing a Critical.'},
+      {id:'gunbeater',name:'Gun Beater',cost:1,desc:'Your Automatic guns roll an Additional Dice.'} ],
+  ]},
+  { id:'endurance', label:'Endurance', icon:'♠', color:'#8aabbb', stat:3, rows:[
+    [ {id:'td1',name:'Tavern Defender I',tier:1,tiers:3,cost:1,desc:'Gain Advance when defending.'},
+      {id:'boozehound',name:'Booze Hound',cost:1,desc:'You do not suffer the negative effects of alcohol.'},
+      {id:'stimlegend',name:'Stim Legend',cost:1,desc:'When using a Medical Stim you may heal 2 health points.'} ],
+    [ {id:'td2',name:'Tavern Defender II',tier:2,tiers:3,cost:1,req:['td1'],desc:'Gain Advantage when defending.'},
+      {id:'drunktrain',name:'Drunken Trainer',tier:1,tiers:3,cost:1,req:['boozehound'],desc:'Gain Advance when making Melee attacks while under the effects of alcohol.'},
+      {id:'mistakemaker',name:'Mistake Maker',cost:1,desc:'Add a Spades card to Defence checks against counters without a Reaction. Cannot counter back.'} ],
+    [ {id:'td3',name:'Tavern Defender III',tier:3,tiers:3,cost:1,req:['td2'],desc:'Gain Advance Advantage when defending.'},
+      {id:'drunkmaster',name:'Drunken Master',tier:2,tiers:3,cost:1,req:['drunktrain'],desc:'Gain Advantage when making Melee attacks while under the effects of alcohol.'} ],
+    [ {id:'drunkshifu',name:'Drunken Shifu',tier:3,tiers:3,cost:1,req:['drunkmaster'],desc:'Gain Advanced Advantage when making Melee attacks while under the effects of alcohol.'} ],
+  ]},
+  { id:'logic', label:'Logic', icon:'◈', color:'#c8a020', stat:3, rows:[
+    [ {id:'goblinkg',name:'Goblin King',cost:1,desc:'Junk rounds no longer give a negative value — instead they make it neutral.'},
+      {id:'hs1',name:'Hack-Smith I',tier:1,tiers:2,cost:1,desc:'Your Guess count increases by 1.'},
+      {id:'wandsmith',name:'Wandering Smith',cost:1,desc:'Modify your weapon without the need of a workbench.'} ],
+    [ {id:'lonescient',name:'Lone Scientist',cost:1,desc:'Research without the need of a workbench.'},
+      {id:'hs2',name:'Hack-Smith II',tier:2,tiers:2,cost:1,req:['hs1'],desc:'Your Guess count increases by 2.'},
+      {id:'labmade',name:'Lab Made',cost:2,desc:'You immediately gain an Additional 2 Harth.'} ],
+  ]},
+  { id:'sense', label:'Sense', icon:'◉', color:'#7aaa68', stat:2, rows:[
+    [ {id:'lr1',name:'Long Ranger I',tier:1,tiers:3,cost:1,desc:"Gain Advance when shooting enemies that are Far away."},
+      {id:'precshot',name:'Precise Shot',cost:2,desc:"Your gun's Range decreases a Distance."},
+      {id:'hh1',name:'Head Hunter I',tier:1,tiers:4,cost:1,desc:'When landing a crit on the head — deal minimum 2 damage, even on a 1.'} ],
+    [ {id:'lr2',name:'Long Ranger II',tier:2,tiers:3,cost:1,req:['lr1'],desc:"Gain Advantage when shooting enemies that are Far away."},
+      {id:'predict',name:'Predictable',cost:2,desc:'Your first attack in combat may be made like a Critical — choosing a body part.'},
+      {id:'hh2',name:'Head Hunter II',tier:2,tiers:4,cost:1,req:['hh1'],desc:'When landing a crit on the head — deal minimum 3 damage, even on a 1.'} ],
+    [ {id:'lr3',name:'Long Ranger III',tier:3,tiers:3,cost:1,req:['lr2'],desc:"Gain Advanced Advantage when shooting enemies that are Far away."},
+      {id:'bulletpitch',name:'Bullet Pitcher',cost:1,desc:'Counter Ranged Attacks out of your maximum distance.'},
+      {id:'hh3',name:'Head Hunter III',tier:3,tiers:4,cost:1,req:['hh2'],desc:'When landing a crit on the head — deal minimum 4 damage, even on a 1.'} ],
+    [ {id:'inscope',name:'In My Scope',cost:3,desc:"Your gun's range increases a Distance."},
+      {id:'hh4',name:'Head Hunter IV',tier:4,tiers:4,cost:1,req:['hh3'],desc:'When landing a crit on the head — always deal maximum damage.'} ],
+  ]},
+  { id:'shine', label:'Shine', icon:'✦', color:'#bb88ee', stat:1, rows:[
+    [ {id:'fourleaf',name:'Four Leafed Looter',cost:1,desc:'Reroll once on the loot table — but you must take the new roll no matter what.'},
+      {id:'cheater',name:'Cheater',cost:2,desc:'You may land a Critical on a natural 19 or 20.'} ],
+    [ {id:'fiveleaf',name:'Five Leafed Looter',cost:1,req:['fourleaf'],desc:'Reroll once on the loot table — and choose between the two results.'} ],
+  ]},
 ];
-let activeCol=COLS[0].id;
-const selected=new Set();
-try{const s=localStorage.getItem('ctg-skills');if(s)JSON.parse(s).forEach(id=>selected.add(id));}catch(e){}
-let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
-function save(){try{localStorage.setItem('ctg-skills',JSON.stringify([...selected]));localStorage.setItem('ctg-last-edit',Date.now());flashSaved();}catch(e){}}
-const sp=s=>Math.floor(s/2);
-const colById=id=>COLS.find(c=>c.id===id);
-function skillById(id){for(const c of COLS){const s=c.rows.flat().find(x=>x.id===id);if(s)return{skill:s,col:c};}return null;}
-function spentIn(cid){return colById(cid).rows.flat().filter(s=>selected.has(s.id)).reduce((a,s)=>a+(s.cost||1),0);}
-function reqMet(sk){return !sk.req||sk.req.every(r=>selected.has(r));}
-function canAfford(sk,cid){if(selected.has(sk.id))return true;return spentIn(cid)+(sk.cost||1)<=sp(colById(cid).stat);}
-function hasDeps(id){return COLS.flatMap(c=>c.rows.flat()).some(s=>s.req&&s.req.includes(id)&&selected.has(s.id));}
-function toggle(id){
-  const {skill,col}=skillById(id);
-  if(selected.has(id)){if(hasDeps(id)){const el=document.getElementById('node-'+id);if(el){el.style.outline='1px solid var(--red)';setTimeout(()=>el.style.outline='',500);}return;}selected.delete(id);}
-  else{if(!reqMet(skill)||!canAfford(skill,col.id))return;selected.add(id);}
-  save();render();
+
+// ═══ STATE ═══
+let activeColId = COLS[0].id;
+const selected = new Set();
+try{ const s=localStorage.getItem('ctg-skills'); if(s) JSON.parse(s).forEach(id=>selected.add(id)); }catch(e){}
+
+function save(){
+  try{localStorage.setItem('ctg-skills',JSON.stringify([...selected]));ctgSaved();}catch(e){}
 }
-function resetCol(){
-  const col=colById(activeCol);
-  if(!confirm('Reset all '+col.label+' skills?'))return;
-  col.rows.flat().forEach(s=>selected.delete(s.id));save();render();
+function ctgSaved(){
+  var el=document.getElementById('nav-saved');
+  if(el){el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show');},1800);}
+  try{
+    localStorage.setItem('ctg-last-updated',new Date().toISOString());
+    var cnt=parseInt(localStorage.getItem('ctg-edit-count')||'0')+1;
+    localStorage.setItem('ctg-edit-count',String(cnt));
+  }catch(e){}
 }
+
+function spOf(stat){ return Math.floor(stat/2); }
+function colById(id){ return COLS.find(c=>c.id===id); }
+function skillById(id){ for(const c of COLS){ const s=c.rows.flat().find(sk=>sk.id===id); if(s)return{skill:s,col:c}; } return null; }
+function spentIn(colId){ const c=colById(colId); return c.rows.flat().filter(s=>selected.has(s.id)).reduce((a,s)=>a+(s.cost||1),0); }
+function reqMet(skill){ return !skill.req || skill.req.every(r=>selected.has(r)); }
+function canAfford(skill,colId){ if(selected.has(skill.id)) return true; return spentIn(colId)+(skill.cost||1) <= spOf(colById(colId).stat); }
+function hasDependents(skillId){ return COLS.flatMap(c=>c.rows.flat()).some(s=>s.req&&s.req.includes(skillId)&&selected.has(s.id)); }
+
+// ═══ TOGGLE ═══
+function toggle(skillId){
+  const {skill,col}=skillById(skillId);
+  if(selected.has(skillId)){
+    if(hasDependents(skillId)){
+      const el=document.getElementById('node-'+skillId);
+      if(el){el.style.outline='1px solid #cc2200';setTimeout(()=>el.style.outline='',500);}
+      return;
+    }
+    selected.delete(skillId);
+  } else {
+    if(!reqMet(skill)||!canAfford(skill,col.id)) return;
+    selected.add(skillId);
+    // Pulse animation
+    setTimeout(()=>{
+      const el=document.getElementById('node-'+skillId);
+      if(el){el.classList.add('node-just-selected');setTimeout(()=>el.classList.remove('node-just-selected'),600);}
+    },10);
+  }
+  save();
+  render();
+}
+
+// ═══ RESET COLUMN ═══
+function resetColumn(){
+  const col=colById(activeColId);
+  const skills=col.rows.flat().map(s=>s.id);
+  if(!skills.some(id=>selected.has(id))) return;
+  if(!confirm(`Reset all ${col.label} skills? This cannot be undone.`)) return;
+  // Remove in reverse order to handle dependents
+  let changed=true;
+  while(changed){
+    changed=false;
+    skills.forEach(id=>{
+      if(selected.has(id)&&!hasDependents(id)){ selected.delete(id); changed=true; }
+    });
+  }
+  save(); render();
+}
+
+// ═══ RENDER BUDGET ═══
 function renderBudget(){
-  const strip=document.getElementById('budget-strip');strip.innerHTML='';
+  const strip=document.getElementById('budget-strip');
+  strip.innerHTML='';
   COLS.forEach(col=>{
-    const tot=sp(col.stat),spent=spentIn(col.id),over=spent>tot;
-    const cell=document.createElement('div');cell.className='budget-cell'+(over?' over':'');cell.style.setProperty('--col',col.color);
-    let pips='';for(let i=0;i<Math.max(tot,spent);i++)pips+=`<span class="b-pip ${i<spent?(over?'over':'on'):''}"></span>`;
-    cell.innerHTML=`<span class="b-name">${col.icon} ${col.label}</span><div class="b-counts"><span class="b-spent" style="color:${over?'var(--red)':col.color}">${spent}</span><span class="b-sep"> / </span><span class="b-total">${tot}</span></div><div class="b-pips">${pips}</div>`;
+    const tot=spOf(col.stat), spent=spentIn(col.id), over=spent>tot;
+    const cell=document.createElement('div');
+    cell.className='budget-cell'+(spent>0?' has-points':'')+(over?' over':'');
+    cell.style.setProperty('--col',col.color);
+    let pips='';
+    for(let i=0;i<Math.max(tot,spent);i++){
+      const cls=i<spent?(over?'b-pip over':'b-pip on'):'b-pip';
+      pips+=`<span class="${cls}"></span>`;
+    }
+    cell.innerHTML=`<span class="b-name">${col.label}</span><div class="b-counts"><span class="b-spent" style="color:${over?'#cc2200':col.color}">${spent}</span><span class="b-sep"> / </span><span class="b-total">${tot}</span></div><div class="b-pips">${pips}</div>`;
     strip.appendChild(cell);
   });
 }
-function renderSidebar(){
-  const sb=document.getElementById('tree-sidebar');sb.innerHTML='';
+
+// ═══ RENDER TABS ═══
+function renderTabs(){
+  const tabs=document.getElementById('tree-tabs');
+  tabs.innerHTML='';
   COLS.forEach(col=>{
-    const tab=document.createElement('div');tab.className='side-tab'+(col.id===activeCol?' active':'');tab.style.setProperty('--col',col.color);
-    tab.innerHTML=`<span class="ti">${col.icon}</span>${col.label}<span class="tspent">${spentIn(col.id)}/${sp(col.stat)}</span>`;
-    tab.onclick=()=>{activeCol=col.id;render();};
-    sb.appendChild(tab);
+    const tab=document.createElement('button');
+    tab.className='tree-tab'+(col.id===activeColId?' active':'');
+    tab.style.setProperty('--col',col.color);
+    if(col.id===activeColId) tab.style.color=col.color;
+    tab.innerHTML=`${col.icon} ${col.label}`;
+    tab.addEventListener('click',()=>{ activeColId=col.id; render(); });
+    tabs.appendChild(tab);
   });
+  // Reset button
+  const resetBtn=document.createElement('button');
+  resetBtn.className='tree-reset-btn';
+  resetBtn.textContent='Reset Tree';
+  resetBtn.addEventListener('click',resetColumn);
+  tabs.appendChild(resetBtn);
 }
+
+// ═══ RENDER TREE ═══
+const NODE_W=164, ROW_H=130;
+
 function renderTree(){
-  const col=colById(activeCol);
-  const nodes=document.getElementById('tree-nodes');const svg=document.getElementById('tree-svg');
-  nodes.innerHTML='';svg.innerHTML='';
-  col.rows.forEach(row=>{
-    const rd=document.createElement('div');rd.className='tree-row';
+  const col=colById(activeColId);
+  const nodesDiv=document.getElementById('tree-nodes');
+  const svg=document.getElementById('tree-svg');
+  nodesDiv.innerHTML='';
+  svg.innerHTML='';
+  const centers={};
+
+  col.rows.forEach((row,ri)=>{
+    const rowDiv=document.createElement('div');
+    rowDiv.className='tree-row';
+    rowDiv.style.cssText=`min-height:${ROW_H}px;`;
     row.forEach(skill=>{
-      const isSel=selected.has(skill.id),isReq=!reqMet(skill),isLock=!isReq&&!canAfford(skill,col.id)&&!isSel;
-      let cls='skill-node';if(isSel)cls+=' node-selected';else if(isReq)cls+=' node-prereq';else if(isLock)cls+=' node-locked';
-      let tier='';if(skill.tier&&skill.tiers){tier='<div class="node-tier">';for(let t=1;t<=skill.tiers;t++)tier+=`<span class="node-tier-dot${t<=skill.tier?' on':''}"></span>`;tier+='</div>';}
-      const cost=(skill.cost>1)?`<span class="node-cost">${skill.cost}pt</span>`:'';
-      const lock=(isReq||isLock)?'<span class="node-lock">⊘</span>':'';
-      const n=document.createElement('div');n.className=cls;n.id='node-'+skill.id;n.style.setProperty('--col',col.color);
-      n.innerHTML=`<div class="node-body">${lock}${tier}<div class="node-name"><span>${skill.name}</span>${cost}</div><div class="node-desc">${skill.desc}</div><span class="node-check">✓</span></div>`;
-      if(!isReq&&!isLock)n.onclick=()=>toggle(skill.id);
-      n.addEventListener('mouseenter',e=>showTip(e,skill,col,isReq,isLock));
-      n.addEventListener('mousemove',moveTip);n.addEventListener('mouseleave',hideTip);
-      rd.appendChild(n);
+      const isSel=selected.has(skill.id);
+      const isReq=!reqMet(skill);
+      const isLocked=!isReq&&!canAfford(skill,col.id)&&!isSel;
+      let cls='skill-node';
+      if(isSel) cls+=' node-selected';
+      else if(isReq) cls+=' node-prereq';
+      else if(isLocked) cls+=' node-locked';
+      let tierHTML='';
+      if(skill.tier&&skill.tiers){
+        tierHTML='<div class="node-tier-row">';
+        for(let t=1;t<=skill.tiers;t++) tierHTML+=`<span class="node-tier-dot${t<=skill.tier?' on':''}"></span>`;
+        tierHTML+='</div>';
+      }
+      const costBadge=(skill.cost&&skill.cost>1)?`<span class="node-cost">${skill.cost}pt</span>`:'';
+      const lockIcon=(isReq||isLocked)?'<span class="node-lock">⊘</span>':'';
+      const node=document.createElement('div');
+      node.className=cls; node.id='node-'+skill.id;
+      node.style.setProperty('--col',col.color);
+      node.innerHTML=`<div class="node-body"><div class="node-corner"></div>${lockIcon}${tierHTML}<div class="node-name"><span>${skill.name}</span>${costBadge}</div><div class="node-desc">${skill.desc}</div><span class="node-check">✓</span></div>`;
+      if(!isReq&&!isLocked) node.addEventListener('click',()=>toggle(skill.id));
+      node.addEventListener('mouseenter',e=>showTip(e,skill,col,isReq,isLocked));
+      node.addEventListener('mousemove',moveTip);
+      node.addEventListener('mouseleave',hideTip);
+      rowDiv.appendChild(node);
     });
-    nodes.appendChild(rd);
+    nodesDiv.appendChild(rowDiv);
   });
-  requestAnimationFrame(()=>drawLines(col,svg,nodes));
+  requestAnimationFrame(()=>drawLines(col,svg,nodesDiv,centers));
 }
-function drawLines(col,svg,nodes){
-  const centers={};col.rows.flat().forEach(s=>{const el=document.getElementById('node-'+s.id);if(!el)return;const r=el.getBoundingClientRect();const pr=nodes.getBoundingClientRect();centers[s.id]={x:r.left-pr.left+r.width/2,top:r.top-pr.top,bot:r.top-pr.top+r.height};});
-  const wr=nodes.getBoundingClientRect();svg.setAttribute('viewBox',`0 0 ${wr.width} ${wr.height}`);svg.style.height=wr.height+'px';
-  col.rows.flat().forEach(s=>{if(!s.req)return;s.req.forEach(rid=>{const c=centers[s.id],p=centers[rid];if(!c||!p)return;const active=selected.has(s.id)&&selected.has(rid);const line=document.createElementNS('http://www.w3.org/2000/svg','path');const mid=(p.bot+c.top)/2;line.setAttribute('d',`M${p.x},${p.bot} C${p.x},${mid} ${c.x},${mid} ${c.x},${c.top}`);line.setAttribute('class','connector'+(active?' active':''));if(active)line.style.setProperty('--col-line',col.color);svg.appendChild(line);});});
+
+function drawLines(col,svg,nodesDiv,centers){
+  const allSkills=col.rows.flat();
+  allSkills.forEach(skill=>{
+    const el=document.getElementById('node-'+skill.id);
+    if(!el) return;
+    const r=el.getBoundingClientRect();
+    const pr=nodesDiv.getBoundingClientRect();
+    centers[skill.id]={x:r.left-pr.left+r.width/2,y:r.top-pr.top+r.height/2,top:r.top-pr.top,bot:r.top-pr.top+r.height};
+  });
+  const wr=nodesDiv.getBoundingClientRect();
+  svg.setAttribute('viewBox',`0 0 ${wr.width} ${wr.height}`);
+  svg.style.height=wr.height+'px';
+  allSkills.forEach(skill=>{
+    if(!skill.req) return;
+    skill.req.forEach(reqId=>{
+      const child=centers[skill.id];
+      const parent=centers[reqId];
+      if(!child||!parent) return;
+      const isActive=selected.has(skill.id)&&selected.has(reqId);
+      const line=document.createElementNS('http://www.w3.org/2000/svg','path');
+      const x1=parent.x,y1=parent.bot,x2=child.x,y2=child.top;
+      const mid=(y1+y2)/2;
+      line.setAttribute('d',`M${x1},${y1} C${x1},${mid} ${x2},${mid} ${x2},${y2}`);
+      line.setAttribute('class','connector'+(isActive?' active':''));
+      if(isActive) line.style.setProperty('--col-line',col.color);
+      svg.appendChild(line);
+    });
+  });
 }
-function renderSummary(){
-  const total=[...selected].length;
-  const pts=COLS.reduce((a,c)=>a+spentIn(c.id),0);
-  document.getElementById('tree-summary').innerHTML=`<strong>${pts}</strong> skill points spent across <strong>${total}</strong> skills`;
+
+// ═══ SPEND SUMMARY ═══
+function renderSpendSummary(){
+  const total=COLS.reduce((a,col)=>a+spentIn(col.id),0);
+  const count=selected.size;
+  const el=document.getElementById('spend-summary');
+  el.innerHTML=`<span>${total}</span> skill point${total===1?'':'s'} spent across <span>${count}</span> skill${count===1?'':'s'}`;
 }
-const TIP=document.getElementById('tip');
-function showTip(e,sk,col,isReq,isLock){document.getElementById('tip-name').textContent=sk.name;document.getElementById('tip-desc').textContent=sk.desc;let c=`Cost: ${sk.cost||1}pt`;if(sk.req)c+=' · needs prior tier';if(isReq)c+=' · ⊘ LOCKED';else if(isLock)c+=' · ⊘ no points';document.getElementById('tip-cost').textContent=c;TIP.style.setProperty('--col',col.color);TIP.classList.add('show');moveTip(e);}
-function moveTip(e){let x=e.clientX+14,y=e.clientY-10;if(x+240>innerWidth)x=e.clientX-250;if(y+120>innerHeight)y=e.clientY-130;TIP.style.left=x+'px';TIP.style.top=y+'px';}
-function hideTip(){TIP.classList.remove('show');}
-function render(){renderBudget();renderSidebar();renderTree();renderSummary();}
-(function(){const n=localStorage.getItem('ctg-f-name');const c=localStorage.getItem('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();
-document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
-let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(render,150);});
+
+// ═══ TOOLTIP ═══
+const TIP=document.getElementById('tooltip');
+function showTip(e,skill,col,isReq,isLocked){
+  document.getElementById('tt-name').textContent=skill.name;
+  document.getElementById('tt-desc').textContent=skill.desc;
+  let costStr=`Cost: ${skill.cost||1} pt`;
+  if(skill.req) costStr+=` · Requires: ${skill.req.join(', ')}`;
+  if(isReq) costStr+=' · ⊘ Requires previous tier';
+  else if(isLocked) costStr+=' · ⊘ Not enough skill points';
+  document.getElementById('tt-cost').textContent=costStr;
+  TIP.style.setProperty('--col',col.color);
+  TIP.classList.add('show');
+  moveTip(e);
+}
+function moveTip(e){
+  let x=e.clientX+14,y=e.clientY-10;
+  if(x+250>window.innerWidth) x=e.clientX-260;
+  if(y+120>window.innerHeight) y=e.clientY-130;
+  TIP.style.left=x+'px'; TIP.style.top=y+'px';
+}
+function hideTip(){ TIP.classList.remove('show'); }
+
+// ═══ RENDER ALL ═══
+function render(){
+  renderBudget();
+  renderTabs();
+  renderTree();
+  renderSpendSummary();
+}
+let resizeTimer=null;
+window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(render,150);});
 render();
+
+// ═══ DICE ROLLER ═══
+(function(){
+  var log=[];
+  var panel=document.getElementById('dice-panel');
+  var btn=document.getElementById('dice-toggle');
+  btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
+  document.addEventListener('click',function(e){
+    if(panel.classList.contains('open')&&!panel.contains(e.target)&&e.target!==btn)
+      panel.classList.remove('open');
+  });
+  window.ctgRoll=function(sides){
+    var r=Math.floor(Math.random()*sides)+1;
+    var numEl=document.getElementById('dice-num');
+    var dieEl=document.getElementById('dice-die');
+    numEl.textContent=r; dieEl.textContent='d'+sides;
+    numEl.style.color=r===sides?'#ddb828':r===1?'#aa1800':'#c09818';
+    numEl.classList.remove('dice-rolling'); void numEl.offsetWidth; numEl.classList.add('dice-rolling');
+    log.unshift({sides:sides,roll:r}); if(log.length>5)log.pop();
+    document.getElementById('dice-history').innerHTML=log.map(function(e){return '<li><b>'+e.roll+'</b> on d'+e.sides+'</li>';}).join('');
+  };
+})();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="ctg-sync.js"></script>
+<script src="ctg-theme.js"></script>
 </body>
 </html>
