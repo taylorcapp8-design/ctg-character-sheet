@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#050508">
+<meta name="theme-color" content="#07060c">
 <title>CTG — Arsenal & Provisions</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ctg.css">
@@ -31,61 +31,12 @@
   </div>
 
   <div class="sec-label"><span class="mk">♣</span>WEAPONS</div>
-
-  <div class="weapon-card melee">
-    <div class="weapon-head"><div class="weapon-name-block"><div class="weapon-name">Toothpick</div><div class="weapon-desc">A needle-thin rapier with a small incense chamber in the guard. Smells faintly of burnt cinnamon and lost animal friends.</div></div><div class="weapon-stats"><div class="wstat"><span class="wstat-val">1</span><span class="wstat-label">DMG</span></div></div></div>
-    <div class="weapon-tags"><span class="tag melee-tag">Melee</span><span class="tag brass-tag">Brass</span><span class="tag string-tag">String</span></div>
-    <div class="weapon-quirk"><div class="quirk-label">SPECIAL QUIRK</div><div class="quirk-name">"Mind The Strings"</div><div class="quirk-text">When you successfully counter an attack and strike back with this weapon it will not consume your Reaction.</div></div>
-  </div>
-
-  <div class="weapon-card ranged">
-    <div class="weapon-head"><div class="weapon-name-block"><div class="weapon-name">Dockwhistle Argument</div><div class="weapon-desc">A long-barrelled flintlock with three tiny brass whistles. It wheezes before firing — like it's clearing its throat.</div></div><div class="weapon-stats"><div class="wstat"><span class="wstat-val">1</span><span class="wstat-label">DMG</span></div></div></div>
-    <div class="weapon-tags"><span class="tag dist-tag">Close</span><span class="tag dist-tag">Medium</span><span class="tag ranged-tag">Ranged</span><span class="tag string-tag">String</span></div>
-    <div class="weapon-quirk"><div class="quirk-label">SPECIAL QUIRK</div><div class="quirk-name">"State Your Case"</div><div class="quirk-text">When you land a Crit and choose the head you cannot deal lower than 2 damage. If you miss, the whistle lets out a disapproving toot.</div></div>
-  </div>
-
-  <div class="weapon-card melee">
-    <div class="weapon-head"><div class="weapon-name-block"><div class="weapon-name">Hunter's Bloody Axe</div><div class="weapon-desc">A large wooden axe with a menacing bit of metal on top. Big, Bloody, and ready for fun.</div></div><div class="weapon-stats"><div class="wstat"><span class="wstat-val">1</span><span class="wstat-label">DMG</span></div></div></div>
-    <div class="weapon-tags"><span class="tag melee-tag">Melee</span><span class="tag brass-tag">Brass</span></div>
-    <div class="weapon-quirk"><div class="quirk-label">SPECIAL QUIRK</div><div class="quirk-name">"Red Painted"</div><div class="quirk-text">When you kill an enemy creature you may gain an additional action. The red paint seems to make it faster.</div></div>
-  </div>
-
-  <div class="weapon-card ranged">
-    <div class="weapon-head"><div class="weapon-name-block"><div class="weapon-name">The Newsletter</div><div class="weapon-desc">A flat-barrelled sniper rifle with three levels of magnification. When the trigger's pulled, it delivers the message.</div></div><div class="weapon-stats"><div class="wstat"><span class="wstat-val">2</span><span class="wstat-label">DMG</span></div></div></div>
-    <div class="weapon-tags"><span class="tag dist-tag">Far</span><span class="tag ranged-tag">Ranged</span><span class="tag flicker-tag">Flicker</span></div>
-    <div class="weapon-quirk"><div class="quirk-label">SPECIAL QUIRK</div><div class="quirk-name">"Letter Opener"</div><div class="quirk-text">When you make an attack Out Of Combat with this weapon it deals double damage.</div><div class="quirk-sub">Like a message from an old friend you wished to forget.</div></div>
-  </div>
-
-  <div class="weapon-card ranged" style="border-color:var(--border2);">
-    <div class="weapon-head"><div class="weapon-name-block"><div class="weapon-name">Gun-Brella</div><div class="weapon-desc">A rifle barrel used as the handle — the umbrella folds out after a shot, ready to make it rain.</div></div><div class="weapon-stats"><div class="wstat"><span class="wstat-val">1</span><span class="wstat-label">DMG</span></div></div></div>
-    <div class="weapon-tags"><span class="tag dist-tag">Medium</span><span class="tag ranged-tag">Ranged</span><span class="tag semi-tag">Semi</span><span class="tag auto-tag">Auto 4</span><span class="tag string-tag">String</span></div>
-    <div class="weapon-quirk"><div class="quirk-label">SPECIAL QUIRK</div><div class="quirk-name">"Weather Forecast"</div><div class="quirk-text">Use an Action and a ♥ Hearts Card to switch modes on your turn.</div>
-      <div class="mode-block"><div class="mode-name">☔ Heavy Rain — Auto</div><div class="mode-text">Roll D6s up to the Auto value (4). All 5s &amp; 6s hit; the rest miss.</div></div>
-      <div class="mode-block" style="border-left-color:#7898aa;margin-top:6px;"><div class="mode-name" style="color:#7898aa;">🌂 Spitting — Semi</div><div class="mode-text">Landing a shot deploys the umbrella shield, granting <strong>Advance</strong> to Defence Checks.</div></div>
-    </div>
-  </div>
+  <div id="weapons"></div>
+  <button class="add-btn add-row" onclick="addWeapon()">ADD WEAPON</button>
 
   <div class="sec-label mt"><span class="mk">◈</span>PROVISIONS — RECHARGEABLE</div>
-  <div class="food-grid" id="food-grid">
-    <div class="food-card" id="food-0">
-      <div class="food-head"><div class="food-name">Lemon-Static Eel Rinds</div><div class="food-type-row"><span class="food-type-tag">Rechargeable</span><span class="food-harth">♥ 2</span></div></div>
-      <div class="food-flavor">Sour · Salty · Glassy-crunch · Slightly electric</div>
-      <div class="food-quirk"><div class="food-quirk-text">As a Free Reaction, shoot electricity from your fingertips — inflict <strong>Shock</strong> on an enemy in range. They withdraw their current card and redraw; if unable, they skip their turn.</div><div class="food-quip">"Zap your tongue. Respect the eel."</div></div>
-      <div class="food-footer"><span class="food-charge-label">CHARGED</span><span class="charge-toggle charged" id="charge-0" onclick="toggleCharge(0)"></span></div>
-    </div>
-    <div class="food-card" id="food-1">
-      <div class="food-head"><div class="food-name">Ink-Dipped Calamari</div><div class="food-type-row"><span class="food-type-tag">Rechargeable</span><span class="food-harth">♥ 2</span></div></div>
-      <div class="food-flavor">Savory-sweet · Ocean-deep · Licorice · Stains lips black</div>
-      <div class="food-quirk"><div class="food-quirk-text">Your blood turns viscous black. Discard up to 2 Cards from your Hand and Redraw them.</div><div class="food-quip">"Pop it. Ink it. Regret nothing."</div></div>
-      <div class="food-footer"><span class="food-charge-label">CHARGED</span><span class="charge-toggle charged" id="charge-1" onclick="toggleCharge(1)"></span></div>
-    </div>
-    <div class="food-card" id="food-2">
-      <div class="food-head"><div class="food-name">Coal-Fire Tentacle Twist</div><div class="food-type-row"><span class="food-type-tag">Rechargeable</span><span class="food-harth">♥ 1</span></div></div>
-      <div class="food-flavor">Burnt sugar · Ash · Peppered salt · Chewy</div>
-      <div class="food-quirk"><div class="food-quirk-text">Breathe flame from your fingertips — attack with ♦ Diamond Cards using your Flicker to inflict <strong>Burn</strong>. Roll D6: Evens = +1 damage, Odds = nothing.</div><div class="food-quip">"Chewy enough to fight back!"</div></div>
-      <div class="food-footer"><span class="food-charge-label">CHARGED</span><span class="charge-toggle charged" id="charge-2" onclick="toggleCharge(2)"></span></div>
-    </div>
-  </div>
+  <div class="food-grid" id="food-grid"></div>
+  <button class="add-btn add-row" onclick="addFood()">ADD PROVISION</button>
 
   <div class="sheet-footer">
     <div class="suits"><span class="s1">♠</span><span class="s2">♣</span><span class="s3">♥</span><span class="s4">♦</span></div>
@@ -96,17 +47,101 @@
 
 <script>
 function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function store(k,v){try{localStorage.setItem(k,v);localStorage.setItem('ctg-last-edit',Date.now());flashSaved();}catch(e){}}
 let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
-const charges=[true,true,true];
-(function(){const s=load('ctg-food-charges');if(s){const d=JSON.parse(s);d.forEach((c,i)=>{charges[i]=c;if(!c){document.getElementById('charge-'+i).classList.remove('charged');document.getElementById('food-'+i).classList.add('depleted');}});}})();
-function toggleCharge(i){
-  charges[i]=!charges[i];
-  document.getElementById('charge-'+i).classList.toggle('charged',charges[i]);
-  document.getElementById('food-'+i).classList.toggle('depleted',!charges[i]);
-  try{localStorage.setItem('ctg-food-charges',JSON.stringify(charges));localStorage.setItem('ctg-last-edit',Date.now());flashSaved();}catch(e){}
+const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const uid=()=>'x'+Math.random().toString(36).slice(2,8);
+
+/* ── WEAPONS ─────────────────────────────────────────────── */
+const DEF_WEAPONS=[
+  {id:'w1',type:'melee',name:'Toothpick',dmg:1,tags:'Melee, Brass, String',desc:'A needle-thin rapier with a small incense chamber in the guard. Smells faintly of burnt cinnamon and lost animal friends.',quirkName:'"Mind The Strings"',quirkText:'When you successfully counter an attack and strike back with this weapon it will not consume your Reaction.'},
+  {id:'w2',type:'ranged',name:'Dockwhistle Argument',dmg:1,tags:'Close, Medium, Ranged, String',desc:'A long-barrelled flintlock with three tiny brass whistles. It wheezes before firing — like it\'s clearing its throat.',quirkName:'"State Your Case"',quirkText:'When you land a Crit and choose the head you cannot deal lower than 2 damage. If you miss, the whistle lets out a disapproving toot.'},
+  {id:'w3',type:'melee',name:"Hunter's Bloody Axe",dmg:1,tags:'Melee, Brass',desc:'A large wooden axe with a menacing bit of metal on top. Big, Bloody, and ready for fun.',quirkName:'"Red Painted"',quirkText:'When you kill an enemy creature you may gain an additional action. The red paint seems to make it faster.'},
+  {id:'w4',type:'ranged',name:'The Newsletter',dmg:2,tags:'Far, Ranged, Flicker',desc:'A flat-barrelled sniper rifle with three levels of magnification. When the trigger\'s pulled, it delivers the message.',quirkName:'"Letter Opener"',quirkText:'When you make an attack Out Of Combat with this weapon it deals double damage. Like a message from an old friend you wished to forget.'},
+  {id:'w5',type:'ranged',name:'Gun-Brella',dmg:1,tags:'Medium, Ranged, Semi, Auto 4, String',desc:'A rifle barrel used as the handle — the umbrella folds out after a shot, ready to make it rain.',quirkName:'"Weather Forecast"',quirkText:'Use an Action and a ♥ Hearts Card to switch modes. ☔ HEAVY RAIN (Auto): roll D6s up to the Auto value (4) — all 5s & 6s hit. 🌂 SPITTING (Semi): landing a shot deploys the umbrella shield, granting Advance to Defence Checks.'},
+];
+let weapons=[];
+try{const s=load('ctg-weapons');weapons=s?JSON.parse(s):JSON.parse(JSON.stringify(DEF_WEAPONS));}catch(e){weapons=JSON.parse(JSON.stringify(DEF_WEAPONS));}
+function saveWeapons(){store('ctg-weapons',JSON.stringify(weapons));}
+function tagClass(t){const k=t.trim().toLowerCase();if(k==='melee')return'melee-tag';if(k==='ranged')return'ranged-tag';if(k==='brass')return'brass-tag';if(k==='string')return'string-tag';if(k==='flicker')return'flicker-tag';if(k==='semi')return'semi-tag';if(k.startsWith('auto'))return'auto-tag';return'dist-tag';}
+function renderTags(str){return (str||'').split(',').map(t=>t.trim()).filter(Boolean).map(t=>`<span class="tag ${tagClass(t)}">${esc(t)}</span>`).join('');}
+function renderWeapons(){
+  const wrap=document.getElementById('weapons');wrap.innerHTML='';
+  weapons.forEach(w=>{
+    const card=document.createElement('div');card.className='weapon-card '+w.type;card.dataset.id=w.id;
+    card.innerHTML=`
+      <button class="card-del" title="Delete weapon" data-del="${w.id}">✕</button>
+      <div class="weapon-head">
+        <div class="weapon-name-block">
+          <input class="ed weapon-name" data-f="name" value="${esc(w.name)}" placeholder="Weapon name">
+          <textarea class="ed weapon-desc" data-f="desc" rows="2" placeholder="Description...">${esc(w.desc)}</textarea>
+        </div>
+        <div class="weapon-stats">
+          <button class="type-toggle ${w.type}" data-type="${w.id}">${w.type==='melee'?'⚔ MELEE':'🎯 RANGED'}</button>
+          <div class="wstat"><input class="ed wstat-val" data-f="dmg" type="number" min="0" value="${w.dmg}"><span class="wstat-label">DMG</span></div>
+        </div>
+      </div>
+      <div class="weapon-tags-edit">
+        <input class="ed tag-input" data-f="tags" value="${esc(w.tags)}" placeholder="Comma, separated, tags">
+        <div class="weapon-tags">${renderTags(w.tags)}</div>
+      </div>
+      <div class="weapon-quirk">
+        <div class="quirk-label">SPECIAL QUIRK</div>
+        <input class="ed quirk-name" data-f="quirkName" value="${esc(w.quirkName)}" placeholder="Quirk name">
+        <textarea class="ed quirk-text" data-f="quirkText" rows="3" placeholder="What it does...">${esc(w.quirkText)}</textarea>
+      </div>`;
+    wrap.appendChild(card);
+    // text edits: update model in place (no re-render, keep focus)
+    card.querySelectorAll('[data-f]').forEach(inp=>{
+      inp.addEventListener('input',()=>{
+        const f=inp.dataset.f;w[f]=inp.value;
+        if(f==='tags')card.querySelector('.weapon-tags').innerHTML=renderTags(inp.value);
+        saveWeapons();
+      });
+    });
+    card.querySelector('[data-type]').addEventListener('click',()=>{w.type=w.type==='melee'?'ranged':'melee';saveWeapons();renderWeapons();});
+    card.querySelector('[data-del]').addEventListener('click',()=>{if(confirm('Delete "'+(w.name||'this weapon')+'"?')){weapons=weapons.filter(x=>x.id!==w.id);saveWeapons();renderWeapons();}});
+  });
 }
+function addWeapon(){weapons.push({id:uid(),type:'melee',name:'',dmg:1,tags:'Melee',desc:'',quirkName:'',quirkText:''});saveWeapons();renderWeapons();const cards=document.querySelectorAll('.weapon-card');cards[cards.length-1].querySelector('.weapon-name').focus();}
+
+/* ── FOOD / PROVISIONS ───────────────────────────────────── */
+const DEF_FOOD=[
+  {id:'f1',name:'Lemon-Static Eel Rinds',harth:'♥ 2',flavor:'Sour · Salty · Glassy-crunch · Slightly electric',quirk:'As a Free Reaction, shoot electricity from your fingertips — inflict Shock on an enemy in range. They withdraw their current card and redraw; if unable, they skip their turn.',quip:'"Zap your tongue. Respect the eel."',charged:true},
+  {id:'f2',name:'Ink-Dipped Calamari',harth:'♥ 2',flavor:'Savory-sweet · Ocean-deep · Licorice · Stains lips black',quirk:'Your blood turns viscous black. Discard up to 2 Cards from your Hand and Redraw them.',quip:'"Pop it. Ink it. Regret nothing."',charged:true},
+  {id:'f3',name:'Coal-Fire Tentacle Twist',harth:'♥ 1',flavor:'Burnt sugar · Ash · Peppered salt · Chewy',quirk:'Breathe flame from your fingertips — attack with ♦ Diamond Cards using your Flicker to inflict Burn. Roll D6: Evens = +1 damage, Odds = nothing.',quip:'"Chewy enough to fight back!"',charged:true},
+];
+let food=[];
+try{const s=load('ctg-food');food=s?JSON.parse(s):JSON.parse(JSON.stringify(DEF_FOOD));}catch(e){food=JSON.parse(JSON.stringify(DEF_FOOD));}
+function saveFood(){store('ctg-food',JSON.stringify(food));}
+function renderFood(){
+  const grid=document.getElementById('food-grid');grid.innerHTML='';
+  food.forEach(fd=>{
+    const card=document.createElement('div');card.className='food-card'+(fd.charged?'':' depleted');card.dataset.id=fd.id;
+    card.innerHTML=`
+      <button class="card-del" title="Delete provision" data-del="${fd.id}">✕</button>
+      <div class="food-head">
+        <input class="ed food-name" data-f="name" value="${esc(fd.name)}" placeholder="Provision name">
+        <div class="food-type-row"><span class="food-type-tag">Rechargeable</span><input class="ed food-harth" data-f="harth" value="${esc(fd.harth)}" placeholder="♥ 1" style="width:54px;color:var(--red);font-family:'Anton',sans-serif;"></div>
+      </div>
+      <input class="ed food-flavor" data-f="flavor" value="${esc(fd.flavor)}" placeholder="Flavour notes...">
+      <div class="food-quirk">
+        <textarea class="ed food-quirk-text" data-f="quirk" rows="4" placeholder="What it does...">${esc(fd.quirk)}</textarea>
+        <input class="ed food-quip" data-f="quip" value="${esc(fd.quip)}" placeholder="Tagline...">
+      </div>
+      <div class="food-footer"><span class="food-charge-label">${fd.charged?'CHARGED':'DEPLETED'}</span><span class="charge-toggle ${fd.charged?'charged':''}" data-charge="${fd.id}"></span></div>`;
+    grid.appendChild(card);
+    card.querySelectorAll('[data-f]').forEach(inp=>{inp.addEventListener('input',()=>{fd[inp.dataset.f]=inp.value;saveFood();});});
+    card.querySelector('[data-charge]').addEventListener('click',()=>{fd.charged=!fd.charged;saveFood();renderFood();});
+    card.querySelector('[data-del]').addEventListener('click',()=>{if(confirm('Delete "'+(fd.name||'this provision')+'"?')){food=food.filter(x=>x.id!==fd.id);saveFood();renderFood();}});
+  });
+}
+function addFood(){food.push({id:uid(),name:'',harth:'♥ 1',flavor:'',quirk:'',quip:'',charged:true});saveFood();renderFood();const cards=document.querySelectorAll('.food-card');cards[cards.length-1].querySelector('.food-name').focus();}
+
+/* ── nav + transitions ───────────────────────────────────── */
 (function(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
+renderWeapons();renderFood();
 </script>
 </body>
 </html>

@@ -105,7 +105,7 @@ function allKeys(){const o=[];try{for(let i=0;i<localStorage.length;i++){const k
 ['p1','p2','p3','p4','p5'].forEach(pg=>{
   const dot=document.querySelector('.card-dot[data-page="'+pg+'"]');
   let has=false;
-  const map={p1:['ctg-f-name','ctg-stat-force','ctg-f-notes'],p2:['ctg-inventory','ctg-mula','ctg-armour'],p3:['ctg-faculties'],p4:['ctg-food-charges'],p5:['ctg-skills']};
+  const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p2:['ctg-inventory','ctg-mula','ctg-armour-list','ctg-charms'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-food'],p5:['ctg-skills']};
   (map[pg]||[]).forEach(k=>{const v=localStorage.getItem(k);if(v&&v!=='[]'&&v!=='{}'&&v!=='')has=true;});
   if(has)dot.classList.add('has-data');
 });

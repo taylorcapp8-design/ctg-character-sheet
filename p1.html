@@ -3,13 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#050508">
+<meta name="theme-color" content="#07060c">
 <title>CTG — Identity & Stats</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ctg.css">
 </head>
 <body>
-
 <nav class="ctg-nav">
   <a class="ctg-nav-home" href="index.html" data-nav>CTG</a>
   <div class="ctg-nav-links">
@@ -25,7 +24,6 @@
 
 <div class="page-wrap" id="page-wrap">
 <div class="sheet">
-
   <div class="sheet-header">
     <div class="head-tag">CALL TO GALLAHAD // OPERATIONAL RECORD</div>
     <div class="sheet-title">IDENTITY &amp; <em>STATS</em></div>
@@ -66,7 +64,7 @@
           <span class="vital-label">HARTH / HP</span>
           <div style="display:flex;align-items:baseline;justify-content:center;gap:4px;">
             <input type="number" class="vital-input" id="harth-cur" value="6" min="0" style="font-size:2rem;width:54px;">
-            <span style="color:var(--text-dim);font-family:'Bebas Neue';font-size:1rem;">/</span>
+            <span style="color:var(--text-dim);font-family:'Anton';font-size:1rem;">/</span>
             <input type="number" class="vital-input" id="harth-max" value="6" min="1" style="font-size:1.1rem;width:42px;color:var(--text-dim);">
           </div>
           <div class="hp-track" id="harth-track"></div>
@@ -79,9 +77,9 @@
         <div class="vital-box">
           <span class="vital-label">STIM S</span>
           <div class="consumable-counter" style="margin-top:6px;">
-            <button class="counter-btn" onclick="adjustCounter('stims',-1)">−</button>
+            <button class="counter-btn" onclick="adjustStimS(-1)">−</button>
             <span class="counter-val" id="stims-val">0</span>
-            <button class="counter-btn" onclick="adjustCounter('stims',1)">+</button>
+            <button class="counter-btn" onclick="adjustStimS(1)">+</button>
           </div>
         </div>
       </div>
@@ -95,6 +93,7 @@
         <div class="sec-label"><span class="mk">♣</span>ATTRIBUTES</div>
         <div class="panel">
           <div class="stat-bars" id="stat-bars"></div>
+          <button class="add-btn add-row" onclick="addStat()">ADD ATTRIBUTE</button>
           <div class="standard-array">STANDARD ARRAY: <span>5,4,3,3,2,1,0</span></div>
         </div>
       </div>
@@ -102,11 +101,8 @@
         <div>
           <div class="sec-label"><span class="mk">◈</span>SUPPLIES</div>
           <div class="panel">
-            <div class="consumables-grid">
-              <div class="consumable"><div class="consumable-name">Stim L</div><div class="consumable-counter"><button class="counter-btn" onclick="adjustCounter('stiml',-1)">−</button><span class="counter-val" id="stiml-val">1</span><button class="counter-btn" onclick="adjustCounter('stiml',1)">+</button></div></div>
-              <div class="consumable"><div class="consumable-name">Ammo</div><div class="consumable-counter"><button class="counter-btn" onclick="adjustCounter('ammo',-1)">−</button><span class="counter-val" id="ammo-val">0</span><button class="counter-btn" onclick="adjustCounter('ammo',1)">+</button></div></div>
-              <div class="consumable" style="grid-column:span 2;"><div class="consumable-name">Pack</div><div class="consumable-counter"><button class="counter-btn" onclick="adjustCounter('pack',-1)">−</button><span class="counter-val" id="pack-val">2</span><button class="counter-btn" onclick="adjustCounter('pack',1)">+</button></div></div>
-            </div>
+            <div class="consumables-grid" id="supplies-grid"></div>
+            <button class="add-btn add-row" onclick="addSupply()">ADD SUPPLY</button>
           </div>
         </div>
         <div>
@@ -128,9 +124,8 @@
   <div class="block">
     <div class="sec-label"><span class="mk">♣</span>EQUIPMENT</div>
     <div class="panel">
-      <div class="equipment-slot"><div class="slot-label"><span class="slot-icon">⚔</span>Main Hand</div><input type="text" class="equip-input" id="eq-main-n" placeholder="Weapon..."><input type="text" class="equip-input" id="eq-main-a" placeholder="Ability / notes..."></div>
-      <div class="equipment-slot"><div class="slot-label"><span class="slot-icon">🛡</span>Secondary</div><input type="text" class="equip-input" id="eq-sec-n" placeholder="Item..."><input type="text" class="equip-input" id="eq-sec-a" placeholder="Ability / notes..."></div>
-      <div class="equipment-slot" style="border-style:dashed;"><div class="slot-label" style="color:var(--text-dim);">⟡ Oddity</div><input type="text" class="equip-input" id="eq-odd-n" placeholder="Oddity..."><input type="text" class="equip-input" id="eq-odd-a" placeholder="Ability / notes..."></div>
+      <div id="equipment-list"></div>
+      <button class="add-btn add-row" onclick="addEquip()">ADD EQUIPMENT SLOT</button>
     </div>
   </div>
 
@@ -144,125 +139,132 @@
     <div class="suits"><span class="s1">♠</span><span class="s2">♣</span><span class="s3">♥</span><span class="s4">♦</span></div>
     CALL TO GALLAHAD · IDENTITY &amp; STATS · PAGE I
   </div>
-
 </div>
 </div>
 
 <script>
-// ═══ STATS ═══
-const STATS=[
-  {key:'force',name:'Force',icon:'♣',score:5},
-  {key:'finess',name:'Finess',icon:'♦',score:4},
-  {key:'endurance',name:'Endurance',icon:'♠',score:3},
-  {key:'logic',name:'Logic',icon:'◈',score:3},
-  {key:'sense',name:'Sense',icon:'◉',score:2},
-  {key:'velvet',name:'Velvet',icon:'♥',score:0},
-  {key:'shine',name:'Shine',icon:'✦',score:1},
+function save(k,v){try{localStorage.setItem(k,v);localStorage.setItem('ctg-last-edit',Date.now());flashSaved();}catch(e){}}
+function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
+const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const uid=()=>'x'+Math.random().toString(36).slice(2,8);
+const sp=s=>Math.floor((parseInt(s)||0)/2);
+
+/* ── ATTRIBUTES (editable + addable) ─────────────────────── */
+const DEF_STATS=[
+  {name:'Force',icon:'♣',score:5},{name:'Finess',icon:'♦',score:4},{name:'Endurance',icon:'♠',score:3},
+  {name:'Logic',icon:'◈',score:3},{name:'Sense',icon:'◉',score:2},{name:'Velvet',icon:'♥',score:0},{name:'Shine',icon:'✦',score:1},
 ];
-const sp=s=>Math.floor(s/2);
-function buildStats(){
+let stats=[];
+(function(){
+  const s=load('ctg-stats');
+  if(s){try{stats=JSON.parse(s);}catch(e){stats=null;}}
+  if(!stats||!stats.length){
+    // migrate old per-key values if they exist
+    const keymap={Force:'force',Finess:'finess',Endurance:'endurance',Logic:'logic',Sense:'sense',Velvet:'velvet',Shine:'shine'};
+    stats=DEF_STATS.map(d=>{const old=load('ctg-stat-'+keymap[d.name]);return{name:d.name,icon:d.icon,score:old!==null?parseInt(old):d.score};});
+  }
+})();
+function saveStats(){save('ctg-stats',JSON.stringify(stats));}
+function renderStats(){
   const w=document.getElementById('stat-bars');w.innerHTML='';
-  STATS.forEach((st,i)=>{
-    const saved=load('ctg-stat-'+st.key);
-    const val=saved!==null?parseInt(saved):st.score;
+  stats.forEach((st,i)=>{
     const row=document.createElement('div');row.className='stat-bar';
     row.innerHTML=`
-      <div class="stat-bar-fill" id="fill-${i}"></div>
-      <span class="stat-icon">${st.icon}</span>
-      <span class="stat-name">${st.name}</span>
-      <input type="number" class="stat-input" id="stat-${i}" value="${val}" min="0" max="9">
-      <span class="stat-sp" id="sp-${i}">${sp(val)}<span>SP</span></span>`;
+      <div class="stat-bar-fill"></div>
+      <span class="stat-icon">${st.icon||'◆'}</span>
+      <input class="ed stat-name" data-f="name" value="${esc(st.name)}" placeholder="Attribute" style="flex:1;">
+      <input type="number" class="stat-input" data-f="score" value="${parseInt(st.score)||0}" min="0" max="9">
+      <span class="stat-sp">${sp(st.score)}<span>SP</span></span>
+      <button class="mini-del" title="Remove" data-del="${i}">✕</button>`;
     w.appendChild(row);
-    const inp=row.querySelector('#stat-'+i);
-    inp.addEventListener('input',()=>{
-      const v=parseInt(inp.value)||0;
-      document.getElementById('sp-'+i).innerHTML=sp(v)+'<span>SP</span>';
-      document.getElementById('fill-'+i).style.width=(v/9*100)+'%';
-      save('ctg-stat-'+st.key,v);
-    });
-    setTimeout(()=>document.getElementById('fill-'+i).style.width=(val/9*100)+'%',50+i*60);
+    const fill=row.querySelector('.stat-bar-fill');
+    setTimeout(()=>fill.style.width=((parseInt(st.score)||0)/9*100)+'%',40+i*55);
+    row.querySelector('[data-f="name"]').addEventListener('input',e=>{st.name=e.target.value;saveStats();});
+    const sc=row.querySelector('[data-f="score"]');
+    sc.addEventListener('input',()=>{st.score=parseInt(sc.value)||0;row.querySelector('.stat-sp').innerHTML=sp(st.score)+'<span>SP</span>';fill.style.width=(st.score/9*100)+'%';saveStats();});
+    row.querySelector('[data-del]').addEventListener('click',()=>{stats.splice(i,1);saveStats();renderStats();});
   });
 }
+function addStat(){stats.push({name:'',icon:'◆',score:0});saveStats();renderStats();const rows=document.querySelectorAll('.stat-name');rows[rows.length-1].focus();}
 
-// ═══ HP TRACK ═══
+/* ── SUPPLIES (editable + addable) ───────────────────────── */
+const DEF_SUPPLIES=[{name:'Stim L',val:1},{name:'Ammo',val:0},{name:'Pack',val:2}];
+let supplies=[];
+(function(){
+  const s=load('ctg-supplies');
+  if(s){try{supplies=JSON.parse(s);}catch(e){supplies=null;}}
+  if(!supplies){
+    const o={stiml:'Stim L',ammo:'Ammo',pack:'Pack'};
+    supplies=DEF_SUPPLIES.map(d=>{const k=Object.keys(o).find(k=>o[k]===d.name);const old=k?load('ctg-cnt-'+k):null;return{name:d.name,val:old!==null?parseInt(old):d.val};});
+  }
+})();
+function saveSupplies(){save('ctg-supplies',JSON.stringify(supplies));}
+function renderSupplies(){
+  const g=document.getElementById('supplies-grid');g.innerHTML='';
+  supplies.forEach((su,i)=>{
+    const d=document.createElement('div');d.className='supply-slot';
+    d.innerHTML=`<button class="mini-del" title="Remove" data-del="${i}">✕</button>
+      <input class="ed supply-name-ed" data-f="name" value="${esc(su.name)}" placeholder="Name">
+      <div class="consumable-counter"><button class="counter-btn" data-d="-1">−</button><span class="counter-val">${su.val}</span><button class="counter-btn" data-d="1">+</button></div>`;
+    g.appendChild(d);
+    d.querySelector('[data-f="name"]').addEventListener('input',e=>{su.name=e.target.value;saveSupplies();});
+    d.querySelectorAll('.counter-btn').forEach(b=>b.addEventListener('click',()=>{su.val=Math.max(0,su.val+parseInt(b.dataset.d));d.querySelector('.counter-val').textContent=su.val;saveSupplies();}));
+    d.querySelector('[data-del]').addEventListener('click',()=>{supplies.splice(i,1);saveSupplies();renderSupplies();});
+  });
+}
+function addSupply(){supplies.push({name:'',val:0});saveSupplies();renderSupplies();const ns=document.querySelectorAll('.supply-name-ed');ns[ns.length-1].focus();}
+
+/* ── EQUIPMENT (editable + addable) ──────────────────────── */
+const DEF_EQUIP=[{label:'⚔ Main Hand',name:'',ability:''},{label:'🛡 Secondary',name:'',ability:''},{label:'⟡ Oddity',name:'',ability:''}];
+let equip=[];
+(function(){const s=load('ctg-equipment');if(s){try{equip=JSON.parse(s);}catch(e){equip=null;}}if(!equip)equip=JSON.parse(JSON.stringify(DEF_EQUIP));})();
+function saveEquip(){save('ctg-equipment',JSON.stringify(equip));}
+function renderEquip(){
+  const w=document.getElementById('equipment-list');w.innerHTML='';
+  equip.forEach((eq,i)=>{
+    const d=document.createElement('div');d.className='equipment-slot';
+    d.innerHTML=`<input class="ed slot-label" data-f="label" value="${esc(eq.label)}" placeholder="Slot">
+      <input class="ed equip-input" data-f="name" value="${esc(eq.name)}" placeholder="Item name...">
+      <div style="display:flex;align-items:center;gap:8px;"><input class="ed equip-input" data-f="ability" value="${esc(eq.ability)}" placeholder="Ability / notes..."><button class="mini-del" title="Remove" data-del="${i}">✕</button></div>`;
+    w.appendChild(d);
+    d.querySelectorAll('[data-f]').forEach(inp=>inp.addEventListener('input',()=>{eq[inp.dataset.f]=inp.value;saveEquip();}));
+    d.querySelector('[data-del]').addEventListener('click',()=>{equip.splice(i,1);saveEquip();renderEquip();});
+  });
+}
+function addEquip(){equip.push({label:'New Slot',name:'',ability:''});saveEquip();renderEquip();}
+
+/* ── VITALS / HP TRACK ───────────────────────────────────── */
 function buildTrack(curId,maxId,trackId,efClass){
   const cur=parseInt(document.getElementById(curId).value)||0;
   const max=maxId?parseInt(document.getElementById(maxId).value)||6:Math.max(parseInt(document.getElementById(curId).value)||0,3);
   const c=document.getElementById(trackId);c.innerHTML='';
-  for(let i=0;i<max;i++){
-    const s=document.createElement('div');
-    s.className='hp-seg'+(efClass?' ef-seg':'')+(i<cur?' filled':'');
-    s.onclick=()=>{document.getElementById(curId).value=i<cur?i:i+1;refreshTracks();saveAll();};
-    c.appendChild(s);
-  }
+  for(let i=0;i<max;i++){const s=document.createElement('div');s.className='hp-seg'+(efClass?' ef-seg':'')+(i<cur?' filled':'');s.onclick=()=>{document.getElementById(curId).value=i<cur?i:i+1;refreshTracks();saveVitals();};c.appendChild(s);}
 }
 function refreshTracks(){buildTrack('harth-cur','harth-max','harth-track',false);buildTrack('ef-val',null,'ef-track',true);}
+function saveVitals(){save('ctg-harth-cur',document.getElementById('harth-cur').value);save('ctg-harth-max',document.getElementById('harth-max').value);save('ctg-ef',document.getElementById('ef-val').value);}
 
-// ═══ COUNTERS ═══
-const counters={stims:0,stiml:1,ammo:0,pack:2};
-Object.keys(counters).forEach(k=>{const s=load('ctg-cnt-'+k);if(s!==null)counters[k]=parseInt(s);});
-function adjustCounter(k,d){counters[k]=Math.max(0,counters[k]+d);document.getElementById(k+'-val').textContent=counters[k];save('ctg-cnt-'+k,counters[k]);}
+/* ── STIM S counter (kept in vitals) ─────────────────────── */
+let stimS=parseInt(load('ctg-cnt-stims')||'0');
+function adjustStimS(d){stimS=Math.max(0,stimS+d);document.getElementById('stims-val').textContent=stimS;save('ctg-cnt-stims',stimS);}
 
-// ═══ PORTRAIT ═══
-document.getElementById('portrait-upload').addEventListener('change',function(e){
-  const f=e.target.files[0];if(!f)return;const r=new FileReader();
-  r.onload=ev=>{const img=document.getElementById('portrait-img');img.src=ev.target.result;img.style.display='block';document.getElementById('portrait-placeholder').style.display='none';try{localStorage.setItem('ctg-portrait',ev.target.result);}catch(e){}};
-  r.readAsDataURL(f);
-});
+/* ── PORTRAIT ────────────────────────────────────────────── */
+document.getElementById('portrait-upload').addEventListener('change',function(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{const img=document.getElementById('portrait-img');img.src=ev.target.result;img.style.display='block';document.getElementById('portrait-placeholder').style.display='none';try{localStorage.setItem('ctg-portrait',ev.target.result);}catch(e){}};r.readAsDataURL(f);});
 
-// ═══ STORAGE ═══
-function save(k,v){try{localStorage.setItem(k,v);flashSaved();}catch(e){}}
-function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
-let flashT;
-function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
-function saveAll(){
-  save('ctg-harth-cur',document.getElementById('harth-cur').value);
-  save('ctg-harth-max',document.getElementById('harth-max').value);
-  save('ctg-ef',document.getElementById('ef-val').value);
-}
-// bind text fields
-const FIELDS=['f-name','f-code','f-level','f-desc','f-notes','eq-main-n','eq-main-a','eq-sec-n','eq-sec-a','eq-odd-n','eq-odd-a'];
-function bindFields(){
-  FIELDS.forEach(id=>{
-    const el=document.getElementById(id);if(!el)return;
-    const s=load('ctg-'+id);if(s!==null)el.value=s;
-    el.addEventListener('input',()=>{
-      save('ctg-'+id,el.value);
-      if(id==='f-level')document.getElementById('lvl-display').textContent=el.value;
-      if(id==='f-name')updateNavName();
-    });
-  });
-  document.getElementById('lvl-display').textContent=document.getElementById('f-level').value;
-}
-function updateNavName(){
-  const n=load('ctg-f-name');const c=load('ctg-f-code');
-  document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');
-}
-['harth-cur','harth-max','ef-val'].forEach(id=>{
-  const el=document.getElementById(id);const s=load('ctg-'+id.replace('harth-','harth-').replace('ef-val','ef'));
-});
-// restore vitals
-(function(){
-  const hc=load('ctg-harth-cur'),hm=load('ctg-harth-max'),ef=load('ctg-ef');
-  if(hc!==null)document.getElementById('harth-cur').value=hc;
-  if(hm!==null)document.getElementById('harth-max').value=hm;
-  if(ef!==null)document.getElementById('ef-val').value=ef;
-  const p=load('ctg-portrait');
-  if(p){const img=document.getElementById('portrait-img');img.src=p;img.style.display='block';document.getElementById('portrait-placeholder').style.display='none';}
-})();
-['harth-cur','harth-max','ef-val'].forEach(id=>{document.getElementById(id).addEventListener('input',()=>{refreshTracks();saveAll();});});
+/* ── IDENTITY FIELDS ─────────────────────────────────────── */
+const FIELDS=['f-name','f-code','f-level','f-desc','f-notes'];
+FIELDS.forEach(id=>{const el=document.getElementById(id);const s=load('ctg-'+id);if(s!==null)el.value=s;el.addEventListener('input',()=>{save('ctg-'+id,el.value);if(id==='f-level')document.getElementById('lvl-display').textContent=el.value;if(id==='f-name'||id==='f-code')updateNavName();});});
+function updateNavName(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');}
 
-// ═══ PAGE TRANSITIONS ═══
-document.querySelectorAll('[data-nav]').forEach(a=>{
-  a.addEventListener('click',e=>{
-    e.preventDefault();const href=a.getAttribute('href');
-    document.getElementById('page-wrap').classList.add('exit');
-    setTimeout(()=>location.href=href,180);
-  });
-});
+/* restore vitals + portrait + stim */
+(function(){const hc=load('ctg-harth-cur'),hm=load('ctg-harth-max'),ef=load('ctg-ef');if(hc!==null)document.getElementById('harth-cur').value=hc;if(hm!==null)document.getElementById('harth-max').value=hm;if(ef!==null)document.getElementById('ef-val').value=ef;const p=load('ctg-portrait');if(p){const img=document.getElementById('portrait-img');img.src=p;img.style.display='block';document.getElementById('portrait-placeholder').style.display='none';}document.getElementById('stims-val').textContent=stimS;document.getElementById('lvl-display').textContent=document.getElementById('f-level').value;})();
+['harth-cur','harth-max','ef-val'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{refreshTracks();saveVitals();}));
 
-// ═══ INIT ═══
-buildStats();refreshTracks();bindFields();updateNavName();
+/* transitions */
+document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
+
+/* init */
+renderStats();renderSupplies();renderEquip();refreshTracks();updateNavName();
 </script>
 </body>
 </html>

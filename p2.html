@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#050508">
+<meta name="theme-color" content="#07060c">
 <title>CTG — Inventory & Armour</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ctg.css">
@@ -35,18 +35,16 @@
       <div class="block">
         <div class="sec-label"><span class="mk">♠</span>EXTRA FLESH</div>
         <div class="panel">
-          <div class="armour-slot"><div class="armour-loc">🪖 Head</div><input class="armour-input" id="arm-head" placeholder="Armour..." value="Change Name"><div class="ef-wrap"><div class="ef-label">EF+</div><input class="ef-input" type="number" id="ef-head" value="0" min="0"></div></div>
-          <div class="armour-slot"><div class="armour-loc">🧥 Torso</div><input class="armour-input" id="arm-torso" placeholder="Armour..." value="Rubbish Slicks"><div class="ef-wrap"><div class="ef-label">EF+</div><input class="ef-input" type="number" id="ef-torso" value="0" min="0"></div></div>
-          <div class="armour-slot"><div class="armour-loc">💪 Arms</div><input class="armour-input" id="arm-arms" placeholder="Armour..." value="Garbage Pads"><div class="ef-wrap"><div class="ef-label">EF+</div><input class="ef-input" type="number" id="ef-arms" value="0" min="0"></div></div>
-          <div class="armour-slot"><div class="armour-loc">🦵 Legs</div><input class="armour-input" id="arm-legs" placeholder="Armour..." value="Two diff. Winter Socks"><div class="ef-wrap"><div class="ef-label">EF+</div><input class="ef-input" type="number" id="ef-legs" value="0" min="0"></div></div>
+          <div id="armour-list"></div>
           <div class="armour-total"><span class="armour-total-label">TOTAL EF</span><span class="armour-total-val" id="ef-total">+0</span></div>
+          <button class="add-btn add-row" onclick="addArmour()">ADD ARMOUR SLOT</button>
         </div>
       </div>
       <div class="block">
         <div class="sec-label"><span class="mk">◈</span>BELT CHARMS</div>
         <div class="panel">
           <div id="charms-list"></div>
-          <button class="add-btn" onclick="addCharm()">+ ADD BELT CHARM</button>
+          <button class="add-btn add-row" onclick="addCharm()">ADD BELT CHARM</button>
         </div>
       </div>
     </div>
@@ -56,7 +54,7 @@
         <div class="sec-label"><span class="mk">♣</span>INVENTORY</div>
         <div class="panel">
           <ul class="inv-list" id="inv-list"></ul>
-          <button class="add-btn" style="margin-top:8px;" onclick="addItem()">+ ADD ITEM</button>
+          <button class="add-btn add-row" onclick="addItem()">ADD ITEM</button>
         </div>
       </div>
       <div class="block">
@@ -83,42 +81,69 @@
 function save(k,v){try{localStorage.setItem(k,v);localStorage.setItem('ctg-last-edit',Date.now());flashSaved();}catch(e){}}
 function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
+const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
-// armour
-function recalcEF(){const ids=['ef-head','ef-torso','ef-arms','ef-legs'];const t=ids.reduce((s,id)=>s+(parseInt(document.getElementById(id).value)||0),0);document.getElementById('ef-total').textContent=(t>=0?'+':'')+t;save('ctg-armour-ef-total',t);}
-['arm-head','arm-torso','arm-arms','arm-legs','ef-head','ef-torso','ef-arms','ef-legs','mula'].forEach(id=>{
-  const el=document.getElementById(id);const s=load('ctg-'+id);if(s!==null)el.value=s;
-  el.addEventListener('input',()=>{save('ctg-'+id,el.value);if(id.startsWith('ef-'))recalcEF();});
-});
-recalcEF();
-
-// inventory
-const startItems=['1× Large Stim (Healing)','1× Gun-Brella','1× Toothpick','1× Ink-Dipped Calamari','1× Rotten Supplies','2× Shotgun Ammo','1× Pistol Silencer'];
-function saveInv(){const items=[...document.querySelectorAll('.inv-input')].map(i=>i.value);save('ctg-inventory',JSON.stringify(items));}
-function addItem(val=''){
-  const li=document.createElement('li');li.className='inv-item';
-  li.innerHTML=`<span class="inv-bullet">◆</span><input class="inv-input" value="${val.replace(/"/g,'&quot;')}" placeholder="Item..."><button class="inv-del" onclick="this.closest('li').remove();saveInv();">✕</button>`;
-  document.getElementById('inv-list').appendChild(li);
-  li.querySelector('.inv-input').addEventListener('input',saveInv);
+/* ── ARMOUR (editable + addable) ─────────────────────────── */
+const DEF_ARMOUR=[
+  {loc:'🪖 Head',name:'Change Name',ef:0},{loc:'🧥 Torso',name:'Rubbish Slicks',ef:0},
+  {loc:'💪 Arms',name:'Garbage Pads',ef:0},{loc:'🦵 Legs',name:'Two diff. Winter Socks',ef:0},
+];
+let armour=[];
+(function(){
+  const s=load('ctg-armour-list');
+  if(s){try{armour=JSON.parse(s);}catch(e){armour=null;}}
+  if(!armour){
+    const o={'🪖 Head':['arm-head','ef-head'],'🧥 Torso':['arm-torso','ef-torso'],'💪 Arms':['arm-arms','ef-arms'],'🦵 Legs':['arm-legs','ef-legs']};
+    armour=DEF_ARMOUR.map(d=>{const k=o[d.loc];const on=k?load('ctg-'+k[0]):null;const oe=k?load('ctg-'+k[1]):null;return{loc:d.loc,name:on!==null?on:d.name,ef:oe!==null?parseInt(oe):d.ef};});
+  }
+})();
+function saveArmour(){save('ctg-armour-list',JSON.stringify(armour));}
+function recalcEF(){const t=armour.reduce((s,a)=>s+(parseInt(a.ef)||0),0);document.getElementById('ef-total').textContent=(t>=0?'+':'')+t;}
+function renderArmour(){
+  const w=document.getElementById('armour-list');w.innerHTML='';
+  armour.forEach((a,i)=>{
+    const d=document.createElement('div');d.className='armour-slot';
+    d.innerHTML=`<input class="ed armour-loc" data-f="loc" value="${esc(a.loc)}" placeholder="Location">
+      <input class="ed armour-input" data-f="name" value="${esc(a.name)}" placeholder="Armour...">
+      <div class="ef-wrap"><div class="ef-label">EF+</div><input class="ef-input" type="number" data-f="ef" value="${parseInt(a.ef)||0}" min="0"></div>
+      <button class="mini-del" title="Remove" data-del="${i}" style="position:absolute;top:3px;right:4px;">✕</button>`;
+    d.style.position='relative';
+    w.appendChild(d);
+    d.querySelectorAll('[data-f]').forEach(inp=>inp.addEventListener('input',()=>{a[inp.dataset.f]=inp.dataset.f==='ef'?(parseInt(inp.value)||0):inp.value;saveArmour();if(inp.dataset.f==='ef')recalcEF();}));
+    d.querySelector('[data-del]').addEventListener('click',()=>{armour.splice(i,1);saveArmour();renderArmour();recalcEF();});
+  });
 }
-(function(){const saved=load('ctg-inventory');if(saved){JSON.parse(saved).forEach(addItem);}else{startItems.forEach(addItem);}})();
+function addArmour(){armour.push({loc:'New Slot',name:'',ef:0});saveArmour();renderArmour();}
 
-// charms
+/* ── CHARMS ──────────────────────────────────────────────── */
 function saveCharms(){const c=[...document.querySelectorAll('.charm-slot')].map(s=>({name:s.querySelector('.charm-input').value,quirk:s.querySelector('.charm-quirk-input').value}));save('ctg-charms',JSON.stringify(c));}
 function addCharm(name='',quirk=''){
   const d=document.createElement('div');d.className='charm-slot';
-  d.innerHTML=`<div class="charm-row"><span class="charm-label">CHARM</span><input class="charm-input" value="${name.replace(/"/g,'&quot;')}" placeholder="Charm name..."><button class="del-x" onclick="this.closest('.charm-slot').remove();saveCharms();">✕</button></div><div class="charm-quirk-label">SPECIAL QUIRK</div><textarea class="charm-quirk-input" placeholder="Quirk...">${quirk}</textarea>`;
+  d.innerHTML=`<div class="charm-row"><span class="charm-label">CHARM</span><input class="charm-input" value="${esc(name)}" placeholder="Charm name..."><button class="mini-del" onclick="this.closest('.charm-slot').remove();saveCharms();">✕</button></div><div class="charm-quirk-label">SPECIAL QUIRK</div><textarea class="charm-quirk-input" placeholder="Quirk...">${esc(quirk)}</textarea>`;
   document.getElementById('charms-list').appendChild(d);
   d.querySelector('.charm-input').addEventListener('input',saveCharms);
   d.querySelector('.charm-quirk-input').addEventListener('input',saveCharms);
 }
-(function(){const saved=load('ctg-charms');if(saved){JSON.parse(saved).forEach(c=>addCharm(c.name,c.quirk));}else{addCharm('Useless Miscoloured Shoe String','You may change the shoe string on your boots once per encounter.');}})();
+(function(){const s=load('ctg-charms');if(s){JSON.parse(s).forEach(c=>addCharm(c.name,c.quirk));}else{addCharm('Useless Miscoloured Shoe String','You may change the shoe string on your boots once per encounter.');}})();
 
-// nav name
+/* ── INVENTORY ───────────────────────────────────────────── */
+const startItems=['1× Large Stim (Healing)','1× Gun-Brella','1× Toothpick','1× Ink-Dipped Calamari','1× Rotten Supplies','2× Shotgun Ammo','1× Pistol Silencer'];
+function saveInv(){const items=[...document.querySelectorAll('.inv-input')].map(i=>i.value);save('ctg-inventory',JSON.stringify(items));}
+function addItem(val=''){
+  const li=document.createElement('li');li.className='inv-item';
+  li.innerHTML=`<span class="inv-bullet">◆</span><input class="inv-input" value="${esc(val)}" placeholder="Item..."><button class="inv-del" onclick="this.closest('li').remove();saveInv();">✕</button>`;
+  document.getElementById('inv-list').appendChild(li);
+  li.querySelector('.inv-input').addEventListener('input',saveInv);
+}
+(function(){const s=load('ctg-inventory');if(s){JSON.parse(s).forEach(addItem);}else{startItems.forEach(addItem);}})();
+
+/* ── MULA ────────────────────────────────────────────────── */
+(function(){const el=document.getElementById('mula');const s=load('ctg-mula');if(s!==null)el.value=s;el.addEventListener('input',()=>save('ctg-mula',el.value));})();
+
+/* ── nav + transitions ───────────────────────────────────── */
 (function(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();
-
-// transitions
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
+renderArmour();recalcEF();
 </script>
 </body>
 </html>
