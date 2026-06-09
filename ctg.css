@@ -459,3 +459,151 @@ body.hub-body{padding:0;overflow-x:hidden;}
   .panel,.weapon-card,.food-card,.faculty-card{filter:none;border-color:#999;break-inside:avoid;}
   .sheet::before,.sheet::after,.tree-svg{display:none;}
 }
+
+/* ═══════════════════════════════════════════════════════════
+   HEAVY INK LAYER — brush-stroke borders, tapered dividers,
+   decorative strokes. Loaded last so it wins. To soften the
+   look, delete from here down.
+   ═══════════════════════════════════════════════════════════ */
+
+/* hand-inked rough frame applied to the big boxes (replaces the
+   uniform keyline + angled clip with an organic brushed edge) */
+.panel,.weapon-card,.food-card,.faculty-card,.active-bar,.budget-strip,
+.tree-layout,.mula-block,.tip,.portrait-box,.notes-area,.field-textarea{
+  border-width:3px;
+}
+/* keep the soft fill panels readable (border-image removes bg-clip) */
+.notes-area,.field-textarea{padding:13px;}
+.portrait-box{padding:0;}
+
+/* type cue for weapons (left colour was eaten by the ink border) */
+.weapon-card{position:relative;}
+.weapon-card::before{content:'';position:absolute;left:0;top:14px;bottom:14px;width:7px;z-index:3;clip-path:polygon(0 0,100% 8%,100% 92%,0 100%);}
+.weapon-card.melee::before{background:var(--red);}
+.weapon-card.ranged::before{background:var(--purple);}
+
+/* tapered dividers — ink stroke that thins to nothing at both ends */
+.weapon-head,.weapon-tags,.faculty-header,.faculty-note,.food-head,.food-flavor{
+  border-bottom:3px solid transparent;
+  border-image:linear-gradient(90deg,transparent 0,var(--ink) 14%,var(--ink) 86%,transparent 100%) 1;
+}
+.armour-total,.select-rule,.food-footer,.sheet-footer{
+  border-top:3px solid transparent;
+  border-image:linear-gradient(90deg,transparent 0,var(--ink) 14%,var(--ink) 86%,transparent 100%) 1;
+}
+
+/* decorative tapered brush UNDER each page title */
+.sheet-header,.page-head{overflow:visible;}
+.sheet-header::after,.page-head::after{content:'';position:absolute;left:24px;bottom:8px;width:min(300px,70%);height:14px;background:var(--purple);clip-path:polygon(0 42%,72% 0,100% 38%,100% 70%,72% 100%,0 64%);transform:rotate(-1deg);z-index:-1;}
+/* a thinner ink streak crossing it for a layered brush feel */
+.sheet-header::before,.page-head::before{content:'';position:absolute;left:30px;bottom:4px;width:min(220px,55%);height:6px;background:var(--ink);clip-path:polygon(0 30%,100% 0,100% 100%,0 70%);z-index:-1;}
+
+/* beef up the hub brushes */
+.hub-brush{height:22px;}
+.hub-brush.two{height:18px;}
+
+/* ═══════════════════════════════════════════════════════════
+   DARK PURPLE THEME  (loaded last → wins)
+   Delete from here down to return to the white paper theme.
+   ═══════════════════════════════════════════════════════════ */
+:root{
+  --bg:#150925; --bg2:#1d0d33; --paper:#241340; --paper2:#2e1850;
+  --ink:#ece2ff;            /* linework + text now read LIGHT on dark */
+  --fill:#0e0620;           /* deep purple-black for ink-filled chips */
+  --text:#f3ecff; --text2:#cabbe6; --text-dim:#9181b5; --text-ink:#f3ecff;
+  --border:rgba(236,226,255,0.26); --border2:rgba(236,226,255,0.6);
+  --purple:#9b59ff; --purple2:#c79bff; --purple-dim:#6a2fd0; --purple-soft:#3a1f63; --purple-glow:rgba(155,89,255,0.45);
+  --green3:#3ee659; --green2:#39c94f; --green-bright:#5dff6e; --green-glow:rgba(62,230,89,0.35);
+  --gold:#ffd23f; --red:#ff4757; --red-deep:#d11a36;
+  --accent2:#ff3ea5;        /* hot magenta — extra accent */
+  --accent3:#34d6ff;        /* cyan — extra accent */
+}
+
+/* page + halftone in light dots, vivid glows */
+body{
+  background:var(--bg);
+  background-image:
+    radial-gradient(rgba(255,255,255,0.05) 1px,transparent 1.6px),
+    radial-gradient(ellipse 60% 50% at 100% 0%,rgba(155,89,255,0.30) 0%,transparent 55%),
+    radial-gradient(ellipse 55% 55% at 0% 100%,rgba(255,62,165,0.16) 0%,transparent 55%),
+    radial-gradient(ellipse 40% 40% at 50% 50%,rgba(52,214,255,0.06) 0%,transparent 60%);
+  background-size:7px 7px,100% 100%,100% 100%,100% 100%;
+}
+
+/* chips that were dark-ink fills → deep purple-black so they stay dark */
+.ctg-nav-home,.head-stamp,.sec-label,.add-btn,.type-toggle,.hub-logo,.hud-k{background:var(--fill);color:#fff;}
+.add-btn:hover{background:var(--purple);}
+.type-toggle.melee{background:var(--red-deep);}
+.type-toggle.ranged{background:var(--purple);}
+.sec-label{border-color:var(--fill);}
+.sec-label .mk{color:var(--accent2);}
+.head-stamp::before{color:var(--accent2);}
+
+/* nav */
+.ctg-nav{background:rgba(21,9,37,0.94);border-bottom-color:var(--ink);box-shadow:0 5px 0 rgba(0,0,0,0.4);}
+.ctg-nav a.active{box-shadow:3px 3px 0 var(--fill),0 0 14px var(--purple-glow);}
+
+/* re-ink the brushed box frames in LIGHT (black would vanish on dark) */
+.panel,.weapon-card,.food-card,.faculty-card,.active-bar,.budget-strip,
+.tree-layout,.mula-block,.tip,.portrait-box,.notes-area,.field-textarea{
+  border-image:none;border-style:solid;border-color:var(--ink);
+}
+
+/* colored hard-offset shadows = lots more accent, and they pop on dark */
+.panel{filter:drop-shadow(5px 5px 0 var(--fill));}
+.faculty-card{filter:drop-shadow(4px 4px 0 var(--purple-dim));}
+.weapon-card{filter:drop-shadow(4px 4px 0 var(--accent2));}
+.food-card{filter:drop-shadow(4px 4px 0 var(--green2));}
+.active-bar,.budget-strip,.tree-layout{filter:drop-shadow(5px 5px 0 var(--fill));}
+.faculty-card.active-card{filter:drop-shadow(4px 4px 0 var(--purple));}
+.tip{filter:none;box-shadow:4px 4px 0 var(--accent2);}
+
+/* brighter stat fill + visible suit watermark on dark */
+.stat-bar-fill{opacity:0.4;}
+.suit-watermark{opacity:0.16;}
+
+/* HUD + hub accents */
+.hub-cmd b{color:var(--accent2);}
+.data-dots .dd{background:rgba(255,255,255,0.18);}
+.hub-splat.a{opacity:0.42;}
+.hub-splat.b{background:radial-gradient(ellipse at 60% 60%,var(--accent2) 0%,transparent 65%);opacity:0.30;}
+.hub-zz{background-image:repeating-linear-gradient(-45deg,var(--ink) 0 9px,transparent 9px 18px);opacity:0.45;}
+.scrim{background:rgba(0,0,0,0.6);}
+
+/* menu word tiles — more colour variety */
+.word{background:var(--fill);color:#fff;border-color:var(--fill);}
+.word.w1{box-shadow:6px 6px 0 var(--purple);}
+.word.w2{background:var(--purple);color:#fff;box-shadow:6px 6px 0 var(--fill);}
+.word.w3{background:var(--fill);box-shadow:7px 7px 0 var(--accent2);}
+.word.w4{background:var(--accent2);color:#fff;box-shadow:6px 6px 0 var(--fill);}
+.word.w5{background:var(--purple-dim);color:#fff;box-shadow:7px 7px 0 var(--green2);}
+.word:hover{background:var(--green2);color:#0a0413;box-shadow:6px 6px 0 var(--fill)!important;}
+.word .num{color:var(--green-bright);}
+
+/* selected states glow harder on dark */
+.tuning-entry.selected{box-shadow:0 0 14px var(--purple-glow);}
+.skill-node.node-selected .node-body{box-shadow:0 0 0 2px var(--green-bright),0 0 16px var(--purple-glow);}
+
+/* ═══════════════════════════════════════════════════════════
+   CLEAN EDGES + THICK INK ACCENTS
+   Boxes use clean solid edges again; the "ink" feel comes from
+   bold accent top-bars, beefy tapered dividers + title brushes.
+   ═══════════════════════════════════════════════════════════ */
+.panel{border-top:7px solid var(--purple);}
+.faculty-card{border-top:7px solid var(--purple);}
+.weapon-card{border-top:7px solid var(--accent2);}
+.food-card{border-top:7px solid var(--green2);}
+.active-bar,.budget-strip{border-top:7px solid var(--purple);}
+.mula-block{border-top:7px solid var(--green2);}
+.tree-layout{border-top:7px solid var(--purple);}
+
+/* beefier tapered ink dividers */
+.weapon-head,.weapon-tags,.faculty-header,.faculty-note,.food-head,.food-flavor{
+  border-bottom-width:4px;
+}
+.armour-total,.select-rule,.food-footer,.sheet-footer{
+  border-top-width:4px;
+}
+
+/* bolder ink tail off each section label */
+.sec-label::after{width:46px;right:-40px;height:78%;}
