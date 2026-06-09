@@ -3,157 +3,135 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#050508">
-<title>CTG — Character Dossier</title>
+<meta name="theme-color" content="#0a0a0d">
+<title>CTG — Command Select</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ctg.css">
 </head>
 <body class="hub-body">
 
-<div class="hub">
-  <div class="logo-area">
-    <div class="logo-sup">CALL TO GALLAHAD</div>
-    <div class="logo-row">
-      <div class="logo-line"></div>
-      <div class="logo-suits"><span class="s1">♠</span><span class="s2">♣</span><span class="s3">♥</span><span class="s4">♦</span></div>
-      <div class="logo-line r"></div>
-    </div>
-    <div class="ctg-title">CHARACTER <em>DOSSIER</em></div>
-    <div class="ctg-sub">◈ SELECT OPERATIONAL RECORD ◈</div>
+<div class="hub-stage" id="hub">
+  <div class="hub-bg"></div>
+  <div class="hub-splat a"></div>
+  <div class="hub-splat b"></div>
+  <div class="hub-zz"></div>
+
+  <!-- CHARACTER PLACEHOLDER — replace this whole .hub-char block with <img src="your-art.png"> -->
+  <div class="hub-char">
+    <svg viewBox="0 0 420 620" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+      <!-- back accent -->
+      <path d="M120 30 L300 10 L360 120 L300 230 L380 360 L320 620 L70 620 L40 300 L90 150 Z" fill="#4a1f99" opacity="0.55"/>
+      <!-- coat / body -->
+      <path d="M150 250 L250 250 L300 340 L290 620 L110 620 L100 360 Z" fill="#0a0a0c" stroke="#fff" stroke-width="4"/>
+      <!-- collar -->
+      <path d="M150 250 L205 300 L260 250 L250 250 L205 285 L160 250 Z" fill="#fff"/>
+      <path d="M150 250 L205 300 L205 360 L150 280 Z" fill="#fff"/>
+      <path d="M260 250 L205 300 L205 360 L260 280 Z" fill="#fff"/>
+      <!-- neck -->
+      <path d="M185 215 L225 215 L225 260 L185 260 Z" fill="#fff"/>
+      <!-- head -->
+      <path d="M160 120 Q160 70 205 70 Q250 70 250 120 L250 175 Q250 215 205 215 Q160 215 160 175 Z" fill="#fff" stroke="#0a0a0c" stroke-width="3"/>
+      <!-- hair: angular spikes -->
+      <path d="M150 130 L150 70 L185 95 L195 55 L220 92 L240 60 L255 100 L262 80 L262 140 L250 110 Q250 80 205 80 Q165 82 160 120 Z" fill="#0a0a0c"/>
+      <path d="M150 130 L138 175 L158 160 L150 200 L172 175 L160 130 Z" fill="#0a0a0c"/>
+      <!-- mask hint over eyes -->
+      <path d="M168 150 L242 150 L242 168 L168 168 Z" fill="#0a0a0c"/>
+      <circle cx="186" cy="159" r="4" fill="#3ee63e"/>
+      <circle cx="224" cy="159" r="4" fill="#3ee63e"/>
+      <!-- purple sash -->
+      <path d="M150 300 L300 360 L290 400 L150 345 Z" fill="#8b3df5"/>
+    </svg>
+    <div class="drop-hint">⟡ PLACEHOLDER — drop your character art here</div>
+  </div>
+
+  <!-- top bar -->
+  <div class="hub-top">
+    <a href="index.html" class="hub-logo">CTG</a>
+    <div class="hub-cmd">CALL TO GALLAHAD · COMMAND SELECT <b>01</b></div>
+  </div>
+
+  <!-- the word pile = the menu -->
+  <nav class="word-pile" id="pile">
+    <a class="word w1" href="p1.html" data-nav data-word="STATS"><span class="num">I</span></a>
+    <a class="word w2" href="p2.html" data-nav data-word="GEAR"><span class="num">II</span></a>
+    <a class="word w3" href="p3.html" data-nav data-word="FACULTIES"><span class="num">III</span></a>
+    <a class="word w4" href="p4.html" data-nav data-word="ARSENAL"><span class="num">IV</span></a>
+    <a class="word w5" href="p5.html" data-nav data-word="SKILLS"><span class="num">V</span></a>
+  </nav>
+
+  <!-- HUD readouts -->
+  <div class="hub-hud">
+    <div class="hud-row"><span class="hud-k">MULA</span><span class="hud-v mula" id="hud-mula">0</span></div>
+    <div class="hud-row"><span class="hud-k">LEVEL</span><span class="hud-v" id="hud-level">1</span></div>
     <div class="char-line" id="char-line"><span>NO OPERATIVE LOADED</span></div>
   </div>
 
-  <div class="cards-row">
-    <a class="page-card" href="p1.html" data-nav>
-      <span class="card-dot" data-page="p1"></span><span class="slash"></span><span class="card-watermark">I</span>
-      <div class="card-num">PAGE · I</div><div class="card-title">IDENTITY<br>&amp; STATS</div>
-      <div class="card-desc">Portrait, attributes, Harth, EF, supplies, card combat.</div>
-    </a>
-    <a class="page-card" href="p2.html" data-nav>
-      <span class="card-dot" data-page="p2"></span><span class="slash"></span><span class="card-watermark">II</span>
-      <div class="card-num">PAGE · II</div><div class="card-title">INVENTORY<br>&amp; ARMOUR</div>
-      <div class="card-desc">Extra Flesh, belt charms, inventory, mula.</div>
-    </a>
-    <a class="page-card" href="p3.html" data-nav>
-      <span class="card-dot" data-page="p3"></span><span class="slash"></span><span class="card-watermark">III</span>
-      <div class="card-num">PAGE · III</div><div class="card-title">CORE<br>FACULTIES</div>
-      <div class="card-desc">Six faculties, tunings, two active slots.</div>
-    </a>
-    <a class="page-card" href="p4.html" data-nav>
-      <span class="card-dot" data-page="p4"></span><span class="slash"></span><span class="card-watermark">IV</span>
-      <div class="card-num">PAGE · IV</div><div class="card-title">ARSENAL<br>&amp; PROVISIONS</div>
-      <div class="card-desc">Weapons, tags, quirks, rechargeable food.</div>
-    </a>
-    <a class="page-card" href="p5.html" data-nav>
-      <span class="card-dot" data-page="p5"></span><span class="slash"></span><span class="card-watermark">V</span>
-      <div class="card-num">PAGE · V</div><div class="card-title">SKILL<br>TREE</div>
-      <div class="card-desc">Branching skills across six attributes.</div>
-    </a>
+  <!-- data dots -->
+  <div class="data-dots">
+    <span class="dd" data-page="p1"></span><span class="dd" data-page="p2"></span>
+    <span class="dd" data-page="p3"></span><span class="dd" data-page="p4"></span>
+    <span class="dd" data-page="p5"></span>
+    <span class="ddl">SAVED DATA</span>
   </div>
 
-  <div class="sync-trigger">
-    <button class="sync-btn" onclick="openSync()">☁ SYNC</button>
-    <button class="sync-btn green" onclick="location.href='p1.html'">▶ OPEN SHEET</button>
-    <div class="sync-info" id="sync-info">Local save active · cloud sync optional</div>
+  <!-- button hints -->
+  <div class="hub-btns">
+    <div class="btn-hint hub-sync" onclick="openSync()"><i class="b">Y</i> SYNC</div>
+    <div class="btn-hint" onclick="location.href='p1.html'"><i class="a">A</i> CONFIRM</div>
   </div>
 </div>
 
+<!-- sync slide-up -->
 <div class="scrim" id="scrim" onclick="closeSync()"></div>
 <div class="slideup" id="slideup">
   <div class="slideup-inner">
     <button class="slideup-close" onclick="closeSync()">✕ CLOSE</button>
     <div class="slideup-title">SYNC &amp; BACKUP</div>
     <div class="slideup-sub">// EXPORT · IMPORT · CLOUD (set up via Claude Code)</div>
-
-    <div class="su-row">
-      <div class="su-field" style="flex:2;">
-        <span class="su-label">SAVE CODE — EXPORT</span>
-        <textarea class="su-area" id="export-area" readonly placeholder="Click Generate to create your portable save code..."></textarea>
-      </div>
-    </div>
-    <div class="su-btns">
-      <button class="su-btn" onclick="genExport()">⬇ GENERATE CODE</button>
-      <button class="su-btn ghost" onclick="copyExport()">⧉ COPY</button>
-    </div>
-
-    <div class="su-row" style="margin-top:18px;">
-      <div class="su-field" style="flex:2;">
-        <span class="su-label">SAVE CODE — IMPORT</span>
-        <textarea class="su-area" id="import-area" placeholder="Paste a save code here to restore..."></textarea>
-      </div>
-    </div>
-    <div class="su-btns">
-      <button class="su-btn" onclick="doImport()">⬆ RESTORE</button>
-      <button class="su-btn danger ghost" onclick="clearAll()">⌫ CLEAR ALL DATA</button>
-    </div>
-    <div class="su-hint" id="su-hint">Tip: Export your code as a backup before clearing. Cloud login appears here once you wire up Supabase.</div>
+    <div class="su-row"><div class="su-field" style="flex:2;"><span class="su-label">SAVE CODE — EXPORT</span><textarea class="su-area" id="export-area" readonly placeholder="Click Generate to create your portable save code..."></textarea></div></div>
+    <div class="su-btns"><button class="su-btn" onclick="genExport()">⬇ GENERATE CODE</button><button class="su-btn ghost" onclick="copyExport()">⧉ COPY</button></div>
+    <div class="su-row" style="margin-top:18px;"><div class="su-field" style="flex:2;"><span class="su-label">SAVE CODE — IMPORT</span><textarea class="su-area" id="import-area" placeholder="Paste a save code here to restore..."></textarea></div></div>
+    <div class="su-btns"><button class="su-btn" onclick="doImport()">⬆ RESTORE</button><button class="su-btn danger ghost" onclick="clearAll()">⌫ CLEAR ALL DATA</button></div>
+    <div class="su-hint" id="su-hint">Tip: export a code as backup before clearing. Cloud login can be wired in later via Supabase.</div>
   </div>
 </div>
 
 <script>
-const KEYS_PREFIX='ctg-';
-function allKeys(){const o=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(KEYS_PREFIX))o.push(k);}}catch(e){}return o;}
+const PFX='ctg-';
+function allKeys(){const o=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(PFX))o.push(k);}}catch(e){}return o;}
+function lg(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 
-// char name line
-(function(){
-  const n=localStorage.getItem('ctg-f-name');const c=localStorage.getItem('ctg-f-code');
-  const line=document.getElementById('char-line');
-  if(n||c){line.innerHTML=(n||'Unnamed')+(c?' <span class="code">"'+c+'"</span>':'');}
-})();
-
-// page data dots
-['p1','p2','p3','p4','p5'].forEach(pg=>{
-  const dot=document.querySelector('.card-dot[data-page="'+pg+'"]');
-  let has=false;
-  const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p2:['ctg-inventory','ctg-mula','ctg-armour-list','ctg-charms'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-food'],p5:['ctg-skills']};
-  (map[pg]||[]).forEach(k=>{const v=localStorage.getItem(k);if(v&&v!=='[]'&&v!=='{}'&&v!=='')has=true;});
-  if(has)dot.classList.add('has-data');
+// build ransom-note letters for each menu word
+document.querySelectorAll('.word').forEach(w=>{
+  const txt=w.dataset.word;const frag=document.createDocumentFragment();
+  [...txt].forEach(ch=>{const s=document.createElement('span');s.className='ln';s.textContent=ch;const r=(Math.random()*7-3.5).toFixed(1);const y=(Math.random()*4-2).toFixed(1);s.style.transform=`rotate(${r}deg) translateY(${y}px)`;frag.appendChild(s);});
+  w.appendChild(frag);
 });
 
-// sync info
+// char line + HUD
 (function(){
-  const upd=localStorage.getItem('ctg-last-edit');
-  if(upd){const mins=Math.round((Date.now()-parseInt(upd))/60000);document.getElementById('sync-info').textContent='Last edited '+(mins<1?'just now':mins+' min ago')+' · local save active';}
+  const n=lg('ctg-f-name'),c=lg('ctg-f-code');
+  const line=document.getElementById('char-line');
+  if(n||c)line.innerHTML=(n||'Unnamed')+(c?' <span class="code">"'+c+'"</span>':'');
+  document.getElementById('hud-mula').textContent=lg('ctg-mula')||'0';
+  document.getElementById('hud-level').textContent=lg('ctg-f-level')||'1';
 })();
 
-// slide up
+// data dots
+const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p2:['ctg-inventory','ctg-mula','ctg-armour-list','ctg-charms'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-food'],p5:['ctg-skills']};
+document.querySelectorAll('.dd').forEach(dd=>{const pg=dd.dataset.page;let has=false;(map[pg]||[]).forEach(k=>{const v=lg(k);if(v&&v!=='[]'&&v!=='{}'&&v!=='')has=true;});if(has)dd.classList.add('has-data');});
+
+// sync panel
 function openSync(){document.getElementById('slideup').classList.add('open');document.getElementById('scrim').classList.add('open');}
 function closeSync(){document.getElementById('slideup').classList.remove('open');document.getElementById('scrim').classList.remove('open');}
+function genExport(){const data={};allKeys().forEach(k=>data[k]=localStorage.getItem(k));document.getElementById('export-area').value=btoa(unescape(encodeURIComponent(JSON.stringify(data))));}
+function copyExport(){const t=document.getElementById('export-area');if(!t.value)genExport();navigator.clipboard.writeText(t.value).then(()=>{document.getElementById('su-hint').textContent='✓ Copied to clipboard.';}).catch(()=>t.select());}
+function doImport(){const raw=document.getElementById('import-area').value.trim();const h=document.getElementById('su-hint');try{const d=JSON.parse(decodeURIComponent(escape(atob(raw))));Object.entries(d).forEach(([k,v])=>localStorage.setItem(k,v));h.textContent='✓ Restored. Reloading...';h.style.color='var(--green3)';setTimeout(()=>location.reload(),900);}catch(e){h.textContent='✕ Invalid save code.';h.style.color='var(--red)';}}
+function clearAll(){if(!confirm('Clear ALL character data? Export a backup first if unsure.'))return;allKeys().forEach(k=>localStorage.removeItem(k));setTimeout(()=>location.reload(),500);}
 
-function genExport(){
-  const data={};allKeys().forEach(k=>data[k]=localStorage.getItem(k));
-  const code=btoa(unescape(encodeURIComponent(JSON.stringify(data))));
-  document.getElementById('export-area').value=code;
-}
-function copyExport(){
-  const t=document.getElementById('export-area');if(!t.value)genExport();
-  navigator.clipboard.writeText(t.value).then(()=>{document.getElementById('su-hint').textContent='✓ Copied to clipboard.';}).catch(()=>{t.select();});
-}
-function doImport(){
-  const raw=document.getElementById('import-area').value.trim();const hint=document.getElementById('su-hint');
-  try{
-    const data=JSON.parse(decodeURIComponent(escape(atob(raw))));
-    Object.entries(data).forEach(([k,v])=>localStorage.setItem(k,v));
-    hint.textContent='✓ Restored. Reload pages to see changes.';hint.style.color='var(--green3)';
-    setTimeout(()=>location.reload(),900);
-  }catch(e){hint.textContent='✕ Invalid save code.';hint.style.color='var(--red)';}
-}
-function clearAll(){
-  if(!confirm('Clear ALL character data? Export a backup first if unsure.'))return;
-  allKeys().forEach(k=>localStorage.removeItem(k));
-  document.getElementById('su-hint').textContent='Data cleared.';
-  setTimeout(()=>location.reload(),700);
-}
-
-// page transitions
-document.querySelectorAll('[data-nav]').forEach(a=>{
-  a.addEventListener('click',e=>{
-    e.preventDefault();const href=a.getAttribute('href');
-    document.querySelector('.hub').style.animation='hubOut .2s ease both';
-    setTimeout(()=>location.href=href,160);
-  });
-});
-const st=document.createElement('style');st.textContent='@keyframes hubOut{from{opacity:1;transform:scale(1);}to{opacity:0;transform:scale(0.97);}}';document.head.appendChild(st);
+// transitions
+document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const href=a.getAttribute('href');document.getElementById('hub').style.animation='pileOut .22s ease both';setTimeout(()=>location.href=href,180);});});
+const st=document.createElement('style');st.textContent='@keyframes pileOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-40px);}}';document.head.appendChild(st);
 </script>
 </body>
 </html>
