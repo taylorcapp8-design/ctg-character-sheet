@@ -3,685 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080a04">
-<link rel="stylesheet" href="ctg-themes.css">
-<title>CTG — Character Dossier</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400;700&family=Cinzel+Decorative:wght@400;700&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --gold:#c09818;--gold2:#ddb828;--gold-dim:#604808;
-  --olive:#1e2410;--olive2:#151a08;--olive3:#2a3018;
-  --red:#6a1010;--red2:#cc2200;
-  --bg:#080a04;--panel:#0d1006;
-  --border:rgba(192,152,24,0.22);--border-bright:rgba(192,152,24,0.55);
-  --text:#c4b870;--text-dim:#524e2c;--text-bright:#e8d490;
-  --suit-spade:#7898aa;--suit-club:#7a9868;
-  --suit-heart:#b02828;--suit-diamond:#4470aa;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{
-  background:var(--bg);
-  background-image:
-    radial-gradient(ellipse at 20% 10%,rgba(58,64,32,0.45) 0%,transparent 55%),
-    radial-gradient(ellipse at 80% 90%,rgba(139,26,26,0.2) 0%,transparent 55%),
-    radial-gradient(ellipse at 50% 50%,rgba(58,64,32,0.15) 0%,transparent 70%);
-  color:var(--text);
-  font-family:'Rajdhani',sans-serif;
-  min-height:100vh;
-  display:flex;flex-direction:column;align-items:center;
-  padding:0 20px 60px;
-}
-
-/* ── TOP BAR (theme switcher home) ── */
-.hub-topbar{
-  position:sticky;top:0;z-index:100;
-  width:100%;
-  background:var(--bg);
-  border-bottom:1px solid var(--border);
-  backdrop-filter:blur(8px);
-  display:flex;align-items:center;
-  padding:0 20px;
-  height:36px;
-  font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:3px;
-  margin-bottom:0;
-}
-.hub-topbar-label{color:var(--gold-dim);margin-right:auto;}
-/* theme-sw injected by ctg-theme.js sits after the label */
-
-/* ── CORNER ORNAMENTS ── */
-.corner-ornament{position:fixed;width:80px;height:80px;pointer-events:none;z-index:0;opacity:0.15;}
-.corner-ornament svg{width:100%;height:100%;}
-.co-tl{top:10px;left:10px;}.co-tr{top:10px;right:10px;transform:scaleX(-1);}
-.co-bl{bottom:10px;left:10px;transform:scaleY(-1);}.co-br{bottom:10px;right:10px;transform:scale(-1);}
-
-/* ── LOGO / TITLE ── */
-.logo-area{text-align:center;margin:40px 0 36px;position:relative;z-index:1;}
-.logo-emblem{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:16px;}
-.emblem-line{flex:1;max-width:120px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-dim));}
-.emblem-line.r{background:linear-gradient(90deg,var(--gold-dim),transparent);}
-.suits-big{font-size:1.4rem;letter-spacing:8px;color:var(--gold);opacity:0.6;}
-.suits-big span:nth-child(3){color:var(--suit-heart);}
-.suits-big span:nth-child(4){color:var(--suit-diamond);}
-.ctg-sup{font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:10px;color:var(--gold-dim);margin-bottom:8px;}
-.ctg-title{font-family:'Bebas Neue',sans-serif;font-size:4rem;color:var(--gold);letter-spacing:10px;text-shadow:0 0 40px rgba(192,152,24,0.3),0 0 80px rgba(192,152,24,0.1);line-height:1;margin-bottom:8px;}
-.ctg-sub{font-family:'Share Tech Mono',monospace;font-size:0.65rem;letter-spacing:4px;color:var(--text-dim);}
-
-/* ── CHAR NAME ── */
-.char-name-block{margin-top:20px;}
-.char-name-label{font-family:'Share Tech Mono',monospace;font-size:0.55rem;letter-spacing:3px;color:var(--gold-dim);margin-bottom:5px;}
-.char-name-input{
-  background:transparent;border:none;border-bottom:1px solid var(--border-bright);
-  color:var(--text-bright);font-family:'Cinzel',serif;font-size:1.4rem;
-  text-align:center;width:300px;outline:none;padding:3px 0;
-  transition:border-color 0.2s;
-}
-.char-name-input:focus{border-color:var(--gold);}
-.char-name-input::placeholder{color:var(--text-dim);font-size:1rem;}
-
-/* Code name + status strip */
-.char-code-name{
-  margin-top:6px;
-  font-family:'Share Tech Mono',monospace;font-size:0.62rem;letter-spacing:3px;
-  color:var(--text-dim);min-height:1.2em;
-}
-.char-code-name b{color:var(--gold);font-weight:normal;}
-.char-stat-strip{
-  display:flex;gap:20px;justify-content:center;align-items:center;
-  margin-top:10px;flex-wrap:wrap;
-}
-.char-stat-item{
-  font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:2px;
-  color:var(--text-dim);
-}
-.char-stat-item b{color:var(--gold);font-weight:normal;}
-
-/* ── PAGE CARDS ── */
-.pages-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:14px;
-  width:100%;max-width:860px;
-  margin-bottom:40px;
-  position:relative;z-index:1;
-}
-.page-card{
-  background:var(--panel);
-  border:1px solid var(--border);
-  text-decoration:none;
-  color:inherit;
-  position:relative;
-  overflow:hidden;
-  transition:border-color 0.2s,transform 0.2s,box-shadow 0.2s;
-  clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px);
-  display:block;
-}
-.page-card::before{content:'';position:absolute;inset:2px;border:1px solid rgba(200,160,32,0.06);pointer-events:none;}
-.page-card:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,0.5),0 0 20px rgba(200,160,32,0.08);}
-.page-card:hover .card-arrow{opacity:1;transform:translateX(0);}
-.card-top{padding:16px 16px 10px;border-bottom:1px solid rgba(200,160,32,0.1);}
-.card-num{font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:4px;color:var(--gold-dim);margin-bottom:6px;}
-.card-title{font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--text-bright);letter-spacing:4px;margin-bottom:4px;}
-.card-icon{font-size:1.3rem;position:absolute;top:14px;right:14px;opacity:0.25;}
-.card-body{padding:10px 16px 14px;}
-.card-desc{font-family:'Rajdhani',sans-serif;font-size:0.82rem;color:var(--text-dim);line-height:1.4;}
-.card-arrow{position:absolute;bottom:12px;right:14px;font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--gold);letter-spacing:2px;opacity:0;transform:translateX(-6px);transition:all 0.2s;}
-/* accent bar */
-.page-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--card-accent,var(--gold-dim));opacity:0.5;transition:opacity 0.2s;}
-.page-card:hover::after{opacity:1;}
-
-/* ── DATA INDICATOR ── */
-.card-data-row{
-  display:flex;align-items:center;gap:6px;
-  padding:7px 16px 9px;
-  border-top:1px solid rgba(200,160,32,0.07);
-}
-.card-data-dot{
-  font-size:0.7rem;
-  color:rgba(200,160,32,0.18);
-  transition:color 0.3s;
-  font-family:'Share Tech Mono',monospace;
-  line-height:1;
-}
-.card-data-dot.has-data{color:var(--gold);}
-.card-data-label{font-family:'Share Tech Mono',monospace;font-size:0.45rem;letter-spacing:2px;color:var(--text-dim);margin-left:auto;}
-
-/* ── SAVE/LOAD BAR ── */
-.save-bar{
-  width:100%;max-width:860px;
-  background:var(--panel);border:1px solid var(--border);
-  padding:14px 18px;
-  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-  clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0 calc(100% - 6px),0 6px);
-  margin-bottom:16px;
-  position:relative;z-index:1;
-}
-.save-bar-label{font-family:'Share Tech Mono',monospace;font-size:0.58rem;letter-spacing:2px;color:var(--gold-dim);min-width:100px;}
-.save-btn{
-  background:transparent;border:1px solid var(--border);
-  color:var(--text);font-family:'Share Tech Mono',monospace;
-  font-size:0.6rem;letter-spacing:2px;padding:6px 14px;
-  cursor:pointer;transition:all 0.15s;
-  clip-path:polygon(4px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,0 calc(100% - 4px),0 4px);
-}
-.save-btn:hover{border-color:var(--gold);color:var(--gold);}
-.save-btn.primary{border-color:var(--gold-dim);color:var(--gold);}
-.save-btn.danger:hover{border-color:var(--red);color:#cc4444;}
-.save-status{font-family:'Share Tech Mono',monospace;font-size:0.58rem;color:var(--gold);opacity:0;transition:opacity 0.3s;margin-left:auto;}
-.save-status.show{opacity:1;}
-.export-area{width:100%;max-width:860px;display:none;margin-bottom:16px;position:relative;z-index:1;}
-.export-area.open{display:block;}
-.export-textarea{width:100%;background:var(--olive2);border:1px solid var(--border);color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:0.65rem;padding:10px;outline:none;resize:vertical;min-height:60px;max-height:120px;}
-.export-hint{font-family:'Share Tech Mono',monospace;font-size:0.55rem;color:var(--text-dim);margin-top:4px;letter-spacing:1px;}
-
-/* ── FOOTER ── */
-.hub-footer{font-family:'Share Tech Mono',monospace;font-size:0.55rem;letter-spacing:3px;color:var(--text-dim);text-align:center;margin-top:10px;position:relative;z-index:1;}
-.hub-footer .suits span:nth-child(1){color:var(--suit-spade)}
-.hub-footer .suits span:nth-child(2){color:var(--suit-club)}
-.hub-footer .suits span:nth-child(3){color:var(--suit-heart)}
-.hub-footer .suits span:nth-child(4){color:var(--suit-diamond)}
-
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.logo-area{animation:fadeUp 0.4s ease 0.05s both;}
-.pages-grid{animation:fadeUp 0.4s ease 0.15s both;}
-.save-bar{animation:fadeUp 0.4s ease 0.25s both;}
-
-@media(max-width:680px){.pages-grid{grid-template-columns:1fr 1fr;}}
-@media(max-width:420px){.pages-grid{grid-template-columns:1fr;}}
-
-/* ── DICE ── */
-.dice-float-btn{position:fixed;bottom:20px;right:20px;z-index:500;width:44px;height:44px;background:#151a08;border:1px solid #604808;color:#c09818;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px);transition:all 0.2s;box-shadow:0 4px 20px rgba(0,0,0,0.5);}
-.dice-float-btn:hover{background:#1e2410;border-color:#c09818;}
-.dice-panel{position:fixed;bottom:74px;right:20px;z-index:500;width:210px;background:#0d1006;border:1px solid rgba(192,152,24,0.45);padding:14px;display:none;clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px);box-shadow:0 8px 32px rgba(0,0,0,0.7);}
-.dice-panel.open{display:block;}
-.dice-panel-title{font-family:'Bebas Neue',sans-serif;font-size:0.85rem;letter-spacing:5px;color:#604808;margin-bottom:10px;}
-.dice-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:10px;}
-.die-btn{background:transparent;border:1px solid rgba(192,152,24,0.22);color:#c4b870;font-family:'Share Tech Mono',monospace;font-size:0.62rem;letter-spacing:1px;padding:6px 4px;cursor:pointer;transition:all 0.2s;clip-path:polygon(3px 0,calc(100% - 3px) 0,100% 3px,100% calc(100% - 3px),calc(100% - 3px) 100%,3px 100%,0 calc(100% - 3px),0 3px);}
-.die-btn:hover{border-color:#c09818;color:#c09818;background:rgba(192,152,24,0.08);}
-.dice-result-area{border:1px solid rgba(192,152,24,0.22);background:rgba(0,0,0,0.3);padding:10px;text-align:center;margin-bottom:8px;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.dice-result-num{font-family:'Cinzel',serif;font-size:2rem;color:#c09818;line-height:1;}
-.dice-result-die{font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:#524e2c;letter-spacing:2px;}
-.dice-history{list-style:none;}
-.dice-history li{font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:#524e2c;padding:2px 0;border-bottom:1px solid rgba(192,152,24,0.06);}
-.dice-history li:last-child{border-bottom:none;}
-.dice-history li b{color:#c09818;}
-@keyframes diceRoll{0%{transform:scale(0.6) rotate(-20deg);opacity:0}60%{transform:scale(1.2) rotate(8deg)}100%{transform:scale(1) rotate(0);opacity:1}}
-.dice-rolling{animation:diceRoll 0.35s ease;}
-
-@media print{.hub-topbar,.corner-ornament,.dice-float-btn,.dice-panel{display:none!important;}body{background:#fff!important;color:#000!important;}}
-
-/* ── LOGIN MODAL ── */
-.login-modal{position:fixed;inset:0;z-index:2000;background:rgba(4,5,2,0.96);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
-.login-panel{background:var(--bg);border:1px solid rgba(192,152,24,0.55);width:100%;max-width:380px;clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 10px,100% calc(100% - 10px),calc(100% - 10px) 100%,10px 100%,0 calc(100% - 10px),0 10px);position:relative;margin:16px;}
-.login-panel::before{content:'';position:absolute;inset:2px;border:1px solid rgba(192,152,24,0.1);pointer-events:none;z-index:0;}
-.login-hdr{background:rgba(0,0,0,0.5);border-bottom:1px solid rgba(192,152,24,0.18);padding:20px 24px 16px;text-align:center;position:relative;z-index:1;}
-.login-pre{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:5px;color:var(--gold-dim);margin-bottom:6px;}
-.login-title{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:8px;color:var(--gold);text-shadow:0 0 30px rgba(192,152,24,0.4);}
-.login-sub{font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:3px;color:var(--text-dim);margin-top:3px;}
-.login-body{padding:22px 24px;position:relative;z-index:1;}
-.login-field{margin-bottom:16px;}
-.login-lbl{display:block;font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:3px;color:var(--gold-dim);margin-bottom:5px;}
-.login-input{width:100%;background:rgba(0,0,0,0.5);border:1px solid rgba(192,152,24,0.28);color:var(--text-bright);font-family:'Share Tech Mono',monospace;font-size:1rem;letter-spacing:2px;padding:9px 12px;outline:none;transition:border-color 0.2s;}
-.login-input:focus{border-color:var(--gold);}
-.login-input::placeholder{color:var(--text-dim);font-size:0.72rem;letter-spacing:1px;}
-.login-btn{width:100%;background:transparent;border:1px solid var(--gold-dim);color:var(--gold);font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:5px;padding:11px;cursor:pointer;transition:all 0.2s;clip-path:polygon(5px 0,calc(100% - 5px) 0,100% 5px,100% calc(100% - 5px),calc(100% - 5px) 100%,5px 100%,0 calc(100% - 5px),0 5px);}
-.login-btn:hover{background:rgba(192,152,24,0.1);border-color:var(--gold);}
-.login-btn:disabled{opacity:0.4;cursor:not-allowed;}
-.login-error{font-family:'Share Tech Mono',monospace;font-size:0.58rem;color:#cc4444;letter-spacing:1px;margin-top:8px;min-height:1.2em;text-align:center;}
-.login-note{font-family:'Share Tech Mono',monospace;font-size:0.49rem;color:var(--text-dim);margin-top:14px;line-height:1.65;text-align:center;border-top:1px solid rgba(192,152,24,0.1);padding-top:12px;}
-.login-offline{display:block;text-align:center;margin-top:8px;font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);cursor:pointer;background:none;border:none;transition:color 0.2s;text-decoration:underline;text-underline-offset:2px;}
-.login-offline:hover{color:var(--text);}
-
-/* ── CLOUD STATUS BAR ── */
-.cloud-bar{width:100%;max-width:860px;display:none;align-items:center;gap:12px;padding:7px 18px;background:var(--panel);border:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);letter-spacing:1px;margin-bottom:10px;position:relative;z-index:1;clip-path:polygon(4px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,0 calc(100% - 4px),0 4px);}
-.cloud-bar.visible{display:flex;}
-.cloud-user{color:var(--gold);}
-.cloud-sync-lbl{color:var(--text-dim);}
-.cloud-sync-val{color:var(--gold-dim);}
-</style>
+<meta name="theme-color" content="#0a0a0d">
+<title>CTG — Command Select</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ctg.css">
 </head>
-<body>
+<body class="hub-body">
 
-<!-- LOGIN MODAL -->
-<div class="login-modal" id="login-modal" style="display:none;">
-  <div class="login-panel">
-    <div class="login-hdr">
-      <div class="login-pre">CTG · SECURE ACCESS</div>
-      <div class="login-title">Access Dossier</div>
-      <div class="login-sub">OPERATIVE IDENTIFICATION REQUIRED</div>
-    </div>
-    <div class="login-body">
-      <div class="login-field">
-        <label class="login-lbl" for="login-user">Operative Handle</label>
-        <input id="login-user" type="text" class="login-input" placeholder="username..." maxlength="32" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-      </div>
-      <div class="login-field">
-        <label class="login-lbl" for="login-pin">Access PIN</label>
-        <input id="login-pin" type="password" class="login-input" placeholder="4-digit PIN..." maxlength="4" inputmode="numeric" autocomplete="off">
-      </div>
-      <button id="login-btn" class="login-btn" onclick="ctgLogin()">Access Dossier</button>
-      <div id="login-error" class="login-error"></div>
-      <div class="login-note">New handle? Your dossier is created on first access.&nbsp; PIN is plain text — this is a hobby sheet, not a vault.</div>
-      <button class="login-offline" onclick="ctgOffline()">↓ Continue offline (local only)</button>
-    </div>
+<div class="hub-stage" id="hub">
+  <div class="hub-bg"></div>
+  <div class="hub-splat a"></div>
+  <div class="hub-splat b"></div>
+  <div class="hub-zz"></div>
+
+  <!-- CHARACTER PLACEHOLDER — replace this whole .hub-char block with <img src="your-art.png"> -->
+  <div class="hub-char">
+    <svg viewBox="0 0 420 620" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+      <!-- back accent halo -->
+      <path d="M120 30 L300 10 L360 120 L300 230 L380 360 L320 620 L70 620 L40 300 L90 150 Z" fill="#6d28d9" opacity="0.18"/>
+      <!-- coat / body : solid ink cutout -->
+      <path d="M150 250 L250 250 L300 340 L290 620 L110 620 L100 360 Z" fill="#15131a"/>
+      <!-- collar : paper negative space -->
+      <path d="M150 250 L205 300 L205 366 L150 282 Z" fill="#f3efe4"/>
+      <path d="M260 250 L205 300 L205 366 L260 282 Z" fill="#f3efe4"/>
+      <!-- neck -->
+      <path d="M185 212 L225 212 L225 262 L185 262 Z" fill="#15131a"/>
+      <!-- head : ink silhouette -->
+      <path d="M158 118 Q158 66 205 66 Q252 66 252 118 L252 176 Q252 218 205 218 Q158 218 158 176 Z" fill="#15131a"/>
+      <!-- hair spikes (ink, reads against paper bg) -->
+      <path d="M150 130 L148 62 L186 92 L196 50 L222 90 L242 56 L257 98 L266 76 L266 144 L252 112 Q252 78 205 78 Q162 80 158 122 Z" fill="#15131a"/>
+      <path d="M150 132 L132 180 L156 162 L146 206 L174 176 L160 130 Z" fill="#15131a"/>
+      <!-- face plane (paper) so features read -->
+      <path d="M170 120 Q170 96 205 96 Q240 96 240 120 L240 150 L170 150 Z" fill="#f3efe4"/>
+      <!-- mask band (ink) with glowing eyes -->
+      <path d="M168 150 L242 150 L242 170 L168 170 Z" fill="#15131a"/>
+      <circle cx="187" cy="160" r="4.5" fill="#22c451"/>
+      <circle cx="223" cy="160" r="4.5" fill="#22c451"/>
+      <!-- purple sash -->
+      <path d="M150 300 L300 360 L290 402 L150 346 Z" fill="#6d28d9"/>
+      <!-- white keyline accent down coat -->
+      <path d="M205 300 L210 620 L200 620 Z" fill="#f3efe4" opacity="0.7"/>
+    </svg>
+    <div class="drop-hint">⟡ PLACEHOLDER — drop your character art here</div>
+  </div>
+
+  <!-- top bar -->
+  <div class="hub-top">
+    <a href="index.html" class="hub-logo">CTG</a>
+    <div class="hub-cmd">CALL TO GALLAHAD · COMMAND SELECT <b>01</b></div>
+  </div>
+
+  <!-- the word pile = the menu -->
+  <nav class="word-pile" id="pile">
+    <a class="word w1" href="p1.html" data-nav data-word="STATS"><span class="num">I</span></a>
+    <a class="word w2" href="p2.html" data-nav data-word="GEAR"><span class="num">II</span></a>
+    <a class="word w3" href="p3.html" data-nav data-word="FACULTIES"><span class="num">III</span></a>
+    <a class="word w4" href="p4.html" data-nav data-word="ARSENAL"><span class="num">IV</span></a>
+    <a class="word w5" href="p5.html" data-nav data-word="SKILLS"><span class="num">V</span></a>
+  </nav>
+
+  <!-- HUD readouts -->
+  <div class="hub-hud">
+    <div class="hud-row"><span class="hud-k">MULA</span><span class="hud-v mula" id="hud-mula">0</span></div>
+    <div class="hud-row"><span class="hud-k">LEVEL</span><span class="hud-v" id="hud-level">1</span></div>
+    <div class="char-line" id="char-line"><span>NO OPERATIVE LOADED</span></div>
+  </div>
+
+  <!-- data dots -->
+  <div class="data-dots">
+    <span class="dd" data-page="p1"></span><span class="dd" data-page="p2"></span>
+    <span class="dd" data-page="p3"></span><span class="dd" data-page="p4"></span>
+    <span class="dd" data-page="p5"></span>
+    <span class="ddl">SAVED DATA</span>
+  </div>
+
+  <!-- button hints -->
+  <div class="hub-btns">
+    <div class="btn-hint hub-sync" onclick="openSync()"><i class="b">Y</i> SYNC</div>
+    <div class="btn-hint" onclick="location.href='p1.html'"><i class="a">A</i> CONFIRM</div>
   </div>
 </div>
 
-<!-- TOP BAR — theme switcher injected here -->
-<div id="ctg-nav-bar" class="hub-topbar">
-  <span class="hub-topbar-label">CTG · DOSSIER HUB</span>
-</div>
-
-<!-- Corner ornaments -->
-<div class="corner-ornament co-tl"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-<div class="corner-ornament co-tr"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-<div class="corner-ornament co-bl"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-<div class="corner-ornament co-br"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-
-<!-- LOGO -->
-<div class="logo-area">
-  <div class="ctg-sup">Call To Gallahad</div>
-  <div class="logo-emblem">
-    <div class="emblem-line"></div>
-    <div class="suits-big"><span>♠</span><span>♣</span><span>♥</span><span>♦</span></div>
-    <div class="emblem-line r"></div>
+<!-- sync slide-up -->
+<div class="scrim" id="scrim" onclick="closeSync()"></div>
+<div class="slideup" id="slideup">
+  <div class="slideup-inner">
+    <button class="slideup-close" onclick="closeSync()">✕ CLOSE</button>
+    <div class="slideup-title">SYNC &amp; BACKUP</div>
+    <div class="slideup-sub">// EXPORT · IMPORT · CLOUD (set up via Claude Code)</div>
+    <div class="su-row"><div class="su-field" style="flex:2;"><span class="su-label">SAVE CODE — EXPORT</span><textarea class="su-area" id="export-area" readonly placeholder="Click Generate to create your portable save code..."></textarea></div></div>
+    <div class="su-btns"><button class="su-btn" onclick="genExport()">⬇ GENERATE CODE</button><button class="su-btn ghost" onclick="copyExport()">⧉ COPY</button></div>
+    <div class="su-row" style="margin-top:18px;"><div class="su-field" style="flex:2;"><span class="su-label">SAVE CODE — IMPORT</span><textarea class="su-area" id="import-area" placeholder="Paste a save code here to restore..."></textarea></div></div>
+    <div class="su-btns"><button class="su-btn" onclick="doImport()">⬆ RESTORE</button><button class="su-btn danger ghost" onclick="clearAll()">⌫ CLEAR ALL DATA</button></div>
+    <div class="su-hint" id="su-hint">Tip: export a code as backup before clearing. Cloud login can be wired in later via Supabase.</div>
   </div>
-  <div class="ctg-title">Character Dossier</div>
-  <div class="ctg-sub">◈ &nbsp; select a page &nbsp; ◈</div>
-  <div class="char-name-block">
-    <div class="char-name-label">Operative</div>
-    <input class="char-name-input" type="text" id="hub-char-name" placeholder="Character name..." autocomplete="off">
-  </div>
-  <div class="char-code-name" id="char-code-name"></div>
-  <div class="char-stat-strip" id="char-stat-strip"></div>
-</div>
-
-<!-- CLOUD STATUS BAR (visible when logged in) -->
-<div class="cloud-bar" id="cloud-bar">
-  <span>Operative:</span>
-  <span class="cloud-user" id="cloud-user">—</span>
-  <span class="cloud-sync-lbl" style="margin-left:auto;">Last synced:</span>
-  <span class="cloud-sync-val"><span id="last-synced">never</span></span>
-  <button class="save-btn danger" style="padding:4px 10px;font-size:0.52rem;" onclick="ctgLogout()">Log Out</button>
-</div>
-
-<!-- PAGE CARDS -->
-<div class="pages-grid">
-  <a class="page-card" href="p1.html" style="--card-accent:var(--gold);">
-    <span class="card-icon">◈</span>
-    <div class="card-top">
-      <div class="card-num">PAGE · I</div>
-      <div class="card-title">Identity &amp; Stats</div>
-    </div>
-    <div class="card-body">
-      <div class="card-desc">Character name, portrait, level, Harth, EF, the 7 core attributes, supplies, equipment slots, and card combat reference.</div>
-    </div>
-    <div class="card-data-row" id="dot-p1">
-      <span class="card-data-dot" data-label="stats">◈</span>
-      <span class="card-data-label">No data</span>
-    </div>
-    <div class="card-arrow">OPEN →</div>
-  </a>
-
-  <a class="page-card" href="p2.html" style="--card-accent:var(--suit-spade);">
-    <span class="card-icon">♠</span>
-    <div class="card-top">
-      <div class="card-num">PAGE · II</div>
-      <div class="card-title">Inventory &amp; Armour</div>
-    </div>
-    <div class="card-body">
-      <div class="card-desc">Extra Flesh armour slots with EF modifiers, Belt Charms, a full expandable inventory list, and Mula funds.</div>
-    </div>
-    <div class="card-data-row" id="dot-p2">
-      <span class="card-data-dot">◈</span>
-      <span class="card-data-label">No data</span>
-    </div>
-    <div class="card-arrow">OPEN →</div>
-  </a>
-
-  <a class="page-card" href="p3.html" style="--card-accent:var(--suit-club);">
-    <span class="card-icon">♣</span>
-    <div class="card-top">
-      <div class="card-num">PAGE · III</div>
-      <div class="card-title">Core Faculties</div>
-    </div>
-    <div class="card-body">
-      <div class="card-desc">All 6 Faculty categories with 3 Tunings each. Select active faculties — limited to 2 at a time with a live tracker.</div>
-    </div>
-    <div class="card-data-row" id="dot-p3">
-      <span class="card-data-dot">◈</span>
-      <span class="card-data-label">No data</span>
-    </div>
-    <div class="card-arrow">OPEN →</div>
-  </a>
-
-  <a class="page-card" href="p4.html" style="--card-accent:var(--suit-diamond);">
-    <span class="card-icon">♦</span>
-    <div class="card-top">
-      <div class="card-num">PAGE · IV</div>
-      <div class="card-title">Arsenal &amp; Provisions</div>
-    </div>
-    <div class="card-body">
-      <div class="card-desc">All weapons with tags, damage, and quirks. Rechargeable food items with clickable charge toggles.</div>
-    </div>
-    <div class="card-data-row" id="dot-p4">
-      <span class="card-data-dot">◈</span>
-      <span class="card-data-label">No data</span>
-    </div>
-    <div class="card-arrow">OPEN →</div>
-  </a>
-
-  <a class="page-card" href="p5.html" style="--card-accent:var(--suit-heart);">
-    <span class="card-icon">♥</span>
-    <div class="card-top">
-      <div class="card-num">PAGE · V</div>
-      <div class="card-title">Skills</div>
-    </div>
-    <div class="card-body">
-      <div class="card-desc">All skills across 6 attributes. Tiered skills unlock in order. Skill point budget tracked per attribute.</div>
-    </div>
-    <div class="card-data-row" id="dot-p5">
-      <span class="card-data-dot">◈</span>
-      <span class="card-data-label">No data</span>
-    </div>
-    <div class="card-arrow">OPEN →</div>
-  </a>
-</div>
-
-<!-- SAVE/LOAD BAR -->
-<div class="save-bar">
-  <span class="save-bar-label">Save Data</span>
-  <button class="save-btn primary" onclick="exportSave()">Export Save Code</button>
-  <button class="save-btn" onclick="toggleImport()">Import Save Code</button>
-  <button class="save-btn danger" onclick="clearAll()">Clear All Data</button>
-  <span class="save-status" id="save-status">Copied!</span>
-</div>
-<div class="export-area" id="export-area">
-  <textarea class="export-textarea" id="export-textarea" readonly placeholder="Your save code will appear here..."></textarea>
-  <div class="export-hint">Copy this code · Use "Import Save Code" on another device to restore your sheet.</div>
-</div>
-<div class="export-area" id="import-area">
-  <textarea class="export-textarea" id="import-textarea" placeholder="Paste your save code here..."></textarea>
-  <button class="save-btn primary" style="margin-top:6px;" onclick="doImport()">Restore from Code</button>
-  <div class="export-hint" id="import-hint"></div>
-</div>
-
-<div class="hub-footer">
-  <div class="suits"><span>♠</span>&nbsp;<span>♣</span>&nbsp;<span>♥</span>&nbsp;<span>♦</span></div>
-  CALL TO GALLAHAD &nbsp;·&nbsp; CHARACTER DOSSIER
-  <div style="margin-top:10px;font-size:0.5rem;letter-spacing:2px;color:var(--text-dim);">
-    <a href="alt/index.html" style="color:var(--gold-dim);text-decoration:none;border-bottom:1px solid rgba(192,152,24,0.2);padding-bottom:1px;transition:color .15s;" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--gold-dim)'">SWITCH TO FIELD DOSSIER STYLE →</a>
-  </div>
-</div>
-
-<!-- DICE -->
-<button class="dice-float-btn" id="dice-toggle" title="Roll Dice">◈</button>
-<div class="dice-panel" id="dice-panel">
-  <div class="dice-panel-title">Dice Roller</div>
-  <div class="dice-btns">
-    <button class="die-btn" onclick="ctgRoll(4)">D4</button>
-    <button class="die-btn" onclick="ctgRoll(6)">D6</button>
-    <button class="die-btn" onclick="ctgRoll(8)">D8</button>
-    <button class="die-btn" onclick="ctgRoll(10)">D10</button>
-    <button class="die-btn" onclick="ctgRoll(12)">D12</button>
-    <button class="die-btn" onclick="ctgRoll(20)">D20</button>
-  </div>
-  <div class="dice-result-area">
-    <div class="dice-result-num" id="dice-num">—</div>
-    <div class="dice-result-die" id="dice-die">select a die</div>
-  </div>
-  <ul class="dice-history" id="dice-history"></ul>
 </div>
 
 <script>
-// ── CHAR NAME ──
-var nameInput = document.getElementById('hub-char-name');
-try { var n = localStorage.getItem('ctg-char-name'); if (n) nameInput.value = n; } catch(e){}
-nameInput.addEventListener('input', function() {
-  try { localStorage.setItem('ctg-char-name', nameInput.value); } catch(e){}
+const PFX='ctg-';
+function allKeys(){const o=[];try{for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.startsWith(PFX))o.push(k);}}catch(e){}return o;}
+function lg(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+
+// build ransom-note letters for each menu word
+document.querySelectorAll('.word').forEach(w=>{
+  const txt=w.dataset.word;const frag=document.createDocumentFragment();
+  [...txt].forEach(ch=>{const s=document.createElement('span');s.className='ln';s.textContent=ch;const r=(Math.random()*7-3.5).toFixed(1);const y=(Math.random()*4-2).toFixed(1);s.style.transform=`rotate(${r}deg) translateY(${y}px)`;frag.appendChild(s);});
+  w.appendChild(frag);
 });
 
-// ── TASK 5: CHAR INFO + STATS STRIP ──
-(function() {
-  // Code name from ctg-p1
-  try {
-    var p1raw = localStorage.getItem('ctg-p1');
-    if (p1raw) {
-      var p1 = JSON.parse(p1raw);
-      var codeEl = document.getElementById('char-code-name');
-      if (p1.cd) codeEl.innerHTML = 'Code Name: <b>' + p1.cd + '</b>';
-      else codeEl.textContent = '';
-    }
-  } catch(e){}
-
-  // Last updated + edit count
-  try {
-    var strip = document.getElementById('char-stat-strip');
-    var updated = localStorage.getItem('ctg-last-updated');
-    var count = localStorage.getItem('ctg-edit-count');
-    var parts = [];
-    if (updated) {
-      var d = new Date(updated);
-      var diff = Date.now() - d.getTime();
-      var mins = Math.floor(diff/60000);
-      var hrs = Math.floor(mins/60);
-      var days = Math.floor(hrs/24);
-      var label;
-      if (days > 0) label = days + 'd ago';
-      else if (hrs > 0) label = hrs + 'h ago';
-      else if (mins > 0) label = mins + 'm ago';
-      else label = 'just now';
-      parts.push('<span class="char-stat-item">Last Edited: <b>' + label + '</b></span>');
-    }
-    if (count && parseInt(count) > 0) {
-      parts.push('<span class="char-stat-item">Edit Sessions: <b>' + count + '</b></span>');
-    }
-    if (parts.length) strip.innerHTML = parts.join('<span style="color:rgba(192,152,24,0.2)">·</span>');
-  } catch(e){}
-
-  // ── DATA INDICATOR DOTS ──
-  var checks = [
-    { id:'dot-p1', key:'ctg-p1' },
-    { id:'dot-p2', key:'ctg-p2' },
-    { id:'dot-p3', key:'ctg-faculties' },
-    { id:'dot-p4', key:'ctg-p4' },
-    { id:'dot-p5', key:'ctg-skills' },
-  ];
-  checks.forEach(function(c) {
-    try {
-      var row = document.getElementById(c.id);
-      if (!row) return;
-      var dot = row.querySelector('.card-data-dot');
-      var lbl = row.querySelector('.card-data-label');
-      var val = localStorage.getItem(c.key);
-      if (val) {
-        dot.classList.add('has-data');
-        lbl.textContent = 'Data saved';
-      }
-    } catch(e){}
-  });
-})();
-
-// ── EXPORT/IMPORT ──
-var CTG_KEYS = ['ctg-char-name','ctg-skills','ctg-faculties','ctg-p1','ctg-p2','ctg-inventory','ctg-mula','ctg-armour','ctg-charms'];
-function exportSave() {
-  var data = {};
-  CTG_KEYS.forEach(function(k) { try { var v=localStorage.getItem(k); if(v!==null) data[k]=v; } catch(e){} });
-  var code = btoa(JSON.stringify(data));
-  document.getElementById('export-textarea').value = code;
-  document.getElementById('export-area').classList.add('open');
-  document.getElementById('import-area').classList.remove('open');
-  navigator.clipboard.writeText(code).then(function() {
-    var s=document.getElementById('save-status'); s.textContent='Copied to clipboard ✓'; s.classList.add('show'); setTimeout(function(){s.classList.remove('show');},2500);
-  }).catch(function(){document.getElementById('export-textarea').select();});
-}
-function toggleImport() {
-  document.getElementById('import-area').classList.toggle('open');
-  document.getElementById('export-area').classList.remove('open');
-}
-function doImport() {
-  var raw=document.getElementById('import-textarea').value.trim();
-  var hint=document.getElementById('import-hint');
-  try {
-    var data=JSON.parse(atob(raw));
-    Object.keys(data).forEach(function(k){try{localStorage.setItem(k,data[k]);}catch(e){}});
-    hint.textContent='✓ Restored — reload any open pages to see changes.'; hint.style.color='#6db06d';
-    if(data['ctg-char-name']) nameInput.value=data['ctg-char-name'];
-  } catch(e) {
-    hint.textContent='✕ Invalid save code.'; hint.style.color='#b02828';
-  }
-}
-function clearAll() {
-  if(!confirm('Clear ALL character data? This cannot be undone.')) return;
-  CTG_KEYS.forEach(function(k){try{localStorage.removeItem(k);}catch(e){}});
-  nameInput.value='';
-  var s=document.getElementById('save-status'); s.textContent='Data cleared.'; s.classList.add('show'); setTimeout(function(){s.classList.remove('show');},2000);
-}
-
-// ── DICE ──
+// char line + HUD
 (function(){
-  var log=[];
-  var panel=document.getElementById('dice-panel');
-  var btn=document.getElementById('dice-toggle');
-  btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
-  document.addEventListener('click',function(e){if(panel.classList.contains('open')&&!panel.contains(e.target)&&e.target!==btn)panel.classList.remove('open');});
-  window.ctgRoll=function(sides){
-    var r=Math.floor(Math.random()*sides)+1;
-    var numEl=document.getElementById('dice-num'); var dieEl=document.getElementById('dice-die');
-    numEl.textContent=r; dieEl.textContent='d'+sides;
-    numEl.style.color=r===sides?'#ddb828':r===1?'#aa1800':'#c09818';
-    numEl.classList.remove('dice-rolling'); void numEl.offsetWidth; numEl.classList.add('dice-rolling');
-    log.unshift({sides:sides,roll:r}); if(log.length>5)log.pop();
-    document.getElementById('dice-history').innerHTML=log.map(function(e){return '<li><b>'+e.roll+'</b> on d'+e.sides+'</li>';}).join('');
-  };
+  const n=lg('ctg-f-name'),c=lg('ctg-f-code');
+  const line=document.getElementById('char-line');
+  if(n||c)line.innerHTML=(n||'Unnamed')+(c?' <span class="code">"'+c+'"</span>':'');
+  document.getElementById('hud-mula').textContent=lg('ctg-mula')||'0';
+  document.getElementById('hud-level').textContent=lg('ctg-f-level')||'1';
 })();
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="ctg-sync.js"></script>
-<script src="ctg-theme.js"></script>
-<script>
-// ── LOGIN / LOGOUT UI ──────────────────────────────────────────────────
-(function () {
-  function showCloudBar(username) {
-    var bar = document.getElementById('cloud-bar');
-    var userEl = document.getElementById('cloud-user');
-    if (bar) bar.classList.add('visible');
-    if (userEl) userEl.textContent = username;
-    if (window.ctgSync) window.ctgSync.updateLastSyncedDisplay();
-  }
 
-  function refreshIndexData() {
-    try {
-      var n = localStorage.getItem('ctg-char-name');
-      if (n) {
-        var ni = document.getElementById('hub-char-name');
-        if (ni) ni.value = n;
-      }
-    } catch (e) {}
-    try {
-      var p1raw = localStorage.getItem('ctg-p1');
-      if (p1raw) {
-        var p1 = JSON.parse(p1raw);
-        var codeEl = document.getElementById('char-code-name');
-        if (codeEl) {
-          if (p1.cd) codeEl.innerHTML = 'Code Name: <b>' + p1.cd + '</b>';
-          else codeEl.textContent = '';
-        }
-        var strip = document.getElementById('char-stat-strip');
-        if (strip) {
-          var updated = localStorage.getItem('ctg-last-updated');
-          var count = localStorage.getItem('ctg-edit-count');
-          var parts = [];
-          if (updated) {
-            var d = new Date(updated);
-            var diff = Date.now() - d.getTime();
-            var mins = Math.floor(diff / 60000);
-            var hrs = Math.floor(mins / 60);
-            var days = Math.floor(hrs / 24);
-            var lbl = days > 0 ? days + 'd ago' : hrs > 0 ? hrs + 'h ago' : mins > 0 ? mins + 'm ago' : 'just now';
-            parts.push('<span class="char-stat-item">Last Edited: <b>' + lbl + '</b></span>');
-          }
-          if (count && parseInt(count) > 0)
-            parts.push('<span class="char-stat-item">Edit Sessions: <b>' + count + '</b></span>');
-          if (parts.length) strip.innerHTML = parts.join('<span style="color:rgba(192,152,24,0.2)">·</span>');
-        }
-      }
-    } catch (e) {}
-    var checks = [
-      { id: 'dot-p1', key: 'ctg-p1' },
-      { id: 'dot-p2', key: 'ctg-p2' },
-      { id: 'dot-p3', key: 'ctg-faculties' },
-      { id: 'dot-p4', key: 'ctg-p4' },
-      { id: 'dot-p5', key: 'ctg-skills' },
-    ];
-    checks.forEach(function (c) {
-      try {
-        var row = document.getElementById(c.id);
-        if (!row) return;
-        var dot = row.querySelector('.card-data-dot');
-        var lbl = row.querySelector('.card-data-label');
-        var val = localStorage.getItem(c.key);
-        if (val) { dot.classList.add('has-data'); lbl.textContent = 'Data saved'; }
-        else { dot.classList.remove('has-data'); lbl.textContent = 'No data'; }
-      } catch (e) {}
-    });
-    if (window.ctgSync) window.ctgSync.updateLastSyncedDisplay();
-  }
+// data dots
+const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p2:['ctg-inventory','ctg-mula','ctg-armour-list','ctg-charms'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-food'],p5:['ctg-skills']};
+document.querySelectorAll('.dd').forEach(dd=>{const pg=dd.dataset.page;let has=false;(map[pg]||[]).forEach(k=>{const v=lg(k);if(v&&v!=='[]'&&v!=='{}'&&v!=='')has=true;});if(has)dd.classList.add('has-data');});
 
-  window.ctgLogin = async function () {
-    var u = document.getElementById('login-user').value.trim();
-    var p = document.getElementById('login-pin').value.trim();
-    var errEl = document.getElementById('login-error');
-    var btn = document.getElementById('login-btn');
-    errEl.textContent = '';
-    if (!u) { errEl.textContent = '⟡ Enter an operative handle'; return; }
-    if (!/^\d{4}$/.test(p)) { errEl.textContent = '⟡ PIN must be exactly 4 digits'; return; }
-    btn.textContent = 'Connecting...';
-    btn.disabled = true;
-    try {
-      var result = await window.ctgSync.login(u, p);
-      document.getElementById('login-modal').style.display = 'none';
-      showCloudBar(u);
-      if (!result.isNew) refreshIndexData();
-      window.ctgSync.start();
-    } catch (e) {
-      errEl.textContent = '⟡ ' + e.message;
-    } finally {
-      btn.textContent = 'Access Dossier';
-      btn.disabled = false;
-    }
-  };
+// sync panel
+function openSync(){document.getElementById('slideup').classList.add('open');document.getElementById('scrim').classList.add('open');}
+function closeSync(){document.getElementById('slideup').classList.remove('open');document.getElementById('scrim').classList.remove('open');}
+function genExport(){const data={};allKeys().forEach(k=>data[k]=localStorage.getItem(k));document.getElementById('export-area').value=btoa(unescape(encodeURIComponent(JSON.stringify(data))));}
+function copyExport(){const t=document.getElementById('export-area');if(!t.value)genExport();navigator.clipboard.writeText(t.value).then(()=>{document.getElementById('su-hint').textContent='✓ Copied to clipboard.';}).catch(()=>t.select());}
+function doImport(){const raw=document.getElementById('import-area').value.trim();const h=document.getElementById('su-hint');try{const d=JSON.parse(decodeURIComponent(escape(atob(raw))));Object.entries(d).forEach(([k,v])=>localStorage.setItem(k,v));h.textContent='✓ Restored. Reloading...';h.style.color='var(--green3)';setTimeout(()=>location.reload(),900);}catch(e){h.textContent='✕ Invalid save code.';h.style.color='var(--red)';}}
+function clearAll(){if(!confirm('Clear ALL character data? Export a backup first if unsure.'))return;allKeys().forEach(k=>localStorage.removeItem(k));setTimeout(()=>location.reload(),500);}
 
-  window.ctgOffline = function () {
-    document.getElementById('login-modal').style.display = 'none';
-  };
-
-  window.ctgLogout = function () {
-    window.ctgSync.logout();
-    document.getElementById('cloud-bar').classList.remove('visible');
-    document.getElementById('login-modal').style.display = 'flex';
-    document.getElementById('login-user').value = '';
-    document.getElementById('login-pin').value = '';
-    document.getElementById('login-error').textContent = '';
-  };
-
-  // ── Init ──────────────────────────────────────────────────────────────
-  function init() {
-    var user = window.ctgSync && window.ctgSync.getUser();
-    if (!user) {
-      document.getElementById('login-modal').style.display = 'flex';
-    } else {
-      showCloudBar(user);
-    }
-  }
-
-  // Enter key shortcuts on login fields
-  var userFld = document.getElementById('login-user');
-  var pinFld = document.getElementById('login-pin');
-  if (userFld) userFld.addEventListener('keydown', function (e) { if (e.key === 'Enter') pinFld.focus(); });
-  if (pinFld) pinFld.addEventListener('keydown', function (e) { if (e.key === 'Enter') window.ctgLogin(); });
-
-  init();
-})();
+// transitions
+document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const href=a.getAttribute('href');document.getElementById('hub').style.animation='pileOut .22s ease both';setTimeout(()=>location.href=href,180);});});
+const st=document.createElement('style');st.textContent='@keyframes pileOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-40px);}}';document.head.appendChild(st);
 </script>
 </body>
 </html>

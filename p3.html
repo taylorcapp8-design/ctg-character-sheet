@@ -3,410 +3,117 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080a04">
-<link rel="stylesheet" href="ctg-themes.css">
-<title>CTG — Character Sheet · Page III</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400;700&family=Cinzel+Decorative:wght@400;700&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --gold: #c09818; --gold-light: #ddb828; --gold-dim: #604808;
-    --olive: #3a4020; --olive-dark: #151a08; --olive-mid: #1e2410;
-    --red: #6a1010; --red-bright: #aa1800;
-    --bg: #080a04; --panel: #0d1006;
-    --border: rgba(192,152,24,0.22); --border-bright: rgba(192,152,24,0.55);
-    --text: #c4b870; --text-dim: #524e2c; --text-bright: #e8d490;
-    --suit-spade: #7898aa; --suit-club: #7a9868; --suit-heart: #b02828; --suit-diamond: #4470aa;
-    --active-glow: rgba(200,160,32,0.15); --inactive: rgba(200,160,32,0.06); --strike: rgba(200,160,32,0.25);
-  }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body {
-    background: var(--bg);
-    background-image:
-      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(28,35,10,0.9) 0%, transparent 70%),
-      radial-gradient(ellipse 45% 45% at 5% 95%, rgba(80,12,12,0.3) 0%, transparent 60%),
-      radial-gradient(ellipse 45% 45% at 95% 5%, rgba(28,40,10,0.3) 0%, transparent 60%),
-      repeating-linear-gradient(0deg,transparent,transparent 52px,rgba(192,152,24,0.016) 52px,rgba(192,152,24,0.016) 53px),
-      repeating-linear-gradient(90deg,transparent,transparent 52px,rgba(192,152,24,0.016) 52px,rgba(192,152,24,0.016) 53px);
-    color: var(--text); font-family: 'Rajdhani', sans-serif; min-height: 100vh; padding: 20px;
-  }
-  .sheet { max-width: 960px; margin: 0 auto; position: relative; z-index: 1; }
-  .outer-frame { border:1px solid rgba(192,152,24,0.18); box-shadow:inset 0 0 60px rgba(0,0,0,0.6),0 0 40px rgba(0,0,0,0.8); padding:16px; position:relative; }
-  .outer-frame::before { content:'◈'; position:absolute; top:8px; left:12px; color:var(--gold-dim); font-size:0.7rem; }
-  .outer-frame::after  { content:'◈'; position:absolute; bottom:8px; right:12px; color:var(--gold-dim); font-size:0.7rem; }
-
-  /* CORNER ORNAMENTS */
-  .corner-ornament { position:fixed; width:80px; height:80px; pointer-events:none; z-index:0; opacity:0.18; }
-  .corner-ornament svg { width:100%; height:100%; }
-  .co-tl { top:10px; left:10px; }
-  .co-tr { top:10px; right:10px; transform:scaleX(-1); }
-  .co-bl { bottom:10px; left:10px; transform:scaleY(-1); }
-  .co-br { bottom:10px; right:10px; transform:scale(-1); }
-
-  /* HEADER */
-  .sheet-header { text-align:center; margin-bottom:20px; position:relative; padding:24px 0 16px; }
-  .sheet-header::before { content:''; position:absolute; bottom:0; left:10%; right:10%; height:1px; background:linear-gradient(90deg,transparent,var(--gold),var(--gold-light),var(--gold),transparent); }
-  .ctg-badge { font-family:'Bebas Neue',sans-serif; font-size:0.75rem; letter-spacing:6px; color:var(--gold-dim); margin-bottom:6px; }
-  .sheet-title { font-family:'Bebas Neue',sans-serif; font-size:2.4rem; color:var(--gold); letter-spacing:4px; text-shadow:0 0 30px rgba(200,160,32,0.3); margin-bottom:4px; }
-  .sheet-sub { font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:var(--text-dim); letter-spacing:3px; }
-  .wing-divider { display:flex; align-items:center; justify-content:center; gap:12px; margin:12px 0 20px; }
-  .wing-divider .line { flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--gold-dim)); }
-  .wing-divider .line.r { background:linear-gradient(90deg,var(--gold-dim),transparent); }
-  .wing-divider .emblem { color:var(--gold); font-size:1rem; opacity:0.7; }
-
-  /* ACTIVE BAR */
-  .active-bar { background:var(--olive-dark); border:1px solid var(--border-bright); padding:12px 16px; margin-bottom:16px; display:flex; align-items:center; gap:16px; clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0 calc(100% - 6px),0 6px); flex-wrap:wrap; }
-  .active-bar-label { font-family:'Share Tech Mono',monospace; font-size:0.58rem; letter-spacing:3px; color:var(--gold-dim); min-width:100px; }
-  .active-slots { display:flex; gap:10px; flex:1; flex-wrap:wrap; }
-  .active-slot { flex:1; min-width:120px; background:var(--olive-mid); border:1px solid var(--border-bright); padding:8px 12px; text-align:center; min-height:36px; font-family:'Cinzel',serif; font-size:0.85rem; color:var(--gold); display:flex; align-items:center; justify-content:center; transition:background 0.2s; clip-path:polygon(4px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,0 calc(100% - 4px),0 4px); }
-  .active-slot.empty { color:var(--text-dim); font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:2px; }
-  .active-rule { font-family:'Share Tech Mono',monospace; font-size:0.55rem; color:var(--text-dim); font-style:italic; }
-
-  /* FACULTY GRID */
-  .faculty-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
-
-  /* FACULTY CARD */
-  .faculty-card { background:var(--panel); border:1px solid var(--border); position:relative; overflow:hidden; transition:border-color 0.2s; }
-  .faculty-card::before { content:''; position:absolute; inset:2px; border:1px solid rgba(200,160,32,0.06); pointer-events:none; }
-  .faculty-card.active-card { border-color:var(--gold); }
-  .faculty-card.active-card::after { content:'ACTIVE'; position:absolute; top:8px; right:8px; font-family:'Share Tech Mono',monospace; font-size:0.45rem; letter-spacing:2px; color:var(--gold); background:var(--olive-dark); border:1px solid var(--gold-dim); padding:1px 5px; }
-  .faculty-header { padding:10px 12px 8px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:8px; }
-  .faculty-icon { font-size:1.1rem; }
-  .faculty-name { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:var(--text-bright); letter-spacing:3px; }
-  .faculty-note { font-family:'Share Tech Mono',monospace; font-size:0.52rem; color:var(--text-dim); padding:6px 12px 8px; border-bottom:1px solid rgba(200,160,32,0.1); line-height:1.4; font-style:italic; }
-
-  /* TUNING ENTRIES */
-  .tuning-list { padding:8px 10px; }
-  .tuning-entry { padding:7px 8px; margin-bottom:5px; border:1px solid rgba(200,160,32,0.12); background:var(--inactive); cursor:pointer; transition:all 0.15s; position:relative; overflow:hidden; }
-  .tuning-entry:hover { border-color:rgba(200,160,32,0.4); }
-  .tuning-entry.selected { background:var(--active-glow); border-color:var(--gold); }
-  .tuning-entry.selected::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--gold); }
-  .tuning-entry.strikethrough { opacity:0.35; }
-  .tuning-entry.strikethrough .tuning-name { text-decoration:line-through; text-decoration-color:var(--strike); }
-  .tuning-name { font-family:'Cinzel',serif; font-size:0.72rem; color:var(--text-bright); margin-bottom:3px; }
-  .tuning-actions { font-family:'Share Tech Mono',monospace; font-size:0.52rem; color:var(--text-dim); line-height:1.4; }
-  .tuning-actions strong { color:var(--gold-dim); }
-
-  /* SELECTION RULE */
-  .select-rule { padding:8px 12px; border-top:1px solid var(--border); font-family:'Share Tech Mono',monospace; font-size:0.52rem; color:var(--text-dim); display:flex; align-items:center; gap:6px; }
-  .select-indicator { width:8px; height:8px; border-radius:50%; background:var(--olive-mid); border:1px solid var(--gold-dim); display:inline-block; }
-  .select-indicator.on { background:var(--gold); border-color:var(--gold); box-shadow:0 0 6px rgba(200,160,32,0.5); }
-
-  /* FOOTER */
-  .sheet-footer { text-align:center; margin-top:20px; padding-top:14px; border-top:1px solid var(--border); font-family:'Share Tech Mono',monospace; font-size:0.55rem; letter-spacing:3px; color:var(--text-dim); }
-  .sheet-footer .suits { font-size:0.8rem; margin-bottom:4px; }
-  .sheet-footer .suits span:nth-child(1) { color:var(--suit-spade); }
-  .sheet-footer .suits span:nth-child(2) { color:var(--suit-club); }
-  .sheet-footer .suits span:nth-child(3) { color:var(--suit-heart); }
-  .sheet-footer .suits span:nth-child(4) { color:var(--suit-diamond); }
-
-  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-  .faculty-card { animation:fadeUp 0.35s ease both; }
-
-  @media(max-width:700px) { .faculty-grid { grid-template-columns:1fr 1fr; } }
-  @media(max-width:480px) { .faculty-grid { grid-template-columns:1fr; } body { padding:10px; } }
-
-  /* PRINT */
-  @media print {
-    .ctg-nav, .corner-ornament, .dice-float-btn, .dice-panel { display:none !important; }
-    body { background:#fff !important; color:#000 !important; padding:0 !important; }
-    .outer-frame { border:none !important; padding:0 !important; }
-    .outer-frame::before, .outer-frame::after { display:none; }
-    .faculty-card { background:#fff !important; border:1px solid #ccc !important; break-inside:avoid; }
-    .faculty-card::before { display:none; }
-    .faculty-card.active-card { border:2px solid #333 !important; }
-    .tuning-entry.selected { background:#f0f0f0 !important; border:1px solid #333 !important; }
-    .faculty-grid { grid-template-columns:1fr 1fr !important; }
-    @page { margin:1.5cm; }
-  }
-
-  /* DICE */
-  .dice-float-btn { position:fixed; bottom:20px; right:20px; z-index:500; width:44px; height:44px; background:var(--olive-dark); border:1px solid var(--gold-dim); color:var(--gold); font-size:1.2rem; cursor:pointer; display:flex; align-items:center; justify-content:center; clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px); transition:all 0.2s; box-shadow:0 4px 20px rgba(0,0,0,0.5); }
-  .dice-float-btn:hover { background:var(--olive-mid); border-color:var(--gold); }
-  .dice-panel { position:fixed; bottom:74px; right:20px; z-index:500; width:210px; background:#0d1006; border:1px solid rgba(192,152,24,0.45); padding:14px; display:none; clip-path:polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px); box-shadow:0 8px 32px rgba(0,0,0,0.7); }
-  .dice-panel.open { display:block; }
-  .dice-panel-title { font-family:'Bebas Neue',sans-serif; font-size:0.85rem; letter-spacing:5px; color:var(--gold-dim); margin-bottom:10px; }
-  .dice-btns { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:10px; }
-  .die-btn { background:transparent; border:1px solid var(--border); color:var(--text); font-family:'Share Tech Mono',monospace; font-size:0.62rem; letter-spacing:1px; padding:6px 4px; cursor:pointer; transition:all 0.2s; clip-path:polygon(3px 0,calc(100% - 3px) 0,100% 3px,100% calc(100% - 3px),calc(100% - 3px) 100%,3px 100%,0 calc(100% - 3px),0 3px); }
-  .die-btn:hover { border-color:var(--gold); color:var(--gold); background:rgba(192,152,24,0.08); }
-  .dice-result-area { border:1px solid var(--border); background:rgba(0,0,0,0.3); padding:10px; text-align:center; margin-bottom:8px; min-height:52px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-  .dice-result-num { font-family:'Cinzel',serif; font-size:2rem; color:var(--gold); line-height:1; }
-  .dice-result-die { font-family:'Share Tech Mono',monospace; font-size:0.5rem; color:var(--text-dim); letter-spacing:2px; }
-  .dice-history { list-style:none; }
-  .dice-history li { font-family:'Share Tech Mono',monospace; font-size:0.52rem; color:var(--text-dim); padding:2px 0; border-bottom:1px solid rgba(192,152,24,0.06); }
-  .dice-history li:last-child { border-bottom:none; }
-  .dice-history li b { color:var(--gold); }
-  @keyframes diceRoll { 0%{transform:scale(0.6) rotate(-20deg);opacity:0} 60%{transform:scale(1.2) rotate(8deg)} 100%{transform:scale(1) rotate(0);opacity:1} }
-  .dice-rolling { animation:diceRoll 0.35s ease; }
-
-  /* NAV */
-  .ctg-nav { position:sticky;top:0;z-index:100;background:rgba(6,8,2,0.98);border-bottom:1px solid rgba(200,160,32,0.25);backdrop-filter:blur(6px);display:flex;align-items:center;padding:0 16px;height:40px;font-family:'Share Tech Mono',monospace;font-size:0.58rem;letter-spacing:2px; }
-  .ctg-nav-home { color:#c8a020;text-decoration:none;font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:3px;padding-right:16px;border-right:1px solid rgba(200,160,32,0.2);margin-right:8px;white-space:nowrap; }
-  .ctg-nav-home:hover { color:#e8c040; }
-  .ctg-nav a { color:#7a7050;text-decoration:none;padding:0 10px;height:100%;display:flex;align-items:center;border-right:1px solid rgba(200,160,32,0.1);transition:color .15s,background .15s;white-space:nowrap; }
-  .ctg-nav a:hover { color:#d4c88a;background:rgba(200,160,32,0.05); }
-  .ctg-nav a.active { color:#c8a020;border-bottom:2px solid #c8a020; }
-  .ctg-nav-name { margin-left:auto;font-family:'Cinzel',serif;font-size:0.65rem;color:#c8a020;opacity:0.8;padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px; }
-  .ctg-nav-saved { font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:#c8a020;opacity:0;transition:opacity 0.4s;padding-right:8px;white-space:nowrap; }
-  .ctg-nav-saved.show { opacity:1; }
-</style>
+<meta name="theme-color" content="#050508">
+<title>CTG — Core Faculties</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ctg.css">
 </head>
 <body>
-
-<nav class="ctg-nav" id="ctg-nav-bar">
-  <a class="ctg-nav-home" href="index.html">CTG</a>
-  <a href="p1.html" id="nav-p1">I · Stats</a>
-  <a href="p2.html" id="nav-p2">II · Inventory</a>
-  <a href="p3.html" id="nav-p3">III · Faculties</a>
-  <a href="p4.html" id="nav-p4">IV · Arsenal</a>
-  <a href="p5.html" id="nav-p5">V · Skills</a>
-  <span class="ctg-nav-name" id="nav-char-name">Operative</span>
-  <span class="ctg-nav-saved" id="nav-saved">Saved ✓</span>
+<nav class="ctg-nav">
+  <a class="ctg-nav-home" href="index.html" data-nav>CTG</a>
+  <div class="ctg-nav-links">
+    <a href="p1.html" data-nav>I·STATS</a>
+    <a href="p2.html" data-nav>II·GEAR</a>
+    <a href="p3.html" class="active">III·FAC</a>
+    <a href="p4.html" data-nav>IV·ARMS</a>
+    <a href="p5.html" data-nav>V·SKILL</a>
+  </div>
+  <div class="nav-char-name" id="nav-name"><span>OPERATIVE //</span> —</div>
+  <span class="save-flash" id="save-flash">SAVED ✓</span>
 </nav>
-<script>(function(){
-  var pg=location.pathname.split('/').pop()||'index.html';
-  var m={'p1.html':'nav-p1','p2.html':'nav-p2','p3.html':'nav-p3','p4.html':'nav-p4','p5.html':'nav-p5'};
-  var id=m[pg];if(id){var el=document.getElementById(id);if(el)el.classList.add('active');}
-  try{var n=localStorage.getItem('ctg-char-name');if(n)document.getElementById('nav-char-name').textContent=n;}catch(e){}
-})();</script>
 
-<!-- Corner ornaments -->
-<div class="corner-ornament co-tl"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><path d="M8 2 L8 8 L2 8" stroke="#c8a020" stroke-width="0.5" opacity="0.5"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-<div class="corner-ornament co-tr"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-<div class="corner-ornament co-bl"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-<div class="corner-ornament co-br"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-
+<div class="page-wrap" id="page-wrap">
 <div class="sheet">
-<div class="outer-frame">
-
   <div class="sheet-header">
-    <div class="ctg-badge">Call To Gallahad</div>
-    <div class="sheet-title">Core Faculties</div>
-    <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:6px;color:var(--gold-dim);margin-top:2px;">— PAGE III —</div>
-    <div class="sheet-sub">◈ &nbsp; operational record — page iii &nbsp; ◈</div>
-  </div>
-  <div class="wing-divider">
-    <div class="line"></div><div class="emblem">♠ ♣ ♥ ♦</div><div class="line r"></div>
+    <div class="head-tag">CALL TO GALLAHAD // OPERATIONAL RECORD</div>
+    <div class="sheet-title">CORE <em>FACULTIES</em></div>
+    <div class="head-stamp">PAGE III</div>
   </div>
 
-  <!-- ACTIVE BAR -->
   <div class="active-bar">
-    <div>
-      <div class="active-bar-label">Active Faculties</div>
-      <div class="active-rule">Select 1 per category · Max 2 active · Switch once per encounter free</div>
+    <div class="active-bar-info">
+      <div class="active-bar-label">ACTIVE FACULTIES</div>
+      <div class="active-rule">1 PER CATEGORY · MAX 2 ACTIVE · SWITCH ONCE PER ENCOUNTER FREE</div>
     </div>
     <div class="active-slots">
-      <div class="active-slot empty" id="active-1">— Slot I —</div>
-      <div class="active-slot empty" id="active-2">— Slot II —</div>
+      <div class="active-slot empty" id="active-1">— SLOT I —</div>
+      <div class="active-slot empty" id="active-2">— SLOT II —</div>
     </div>
   </div>
 
   <div class="faculty-grid" id="faculty-grid"></div>
 
   <div class="sheet-footer">
-    <div class="suits"><span>♠</span>&nbsp;<span>♣</span>&nbsp;<span>♥</span>&nbsp;<span>♦</span></div>
-    CALL TO GALLAHAD &nbsp;·&nbsp; CORE FACULTIES &nbsp;·&nbsp; PAGE III
+    <div class="suits"><span class="s1">♠</span><span class="s2">♣</span><span class="s3">♥</span><span class="s4">♦</span></div>
+    CALL TO GALLAHAD · CORE FACULTIES · PAGE III
   </div>
 </div>
-</div>
-
-<!-- DICE ROLLER -->
-<button class="dice-float-btn" id="dice-toggle" title="Roll Dice">◈</button>
-<div class="dice-panel" id="dice-panel">
-  <div class="dice-panel-title">Dice Roller</div>
-  <div class="dice-btns">
-    <button class="die-btn" onclick="ctgRoll(4)">D4</button>
-    <button class="die-btn" onclick="ctgRoll(6)">D6</button>
-    <button class="die-btn" onclick="ctgRoll(8)">D8</button>
-    <button class="die-btn" onclick="ctgRoll(10)">D10</button>
-    <button class="die-btn" onclick="ctgRoll(12)">D12</button>
-    <button class="die-btn" onclick="ctgRoll(20)">D20</button>
-  </div>
-  <div class="dice-result-area">
-    <div class="dice-result-num" id="dice-num">—</div>
-    <div class="dice-result-die" id="dice-die">select a die</div>
-  </div>
-  <ul class="dice-history" id="dice-history"></ul>
 </div>
 
 <script>
-const FACULTIES = [
-  { id:'force', name:'Force', icon:'♣', note:'Raw physical output: smashing, grappling, kicking doors in.',
-    tuning:[
-      { name:'Large Handed', actions:'Smash doors, throw barrels, grapple massive Marionettes, break objects for environmental advantages.', strikethrough:true },
-      { name:'Rusty Anchor', actions:'Hold your ground against tides, resist pushes, brace for heavy attacks.' },
-      { name:'Bull Wit Da Horn', actions:'Sprint into action, slam through obstacles, chase fleeing threats.' },
-    ]
-  },
-  { id:'finess', name:'Finesse', icon:'♦', note:'Control and precision: lockpicking, surgery, shooting, sleight-of-hand.',
-    tuning:[
-      { name:'Long Fingernails', actions:'Thread small mechanisms, pick locks, operate delicate machinery, snipe Marionette weak points.' },
-      { name:"Shadow's Shadow", actions:'Move quietly, slip past guards, shadow objects, avoid notice.' },
-      { name:'Glover', actions:'Multi-action precision, manipulate multiple devices or objects, perform sequences.', strikethrough:true },
-    ]
-  },
-  { id:'sense', name:'Sense', icon:'◉', note:'Perception and awareness: tracking, spotting danger, reading body language.',
-    tuning:[
-      { name:'Starved Hound', actions:'Identify hidden Marionettes, trace unusual movements, follow scent or mechanical traces.', strikethrough:true },
-      { name:'Hawk-Eagle Eyes', actions:'Spot ambushes, identify danger before it strikes, read room layout quickly.', strikethrough:true },
-      { name:'Large Drums', actions:'Listen to distant sounds, detect machinery cues, anticipate enemy intentions.', strikethrough:true },
-    ]
-  },
-  { id:'logic', name:'Logic', icon:'◈', note:'Processing and problem solving: repairing, decoding, planning, strategy.',
-    tuning:[
-      { name:'A Smart Thief?', actions:'See weaknesses in structures, plan environmental solutions, reroute machinery.', strikethrough:true },
-      { name:'Plague Surgeon', actions:'Repair engines, disable Marionette mechanisms, solve delicate problems.' },
-      { name:'Folder Mind', actions:'Observe sequences, predict Marionette routines, find weaknesses in plans.' },
-    ]
-  },
-  { id:'velvet', name:'Velvet', icon:'♥', note:'Social gravity: intimidation, leadership, charm, lying.',
-    tuning:[
-      { name:'Silver and Steel', actions:'Convince others, defuse tension, rally allies, manipulate Marionettes emotionally.', strikethrough:true },
-      { name:'Bronze and Woah', actions:'Force compliance, scare off Marionettes or rivals, establish authority.' },
-      { name:'Turned Around Mirror', actions:'Reflect moods, mirror speech or gesture to manipulate outcomes.' },
-    ]
-  },
-  { id:'endure', name:'Endure', icon:'♠', note:'Pain tolerance and resilience: surviving poison, holding breath, resisting panic.',
-    tuning:[
-      { name:'Steel Jaw, Low Brim', actions:'Resist panic, ignore distractions, remain composed during chaos.', strikethrough:true },
-      { name:'Cutting Board', actions:'Shake off damage, survive hazardous conditions, resist toxins.' },
-      { name:'Tongue-less', actions:'Consume the worst of the worst, perform impossible feats of endurance. Drink seawater.' },
-    ]
-  },
+const FACULTIES=[
+  {id:'force',name:'Force',icon:'♣',note:'Raw physical output: smashing, grappling, kicking doors in.',tuning:[
+    {name:'Large Handed',actions:'Smash doors, throw barrels, grapple massive Marionettes, break objects for environmental advantages.',strikethrough:true},
+    {name:'Rusty Anchor',actions:'Hold your ground against tides, resist pushes, brace for heavy attacks.'},
+    {name:'Bull Wit Da Horn',actions:'Sprint into action, slam through obstacles, chase fleeing threats.'}]},
+  {id:'finess',name:'Finesse',icon:'♦',note:'Control and precision: lockpicking, surgery, shooting, sleight-of-hand.',tuning:[
+    {name:'Long Fingernails',actions:'Thread small mechanisms, pick locks, operate delicate machinery, snipe weak points.'},
+    {name:"Shadow's Shadow",actions:'Move quietly, slip past guards, shadow objects, avoid notice.'},
+    {name:'Glover',actions:'Multi-action precision, manipulate multiple devices, perform sequences.',strikethrough:true}]},
+  {id:'sense',name:'Sense',icon:'◉',note:'Perception and awareness: tracking, spotting danger, reading body language.',tuning:[
+    {name:'Starved Hound',actions:'Identify hidden Marionettes, trace unusual movements, follow traces.',strikethrough:true},
+    {name:'Hawk-Eagle Eyes',actions:'Spot ambushes, identify danger before it strikes, read layouts quickly.',strikethrough:true},
+    {name:'Large Drums',actions:'Listen to distant sounds, detect machinery cues, anticipate intentions.',strikethrough:true}]},
+  {id:'logic',name:'Logic',icon:'◈',note:'Processing and problem solving: repairing, decoding, planning, strategy.',tuning:[
+    {name:'A Smart Thief?',actions:'See weaknesses in structures, plan environmental solutions, reroute machinery.',strikethrough:true},
+    {name:'Plague Surgeon',actions:'Repair engines, disable Marionette mechanisms, solve delicate problems.'},
+    {name:'Folder Mind',actions:'Observe sequences, predict Marionette routines, find weaknesses in plans.'}]},
+  {id:'velvet',name:'Velvet',icon:'♥',note:'Social gravity: intimidation, leadership, charm, lying.',tuning:[
+    {name:'Silver and Steel',actions:'Convince others, defuse tension, rally allies, manipulate emotionally.',strikethrough:true},
+    {name:'Bronze and Woah',actions:'Force compliance, scare off rivals, establish authority.'},
+    {name:'Turned Around Mirror',actions:'Reflect moods, mirror speech or gesture to manipulate outcomes.'}]},
+  {id:'endure',name:'Endure',icon:'♠',note:'Pain tolerance and resilience: surviving poison, holding breath, resisting panic.',tuning:[
+    {name:'Steel Jaw, Low Brim',actions:'Resist panic, ignore distractions, remain composed during chaos.',strikethrough:true},
+    {name:'Cutting Board',actions:'Shake off damage, survive hazardous conditions, resist toxins.'},
+    {name:'Tongue-less',actions:'Consume the worst of the worst, perform impossible feats. Drink seawater.'}]},
 ];
+const state={selected:{},active:[null,null]};
+(function(){const s=load('ctg-faculties');if(s){const d=JSON.parse(s);state.selected=d.selected||{};state.active=d.active||[null,null];}else{state.selected={force:1,finess:0};state.active=['force','finess'];}})();
+function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
+function persist(){try{localStorage.setItem('ctg-faculties',JSON.stringify(state));localStorage.setItem('ctg-last-edit',Date.now());flashSaved();}catch(e){}}
 
-const state = { selected: {}, active: [null, null] };
-
-// Load from localStorage or use defaults
-(function() {
-  try {
-    const raw = localStorage.getItem('ctg-faculties');
-    if (raw) {
-      const saved = JSON.parse(raw);
-      if (saved.selected) state.selected = saved.selected;
-      if (saved.active) state.active = saved.active;
-      return;
-    }
-  } catch(e) {}
-  // Defaults
-  state.selected['force'] = 1;
-  state.selected['finess'] = 0;
-  state.active = ['force','finess'];
-})();
-
-function saveFaculties() {
-  try {
-    localStorage.setItem('ctg-faculties', JSON.stringify({ selected: state.selected, active: state.active }));
-    ctgSaved();
-  } catch(e) {}
-}
-
-function ctgSaved() {
-  var el = document.getElementById('nav-saved');
-  if (el) { el.classList.add('show'); clearTimeout(el._t); el._t = setTimeout(function(){ el.classList.remove('show'); }, 1800); }
-  try {
-    localStorage.setItem('ctg-last-updated', new Date().toISOString());
-    var cnt = parseInt(localStorage.getItem('ctg-edit-count')||'0')+1;
-    localStorage.setItem('ctg-edit-count', String(cnt));
-  } catch(e) {}
-}
-
-function getActiveCount() { return state.active.filter(Boolean).length; }
-
-function updateActiveBar() {
-  ['active-1','active-2'].forEach((id,i) => {
-    const el = document.getElementById(id);
-    const fid = state.active[i];
-    if (fid) {
-      const fac = FACULTIES.find(f=>f.id===fid);
-      const tidx = state.selected[fid];
-      const tuningName = (tidx != null) ? fac.tuning[tidx].name : '(no tuning)';
-      el.textContent = `${fac.icon} ${fac.name} · ${tuningName}`;
-      el.classList.remove('empty');
-    } else {
-      el.textContent = `— Slot ${['I','II'][i]} —`;
-      el.classList.add('empty');
-    }
+function updateActiveBar(){
+  ['active-1','active-2'].forEach((id,i)=>{
+    const el=document.getElementById(id);const fid=state.active[i];
+    if(fid){const f=FACULTIES.find(x=>x.id===fid);const t=state.selected[fid];const tn=(t!=null)?f.tuning[t].name:'(none)';el.textContent=`${f.icon} ${f.name} · ${tn}`;el.classList.remove('empty');}
+    else{el.textContent=`— SLOT ${['I','II'][i]} —`;el.classList.add('empty');}
   });
 }
-
-function buildGrid() {
-  const grid = document.getElementById('faculty-grid');
-  grid.innerHTML = '';
-  FACULTIES.forEach(fac => {
-    const isActive = state.active.includes(fac.id);
-    const card = document.createElement('div');
-    card.className = 'faculty-card' + (isActive ? ' active-card' : '');
-    card.id = 'card-' + fac.id;
-    const selectedIdx = state.selected[fac.id];
-    card.innerHTML = `
-      <div class="faculty-header">
-        <span class="faculty-icon">${fac.icon}</span>
-        <span class="faculty-name">${fac.name}</span>
-      </div>
+function build(){
+  const grid=document.getElementById('faculty-grid');grid.innerHTML='';
+  FACULTIES.forEach(fac=>{
+    const isActive=state.active.includes(fac.id);const sel=state.selected[fac.id];
+    const card=document.createElement('div');card.className='faculty-card'+(isActive?' active-card':'');
+    card.innerHTML=`
+      <div class="faculty-header"><span class="faculty-icon">${fac.icon}</span><span class="faculty-name">${fac.name}</span></div>
       <div class="faculty-note">${fac.note}</div>
-      <div class="tuning-list" id="tuning-${fac.id}">
-        ${fac.tuning.map((t,i) => `
-          <div class="tuning-entry ${t.strikethrough && selectedIdx !== i ? 'strikethrough' : ''} ${selectedIdx === i ? 'selected' : ''}"
-               onclick="selectTuning('${fac.id}', ${i})" id="tuning-${fac.id}-${i}">
-            <div class="tuning-name">${t.name}</div>
-            <div class="tuning-actions"><strong>Actions:</strong> ${t.actions}</div>
-          </div>`).join('')}
+      <div class="tuning-list">
+        ${fac.tuning.map((t,i)=>`<div class="tuning-entry ${t.strikethrough&&sel!==i?'strikethrough':''} ${sel===i?'selected':''}" onclick="selectTuning('${fac.id}',${i})"><div class="tuning-name">${t.name}</div><div class="tuning-actions"><strong>Actions:</strong> ${t.actions}</div></div>`).join('')}
       </div>
-      <div class="select-rule">
-        <span class="select-indicator ${isActive ? 'on' : ''}" id="ind-${fac.id}"></span>
-        <span>${isActive ? 'ACTIVE — click tuning to switch' : 'Click tuning to select · click again to activate'}</span>
-      </div>`;
+      <div class="select-rule"><span class="sel-ind ${isActive?'on':''}"></span><span>${isActive?'ACTIVE — click tuning to switch':'Click tuning to select'}</span></div>`;
     grid.appendChild(card);
   });
 }
-
-function selectTuning(facId, tIdx) {
-  const fac = FACULTIES.find(f=>f.id===facId);
-  const prev = state.selected[facId];
-  const isActive = state.active.includes(facId);
-  if (prev === tIdx) {
-    state.selected[facId] = null;
-    if (isActive) { const slot = state.active.indexOf(facId); state.active[slot] = null; }
-  } else {
-    state.selected[facId] = tIdx;
-    if (!isActive) {
-      const emptySlot = state.active.indexOf(null);
-      if (emptySlot !== -1) state.active[emptySlot] = facId;
-      else { state.active[0] = state.active[1]; state.active[1] = facId; }
-    }
-  }
-  buildGrid();
-  updateActiveBar();
-  saveFaculties();
+function selectTuning(fid,ti){
+  const isActive=state.active.includes(fid);
+  if(state.selected[fid]===ti){state.selected[fid]=null;if(isActive){state.active[state.active.indexOf(fid)]=null;}}
+  else{state.selected[fid]=ti;if(!isActive){const e=state.active.indexOf(null);if(e!==-1)state.active[e]=fid;else{state.active[0]=state.active[1];state.active[1]=fid;}}}
+  persist();build();updateActiveBar();
 }
-
-buildGrid();
-updateActiveBar();
-
-// Dice Roller
-(function(){
-  var log=[];
-  var panel=document.getElementById('dice-panel');
-  var btn=document.getElementById('dice-toggle');
-  btn.addEventListener('click',function(e){e.stopPropagation();panel.classList.toggle('open');});
-  document.addEventListener('click',function(e){
-    if(panel.classList.contains('open')&&!panel.contains(e.target)&&e.target!==btn)
-      panel.classList.remove('open');
-  });
-  window.ctgRoll=function(sides){
-    var r=Math.floor(Math.random()*sides)+1;
-    var numEl=document.getElementById('dice-num');
-    var dieEl=document.getElementById('dice-die');
-    numEl.textContent=r; dieEl.textContent='d'+sides;
-    numEl.style.color=r===sides?'#ddb828':r===1?'#aa1800':'#c09818';
-    numEl.classList.remove('dice-rolling'); void numEl.offsetWidth; numEl.classList.add('dice-rolling');
-    log.unshift({sides:sides,roll:r}); if(log.length>5)log.pop();
-    document.getElementById('dice-history').innerHTML=log.map(function(e){return '<li><b>'+e.roll+'</b> on d'+e.sides+'</li>';}).join('');
-  };
-})();
+(function(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();
+document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
+build();updateActiveBar();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="ctg-sync.js"></script>
-<script src="ctg-theme.js"></script>
 </body>
 </html>
