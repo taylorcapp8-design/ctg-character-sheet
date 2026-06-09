@@ -5,78 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#050508">
 <title>CTG — Core Faculties</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#050508;--bg2:#080b0f;--panel:#0a0d0a;
-  --purple:#7c3aed;--purple2:#9d5ff5;--purple-dim:#3d1a7a;--purple-glow:rgba(124,58,237,0.2);
-  --green:#1a4a1a;--green2:#2d6e2d;--green3:#4a9a4a;--green-glow:rgba(74,154,74,0.15);
-  --gold:#c8a020;--text:#c8d4c0;--text-dim:#4a5444;--text-bright:#e8f0e0;--red:#cc2200;
-  --border:rgba(124,58,237,0.25);--border2:rgba(124,58,237,0.5);
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);background-image:radial-gradient(ellipse 70% 50% at 50% 0%,rgba(60,26,122,0.18) 0%,transparent 60%),radial-gradient(ellipse 50% 50% at 0% 100%,rgba(26,74,26,0.15) 0%,transparent 55%),repeating-linear-gradient(0deg,transparent,transparent 54px,rgba(124,58,237,0.02) 54px,rgba(124,58,237,0.02) 55px),repeating-linear-gradient(90deg,transparent,transparent 54px,rgba(124,58,237,0.02) 54px,rgba(124,58,237,0.02) 55px);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;}
-.ctg-nav{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:2px solid var(--purple);display:flex;align-items:center;padding:0 18px;height:46px;font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;animation:navDrop .25s ease both;}
-@keyframes navDrop{from{transform:translateY(-100%);}to{transform:translateY(0);}}
-.ctg-nav-home{color:var(--purple2);text-decoration:none;font-family:'Black Han Sans',sans-serif;font-size:1.1rem;letter-spacing:3px;padding-right:18px;margin-right:10px;text-shadow:0 0 12px var(--purple-glow);}
-.ctg-nav-links{display:flex;height:100%;}
-.ctg-nav a{color:var(--text-dim);text-decoration:none;padding:0 14px;height:100%;display:flex;align-items:center;transition:all .15s;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);}
-.ctg-nav a:hover{color:var(--text-bright);background:var(--purple-glow);}
-.ctg-nav a.active{color:#fff;background:var(--purple);font-weight:700;}
-.nav-char-name{margin-left:auto;color:var(--green3);font-size:0.6rem;letter-spacing:1px;}
-.nav-char-name span{color:var(--text-dim);}
-.save-flash{margin-left:14px;color:var(--green3);opacity:0;transition:opacity .3s;font-size:0.58rem;}
-.save-flash.show{opacity:1;}
-.page-wrap{animation:pageIn .3s ease-out both;}
-@keyframes pageIn{from{opacity:0;transform:translateX(40px);}to{opacity:1;transform:translateX(0);}}
-.page-wrap.exit{animation:pageOut .2s ease-in both;}
-@keyframes pageOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-40px);}}
-.sheet{max-width:1040px;margin:0 auto;padding:24px 20px 60px;position:relative;}
-.sheet::before{content:'';position:absolute;left:8px;top:24px;bottom:60px;width:2px;background:linear-gradient(180deg,var(--purple),transparent 80%);}
-.sheet-header{position:relative;padding:10px 0 22px 24px;margin-bottom:18px;}
-.head-tag{font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:5px;color:var(--purple2);margin-bottom:4px;}
-.sheet-title{font-family:'Black Han Sans',sans-serif;font-size:2.8rem;color:var(--text-bright);letter-spacing:2px;line-height:0.95;text-shadow:3px 3px 0 var(--purple-dim);}
-.sheet-title em{color:var(--purple2);font-style:normal;}
-.head-stamp{display:inline-block;margin-top:6px;font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:4px;color:var(--green3);border:1px solid var(--green2);padding:2px 10px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);}
-/* active bar */
-.active-bar{background:var(--bg2);border:1px solid var(--border2);border-left:3px solid var(--purple);padding:14px 18px;margin-bottom:24px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%);}
-.active-bar-info{}
-.active-bar-label{font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:4px;color:var(--text-bright);margin-bottom:2px;}
-.active-rule{font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--purple2);letter-spacing:1px;}
-.active-slots{display:flex;gap:12px;flex:1;min-width:280px;}
-.active-slot{flex:1;background:var(--panel);border:1px solid var(--border2);padding:10px 14px;text-align:center;min-height:40px;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:2px;color:var(--green3);display:flex;align-items:center;justify-content:center;transition:all .2s;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);}
-.active-slot.empty{color:var(--text-dim);font-family:'Share Tech Mono',monospace;font-size:0.58rem;}
-/* faculty grid */
-.faculty-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
-.faculty-card{background:var(--panel);border:1px solid var(--border);border-top:2px solid var(--purple-dim);position:relative;overflow:hidden;transition:border-color .2s;clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%);animation:panelIn .4s ease both;}
-@keyframes panelIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
-.faculty-card.active-card{border-color:var(--purple2);border-top-color:var(--purple);box-shadow:0 0 18px var(--purple-glow);}
-.faculty-card.active-card::after{content:'ACTIVE';position:absolute;top:0;right:0;font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:2px;color:#fff;background:var(--purple);padding:2px 8px;clip-path:polygon(8px 0,100% 0,100% 100%,0 100%);}
-.faculty-header{padding:11px 13px 8px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;}
-.faculty-icon{font-size:1.1rem;color:var(--purple2);}
-.faculty-name{font-family:'Bebas Neue',sans-serif;font-size:1.15rem;color:var(--text-bright);letter-spacing:3px;}
-.faculty-note{font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);padding:7px 13px;line-height:1.4;font-style:italic;border-bottom:1px solid var(--border);}
-.tuning-list{padding:8px 10px;}
-.tuning-entry{padding:7px 9px;margin-bottom:5px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;transition:all .15s;position:relative;overflow:hidden;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);}
-.tuning-entry:hover{border-color:var(--border2);}
-.tuning-entry.selected{background:var(--purple-glow);border-color:var(--purple2);}
-.tuning-entry.selected::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--purple2);animation:flashIn .4s ease;}
-@keyframes flashIn{from{box-shadow:0 0 12px var(--purple2);}to{box-shadow:none;}}
-.tuning-entry.strikethrough{opacity:0.35;}
-.tuning-entry.strikethrough .tuning-name{text-decoration:line-through;}
-.tuning-name{font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:1px;color:var(--text-bright);margin-bottom:3px;}
-.tuning-actions{font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);line-height:1.4;}
-.tuning-actions strong{color:var(--green3);}
-.select-rule{padding:8px 12px;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);display:flex;align-items:center;gap:6px;}
-.sel-ind{width:8px;height:8px;background:var(--bg2);border:1px solid var(--purple-dim);display:inline-block;transform:rotate(45deg);}
-.sel-ind.on{background:var(--purple2);border-color:var(--purple2);box-shadow:0 0 6px var(--purple-glow);}
-.sheet-footer{text-align:center;margin-top:24px;padding-top:16px;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:3px;color:var(--text-dim);}
-.sheet-footer .suits{font-size:0.85rem;margin-bottom:5px;letter-spacing:6px;}
-.sheet-footer .suits .s1{color:#7898aa;}.sheet-footer .suits .s2{color:var(--green3);}.sheet-footer .suits .s3{color:var(--red);}.sheet-footer .suits .s4{color:var(--purple2);}
-@media(max-width:760px){.faculty-grid{grid-template-columns:1fr 1fr;}}
-@media(max-width:480px){.faculty-grid{grid-template-columns:1fr;}.sheet-title{font-size:2rem;}}
-@media print{body{background:#fff;color:#000;}.ctg-nav{display:none!important;}.faculty-card{break-inside:avoid;}.sheet::before{display:none;}}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ctg.css">
 </head>
 <body>
 <nav class="ctg-nav">
