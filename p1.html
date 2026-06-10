@@ -117,7 +117,7 @@
   <div class="block">
     <div class="two-col">
       <div>
-        <div class="sec-label"><span class="mk">♣</span>ATTRIBUTES</div>
+        <div class="sec-label"><span class="mk">♣&#xFE0E;</span>ATTRIBUTES</div>
         <div class="panel">
           <div class="stat-bars" id="stat-bars"></div>
           <button class="add-btn add-row" onclick="addStat()">ADD ATTRIBUTE</button>
@@ -126,20 +126,20 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:18px;">
         <div>
-          <div class="sec-label"><span class="mk">◈</span>SUPPLIES</div>
+          <div class="sec-label"><span class="mk">◆</span>SUPPLIES</div>
           <div class="panel">
             <div class="consumables-grid" id="supplies-grid"></div>
             <button class="add-btn add-row" onclick="addSupply()">ADD SUPPLY</button>
           </div>
         </div>
         <div>
-          <div class="sec-label"><span class="mk">◈</span>CARD COMBAT</div>
+          <div class="sec-label"><span class="mk">◆</span>CARD COMBAT</div>
           <div class="panel">
             <div class="suit-grid">
-              <div class="suit-card spade"><div class="suit-sym">♠</div><div class="suit-info"><div class="suit-name">Spades</div><div class="suit-desc">Defence</div></div><div class="suit-watermark">♠</div></div>
-              <div class="suit-card club"><div class="suit-sym">♣</div><div class="suit-info"><div class="suit-name">Clubs</div><div class="suit-desc">Attacks</div></div><div class="suit-watermark">♣</div></div>
-              <div class="suit-card heart"><div class="suit-sym">♥</div><div class="suit-info"><div class="suit-name">Hearts</div><div class="suit-desc">Wild</div></div><div class="suit-watermark">♥</div></div>
-              <div class="suit-card diamond"><div class="suit-sym">♦</div><div class="suit-info"><div class="suit-name">Diamonds</div><div class="suit-desc">Magic</div></div><div class="suit-watermark">♦</div></div>
+              <div class="suit-card spade"><div class="suit-sym">♠&#xFE0E;</div><div class="suit-info"><div class="suit-name">Spades</div><div class="suit-desc">Defence</div></div><div class="suit-watermark">♠&#xFE0E;</div></div>
+              <div class="suit-card club"><div class="suit-sym">♣&#xFE0E;</div><div class="suit-info"><div class="suit-name">Clubs</div><div class="suit-desc">Attacks</div></div><div class="suit-watermark">♣&#xFE0E;</div></div>
+              <div class="suit-card heart"><div class="suit-sym">♥&#xFE0E;</div><div class="suit-info"><div class="suit-name">Hearts</div><div class="suit-desc">Wild</div></div><div class="suit-watermark">♥&#xFE0E;</div></div>
+              <div class="suit-card diamond"><div class="suit-sym">♦&#xFE0E;</div><div class="suit-info"><div class="suit-name">Diamonds</div><div class="suit-desc">Magic</div></div><div class="suit-watermark">♦&#xFE0E;</div></div>
             </div>
           </div>
         </div>
@@ -149,7 +149,7 @@
 
   <!-- EQUIPMENT -->
   <div class="block">
-    <div class="sec-label"><span class="mk">♣</span>EQUIPMENT</div>
+    <div class="sec-label"><span class="mk">♣&#xFE0E;</span>EQUIPMENT</div>
     <div class="panel">
       <div id="equipment-list"></div>
       <button class="add-btn add-row" onclick="addEquip()">ADD EQUIPMENT SLOT</button>
@@ -158,12 +158,12 @@
 
   <!-- NOTES -->
   <div class="block">
-    <div class="sec-label"><span class="mk">◈</span>FIELD NOTES</div>
+    <div class="sec-label"><span class="mk">◆</span>FIELD NOTES</div>
     <div class="panel"><textarea class="notes-area" id="f-notes" placeholder="Mission notes, intel, personal log..."></textarea></div>
   </div>
 
   <div class="sheet-footer">
-    <div class="suits"><span class="s1">♠</span><span class="s2">♣</span><span class="s3">♥</span><span class="s4">♦</span></div>
+    <div class="suits"><span class="s1">♠&#xFE0E;</span><span class="s2">♣&#xFE0E;</span><span class="s3">♥&#xFE0E;</span><span class="s4">♦&#xFE0E;</span></div>
     CALL TO GALLAHAD · IDENTITY &amp; STATS · PAGE I
   </div>
 </div>
@@ -179,8 +179,8 @@ const sp=s=>Math.floor((parseInt(s)||0)/2);
 
 /* ── ATTRIBUTES (editable + addable) ─────────────────────── */
 const DEF_STATS=[
-  {name:'Force',icon:'♣',score:5},{name:'Finess',icon:'♦',score:4},{name:'Endurance',icon:'♠',score:3},
-  {name:'Logic',icon:'◈',score:3},{name:'Sense',icon:'◉',score:2},{name:'Velvet',icon:'♥',score:0},{name:'Shine',icon:'✦',score:1},
+  {name:'Force',icon:'♣',score:5},{name:'Finess',icon:'≫',score:4},{name:'Endurance',icon:'♠',score:3},
+  {name:'Logic',icon:'◆',score:3},{name:'Sense',icon:'◉',score:2},{name:'Velvet',icon:'♥',score:0},{name:'Shine',icon:'✤',score:1},
 ];
 let stats=[];
 (function(){
@@ -191,6 +191,11 @@ let stats=[];
     const keymap={Force:'force',Finess:'finess',Endurance:'endurance',Logic:'logic',Sense:'sense',Velvet:'velvet',Shine:'shine'};
     stats=DEF_STATS.map(d=>{const old=load('ctg-stat-'+keymap[d.name]);return{name:d.name,icon:d.icon,score:old!==null?parseInt(old):d.score};});
   }
+  // migrate old icon symbols to new ones
+  const _im={'♦':'≫','◈':'◆','✦':'✤'};
+  let _iconChanged=false;
+  stats.forEach(st=>{if(_im[st.icon]){st.icon=_im[st.icon];_iconChanged=true;}});
+  if(_iconChanged)saveStats();
 })();
 function saveStats(){save('ctg-stats',JSON.stringify(stats));}
 function renderStats(){

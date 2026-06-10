@@ -15,6 +15,83 @@
 <title>CTG — Command Select</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ctg.css">
+<style>
+/* ── LOGIN OVERLAY ─────────────────────────────────────── */
+.login-overlay{
+  position:fixed;inset:0;z-index:400;
+  background:rgba(0,0,0,0.68);
+  display:none;align-items:center;justify-content:center;
+  padding:20px;
+  animation:ovIn .25s ease both;
+}
+.login-overlay.visible{display:flex;}
+@keyframes ovIn{from{opacity:0;}to{opacity:1;}}
+@keyframes ovOut{from{opacity:1;}to{opacity:0;}}
+.login-card{
+  position:relative;
+  background:var(--paper);
+  border:3px solid var(--ink);
+  padding:44px 36px 32px;
+  max-width:420px;width:100%;
+  clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+  filter:drop-shadow(8px 8px 0 var(--purple));
+  animation:cardIn .4s cubic-bezier(.2,.9,.3,1.2) both;
+}
+@keyframes cardIn{from{opacity:0;transform:scale(.92) translateY(18px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.lc-logo{
+  font-family:'Black Han Sans',sans-serif;font-size:1.5rem;color:#fff;
+  background:var(--ink);display:inline-block;padding:2px 16px;
+  transform:skewX(-9deg);box-shadow:4px 4px 0 var(--purple);
+  margin-bottom:18px;
+}
+.lc-title{
+  font-family:'Anton',sans-serif;font-style:italic;font-size:2.4rem;
+  letter-spacing:2px;color:var(--ink);text-shadow:5px 5px 0 var(--purple);
+  line-height:.95;margin-bottom:6px;
+}
+.lc-sub{
+  font-family:'Share Tech Mono',monospace;font-size:0.54rem;
+  letter-spacing:3px;color:var(--purple);margin-bottom:26px;
+}
+.lc-field{margin-bottom:14px;}
+.lc-label{
+  font-family:'Bebas Neue',sans-serif;font-size:0.72rem;
+  letter-spacing:2px;color:var(--purple);margin-bottom:5px;
+}
+.lc-input{
+  width:100%;background:var(--paper2);border:2px solid var(--ink);
+  color:var(--ink);font-family:'Share Tech Mono',monospace;
+  font-size:1rem;padding:10px 12px;outline:none;
+  transition:border-color .15s;
+}
+.lc-input:focus{border-color:var(--purple);}
+.lc-hint{
+  font-family:'Share Tech Mono',monospace;font-size:0.58rem;
+  letter-spacing:1px;min-height:20px;margin-bottom:10px;
+  color:var(--text-dim);
+}
+.lc-btn{
+  width:100%;background:var(--purple);border:2.5px solid var(--ink);
+  color:#fff;font-family:'Bebas Neue',sans-serif;font-size:1.15rem;
+  letter-spacing:3px;padding:13px;cursor:pointer;
+  box-shadow:5px 5px 0 var(--ink);transition:all .15s;margin-bottom:14px;
+}
+.lc-btn:hover{background:var(--ink);box-shadow:2px 2px 0 var(--purple);}
+.lc-btn:disabled{opacity:.5;cursor:not-allowed;}
+.lc-new{
+  font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.8rem;
+  color:var(--text-dim);text-align:center;margin-bottom:14px;
+}
+.lc-offline{
+  display:block;width:100%;background:none;border:none;
+  color:var(--text-dim);font-family:'Share Tech Mono',monospace;
+  font-size:0.54rem;letter-spacing:2px;cursor:pointer;
+  text-align:center;padding:6px;transition:color .15s;
+}
+.lc-offline:hover{color:var(--ink);}
+[data-theme="dark"] .lc-input{color:var(--text);}
+[data-theme="dark"] .lc-title{color:var(--ink);}
+</style>
 </head>
 <body class="hub-body">
 
@@ -23,42 +100,37 @@
   <div class="hub-splat a"></div>
   <div class="hub-splat b"></div>
   <div class="hub-zz"></div>
+  <div class="hub-slash s1"></div>
+  <div class="hub-slash s2"></div>
+  <div class="hub-bg-txt" aria-hidden="true">CTG</div>
 
-  <!-- CHARACTER PLACEHOLDER — replace this whole .hub-char block with <img src="your-art.png"> -->
+  <!-- CHARACTER — replace .hub-char contents with <img src="your-art.png" style="width:100%;height:100%;object-fit:contain;object-position:bottom"> -->
   <div class="hub-char">
     <svg viewBox="0 0 420 620" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
-      <!-- back accent halo -->
       <path d="M120 30 L300 10 L360 120 L300 230 L380 360 L320 620 L70 620 L40 300 L90 150 Z" fill="#6d28d9" opacity="0.18"/>
-      <!-- coat / body : solid ink cutout -->
       <path d="M150 250 L250 250 L300 340 L290 620 L110 620 L100 360 Z" fill="#15131a"/>
-      <!-- collar : paper negative space -->
       <path d="M150 250 L205 300 L205 366 L150 282 Z" fill="#f3efe4"/>
       <path d="M260 250 L205 300 L205 366 L260 282 Z" fill="#f3efe4"/>
-      <!-- neck -->
       <path d="M185 212 L225 212 L225 262 L185 262 Z" fill="#15131a"/>
-      <!-- head : ink silhouette -->
       <path d="M158 118 Q158 66 205 66 Q252 66 252 118 L252 176 Q252 218 205 218 Q158 218 158 176 Z" fill="#15131a"/>
-      <!-- hair spikes (ink, reads against paper bg) -->
       <path d="M150 130 L148 62 L186 92 L196 50 L222 90 L242 56 L257 98 L266 76 L266 144 L252 112 Q252 78 205 78 Q162 80 158 122 Z" fill="#15131a"/>
       <path d="M150 132 L132 180 L156 162 L146 206 L174 176 L160 130 Z" fill="#15131a"/>
-      <!-- face plane (paper) so features read -->
       <path d="M170 120 Q170 96 205 96 Q240 96 240 120 L240 150 L170 150 Z" fill="#f3efe4"/>
-      <!-- mask band (ink) with glowing eyes -->
       <path d="M168 150 L242 150 L242 170 L168 170 Z" fill="#15131a"/>
       <circle cx="187" cy="160" r="4.5" fill="#22c451"/>
       <circle cx="223" cy="160" r="4.5" fill="#22c451"/>
-      <!-- purple sash -->
       <path d="M150 300 L300 360 L290 402 L150 346 Z" fill="#6d28d9"/>
-      <!-- white keyline accent down coat -->
       <path d="M205 300 L210 620 L200 620 Z" fill="#f3efe4" opacity="0.7"/>
     </svg>
-    <div class="drop-hint">⟡ PLACEHOLDER — drop your character art here</div>
+    <div class="hub-char-marks"></div>
+    <div class="hub-char-label">CHARACTER · OPERATIVE</div>
   </div>
 
   <!-- top bar -->
   <div class="hub-top">
     <a href="index.html" class="hub-logo">CTG</a>
     <div class="hub-cmd">CALL TO GALLAHAD · COMMAND SELECT <b>01</b></div>
+    <button class="hub-theme-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark / light mode">&#9790; DARK</button>
   </div>
 
   <!-- the word pile = the menu -->
@@ -69,7 +141,6 @@
     <a class="word w4" href="p4.html" data-nav data-word="ARSENAL"><span class="num">IV</span></a>
     <a class="word w5" href="p5.html" data-nav data-word="SKILLS"><span class="num">V</span></a>
     <a class="word" href="p6.html" data-nav data-word="COMBAT" style="font-size:3rem;transform:rotate(1.5deg);margin-left:110px;margin-top:-4px;background:var(--red-deep,#a8102c);box-shadow:5px 5px 0 var(--ink);"><span class="num">VI</span></a>
-    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark / light mode">☀ LIGHT</button>
 </nav>
 
   <!-- HUD readouts -->
@@ -87,10 +158,18 @@
     <span class="ddl">SAVED DATA</span>
   </div>
 
-  <!-- button hints -->
+  <!-- action buttons -->
   <div class="hub-btns">
-    <div class="btn-hint hub-sync" onclick="openSync()"><i class="b">Y</i> SYNC</div>
-    <div class="btn-hint" onclick="location.href='p1.html'"><i class="a">A</i> CONFIRM</div>
+    <button class="hub-action primary" onclick="location.href='p1.html'">
+      <span class="hub-action-key">A</span>
+      <span class="hub-action-label">CONFIRM</span>
+      <span class="hub-action-arr">▶</span>
+    </button>
+    <button class="hub-action" onclick="openSync()">
+      <span class="hub-action-key">Y</span>
+      <span class="hub-action-label">SYNC &amp; BACKUP</span>
+      <span class="hub-action-arr">▶</span>
+    </button>
   </div>
 </div>
 
@@ -140,6 +219,27 @@
 
       <div class="su-hint" id="cloud-hint"></div>
     </div>
+  </div>
+</div>
+
+<!-- LOGIN OVERLAY — shown on load when not logged in -->
+<div class="login-overlay" id="login-overlay">
+  <div class="login-card">
+    <div class="lc-logo">CTG</div>
+    <div class="lc-title">CLOUD DOSSIER</div>
+    <div class="lc-sub">// IDENTIFY YOURSELF, OPERATIVE</div>
+    <div class="lc-field">
+      <div class="lc-label">CODENAME</div>
+      <input class="lc-input" id="ov-user" placeholder="your-handle" maxlength="32" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="lc-field">
+      <div class="lc-label">PIN (4 DIGITS)</div>
+      <input class="lc-input" id="ov-pin" type="password" inputmode="numeric" placeholder="••••" maxlength="4" autocomplete="off">
+    </div>
+    <div class="lc-hint" id="ov-hint"></div>
+    <button class="lc-btn" id="ov-btn" onclick="doOverlayLogin()">☁ ACCESS DOSSIER</button>
+    <div class="lc-new">New operative? Enter any codename + PIN to create your dossier.</div>
+    <button class="lc-offline" onclick="dismissOverlay()">Continue offline — skip for now</button>
   </div>
 </div>
 
@@ -223,12 +323,50 @@ function copyExport(){const t=document.getElementById('export-area');if(!t.value
 function doImport(){const raw=document.getElementById('import-area').value.trim();const h=document.getElementById('su-hint');try{const d=JSON.parse(decodeURIComponent(escape(atob(raw))));Object.entries(d).forEach(([k,v])=>localStorage.setItem(k,v));h.textContent='✓ Restored. Reloading...';h.style.color='var(--green3)';setTimeout(()=>location.reload(),900);}catch(e){h.textContent='✕ Invalid save code.';h.style.color='var(--red)';}}
 function clearAll(){if(!confirm('Clear ALL character data? Export a backup first if unsure.'))return;allKeys().forEach(k=>localStorage.removeItem(k));setTimeout(()=>location.reload(),500);}
 
+// overlay login
+async function doOverlayLogin(){
+  var u=document.getElementById('ov-user').value.trim();
+  var p=document.getElementById('ov-pin').value.trim();
+  var hint=document.getElementById('ov-hint');
+  var btn=document.getElementById('ov-btn');
+  if(!u){hint.textContent='Enter a codename.';hint.style.color='var(--red)';return;}
+  if(!/^\d{4}$/.test(p)){hint.textContent='PIN must be exactly 4 digits.';hint.style.color='var(--red)';return;}
+  hint.textContent='Connecting...';hint.style.color='var(--text-dim)';
+  btn.disabled=true;btn.textContent='CONNECTING...';
+  try{
+    var r=await ctgSync.login(u,p);
+    ctgSync.start();
+    hint.textContent=r.isNew?'✓ New dossier created.':'✓ Welcome back, '+u+'.';
+    hint.style.color='var(--green3)';
+    btn.textContent='✓ SYNCED';
+    setTimeout(()=>{dismissOverlay();refreshCloudUI();},900);
+  }catch(e){
+    hint.textContent='✕ '+e.message;
+    hint.style.color='var(--red)';
+    btn.disabled=false;btn.textContent='☁ ACCESS DOSSIER';
+  }
+}
+function dismissOverlay(){
+  var ov=document.getElementById('login-overlay');
+  ov.style.animation='ovOut .2s ease both';
+  setTimeout(()=>ov.classList.remove('visible'),200);
+}
+
 // transitions
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const href=a.getAttribute('href');document.getElementById('hub').style.animation='pileOut .22s ease both';setTimeout(()=>location.href=href,180);});});
 const st=document.createElement('style');st.textContent='@keyframes pileOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-40px);}}';document.head.appendChild(st);
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="ctg-sync.js"></script>
+<script>
+// show login overlay if not logged in
+if(!ctgSync.getUser()){
+  document.getElementById('login-overlay').classList.add('visible');
+}
+// Enter key submits login
+document.getElementById('ov-pin').addEventListener('keydown',function(e){if(e.key==='Enter')doOverlayLogin();});
+document.getElementById('ov-user').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('ov-pin').focus();});
+</script>
 <script src="ctg-theme.js"></script>
 </body>
 </html>

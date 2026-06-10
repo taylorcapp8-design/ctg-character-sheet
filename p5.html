@@ -57,7 +57,7 @@
   </div>
 
   <div class="page-foot">
-    <span class="s1">♠</span> <span class="s2">♣</span> <span class="s3">♥</span> <span class="s4">♦</span><br>
+    <span class="s1">♠&#xFE0E;</span> <span class="s2">♣&#xFE0E;</span> <span class="s3">♥&#xFE0E;</span> <span class="s4">♦&#xFE0E;</span><br>
     CALL TO GALLAHAD · SKILL TREE · PAGE V
   </div>
 </div>
@@ -70,7 +70,7 @@ const COLS=[
     [{id:'tb1',name:'Tavern Brawler I',tier:1,tiers:3,cost:1,desc:'Gain Advance on Unarmed melee attacks.'},{id:'gorey',name:'Gorey',cost:1,desc:'Rip off a limb (weaker targets) on a Critical.'},{id:'1togo',name:'1 to Go',cost:1,desc:'Counter at the same time as being attacked in melee.'}],
     [{id:'tb2',name:'Tavern Brawler II',tier:2,tiers:3,cost:1,req:['tb1'],desc:'Gain Advantage on Unarmed melee attacks.'}],
     [{id:'tb3',name:'Tavern Brawler III',tier:3,tiers:3,cost:1,req:['tb2'],desc:'Gain Advance Advantage on Unarmed melee attacks.'}]]},
-  {id:'finess',label:'Finesse',icon:'♦',color:'#5588bb',stat:4,rows:[
+  {id:'finess',label:'Finesse',icon:'≫',color:'#5588bb',stat:4,rows:[
     [{id:'ls1',name:'Lock-Smith I',tier:1,tiers:2,cost:1,desc:'Your Tick range increases by 1.'},{id:'sneaky',name:'Sneaky Bullfish',cost:1,desc:'Move a Distance without using a card.'},{id:'mistersmooth',name:'Mister Smooth',cost:1,desc:'Use Finesse as base for defensive checks.'}],
     [{id:'ls2',name:'Lock-Smith II',tier:2,tiers:2,cost:1,req:['ls1'],desc:'Your Tick range increases by 2.'},{id:'slick',name:'Slick',cost:1,desc:'Use 2 cards for Defence but cannot counter.'},{id:'nightkiller',name:'Night Killer',cost:1,desc:'Double Damage attacking before seen.'}],
     [{id:'bulletcritic',name:'Bullet Critic',cost:2,desc:'Target two body parts on a Critical.'},{id:'gunbeater',name:'Gun Beater',cost:1,desc:'Automatic guns roll an Additional Dice.'}]]},
@@ -79,7 +79,7 @@ const COLS=[
     [{id:'td2',name:'Tavern Defender II',tier:2,tiers:3,cost:1,req:['td1'],desc:'Gain Advantage when defending.'},{id:'drunktrain',name:'Drunken Trainer',tier:1,tiers:3,cost:1,req:['boozehound'],desc:'Advance on melee while drunk.'},{id:'mistakemaker',name:'Mistake Maker',cost:1,desc:'Add Spades to Defence vs counters, no Reaction.'}],
     [{id:'td3',name:'Tavern Defender III',tier:3,tiers:3,cost:1,req:['td2'],desc:'Advance Advantage when defending.'},{id:'drunkmaster',name:'Drunken Master',tier:2,tiers:3,cost:1,req:['drunktrain'],desc:'Advantage on melee while drunk.'}],
     [{id:'drunkshifu',name:'Drunken Shifu',tier:3,tiers:3,cost:1,req:['drunkmaster'],desc:'Advanced Advantage on melee while drunk.'}]]},
-  {id:'logic',label:'Logic',icon:'◈',color:'#9d5ff5',stat:3,rows:[
+  {id:'logic',label:'Logic',icon:'◆',color:'#9d5ff5',stat:3,rows:[
     [{id:'goblinkg',name:'Goblin King',cost:1,desc:'Junk rounds become neutral, not negative.'},{id:'hs1',name:'Hack-Smith I',tier:1,tiers:2,cost:1,desc:'Your Guess count increases by 1.'},{id:'wandsmith',name:'Wandering Smith',cost:1,desc:'Modify weapons without a workbench.'}],
     [{id:'lonescient',name:'Lone Scientist',cost:1,desc:'Research without a workbench.'},{id:'hs2',name:'Hack-Smith II',tier:2,tiers:2,cost:1,req:['hs1'],desc:'Your Guess count increases by 2.'},{id:'labmade',name:'Lab Made',cost:2,desc:'Immediately gain Additional 2 Harth.'}]]},
   {id:'sense',label:'Sense',icon:'◉',color:'#4a9a4a',stat:2,rows:[
@@ -87,7 +87,7 @@ const COLS=[
     [{id:'lr2',name:'Long Ranger II',tier:2,tiers:3,cost:1,req:['lr1'],desc:'Advantage shooting Far enemies.'},{id:'predict',name:'Predictable',cost:2,desc:'First attack acts like a Critical.'},{id:'hh2',name:'Head Hunter II',tier:2,tiers:4,cost:1,req:['hh1'],desc:'Crit to head: min 3 damage even on a 1.'}],
     [{id:'lr3',name:'Long Ranger III',tier:3,tiers:3,cost:1,req:['lr2'],desc:'Advanced Advantage shooting Far.'},{id:'bulletpitch',name:'Bullet Pitcher',cost:1,desc:'Counter Ranged out of max distance.'},{id:'hh3',name:'Head Hunter III',tier:3,tiers:4,cost:1,req:['hh2'],desc:'Crit to head: min 4 damage even on a 1.'}],
     [{id:'inscope',name:'In My Scope',cost:3,desc:"Gun's range increases a Distance."},{id:'hh4',name:'Head Hunter IV',tier:4,tiers:4,cost:1,req:['hh3'],desc:'Crit to head: always max damage.'}]]},
-  {id:'shine',label:'Shine',icon:'✦',color:'#bb88ee',stat:1,rows:[
+  {id:'shine',label:'Shine',icon:'✤',color:'#bb88ee',stat:1,rows:[
     [{id:'fourleaf',name:'Four Leafed Looter',cost:1,desc:'Reroll once on loot — must take new roll.'},{id:'cheater',name:'Cheater',cost:2,desc:'Land a Critical on a natural 19 or 20.'}],
     [{id:'fiveleaf',name:'Five Leafed Looter',cost:1,req:['fourleaf'],desc:'Reroll once on loot — choose either result.'}]]},
 ];

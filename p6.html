@@ -37,7 +37,7 @@
 
   <!-- ROW 1: HP + EF + TURN TRACKER -->
   <div class="block">
-    <div class="sec-label"><span class="mk">♥</span>VITALS AT A GLANCE</div>
+    <div class="sec-label"><span class="mk">♥&#xFE0E;</span>VITALS AT A GLANCE</div>
     <div class="panel">
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;">
 
@@ -116,19 +116,19 @@
   <div class="block">
     <div class="two-col">
       <div>
-        <div class="sec-label"><span class="mk">♣</span>ATTRIBUTES</div>
+        <div class="sec-label"><span class="mk">♣&#xFE0E;</span>ATTRIBUTES</div>
         <div class="panel">
           <div id="c-stats"></div>
         </div>
       </div>
       <div>
-        <div class="sec-label"><span class="mk">◈</span>CARD COMBAT</div>
+        <div class="sec-label"><span class="mk">◆</span>CARD COMBAT</div>
         <div class="panel">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-            <div class="suit-card spade"><div class="suit-sym">♠</div><div class="suit-info"><div class="suit-name">Spades</div><div class="suit-desc">Defence — block incoming attacks</div></div><div class="suit-watermark">♠</div></div>
-            <div class="suit-card club"><div class="suit-sym">♣</div><div class="suit-info"><div class="suit-name">Clubs</div><div class="suit-desc">Attacks — deal damage</div></div><div class="suit-watermark">♣</div></div>
-            <div class="suit-card heart"><div class="suit-sym">♥</div><div class="suit-info"><div class="suit-name">Hearts</div><div class="suit-desc">Wild — any action</div></div><div class="suit-watermark">♥</div></div>
-            <div class="suit-card diamond"><div class="suit-sym">♦</div><div class="suit-info"><div class="suit-name">Diamonds</div><div class="suit-desc">Magic — special abilities</div></div><div class="suit-watermark">♦</div></div>
+            <div class="suit-card spade"><div class="suit-sym">♠&#xFE0E;</div><div class="suit-info"><div class="suit-name">Spades</div><div class="suit-desc">Defence — block incoming attacks</div></div><div class="suit-watermark">♠&#xFE0E;</div></div>
+            <div class="suit-card club"><div class="suit-sym">♣&#xFE0E;</div><div class="suit-info"><div class="suit-name">Clubs</div><div class="suit-desc">Attacks — deal damage</div></div><div class="suit-watermark">♣&#xFE0E;</div></div>
+            <div class="suit-card heart"><div class="suit-sym">♥&#xFE0E;</div><div class="suit-info"><div class="suit-name">Hearts</div><div class="suit-desc">Wild — any action</div></div><div class="suit-watermark">♥&#xFE0E;</div></div>
+            <div class="suit-card diamond"><div class="suit-sym">♦&#xFE0E;</div><div class="suit-info"><div class="suit-name">Diamonds</div><div class="suit-desc">Magic — special abilities</div></div><div class="suit-watermark">♦&#xFE0E;</div></div>
           </div>
           <!-- hand tracker -->
           <div style="font-family:'Bebas Neue',sans-serif;font-size:0.78rem;letter-spacing:2px;color:var(--purple);margin-bottom:6px;">CARDS IN HAND</div>
@@ -147,14 +147,14 @@
   <div class="block">
     <div class="two-col">
       <div>
-        <div class="sec-label"><span class="mk">✦</span>ACTIVE SKILLS</div>
+        <div class="sec-label"><span class="mk">✤</span>ACTIVE SKILLS</div>
         <div class="panel">
           <div id="c-skills" style="display:flex;flex-direction:column;gap:5px;"></div>
           <div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;color:var(--text-dim);margin-top:10px;letter-spacing:1px;">Showing purchased skills from Skill Tree</div>
         </div>
       </div>
       <div>
-        <div class="sec-label"><span class="mk">♦</span>ACTIVE FACULTIES</div>
+        <div class="sec-label"><span class="mk">♦&#xFE0E;</span>ACTIVE FACULTIES</div>
         <div class="panel">
           <div id="c-faculties"></div>
         </div>
@@ -172,7 +172,7 @@
   <div class="block">
     <div class="two-col">
       <div>
-        <div class="sec-label"><span class="mk">◈</span>CONDITIONS</div>
+        <div class="sec-label"><span class="mk">◆</span>CONDITIONS</div>
         <div class="panel">
           <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;" id="c-conditions">
             <!-- conditions toggled in JS -->
@@ -181,7 +181,7 @@
         </div>
       </div>
       <div>
-        <div class="sec-label"><span class="mk">◈</span>COMBAT NOTES</div>
+        <div class="sec-label"><span class="mk">◆</span>COMBAT NOTES</div>
         <div class="panel">
           <textarea id="c-notes" class="notes-area" placeholder="Initiative order, enemy HP, terrain notes, anything mid-combat..."></textarea>
         </div>
@@ -190,7 +190,7 @@
   </div>
 
   <div class="sheet-footer">
-    <div class="suits"><span class="s1">♠</span><span class="s2">♣</span><span class="s3">♥</span><span class="s4">♦</span></div>
+    <div class="suits"><span class="s1">♠&#xFE0E;</span><span class="s2">♣&#xFE0E;</span><span class="s3">♥&#xFE0E;</span><span class="s4">♦&#xFE0E;</span></div>
     CALL TO GALLAHAD · COMBAT READY · PAGE VI
   </div>
 </div>
@@ -262,7 +262,7 @@ function buildStats(){
   const statsData=load('ctg-stats');
   let stats=[];
   if(statsData){try{stats=JSON.parse(statsData);}catch(e){}}
-  if(!stats.length)stats=[{name:'Force',icon:'♣',score:5},{name:'Finess',icon:'♦',score:4},{name:'Endurance',icon:'♠',score:3},{name:'Logic',icon:'◈',score:3},{name:'Sense',icon:'◉',score:2},{name:'Velvet',icon:'♥',score:0},{name:'Shine',icon:'✦',score:1}];
+  if(!stats.length)stats=[{name:'Force',icon:'♣',score:5},{name:'Finess',icon:'≫',score:4},{name:'Endurance',icon:'♠',score:3},{name:'Logic',icon:'◆',score:3},{name:'Sense',icon:'◉',score:2},{name:'Velvet',icon:'♥',score:0},{name:'Shine',icon:'✤',score:1}];
   const sp=s=>Math.floor((parseInt(s)||0)/2);
   stats.forEach(st=>{
     const row=document.createElement('div');
@@ -346,9 +346,9 @@ function buildFaculties(){
   let state;try{state=JSON.parse(facData);}catch(e){return;}
   const FACULTIES_MAP={
     force:{name:'Force',icon:'♣',tuning:[{name:'Large Handed',actions:'Smash doors, throw barrels, grapple massive Marionettes, break objects.'},{name:'Rusty Anchor',actions:'Hold your ground, resist pushes, brace for heavy attacks.'},{name:'Bull Wit Da Horn',actions:'Sprint, slam through obstacles, chase fleeing threats.'}]},
-    finess:{name:'Finesse',icon:'♦',tuning:[{name:'Long Fingernails',actions:'Pick locks, thread small mechanisms, snipe weak points.'},{name:"Shadow's Shadow",actions:'Move quietly, slip past guards, avoid notice.'},{name:'Glover',actions:'Multi-action precision, manipulate multiple devices.'}]},
+    finess:{name:'Finesse',icon:'≫',tuning:[{name:'Long Fingernails',actions:'Pick locks, thread small mechanisms, snipe weak points.'},{name:"Shadow's Shadow",actions:'Move quietly, slip past guards, avoid notice.'},{name:'Glover',actions:'Multi-action precision, manipulate multiple devices.'}]},
     sense:{name:'Sense',icon:'◉',tuning:[{name:'Starved Hound',actions:'Identify hidden enemies, trace movements.'},{name:'Hawk-Eagle Eyes',actions:'Spot ambushes, identify danger early.'},{name:'Large Drums',actions:'Listen to distant sounds, detect machinery cues.'}]},
-    logic:{name:'Logic',icon:'◈',tuning:[{name:'A Smart Thief?',actions:'See structural weaknesses, plan solutions.'},{name:'Plague Surgeon',actions:'Repair engines, disable Marionette mechanisms.'},{name:'Folder Mind',actions:'Predict Marionette routines, find weaknesses in plans.'}]},
+    logic:{name:'Logic',icon:'◆',tuning:[{name:'A Smart Thief?',actions:'See structural weaknesses, plan solutions.'},{name:'Plague Surgeon',actions:'Repair engines, disable Marionette mechanisms.'},{name:'Folder Mind',actions:'Predict Marionette routines, find weaknesses in plans.'}]},
     velvet:{name:'Velvet',icon:'♥',tuning:[{name:'Silver and Steel',actions:'Convince others, defuse tension, rally allies.'},{name:'Bronze and Woah',actions:'Force compliance, scare off rivals, establish authority.'},{name:'Turned Around Mirror',actions:'Mirror speech or gesture to manipulate.'}]},
     endure:{name:'Endure',icon:'♠',tuning:[{name:'Steel Jaw, Low Brim',actions:'Resist panic, ignore distractions during chaos.'},{name:'Cutting Board',actions:'Shake off damage, resist toxins and hazards.'},{name:"Tongue-less",actions:'Consume anything. Perform impossible feats. Drink seawater.'}]},
   };
