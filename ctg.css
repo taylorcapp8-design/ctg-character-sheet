@@ -248,6 +248,7 @@ input.wstat-val:focus{color:var(--green2);}
 .tuning-entry.strikethrough{opacity:0.4;}
 .tuning-entry.strikethrough .tuning-name{text-decoration:line-through;}
 .tuning-name{font-family:'Bebas Neue',sans-serif;font-size:0.98rem;letter-spacing:1px;color:var(--ink);margin-bottom:4px;}
+.tuning-sub{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.72rem;letter-spacing:0;color:var(--text-dim);font-style:italic;text-transform:none;}
 .tuning-actions{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.78rem;color:var(--text2);line-height:1.45;}
 .tuning-actions strong{color:var(--green2);font-weight:700;}
 .select-rule{padding:9px 13px;border-top:2px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:0.55rem;color:var(--text-dim);display:flex;align-items:center;gap:7px;}

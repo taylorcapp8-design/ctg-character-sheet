@@ -63,29 +63,29 @@
 <script>
 const FACULTIES=[
   {id:'force',name:'Force',icon:'♣',note:'Raw physical output: smashing, grappling, kicking doors in.',tuning:[
-    {name:'Large Handed',actions:'Smash doors, throw barrels, grapple massive Marionettes, break objects for environmental advantages.',strikethrough:true},
-    {name:'Rusty Anchor',actions:'Hold your ground against tides, resist pushes, brace for heavy attacks.'},
-    {name:'Bull Wit Da Horn',actions:'Sprint into action, slam through obstacles, chase fleeing threats.'}]},
+    {name:'Large Handed',sub:'Amplifies raw impact',actions:'Smash doors, throw barrels, grapple massive Marionettes, break objects to create environmental advantages.',strikethrough:true},
+    {name:'Rusty Anchor',sub:'Rooted power',actions:'Hold your ground against tides, resist pushes, brace for heavy attacks.'},
+    {name:'Bull Wit Da Horn',sub:'Dynamic motion',actions:'Sprint into action, slam through obstacles, chase fleeing threats.'}]},
   {id:'finess',name:'Finesse',icon:'≫',note:'Control and precision: lockpicking, surgery, shooting, sleight-of-hand.',tuning:[
-    {name:'Long Fingernails',actions:'Thread small mechanisms, pick locks, operate delicate machinery, snipe weak points.'},
-    {name:"Shadow's Shadow",actions:'Move quietly, slip past guards, shadow objects, avoid notice.'},
-    {name:'Glover',actions:'Multi-action precision, manipulate multiple devices, perform sequences.',strikethrough:true}]},
+    {name:'Long Fingernails',sub:'Extreme precision',actions:'Thread small mechanisms, pick locks, operate delicate machinery, snipe Marionettes\' weak points.'},
+    {name:"Shadow's Shadow",sub:'Stealth & subtlety',actions:'Move quietly, slip past guards, shadow objects, avoid notice.'},
+    {name:'Glover',sub:'Speed & timing',actions:'Multi-action precision, manipulate multiple devices or objects, perform sequences.',strikethrough:true}]},
   {id:'sense',name:'Sense',icon:'◉',note:'Perception and awareness: tracking, spotting danger, reading body language.',tuning:[
-    {name:'Starved Hound',actions:'Identify hidden Marionettes, trace unusual movements, follow traces.',strikethrough:true},
-    {name:'Hawk-Eagle Eyes',actions:'Spot ambushes, identify danger before it strikes, read layouts quickly.',strikethrough:true},
-    {name:'Large Drums',actions:'Listen to distant sounds, detect machinery cues, anticipate intentions.',strikethrough:true}]},
+    {name:'Starved Hound',sub:'Follow and predict',actions:'Identify hidden Marionettes, trace unusual movements, follow scent or mechanical traces.',strikethrough:true},
+    {name:'Hawk-Eagles Eyes',sub:'Awareness in action',actions:'Spot ambushes, identify danger before it strikes, read room layout quickly.',strikethrough:true},
+    {name:'Large Drums',sub:'Hear subtle signals',actions:'Listen to distant sounds, detect machinery cues, anticipate enemy intentions.',strikethrough:true}]},
   {id:'logic',name:'Logic',icon:'◆',note:'Processing and problem solving: repairing, decoding, planning, strategy.',tuning:[
-    {name:'A Smart Thief?',actions:'See weaknesses in structures, plan environmental solutions, reroute machinery.',strikethrough:true},
-    {name:'Plague Surgeon',actions:'Repair engines, disable Marionette mechanisms, solve delicate problems.'},
-    {name:'Folder Mind',actions:'Observe sequences, predict Marionette routines, find weaknesses in plans.'}]},
+    {name:'A Smart Thief?',sub:'Structural insight',actions:'See weaknesses in structures, plan environmental solutions, reroute machinery.',strikethrough:true},
+    {name:'Plague Surgeon',sub:'Surgical clarity',actions:'Repair engines, disable Marionette mechanisms, solve delicate problems.'},
+    {name:'Folder Mind',sub:'Pattern recognition',actions:'Observe sequences, predict Marionette routines, find weaknesses in plans.'}]},
   {id:'velvet',name:'Velvet',icon:'♥',note:'Social gravity: intimidation, leadership, charm, lying.',tuning:[
-    {name:'Silver and Steel',actions:'Convince others, defuse tension, rally allies, manipulate emotionally.',strikethrough:true},
-    {name:'Bronze and Woah',actions:'Force compliance, scare off rivals, establish authority.'},
-    {name:'Turned Around Mirror',actions:'Reflect moods, mirror speech or gesture to manipulate outcomes.'}]},
+    {name:'Silver and Steel',sub:'Grin & persuasion',actions:'Convince others, defuse tension, rally allies, manipulate Marionettes emotionally.',strikethrough:true},
+    {name:'Bronze and Woah',sub:'Intimidation & dominance',actions:'Force compliance, scare off Marionettes or rivals, establish authority.'},
+    {name:'Turned Around Mirror',sub:'Adaptive social tactics',actions:'Reflect moods, mirror speech or gesture to manipulate outcomes.'}]},
   {id:'endure',name:'Endure',icon:'♠',note:'Pain tolerance and resilience: surviving poison, holding breath, resisting panic.',tuning:[
-    {name:'Steel Jaw, Low Brim',actions:'Resist panic, ignore distractions, remain composed during chaos.',strikethrough:true},
-    {name:'Cutting Board',actions:'Shake off damage, survive hazardous conditions, resist toxins.'},
-    {name:'Tongue-less',actions:'Consume the worst of the worst, perform impossible feats. Drink seawater.'}]},
+    {name:'Steel Jaw, Low Brim',sub:'Calm under duress',actions:'Resist panic, ignore distractions, remain composed during chaos.',strikethrough:true},
+    {name:'Cutting Board',sub:'Toughness & recovery',actions:'Shake off damage, survive hazardous conditions, resist toxins.'},
+    {name:'Tongue-less',sub:'Extreme tolerance',actions:'Consume the worst of the worst, perform impossible feats of endurance. Drink seawater.'}]},
 ];
 const state={selected:{},active:[null,null]};
 (function(){const s=load('ctg-faculties');if(s){const d=JSON.parse(s);state.selected=d.selected||{};state.active=d.active||[null,null];}else{state.selected={force:1,finess:0};state.active=['force','finess'];}})();
@@ -109,7 +109,7 @@ function build(){
       <div class="faculty-header"><span class="faculty-icon">${fac.icon}</span><span class="faculty-name">${fac.name}</span></div>
       <div class="faculty-note">${fac.note}</div>
       <div class="tuning-list">
-        ${fac.tuning.map((t,i)=>`<div class="tuning-entry ${t.strikethrough&&sel!==i?'strikethrough':''} ${sel===i?'selected':''}" onclick="selectTuning('${fac.id}',${i})"><div class="tuning-name">${t.name}</div><div class="tuning-actions"><strong>Actions:</strong> ${t.actions}</div></div>`).join('')}
+        ${fac.tuning.map((t,i)=>`<div class="tuning-entry ${t.strikethrough&&sel!==i?'strikethrough':''} ${sel===i?'selected':''}" onclick="selectTuning('${fac.id}',${i})"><div class="tuning-name">${t.name}${t.sub?`<span class="tuning-sub"> — ${t.sub}</span>`:''}</div><div class="tuning-actions"><strong>Actions:</strong> ${t.actions}</div></div>`).join('')}
       </div>
       <div class="select-rule"><span class="sel-ind ${isActive?'on':''}"></span><span>${isActive?'ACTIVE — click tuning to switch':'Click tuning to select'}</span></div>`;
     grid.appendChild(card);
