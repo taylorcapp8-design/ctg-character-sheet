@@ -117,7 +117,7 @@ input.wstat-val:focus{color:var(--green2);}
 .s1{color:#4a6b7a;}.s2{color:var(--green2);}.s3{color:var(--red);}.s4{color:var(--purple);}
 
 /* ═══ PAGE 1 ════════════════════════════════════════════════ */
-.level-badge{position:absolute;top:-16px;right:16px;z-index:4;background:var(--purple);border:2.5px solid var(--ink);padding:5px 18px;font-family:'Anton',sans-serif;font-style:italic;font-size:1.05rem;letter-spacing:2px;color:#fff;transform:skewX(-10deg) rotate(-2deg);box-shadow:3px 3px 0 var(--ink);}
+.level-badge{position:absolute;top:-14px;right:16px;z-index:4;background:var(--purple);border:2.5px solid var(--ink);padding:5px 18px;font-family:'Anton',sans-serif;font-style:italic;font-size:1.05rem;letter-spacing:2px;color:#fff;transform:skewX(-10deg) rotate(-2deg);box-shadow:3px 3px 0 var(--ink);}
 .level-badge span{color:var(--green-bright);}
 .identity-grid{display:grid;grid-template-columns:130px 1fr 1fr;gap:16px;}
 .portrait-box{aspect-ratio:1;border:3px solid var(--ink);background:var(--paper2);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;transition:all .2s;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);}
@@ -568,7 +568,7 @@ body.hub-body{padding:0;overflow-x:hidden;}
 [data-theme="dark"] .scrim{background:rgba(0,0,0,0.65);}
 /* inputs on dark */
 [data-theme="dark"] .field-input,[data-theme="dark"] .equip-input,[data-theme="dark"] .armour-input,[data-theme="dark"] .charm-input,[data-theme="dark"] .mula-input,[data-theme="dark"] .inv-input,[data-theme="dark"] .stat-input,[data-theme="dark"] .ef-input,[data-theme="dark"] .vital-input,[data-theme="dark"] .ed{color:#fff;border-color:var(--border);}
-[data-theme="dark"] .sheet-title,[data-theme="dark"] .head-tag,[data-theme="dark"] .stat-name,[data-theme="dark"] .slot-label,[data-theme="dark"] .armour-loc,.faculty-name,[data-theme="dark"] .tuning-name,[data-theme="dark"] .weapon-name,[data-theme="dark"] .food-name,[data-theme="dark"] .node-name{color:#fff;}
+[data-theme="dark"] .sheet-title,[data-theme="dark"] .head-tag,[data-theme="dark"] .stat-name,[data-theme="dark"] .slot-label,[data-theme="dark"] .armour-loc,[data-theme="dark"] .faculty-name,[data-theme="dark"] .tuning-name,[data-theme="dark"] .weapon-name,[data-theme="dark"] .food-name,[data-theme="dark"] .node-name{color:#fff;}
 
 /* ── THEME TOGGLE BUTTON ──────────────────────────────────── */
 .theme-toggle{
