@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#150925">
+<title>CTG — Combat</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ctg.css">
+<script>
+(function(){const t=localStorage.getItem('ctg-theme')||'light';document.documentElement.setAttribute('data-theme',t);})();
+</script>
+</head>
+<body>
+<nav class="ctg-nav">
+  <a class="ctg-nav-home" href="index.html" data-nav>CTG</a>
+  <div class="ctg-nav-links">
+    <a href="p1.html" data-nav>I·STATS</a>
+    <a href="p2.html" data-nav>II·GEAR</a>
+    <a href="p3.html" data-nav>III·FAC</a>
+    <a href="p4.html" data-nav>IV·ARMS</a>
+    <a href="p5.html" data-nav>V·SKILL</a>
+    <a href="p6.html" class="active" style="color:#fff;background:var(--red);border-color:var(--red);">VI·COMBAT</a>
+  </div>
+  <div class="nav-char-name" id="nav-name"><span>OPERATIVE //</span> —</div>
+  <span class="save-flash" id="save-flash">SAVED ✓</span>
+  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark / light mode">☀ LIGHT</button>
+</nav>
+
+<div class="page-wrap" id="page-wrap">
+<div class="sheet">
+  <div class="sheet-header">
+    <div class="head-tag">CALL TO GALLAHAD // OPERATIONAL RECORD</div>
+    <div class="sheet-title">COMBAT <em>READY</em></div>
+    <div class="head-stamp">PAGE VI</div>
+  </div>
+
+  <!-- ROW 1: HP + EF + TURN TRACKER -->
+  <div class="block">
+    <div class="sec-label"><span class="mk">♥</span>VITALS AT A GLANCE</div>
+    <div class="panel">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;">
+
+        <!-- Harth current/max -->
+        <div class="vital-box harth" style="text-align:center;">
+          <span class="vital-label">HARTH</span>
+          <div style="display:flex;align-items:baseline;justify-content:center;gap:4px;">
+            <span id="c-harth-cur" style="font-family:'Anton',sans-serif;font-size:2.4rem;color:var(--green3);">6</span>
+            <span style="color:var(--text-dim);font-family:'Anton',sans-serif;">/</span>
+            <span id="c-harth-max" style="font-family:'Anton',sans-serif;font-size:1.1rem;color:var(--text-dim);">6</span>
+          </div>
+          <div style="display:flex;gap:6px;justify-content:center;margin-top:6px;">
+            <button class="counter-btn" onclick="combatDmg(1)" style="background:var(--red);border-color:var(--red);" title="Take 1 damage">−1</button>
+            <button class="counter-btn" onclick="combatDmg(2)" style="background:var(--red);border-color:var(--red);font-size:0.65rem;" title="Take 2 damage">−2</button>
+            <button class="counter-btn" onclick="combatHeal(1)" title="Heal 1">+1</button>
+          </div>
+          <div class="hp-track" id="c-hp-track" style="margin-top:8px;"></div>
+        </div>
+
+        <!-- Temp HP -->
+        <div class="vital-box" style="text-align:center;border-color:var(--green2);">
+          <span class="vital-label" style="color:var(--green2);">TEMP HP</span>
+          <div style="display:flex;align-items:baseline;justify-content:center;gap:4px;">
+            <span id="c-temp" style="font-family:'Anton',sans-serif;font-size:2.4rem;color:var(--green-bright,#22c451);">0</span>
+          </div>
+          <div style="display:flex;gap:6px;justify-content:center;margin-top:6px;">
+            <button class="counter-btn" onclick="adjTemp(-1)">−</button>
+            <button class="counter-btn" onclick="adjTemp(1)">+</button>
+          </div>
+        </div>
+
+        <!-- EF -->
+        <div class="vital-box" style="text-align:center;">
+          <span class="vital-label">EF (ARMOUR)</span>
+          <span id="c-ef" style="font-family:'Anton',sans-serif;font-size:2.4rem;color:var(--purple2);">0</span>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);margin-top:4px;">reduces incoming damage</div>
+        </div>
+
+        <!-- Round / Turn tracker -->
+        <div class="vital-box" style="text-align:center;">
+          <span class="vital-label">ROUND</span>
+          <div style="display:flex;align-items:baseline;justify-content:center;gap:6px;margin-bottom:4px;">
+            <button class="counter-btn" onclick="adjRound(-1)">−</button>
+            <span id="c-round" style="font-family:'Anton',sans-serif;font-size:2rem;color:var(--gold);">1</span>
+            <button class="counter-btn" onclick="adjRound(1)">+</button>
+          </div>
+          <button onclick="resetRound()" style="background:var(--red-deep,#a8102c);border:2px solid var(--ink);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:0.7rem;letter-spacing:1px;padding:3px 10px;cursor:pointer;transform:skewX(-8deg);">RESET</button>
+        </div>
+      </div>
+
+      <!-- Damage calculator -->
+      <div style="background:var(--paper2,rgba(0,0,0,0.06));border:1.5px solid var(--border);padding:10px 14px;margin-top:4px;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:0.78rem;letter-spacing:2px;color:var(--purple);margin-bottom:8px;">DAMAGE CALCULATOR</div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <label style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);">INCOMING DMG</label>
+            <input type="number" id="dmg-in" value="1" min="0" style="width:60px;background:transparent;border:2px solid var(--ink);color:var(--text);font-family:'Anton',sans-serif;font-size:1.3rem;text-align:center;padding:3px;outline:none;">
+          </div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--text-dim);">−</div>
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <label style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);">EF</label>
+            <span id="dmg-ef" style="width:44px;background:var(--paper2,rgba(0,0,0,0.04));border:2px solid var(--border);color:var(--purple2);font-family:'Anton',sans-serif;font-size:1.3rem;text-align:center;padding:3px;display:inline-block;">0</span>
+          </div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--text-dim);">=</div>
+          <div style="display:flex;flex-direction:column;gap:2px;">
+            <label style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--red);">ACTUAL DMG</label>
+            <span id="dmg-out" style="width:60px;background:var(--paper2,rgba(0,0,0,0.04));border:2px solid var(--red);color:var(--red);font-family:'Anton',sans-serif;font-size:1.5rem;text-align:center;padding:3px;display:inline-block;">1</span>
+          </div>
+          <button onclick="applyDmg()" style="background:var(--red-deep,#a8102c);border:2px solid var(--ink);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;padding:8px 16px;cursor:pointer;transform:skewX(-9deg);margin-left:6px;">APPLY DAMAGE</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: STATS QUICK REF + CARD COMBAT -->
+  <div class="block">
+    <div class="two-col">
+      <div>
+        <div class="sec-label"><span class="mk">♣</span>ATTRIBUTES</div>
+        <div class="panel">
+          <div id="c-stats"></div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-label"><span class="mk">◈</span>CARD COMBAT</div>
+        <div class="panel">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+            <div class="suit-card spade"><div class="suit-sym">♠</div><div class="suit-info"><div class="suit-name">Spades</div><div class="suit-desc">Defence — block incoming attacks</div></div><div class="suit-watermark">♠</div></div>
+            <div class="suit-card club"><div class="suit-sym">♣</div><div class="suit-info"><div class="suit-name">Clubs</div><div class="suit-desc">Attacks — deal damage</div></div><div class="suit-watermark">♣</div></div>
+            <div class="suit-card heart"><div class="suit-sym">♥</div><div class="suit-info"><div class="suit-name">Hearts</div><div class="suit-desc">Wild — any action</div></div><div class="suit-watermark">♥</div></div>
+            <div class="suit-card diamond"><div class="suit-sym">♦</div><div class="suit-info"><div class="suit-name">Diamonds</div><div class="suit-desc">Magic — special abilities</div></div><div class="suit-watermark">♦</div></div>
+          </div>
+          <!-- hand tracker -->
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:0.78rem;letter-spacing:2px;color:var(--purple);margin-bottom:6px;">CARDS IN HAND</div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            <button class="counter-btn" onclick="adjHand(-1)">−</button>
+            <span id="c-hand" style="font-family:'Anton',sans-serif;font-size:1.6rem;color:var(--gold);min-width:28px;text-align:center;">5</span>
+            <button class="counter-btn" onclick="adjHand(1)">+</button>
+            <button onclick="document.getElementById('c-hand').textContent=5;cstate.hand=5;saveCS();" style="background:var(--purple);border:2px solid var(--ink);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:0.7rem;letter-spacing:1px;padding:3px 10px;cursor:pointer;transform:skewX(-8deg);margin-left:4px;">DRAW 5</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3: ACTIVE SKILLS + ACTIVE FACULTY -->
+  <div class="block">
+    <div class="two-col">
+      <div>
+        <div class="sec-label"><span class="mk">✦</span>ACTIVE SKILLS</div>
+        <div class="panel">
+          <div id="c-skills" style="display:flex;flex-direction:column;gap:5px;"></div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;color:var(--text-dim);margin-top:10px;letter-spacing:1px;">Showing purchased skills from Skill Tree</div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-label"><span class="mk">♦</span>ACTIVE FACULTIES</div>
+        <div class="panel">
+          <div id="c-faculties"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 4: WEAPONS QUICK REF -->
+  <div class="block">
+    <div class="sec-label"><span class="mk">⚔</span>WEAPONS QUICK REF</div>
+    <div class="panel" id="c-weapons"></div>
+  </div>
+
+  <!-- ROW 5: CONDITIONS + NOTES -->
+  <div class="block">
+    <div class="two-col">
+      <div>
+        <div class="sec-label"><span class="mk">◈</span>CONDITIONS</div>
+        <div class="panel">
+          <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;" id="c-conditions">
+            <!-- conditions toggled in JS -->
+          </div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;color:var(--text-dim);letter-spacing:1px;">Click to toggle active conditions</div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-label"><span class="mk">◈</span>COMBAT NOTES</div>
+        <div class="panel">
+          <textarea id="c-notes" class="notes-area" placeholder="Initiative order, enemy HP, terrain notes, anything mid-combat..."></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet-footer">
+    <div class="suits"><span class="s1">♠</span><span class="s2">♣</span><span class="s3">♥</span><span class="s4">♦</span></div>
+    CALL TO GALLAHAD · COMBAT READY · PAGE VI
+  </div>
+</div>
+</div>
+
+<script>
+function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function store(k,v){try{localStorage.setItem(k,v);localStorage.setItem('ctg-last-edit',Date.now());flashSaved();}catch(e){}}
+let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
+
+// ── COMBAT STATE (session-only, doesn't persist between sessions) ──
+const cstate={harth:6,harthMax:6,temp:0,ef:0,round:1,hand:5,conditions:new Set()};
+
+// ── PULL DATA FROM OTHER PAGES ──
+function pullData(){
+  cstate.harthMax=parseInt(load('ctg-harth-max'))||6;
+  cstate.harth=parseInt(load('ctg-harth-cur'))||cstate.harthMax;
+  cstate.temp=parseInt(load('ctg-harth-temp'))||0;
+  // EF: try armour list first for accuracy
+  const armour=load('ctg-armour-list');
+  if(armour){try{cstate.ef=JSON.parse(armour).reduce((s,a)=>s+(parseInt(a.ef)||0),0);}catch(e){cstate.ef=parseInt(load('ctg-ef'))||0;}}
+  else{cstate.ef=parseInt(load('ctg-ef'))||0;}
+  refreshVitals();
+  buildStats();buildWeapons();buildSkills();buildFaculties();
+}
+function saveCS(){store('ctg-harth-cur',cstate.harth);store('ctg-harth-temp',cstate.temp);}
+
+// ── VITALS ──
+function refreshVitals(){
+  document.getElementById('c-harth-cur').textContent=cstate.harth;
+  document.getElementById('c-harth-max').textContent=cstate.harthMax;
+  document.getElementById('c-temp').textContent=cstate.temp;
+  document.getElementById('c-ef').textContent=cstate.ef;
+  document.getElementById('dmg-ef').textContent=cstate.ef;
+  calcDmg();
+  // hp track
+  const track=document.getElementById('c-hp-track');track.innerHTML='';
+  for(let i=0;i<cstate.harthMax;i++){
+    const s=document.createElement('div');s.className='hp-seg'+(i<cstate.harth?' filled':'');
+    s.onclick=()=>{cstate.harth=i<cstate.harth?i:i+1;refreshVitals();saveCS();};
+    track.appendChild(s);
+  }
+}
+function combatDmg(n){
+  let d=Math.max(0,n-cstate.ef); // EF reduces damage
+  if(cstate.temp>=d){cstate.temp-=d;d=0;}else{d-=cstate.temp;cstate.temp=0;}
+  cstate.harth=Math.max(0,cstate.harth-d);
+  refreshVitals();saveCS();
+}
+function combatHeal(n){cstate.harth=Math.min(cstate.harthMax,cstate.harth+n);refreshVitals();saveCS();}
+function adjTemp(d){cstate.temp=Math.max(0,cstate.temp+d);refreshVitals();saveCS();}
+function adjRound(d){cstate.round=Math.max(1,cstate.round+d);document.getElementById('c-round').textContent=cstate.round;}
+function resetRound(){cstate.round=1;document.getElementById('c-round').textContent=1;}
+function adjHand(d){cstate.hand=Math.max(0,cstate.hand+d);document.getElementById('c-hand').textContent=cstate.hand;}
+function calcDmg(){
+  const inc=parseInt(document.getElementById('dmg-in').value)||0;
+  const actual=Math.max(0,inc-cstate.ef);
+  document.getElementById('dmg-out').textContent=actual;
+}
+function applyDmg(){
+  const inc=parseInt(document.getElementById('dmg-in').value)||0;
+  combatDmg(inc);
+}
+document.getElementById('dmg-in').addEventListener('input',calcDmg);
+
+// ── STATS ──
+function buildStats(){
+  const el=document.getElementById('c-stats');el.innerHTML='';
+  const statsData=load('ctg-stats');
+  let stats=[];
+  if(statsData){try{stats=JSON.parse(statsData);}catch(e){}}
+  if(!stats.length)stats=[{name:'Force',icon:'♣',score:5},{name:'Finess',icon:'♦',score:4},{name:'Endurance',icon:'♠',score:3},{name:'Logic',icon:'◈',score:3},{name:'Sense',icon:'◉',score:2},{name:'Velvet',icon:'♥',score:0},{name:'Shine',icon:'✦',score:1}];
+  const sp=s=>Math.floor((parseInt(s)||0)/2);
+  stats.forEach(st=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:10px;padding:5px 10px;background:var(--paper2,rgba(0,0,0,0.05));margin-bottom:5px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);border:1.5px solid var(--border);';
+    row.innerHTML=`<span style="color:var(--purple2);font-size:0.85rem;width:16px;">${st.icon||'◆'}</span>
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;color:var(--text);flex:1;">${st.name||'—'}</span>
+      <span style="font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--green3);">${st.score||0}</span>
+      <span style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--purple2);">${sp(st.score||0)}SP</span>`;
+    el.appendChild(row);
+  });
+}
+
+// ── WEAPONS ──
+function buildWeapons(){
+  const el=document.getElementById('c-weapons');el.innerHTML='';
+  let weapons=[];
+  const s=load('ctg-weapons');if(s){try{weapons=JSON.parse(s);}catch(e){}}
+  if(!weapons.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.62rem;color:var(--text-dim);">No weapons saved — add them on Page IV</div>';return;}
+  weapons.forEach(w=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:start;padding:10px 14px;margin-bottom:8px;border:2px solid var(--border);border-left:5px solid '+(w.type==='melee'?'var(--red)':'var(--purple)')+';background:var(--paper2,rgba(0,0,0,0.04));clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);';
+    const tagHtml=(w.tags||'').split(',').map(t=>`<span class="tag dist-tag" style="font-size:0.55rem;padding:1px 6px;">${t.trim()}</span>`).join('');
+    row.innerHTML=`
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:${w.type==='melee'?'var(--red)':'var(--purple2)'};padding-top:2px;">${w.type==='melee'?'⚔':'🎯'}</div>
+      <div>
+        <div style="font-family:'Anton',sans-serif;font-style:italic;font-size:1.1rem;color:var(--text);">${w.name||'Unnamed'}</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--purple2);margin:3px 0;">${w.quirkName||''}</div>
+        <div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.4;">${w.quirkText||''}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">${tagHtml}</div>
+      </div>
+      <div style="text-align:center;padding:5px 10px;background:var(--paper,#fff);border:2px solid var(--ink);clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%);">
+        <span style="font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--green3);display:block;">${w.dmg||1}</span>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;color:var(--text-dim);">DMG</span>
+      </div>`;
+    el.appendChild(row);
+  });
+}
+
+// ── SKILLS ──
+const SKILL_DATA={
+  tb1:'Advance on Unarmed melee',tb2:'Advantage on Unarmed melee',tb3:'Adv+Advantage Unarmed melee',
+  gorey:'Rip off a limb on a Crit',
+  '1togo':'Counter while being attacked',
+  ls1:'Tick range +1',ls2:'Tick range +2',
+  sneaky:'Move a Distance free',mistersmooth:'Finesse for defence checks',
+  slick:'2 cards Defence, no counter',nightkiller:'2x dmg attacking unseen',
+  bulletcritic:'2 body parts on Crit (2pt)',gunbeater:'Auto guns +1 die',
+  td1:'Advance when defending',td2:'Advantage when defending',td3:'Adv+Advantage defending',
+  boozehound:'No alcohol negatives',stimlegend:'Stims heal 2 HP',
+  drunktrain:'Advance melee while drunk',drunkmaster:'Advantage melee while drunk',drunkshifu:'Adv+Advantage melee drunk',
+  mistakemaker:'Add Spades to Defence vs counters',
+  goblinkg:'Junk rounds neutral',hs1:'Guess count +1',hs2:'Guess count +2',
+  wandsmith:'Modify weapons anywhere',lonescient:'Research anywhere',labmade:'+2 Harth permanent (2pt)',
+  lr1:'Advance Far shots',lr2:'Advantage Far shots',lr3:'Adv+Advantage Far shots',
+  precshot:'Gun range −1 dist (2pt)',predict:'1st attack = Crit (2pt)',bulletpitch:'Counter ranged at max dist',
+  inscope:'Gun range +1 dist (3pt)',
+  hh1:'Crit head: min 2 dmg',hh2:'Crit head: min 3 dmg',hh3:'Crit head: min 4 dmg',hh4:'Crit head: always max',
+  fourleaf:'Reroll loot (must keep)',fiveleaf:'Reroll loot (pick either)',
+  cheater:'Crit on 19-20 (2pt)',
+};
+function buildSkills(){
+  const el=document.getElementById('c-skills');el.innerHTML='';
+  let selected=[];
+  const s=load('ctg-skills');if(s){try{selected=JSON.parse(s);}catch(e){}}
+  if(!selected.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.62rem;color:var(--text-dim);">No skills purchased yet — unlock them on Page V</div>';return;}
+  selected.forEach(id=>{
+    const desc=SKILL_DATA[id]||id;
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:8px;padding:5px 10px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);margin-bottom:4px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);';
+    const name=id.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/\d+$/,' $&').replace(/^./,c=>c.toUpperCase());
+    row.innerHTML=`<span style="color:var(--green-bright,#22c451);font-size:0.6rem;">✓</span><span style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:1px;color:var(--text);min-width:120px;">${name}</span><span style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);">${desc}</span>`;
+    el.appendChild(row);
+  });
+}
+
+// ── FACULTIES ──
+function buildFaculties(){
+  const el=document.getElementById('c-faculties');el.innerHTML='';
+  const facData=load('ctg-faculties');
+  if(!facData){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.62rem;color:var(--text-dim);">No faculties selected — choose on Page III</div>';return;}
+  let state;try{state=JSON.parse(facData);}catch(e){return;}
+  const FACULTIES_MAP={
+    force:{name:'Force',icon:'♣',tuning:[{name:'Large Handed',actions:'Smash doors, throw barrels, grapple massive Marionettes, break objects.'},{name:'Rusty Anchor',actions:'Hold your ground, resist pushes, brace for heavy attacks.'},{name:'Bull Wit Da Horn',actions:'Sprint, slam through obstacles, chase fleeing threats.'}]},
+    finess:{name:'Finesse',icon:'♦',tuning:[{name:'Long Fingernails',actions:'Pick locks, thread small mechanisms, snipe weak points.'},{name:"Shadow's Shadow",actions:'Move quietly, slip past guards, avoid notice.'},{name:'Glover',actions:'Multi-action precision, manipulate multiple devices.'}]},
+    sense:{name:'Sense',icon:'◉',tuning:[{name:'Starved Hound',actions:'Identify hidden enemies, trace movements.'},{name:'Hawk-Eagle Eyes',actions:'Spot ambushes, identify danger early.'},{name:'Large Drums',actions:'Listen to distant sounds, detect machinery cues.'}]},
+    logic:{name:'Logic',icon:'◈',tuning:[{name:'A Smart Thief?',actions:'See structural weaknesses, plan solutions.'},{name:'Plague Surgeon',actions:'Repair engines, disable Marionette mechanisms.'},{name:'Folder Mind',actions:'Predict Marionette routines, find weaknesses in plans.'}]},
+    velvet:{name:'Velvet',icon:'♥',tuning:[{name:'Silver and Steel',actions:'Convince others, defuse tension, rally allies.'},{name:'Bronze and Woah',actions:'Force compliance, scare off rivals, establish authority.'},{name:'Turned Around Mirror',actions:'Mirror speech or gesture to manipulate.'}]},
+    endure:{name:'Endure',icon:'♠',tuning:[{name:'Steel Jaw, Low Brim',actions:'Resist panic, ignore distractions during chaos.'},{name:'Cutting Board',actions:'Shake off damage, resist toxins and hazards.'},{name:"Tongue-less",actions:'Consume anything. Perform impossible feats. Drink seawater.'}]},
+  };
+  const active=(state.active||[]).filter(Boolean);
+  if(!active.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.62rem;color:var(--text-dim);">No active faculties — select on Page III</div>';return;}
+  active.forEach(fid=>{
+    const f=FACULTIES_MAP[fid];if(!f)return;
+    const ti=state.selected?.[fid];
+    const t=ti!=null?f.tuning[ti]:null;
+    const card=document.createElement('div');
+    card.style.cssText='padding:10px 13px;margin-bottom:8px;background:var(--paper2,rgba(109,40,217,0.08));border:2px solid var(--purple);border-left:5px solid var(--green3);clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);';
+    card.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;"><span style="font-size:1.1rem;color:var(--purple2);">${f.icon}</span><span style="font-family:'Anton',sans-serif;font-style:italic;font-size:1.1rem;color:var(--text);">${f.name}</span><span style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--green2);margin-left:auto;">ACTIVE</span></div>${t?`<div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:1px;color:var(--green3);margin-bottom:4px;">${t.name}</div><div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.4;">${t.actions}</div>`:'<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.58rem;color:var(--text-dim);">No tuning selected</div>'}`;
+    el.appendChild(card);
+  });
+}
+
+// ── CONDITIONS ──
+const CONDITIONS=['Poisoned','Burning','Shocked','Blinded','Stunned','Panicked','Prone','Restrained','Drunk','Bleeding'];
+function buildConditions(){
+  const el=document.getElementById('c-conditions');
+  CONDITIONS.forEach(c=>{
+    const btn=document.createElement('button');
+    btn.textContent=c;btn.dataset.cond=c;
+    btn.style.cssText='font-family:\'Bebas Neue\',sans-serif;font-size:0.8rem;letter-spacing:1px;padding:5px 12px;cursor:pointer;border:2px solid var(--border2);background:transparent;color:var(--text2);transform:skewX(-8deg);transition:all .15s;';
+    btn.addEventListener('click',()=>{
+      if(cstate.conditions.has(c)){cstate.conditions.delete(c);btn.style.background='transparent';btn.style.color='var(--text2)';btn.style.borderColor='var(--border2)';}
+      else{cstate.conditions.add(c);btn.style.background=c==='Burning'?'var(--red)':c==='Shocked'?'var(--purple)':c==='Drunk'?'var(--gold)':'var(--red-deep)';btn.style.color='#fff';btn.style.borderColor='var(--ink)';}
+    });
+    el.appendChild(btn);
+  });
+}
+
+// ── COMBAT NOTES ──
+const noteEl=document.getElementById('c-notes');
+const savedNotes=load('ctg-combat-notes');if(savedNotes)noteEl.value=savedNotes;
+noteEl.addEventListener('input',()=>store('ctg-combat-notes',noteEl.value));
+
+// ── NAV NAME ──
+(function(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();
+
+// ── TRANSITIONS ──
+document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
+
+// ── INIT ──
+pullData();buildConditions();
+</script>
+
+<script>
+function applyTheme(t){document.documentElement.setAttribute('data-theme',t);localStorage.setItem('ctg-theme',t);const btn=document.getElementById('theme-toggle');if(btn)btn.textContent=t==='dark'?'☀ LIGHT':'☾ DARK';}
+function toggleTheme(){applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');}
+(function(){const t=localStorage.getItem('ctg-theme')||'light';const btn=document.getElementById('theme-toggle');if(btn)btn.textContent=t==='dark'?'☀ LIGHT':'☾ DARK';})();
+</script>
+</body>
+</html>

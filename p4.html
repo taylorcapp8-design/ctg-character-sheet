@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+// ── THEME INIT (runs before paint to avoid flash) ──
+(function(){
+  const t=localStorage.getItem('ctg-theme')||'light';
+  document.documentElement.setAttribute('data-theme',t);
+})();
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#07060c">
@@ -17,9 +25,11 @@
     <a href="p3.html" data-nav>III·FAC</a>
     <a href="p4.html" class="active">IV·ARMS</a>
     <a href="p5.html" data-nav>V·SKILL</a>
+    <a href="p6.html" data-nav style="color:var(--red);">VI·COMBAT</a>
   </div>
   <div class="nav-char-name" id="nav-name"><span>OPERATIVE //</span> —</div>
   <span class="save-flash" id="save-flash">SAVED ✓</span>
+  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark / light mode">☀ LIGHT</button>
 </nav>
 
 <div class="page-wrap" id="page-wrap">
@@ -37,6 +47,12 @@
   <div class="sec-label mt"><span class="mk">◈</span>PROVISIONS — RECHARGEABLE</div>
   <div class="food-grid" id="food-grid"></div>
   <button class="add-btn add-row" onclick="addFood()">ADD PROVISION</button>
+
+  <!-- KEYWORD GLOSSARY -->
+  <div class="sec-label mt"><span class="mk">◈</span>KEYWORD GLOSSARY <span class="note">— click to expand</span></div>
+  <div class="panel" id="glossary-panel">
+    <div style="display:flex;flex-wrap:wrap;gap:8px;" id="glossary-list"></div>
+  </div>
 
   <div class="sheet-footer">
     <div class="suits"><span class="s1">♠</span><span class="s2">♣</span><span class="s3">♥</span><span class="s4">♦</span></div>
@@ -137,6 +153,48 @@ function renderFood(){
   });
 }
 function addFood(){food.push({id:uid(),name:'',harth:'♥ 1',flavor:'',quirk:'',quip:'',charged:true});saveFood();renderFood();const cards=document.querySelectorAll('.food-card');cards[cards.length-1].querySelector('.food-name').focus();}
+
+/* ── KEYWORD GLOSSARY ───────────────────────────────────── */
+const KEYWORDS={
+  'Melee':'Attack must be in close range (adjacent). Uses ♣ Clubs cards.',
+  'Ranged':'Attack at a distance. Uses ♣ Clubs cards. Requires ammo.',
+  'Brass':'Weapon is made of brass/metal. May interact with certain abilities.',
+  'String':'Weapon has a string mechanism — fine for Lock-Smith abilities.',
+  'Flicker':'Weapon uses Flicker as its attack stat instead of Force.',
+  'Semi':'Semi-automatic. One shot per action, accurate.',
+  'Auto':'Automatic fire. Roll multiple D6s up to the Auto value. Hits on 5-6.',
+  'Close':'Effective at close range only.',
+  'Medium':'Effective up to medium range.',
+  'Far':'Effective at long range. Requires Long Ranger or similar.',
+  'Melee (tag)':'This weapon can also make melee attacks.',
+  'Advance':'Roll twice, take the better result.',
+  'Advantage':'Add +1 to your roll.',
+  'Crit':'A natural 20 (or 19-20 with Cheater). Choose a hit location and deal max damage.',
+  'Reaction':'A free action in response to an opponent\u2019s action. Used once per round.',
+  'Counter':'Respond to an attack with your own attack. Costs a Reaction.',
+  'Shock':'Target must withdraw their current card and redraw. If unable, they skip their turn.',
+  'Burn':'Target takes fire damage at start of their next turn.',
+  'Out Of Combat':'No enemies are actively engaged. Counts as a surprise attack.',
+  'Tick':'Lock-picking measure. Higher Tick range = faster picks.',
+  'Guess':'Logic-based problem solving attempts. Higher = more tries.',
+};
+function buildGlossary(){
+  const list=document.getElementById('glossary-list');list.innerHTML='';
+  Object.entries(KEYWORDS).forEach(([kw,def])=>{
+    const chip=document.createElement('div');
+    chip.style.cssText='cursor:pointer;position:relative;';
+    chip.innerHTML=`<span class="tag dist-tag" style="cursor:pointer;user-select:none;">${kw}</span>
+      <div class="kw-def" style="display:none;position:absolute;bottom:calc(100% + 6px);left:0;z-index:50;background:var(--paper,#fff);border:2.5px solid var(--ink,#15131a);padding:10px 14px;width:260px;font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.88rem;line-height:1.5;color:var(--text,#15131a);box-shadow:4px 4px 0 var(--purple,#6d28d9);">
+        <strong style="font-family:'Bebas Neue',sans-serif;letter-spacing:1px;color:var(--purple,#6d28d9);display:block;margin-bottom:4px;">${kw}</strong>${def}
+      </div>`;
+    const tag=chip.querySelector('.tag');const def_el=chip.querySelector('.kw-def');
+    let open=false;
+    tag.addEventListener('click',e=>{e.stopPropagation();open=!open;def_el.style.display=open?'block':'none';});
+    document.addEventListener('click',()=>{open=false;def_el.style.display='none';});
+    list.appendChild(chip);
+  });
+}
+buildGlossary();
 
 /* ── nav + transitions ───────────────────────────────────── */
 (function(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();

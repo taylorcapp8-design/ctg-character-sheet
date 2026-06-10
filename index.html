@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+// ── THEME INIT (runs before paint to avoid flash) ──
+(function(){
+  const t=localStorage.getItem('ctg-theme')||'light';
+  document.documentElement.setAttribute('data-theme',t);
+})();
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0a0a0d">
@@ -60,7 +68,9 @@
     <a class="word w3" href="p3.html" data-nav data-word="FACULTIES"><span class="num">III</span></a>
     <a class="word w4" href="p4.html" data-nav data-word="ARSENAL"><span class="num">IV</span></a>
     <a class="word w5" href="p5.html" data-nav data-word="SKILLS"><span class="num">V</span></a>
-  </nav>
+    <a class="word" href="p6.html" data-nav data-word="COMBAT" style="font-size:3rem;transform:rotate(1.5deg);margin-left:110px;margin-top:-4px;background:var(--red-deep,#a8102c);box-shadow:5px 5px 0 var(--ink);"><span class="num">VI</span></a>
+    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark / light mode">☀ LIGHT</button>
+</nav>
 
   <!-- HUD readouts -->
   <div class="hub-hud">
@@ -73,7 +83,7 @@
   <div class="data-dots">
     <span class="dd" data-page="p1"></span><span class="dd" data-page="p2"></span>
     <span class="dd" data-page="p3"></span><span class="dd" data-page="p4"></span>
-    <span class="dd" data-page="p5"></span>
+    <span class="dd" data-page="p5"></span><span class="dd" data-page="p6"></span>
     <span class="ddl">SAVED DATA</span>
   </div>
 
@@ -121,7 +131,7 @@ document.querySelectorAll('.word').forEach(w=>{
 })();
 
 // data dots
-const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p2:['ctg-inventory','ctg-mula','ctg-armour-list','ctg-charms'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-food'],p5:['ctg-skills']};
+const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p2:['ctg-inventory','ctg-mula','ctg-armour-list','ctg-charms'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-food'],p5:['ctg-skills'],p6:['ctg-combat-notes']};
 document.querySelectorAll('.dd').forEach(dd=>{const pg=dd.dataset.page;let has=false;(map[pg]||[]).forEach(k=>{const v=lg(k);if(v&&v!=='[]'&&v!=='{}'&&v!=='')has=true;});if(has)dd.classList.add('has-data');});
 
 // sync panel

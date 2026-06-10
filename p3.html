@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+// ── THEME INIT (runs before paint to avoid flash) ──
+(function(){
+  const t=localStorage.getItem('ctg-theme')||'light';
+  document.documentElement.setAttribute('data-theme',t);
+})();
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#050508">
@@ -17,9 +25,11 @@
     <a href="p3.html" class="active">III·FAC</a>
     <a href="p4.html" data-nav>IV·ARMS</a>
     <a href="p5.html" data-nav>V·SKILL</a>
+    <a href="p6.html" data-nav style="color:var(--red);">VI·COMBAT</a>
   </div>
   <div class="nav-char-name" id="nav-name"><span>OPERATIVE //</span> —</div>
   <span class="save-flash" id="save-flash">SAVED ✓</span>
+  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark / light mode">☀ LIGHT</button>
 </nav>
 
 <div class="page-wrap" id="page-wrap">

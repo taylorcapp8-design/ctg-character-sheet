@@ -459,3 +459,91 @@ body.hub-body{padding:0;overflow-x:hidden;}
   .panel,.weapon-card,.food-card,.faculty-card{filter:none;border-color:#999;break-inside:avoid;}
   .sheet::before,.sheet::after,.tree-svg{display:none;}
 }
+
+/* ═══════════════════════════════════════════════════════════
+   DARK MODE  — activated by  html[data-theme="dark"]
+   All colours flip; accents stay vivid.
+   ═══════════════════════════════════════════════════════════ */
+[data-theme="dark"]{
+  --bg:#150925; --bg2:#1d0d33; --paper:#241340; --paper2:#2e1850;
+  --ink:#ece2ff;
+  --text:#f3ecff; --text2:#cabbe6; --text-dim:#9181b5;
+  --border:rgba(236,226,255,0.26); --border2:rgba(236,226,255,0.6);
+  --purple:#9b59ff; --purple2:#c79bff; --purple-dim:#6a2fd0;
+  --purple-soft:#3a1f63; --purple-glow:rgba(155,89,255,0.45);
+  --green3:#3ee659; --green2:#39c94f; --green-bright:#5dff6e;
+  --green-glow:rgba(62,230,89,0.35);
+  --gold:#ffd23f; --red:#ff4757; --red-deep:#d11a36;
+  --accent2:#ff3ea5; --accent3:#34d6ff;
+}
+/* body bg glow pools in dark mode */
+[data-theme="dark"] body{
+  background:var(--bg);
+  background-image:
+    radial-gradient(rgba(255,255,255,0.04) 1px,transparent 1.6px),
+    radial-gradient(ellipse 60% 50% at 100% 0%,rgba(155,89,255,0.28) 0%,transparent 55%),
+    radial-gradient(ellipse 55% 55% at 0% 100%,rgba(255,62,165,0.14) 0%,transparent 55%);
+  background-size:7px 7px,100% 100%,100% 100%;
+}
+/* nav */
+[data-theme="dark"] .ctg-nav{background:rgba(21,9,37,0.95);border-bottom-color:var(--ink);}
+[data-theme="dark"] .ctg-nav-home{background:var(--purple);color:#fff;}
+[data-theme="dark"] .ctg-nav a.active{background:var(--purple);color:#fff;}
+[data-theme="dark"] .ctg-nav a:hover{background:rgba(255,255,255,0.1);color:#fff;}
+/* panels / cards */
+[data-theme="dark"] .panel{background:var(--paper);border-color:var(--ink);}
+[data-theme="dark"] .weapon-card,[data-theme="dark"] .food-card,[data-theme="dark"] .faculty-card{background:var(--paper);border-color:var(--ink);}
+[data-theme="dark"] .node-body{background:var(--paper2);border-color:var(--ink);}
+[data-theme="dark"] .armour-slot,[data-theme="dark"] .charm-slot,[data-theme="dark"] .inv-item,[data-theme="dark"] .supply-slot,[data-theme="dark"] .equipment-slot,[data-theme="dark"] .vital-box,[data-theme="dark"] .consumable,[data-theme="dark"] .suit-card,[data-theme="dark"] .stat-bar,[data-theme="dark"] .tuning-entry,[data-theme="dark"] .wstat{background:var(--paper2);border-color:var(--border);}
+[data-theme="dark"] .inv-item:hover,[data-theme="dark"] .tuning-entry:hover{background:var(--purple-soft);}
+[data-theme="dark"] .tuning-entry.selected{background:var(--purple-soft);}
+[data-theme="dark"] .active-bar,[data-theme="dark"] .budget-strip{background:var(--paper);border-color:var(--ink);}
+[data-theme="dark"] .active-slot{background:var(--paper2);border-color:var(--border2);}
+[data-theme="dark"] .tree-layout{background:var(--paper);border-color:var(--ink);}
+[data-theme="dark"] .tree-sidebar{background:var(--paper2);border-right-color:var(--border);}
+[data-theme="dark"] .mula-block{background:var(--paper2);}
+[data-theme="dark"] .notes-area,[data-theme="dark"] .field-textarea,[data-theme="dark"] .charm-quirk-input,[data-theme="dark"] .su-input,[data-theme="dark"] .su-area{background:var(--paper2);border-color:var(--border);color:var(--text);}
+[data-theme="dark"] .portrait-box{background:var(--paper2);}
+[data-theme="dark"] .tip{background:var(--paper);border-color:var(--ink);}
+[data-theme="dark"] .slideup{background:var(--bg2);border-top-color:var(--purple);}
+/* thick accent top-bars in dark — bump saturation */
+[data-theme="dark"] .panel{border-top-color:var(--purple2);}
+[data-theme="dark"] .weapon-card{border-top-color:#ff6eb8;}
+[data-theme="dark"] .food-card{border-top-color:var(--green-bright);}
+[data-theme="dark"] .faculty-card{border-top-color:var(--purple2);}
+/* section labels */
+[data-theme="dark"] .sec-label{background:var(--purple);border-color:var(--purple);}
+[data-theme="dark"] .sec-label::after{background:var(--purple);}
+[data-theme="dark"] .head-stamp{background:var(--purple);color:#fff;}
+/* hub word pile */
+[data-theme="dark"] .hub-bg{background:var(--bg);}
+[data-theme="dark"] .hub-splat.a{opacity:0.45;}
+[data-theme="dark"] .hub-splat.b{opacity:0.3;}
+[data-theme="dark"] .hub-zz{opacity:0.35;}
+[data-theme="dark"] .hub-logo{background:var(--purple);color:#fff;}
+[data-theme="dark"] .hub-cmd{color:#fff;border-color:var(--ink);}
+[data-theme="dark"] .word{background:var(--paper);color:#fff;border-color:var(--ink);}
+[data-theme="dark"] .word.w2,[data-theme="dark"] .word.w5{background:var(--purple);color:#fff;}
+[data-theme="dark"] .word.w3{background:var(--paper2);}
+[data-theme="dark"] .word:hover{background:var(--purple2)!important;color:#0a0413!important;}
+[data-theme="dark"] .hud-k{background:var(--purple);color:#fff;border-color:var(--ink);}
+[data-theme="dark"] .hud-v{background:var(--paper);color:var(--text);border-color:var(--ink);}
+[data-theme="dark"] .hud-v.mula{color:var(--purple2);}
+[data-theme="dark"] .char-line{color:#fff;}
+[data-theme="dark"] .btn-hint{color:#fff;}
+[data-theme="dark"] .scrim{background:rgba(0,0,0,0.65);}
+/* inputs on dark */
+[data-theme="dark"] .field-input,[data-theme="dark"] .equip-input,[data-theme="dark"] .armour-input,[data-theme="dark"] .charm-input,[data-theme="dark"] .mula-input,[data-theme="dark"] .inv-input,[data-theme="dark"] .stat-input,[data-theme="dark"] .ef-input,[data-theme="dark"] .vital-input,[data-theme="dark"] .ed{color:#fff;border-color:var(--border);}
+[data-theme="dark"] .sheet-title,[data-theme="dark"] .head-tag,[data-theme="dark"] .stat-name,[data-theme="dark"] .slot-label,[data-theme="dark"] .armour-loc,.faculty-name,[data-theme="dark"] .tuning-name,[data-theme="dark"] .weapon-name,[data-theme="dark"] .food-name,[data-theme="dark"] .node-name{color:#fff;}
+
+/* ── THEME TOGGLE BUTTON ──────────────────────────────────── */
+.theme-toggle{
+  margin-left:10px;background:none;border:2px solid var(--ink);
+  color:var(--ink);font-family:'Bebas Neue',sans-serif;font-size:0.8rem;
+  letter-spacing:1px;padding:3px 10px;cursor:pointer;
+  transform:skewX(-9deg);transition:all .15s;white-space:nowrap;
+  box-shadow:2px 2px 0 var(--purple);
+}
+.theme-toggle:hover{background:var(--purple);color:#fff;border-color:var(--purple);}
+[data-theme="dark"] .theme-toggle{border-color:var(--ink);color:var(--ink);}
+[data-theme="dark"] .theme-toggle:hover{background:var(--purple2);border-color:var(--purple2);}

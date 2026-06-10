@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+// ── THEME INIT (runs before paint to avoid flash) ──
+(function(){
+  const t=localStorage.getItem('ctg-theme')||'light';
+  document.documentElement.setAttribute('data-theme',t);
+})();
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#07060c">
@@ -17,9 +25,11 @@
     <a href="p3.html" data-nav>III·FAC</a>
     <a href="p4.html" data-nav>IV·ARMS</a>
     <a href="p5.html" data-nav>V·SKILL</a>
+    <a href="p6.html" data-nav style="color:var(--red);">VI·COMBAT</a>
   </div>
   <div class="nav-char-name" id="nav-name"><span>OPERATIVE //</span> —</div>
   <span class="save-flash" id="save-flash">SAVED ✓</span>
+  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark / light mode">☀ LIGHT</button>
 </nav>
 
 <div class="page-wrap" id="page-wrap">
@@ -59,21 +69,38 @@
   <div class="block">
     <div class="sec-label"><span class="mk">♥</span>VITALS</div>
     <div class="panel">
-      <div class="vitals-strip">
+      <div class="vitals-strip" style="grid-template-columns:2fr 1fr 1fr 1fr;">
+        <!-- HARTH / HP -->
         <div class="vital-box harth">
           <span class="vital-label">HARTH / HP</span>
           <div style="display:flex;align-items:baseline;justify-content:center;gap:4px;">
             <input type="number" class="vital-input" id="harth-cur" value="6" min="0" style="font-size:2rem;width:54px;">
-            <span style="color:var(--text-dim);font-family:'Anton';font-size:1rem;">/</span>
-            <input type="number" class="vital-input" id="harth-max" value="6" min="1" style="font-size:1.1rem;width:42px;color:var(--text-dim);">
+            <span style="color:var(--text-dim);font-family:'Anton',sans-serif;font-size:1rem;">/</span>
+            <input type="number" class="vital-input" id="harth-max" value="6" min="1" style="font-size:1.1rem;width:42px;color:var(--text-dim);" title="Max HP — click to edit">
+          </div>
+          <div style="display:flex;gap:8px;justify-content:center;margin-top:4px;">
+            <button class="counter-btn" onclick="adjustHarth(-1)" title="Take damage">−</button>
+            <button class="counter-btn" onclick="adjustHarth(1)" title="Heal">+</button>
+            <button class="counter-btn" style="font-size:0.6rem;padding:0 6px;letter-spacing:0;" onclick="document.getElementById('harth-cur').value=document.getElementById('harth-max').value;refreshTracks();saveVitals();" title="Full heal">FULL</button>
           </div>
           <div class="hp-track" id="harth-track"></div>
         </div>
-        <div class="vital-box ef">
-          <span class="vital-label">EF</span>
-          <input type="number" class="vital-input" id="ef-val" value="0" min="0">
-          <div class="hp-track" id="ef-track"></div>
+        <!-- TEMP HP -->
+        <div class="vital-box" style="border-color:var(--green2);">
+          <span class="vital-label" style="color:var(--green2);">TEMP HP</span>
+          <div style="display:flex;align-items:baseline;justify-content:center;gap:4px;">
+            <input type="number" class="vital-input" id="harth-temp" value="0" min="0" style="color:var(--green3);">
+          </div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);text-align:center;margin-top:4px;">absorbs damage first</div>
         </div>
+        <!-- EF — pulled from armour page total -->
+        <div class="vital-box ef">
+          <span class="vital-label">EF (ARMOUR)</span>
+          <input type="number" class="vital-input" id="ef-val" value="0" min="0" title="Auto-totalled from Armour page. Can override here.">
+          <div class="hp-track" id="ef-track"></div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;color:var(--text-dim);text-align:center;margin-top:3px;">from armour page</div>
+        </div>
+        <!-- STIM S -->
         <div class="vital-box">
           <span class="vital-label">STIM S</span>
           <div class="consumable-counter" style="margin-top:6px;">
@@ -173,14 +200,14 @@ function renderStats(){
     row.innerHTML=`
       <div class="stat-bar-fill"></div>
       <span class="stat-icon">${st.icon||'◆'}</span>
-      <input class="ed stat-name" data-f="name" value="${esc(st.name)}" placeholder="Attribute" style="flex:1;">
+      <input class="stat-name-input" data-f="name" value="${esc(st.name)}" placeholder="Attribute name..." style="flex:1;background:transparent;border:none;border-bottom:1.5px dashed rgba(0,0,0,0.2);color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:1px;outline:none;padding:2px 4px;transition:border-color .15s;" onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='rgba(0,0,0,0.2)'">
       <input type="number" class="stat-input" data-f="score" value="${parseInt(st.score)||0}" min="0" max="9">
       <span class="stat-sp">${sp(st.score)}<span>SP</span></span>
       <button class="mini-del" title="Remove" data-del="${i}">✕</button>`;
     w.appendChild(row);
     const fill=row.querySelector('.stat-bar-fill');
     setTimeout(()=>fill.style.width=((parseInt(st.score)||0)/9*100)+'%',40+i*55);
-    row.querySelector('[data-f="name"]').addEventListener('input',e=>{st.name=e.target.value;saveStats();});
+    row.querySelector('.stat-name-input').addEventListener('input',e=>{st.name=e.target.value;saveStats();});
     const sc=row.querySelector('[data-f="score"]');
     sc.addEventListener('input',()=>{st.score=parseInt(sc.value)||0;row.querySelector('.stat-sp').innerHTML=sp(st.score)+'<span>SP</span>';fill.style.width=(st.score/9*100)+'%';saveStats();});
     row.querySelector('[data-del]').addEventListener('click',()=>{stats.splice(i,1);saveStats();renderStats();});
@@ -242,7 +269,26 @@ function buildTrack(curId,maxId,trackId,efClass){
   for(let i=0;i<max;i++){const s=document.createElement('div');s.className='hp-seg'+(efClass?' ef-seg':'')+(i<cur?' filled':'');s.onclick=()=>{document.getElementById(curId).value=i<cur?i:i+1;refreshTracks();saveVitals();};c.appendChild(s);}
 }
 function refreshTracks(){buildTrack('harth-cur','harth-max','harth-track',false);buildTrack('ef-val',null,'ef-track',true);}
-function saveVitals(){save('ctg-harth-cur',document.getElementById('harth-cur').value);save('ctg-harth-max',document.getElementById('harth-max').value);save('ctg-ef',document.getElementById('ef-val').value);}
+function saveVitals(){
+  save('ctg-harth-cur',document.getElementById('harth-cur').value);
+  save('ctg-harth-max',document.getElementById('harth-max').value);
+  save('ctg-ef',document.getElementById('ef-val').value);
+  save('ctg-harth-temp',document.getElementById('harth-temp').value);
+}
+function adjustHarth(d){
+  const tempEl=document.getElementById('harth-temp');
+  const curEl=document.getElementById('harth-cur');
+  const maxVal=parseInt(document.getElementById('harth-max').value)||6;
+  let temp=parseInt(tempEl.value)||0;
+  let cur=parseInt(curEl.value)||0;
+  if(d<0){// damage: eat temp first
+    const dmg=Math.abs(d);if(temp>=dmg){temp-=dmg;}else{cur=Math.max(0,cur-(dmg-temp));temp=0;}
+  } else {// heal: don't exceed max
+    cur=Math.min(maxVal,cur+d);
+  }
+  tempEl.value=temp;curEl.value=cur;
+  refreshTracks();saveVitals();
+}
 
 /* ── STIM S counter (kept in vitals) ─────────────────────── */
 let stimS=parseInt(load('ctg-cnt-stims')||'0');
@@ -257,8 +303,13 @@ FIELDS.forEach(id=>{const el=document.getElementById(id);const s=load('ctg-'+id)
 function updateNavName(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');}
 
 /* restore vitals + portrait + stim */
-(function(){const hc=load('ctg-harth-cur'),hm=load('ctg-harth-max'),ef=load('ctg-ef');if(hc!==null)document.getElementById('harth-cur').value=hc;if(hm!==null)document.getElementById('harth-max').value=hm;if(ef!==null)document.getElementById('ef-val').value=ef;const p=load('ctg-portrait');if(p){const img=document.getElementById('portrait-img');img.src=p;img.style.display='block';document.getElementById('portrait-placeholder').style.display='none';}document.getElementById('stims-val').textContent=stimS;document.getElementById('lvl-display').textContent=document.getElementById('f-level').value;})();
-['harth-cur','harth-max','ef-val'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{refreshTracks();saveVitals();}));
+(function(){
+  // pull EF total from armour page if available
+  const armourData=load('ctg-armour-list');
+  if(armourData){try{const arr=JSON.parse(armourData);const t=arr.reduce((s,a)=>s+(parseInt(a.ef)||0),0);save('ctg-ef',t);}catch(e){}}
+  const hc=load('ctg-harth-cur'),hm=load('ctg-harth-max'),ef=load('ctg-ef'),ht=load('ctg-harth-temp');if(hc!==null)document.getElementById('harth-cur').value=hc;if(hm!==null)document.getElementById('harth-max').value=hm;if(ef!==null)document.getElementById('ef-val').value=ef;
+  if(ht!==null)document.getElementById('harth-temp').value=ht;const p=load('ctg-portrait');if(p){const img=document.getElementById('portrait-img');img.src=p;img.style.display='block';document.getElementById('portrait-placeholder').style.display='none';}document.getElementById('stims-val').textContent=stimS;document.getElementById('lvl-display').textContent=document.getElementById('f-level').value;})();
+['harth-cur','harth-max','ef-val','harth-temp'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{refreshTracks();saveVitals();}));
 
 /* transitions */
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});

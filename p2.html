@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>
+// ── THEME INIT (runs before paint to avoid flash) ──
+(function(){
+  const t=localStorage.getItem('ctg-theme')||'light';
+  document.documentElement.setAttribute('data-theme',t);
+})();
+</script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#07060c">
@@ -17,9 +25,11 @@
     <a href="p3.html" data-nav>III·FAC</a>
     <a href="p4.html" data-nav>IV·ARMS</a>
     <a href="p5.html" data-nav>V·SKILL</a>
+    <a href="p6.html" data-nav style="color:var(--red);">VI·COMBAT</a>
   </div>
   <div class="nav-char-name" id="nav-name"><span>OPERATIVE //</span> —</div>
   <span class="save-flash" id="save-flash">SAVED ✓</span>
+  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark / light mode">☀ LIGHT</button>
 </nav>
 
 <div class="page-wrap" id="page-wrap">
@@ -85,8 +95,8 @@ const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&g
 
 /* ── ARMOUR (editable + addable) ─────────────────────────── */
 const DEF_ARMOUR=[
-  {loc:'🪖 Head',name:'Change Name',ef:0},{loc:'🧥 Torso',name:'Rubbish Slicks',ef:0},
-  {loc:'💪 Arms',name:'Garbage Pads',ef:0},{loc:'🦵 Legs',name:'Two diff. Winter Socks',ef:0},
+  {loc:'🪖 Head',name:'Change Name',ef:0,ability:''},{loc:'🧥 Torso',name:'Rubbish Slicks',ef:0,ability:''},
+  {loc:'💪 Arms',name:'Garbage Pads',ef:0,ability:''},{loc:'🦵 Legs',name:'Two diff. Winter Socks',ef:0,ability:''},
 ];
 let armour=[];
 (function(){
@@ -97,23 +107,40 @@ let armour=[];
     armour=DEF_ARMOUR.map(d=>{const k=o[d.loc];const on=k?load('ctg-'+k[0]):null;const oe=k?load('ctg-'+k[1]):null;return{loc:d.loc,name:on!==null?on:d.name,ef:oe!==null?parseInt(oe):d.ef};});
   }
 })();
-function saveArmour(){save('ctg-armour-list',JSON.stringify(armour));}
-function recalcEF(){const t=armour.reduce((s,a)=>s+(parseInt(a.ef)||0),0);document.getElementById('ef-total').textContent=(t>=0?'+':'')+t;}
+function saveArmour(){
+  save('ctg-armour-list',JSON.stringify(armour));
+  // keep ctg-ef in sync so Stats page reads the correct total
+  const t=armour.reduce((s,a)=>s+(parseInt(a.ef)||0),0);
+  try{localStorage.setItem('ctg-ef',t);}catch(e){}
+}
+function recalcEF(){
+  const t=armour.reduce((s,a)=>s+(parseInt(a.ef)||0),0);
+  document.getElementById('ef-total').textContent=(t>=0?'+':'')+t;
+  try{localStorage.setItem('ctg-ef',t);}catch(e){}
+}
 function renderArmour(){
   const w=document.getElementById('armour-list');w.innerHTML='';
   armour.forEach((a,i)=>{
-    const d=document.createElement('div');d.className='armour-slot';
-    d.innerHTML=`<input class="ed armour-loc" data-f="loc" value="${esc(a.loc)}" placeholder="Location">
-      <input class="ed armour-input" data-f="name" value="${esc(a.name)}" placeholder="Armour...">
-      <div class="ef-wrap"><div class="ef-label">EF+</div><input class="ef-input" type="number" data-f="ef" value="${parseInt(a.ef)||0}" min="0"></div>
-      <button class="mini-del" title="Remove" data-del="${i}" style="position:absolute;top:3px;right:4px;">✕</button>`;
+    const d=document.createElement('div');d.className='armour-slot';d.style.cssText='clip-path:none;padding:12px;display:block;';
+    const hasAbility = a.ability && a.ability.trim();
+    d.innerHTML=`
+      <div style="display:grid;grid-template-columns:90px 1fr 60px auto;gap:10px;align-items:center;">
+        <input class="ed armour-loc" data-f="loc" value="${esc(a.loc)}" placeholder="Location" style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1px;color:var(--purple2);">
+        <input class="ed armour-input" data-f="name" value="${esc(a.name)}" placeholder="Armour name...">
+        <div class="ef-wrap"><div class="ef-label">EF+</div><input class="ef-input" type="number" data-f="ef" value="${parseInt(a.ef)||0}" min="0"></div>
+        <button class="mini-del" title="Remove" data-del="${i}">✕</button>
+      </div>
+      <div style="margin-top:7px;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--green2);margin-bottom:3px;">ABILITY / PASSIVE</div>
+        <textarea class="ed armour-ability" data-f="ability" rows="2" placeholder="Special ability or passive effect..." style="width:100%;background:var(--paper2,rgba(0,0,0,0.06));border:1.5px dashed var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:0.85rem;padding:5px 8px;resize:vertical;outline:none;line-height:1.4;transition:border-color .15s;" onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='var(--border)'">${esc(a.ability||'')}</textarea>
+      </div>`;
     d.style.position='relative';
     w.appendChild(d);
     d.querySelectorAll('[data-f]').forEach(inp=>inp.addEventListener('input',()=>{a[inp.dataset.f]=inp.dataset.f==='ef'?(parseInt(inp.value)||0):inp.value;saveArmour();if(inp.dataset.f==='ef')recalcEF();}));
     d.querySelector('[data-del]').addEventListener('click',()=>{armour.splice(i,1);saveArmour();renderArmour();recalcEF();});
   });
 }
-function addArmour(){armour.push({loc:'New Slot',name:'',ef:0});saveArmour();renderArmour();}
+function addArmour(){armour.push({loc:'New Slot',name:'',ef:0,ability:''});saveArmour();renderArmour();}
 
 /* ── CHARMS ──────────────────────────────────────────────── */
 function saveCharms(){const c=[...document.querySelectorAll('.charm-slot')].map(s=>({name:s.querySelector('.charm-input').value,quirk:s.querySelector('.charm-quirk-input').value}));save('ctg-charms',JSON.stringify(c));}
@@ -128,14 +155,39 @@ function addCharm(name='',quirk=''){
 
 /* ── INVENTORY ───────────────────────────────────────────── */
 const startItems=['1× Large Stim (Healing)','1× Gun-Brella','1× Toothpick','1× Ink-Dipped Calamari','1× Rotten Supplies','2× Shotgun Ammo','1× Pistol Silencer'];
-function saveInv(){const items=[...document.querySelectorAll('.inv-input')].map(i=>i.value);save('ctg-inventory',JSON.stringify(items));}
-function addItem(val=''){
-  const li=document.createElement('li');li.className='inv-item';
-  li.innerHTML=`<span class="inv-bullet">◆</span><input class="inv-input" value="${esc(val)}" placeholder="Item..."><button class="inv-del" onclick="this.closest('li').remove();saveInv();">✕</button>`;
+function saveInv(){
+  const items=[...document.querySelectorAll('.inv-item')].map(li=>({
+    name:li.querySelector('.inv-input')?.value||'',
+    notes:li.querySelector('.inv-notes')?.value||''
+  }));
+  save('ctg-inventory',JSON.stringify(items));
+}
+function addItem(val='',notes=''){
+  const li=document.createElement('li');li.className='inv-item';li.style.display='block';li.style.borderBottom='2px solid var(--border)';li.style.padding='6px 4px';
+  li.innerHTML=`
+    <div style="display:grid;grid-template-columns:20px 1fr auto auto;gap:8px;align-items:center;">
+      <span class="inv-bullet">◆</span>
+      <input class="inv-input" value="${esc(val)}" placeholder="Item name...">
+      <button class="inv-expand" title="Add notes" style="background:none;border:1px solid var(--border);color:var(--purple2,#8b3df5);font-family:'Share Tech Mono',monospace;font-size:0.6rem;padding:1px 6px;cursor:pointer;transition:all .15s;" onclick="this.closest('li').querySelector('.inv-notes-row').style.display=this.closest('li').querySelector('.inv-notes-row').style.display==='none'?'block':'none';this.textContent=this.textContent==='▼ NOTES'?'▲ NOTES':'▼ NOTES';">▼ NOTES</button>
+      <button class="inv-del" onclick="this.closest('li').remove();saveInv();" style="opacity:0.5;">✕</button>
+    </div>
+    <div class="inv-notes-row" style="display:none;margin-top:5px;padding-left:28px;">
+      <textarea class="inv-notes" rows="2" placeholder="What does it do? Weight? Value? Notes..." style="width:100%;background:rgba(0,0,0,0.04);border:1.5px dashed var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:0.85rem;padding:5px 8px;resize:vertical;outline:none;line-height:1.4;transition:border-color .15s;" onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='var(--border)'">${esc(notes)}</textarea>
+    </div>`;
   document.getElementById('inv-list').appendChild(li);
   li.querySelector('.inv-input').addEventListener('input',saveInv);
+  li.querySelector('.inv-notes').addEventListener('input',saveInv);
 }
-(function(){const s=load('ctg-inventory');if(s){JSON.parse(s).forEach(addItem);}else{startItems.forEach(addItem);}})();
+(function(){
+  const s=load('ctg-inventory');
+  if(s){
+    const arr=JSON.parse(s);
+    arr.forEach(item=>{
+      if(typeof item==='string')addItem(item,''); // old format
+      else addItem(item.name||'',item.notes||''); // new format
+    });
+  } else {startItems.forEach(v=>addItem(v,''));}
+})();
 
 /* ── MULA ────────────────────────────────────────────────── */
 (function(){const el=document.getElementById('mula');const s=load('ctg-mula');if(s!==null)el.value=s;el.addEventListener('input',()=>save('ctg-mula',el.value));})();
