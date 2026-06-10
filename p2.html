@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="ctg.css">
 </head>
 <body>
-<nav class="ctg-nav">
+<nav class="ctg-nav" id="ctg-nav-bar">
   <a class="ctg-nav-home" href="index.html" data-nav>CTG</a>
   <div class="ctg-nav-links">
     <a href="p1.html" data-nav>I·STATS</a>
@@ -197,5 +197,8 @@ function addItem(val='',notes=''){
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
 renderArmour();recalcEF();
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="ctg-sync.js"></script>
+<script src="ctg-theme.js"></script>
 </body>
 </html>

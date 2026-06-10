@@ -12,7 +12,7 @@
 </script>
 </head>
 <body>
-<nav class="ctg-nav">
+<nav class="ctg-nav" id="ctg-nav-bar">
   <a class="ctg-nav-home" href="index.html" data-nav>CTG</a>
   <div class="ctg-nav-links">
     <a href="p1.html" data-nav>I·STATS</a>
@@ -396,10 +396,8 @@ document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e
 pullData();buildConditions();
 </script>
 
-<script>
-function applyTheme(t){document.documentElement.setAttribute('data-theme',t);localStorage.setItem('ctg-theme',t);const btn=document.getElementById('theme-toggle');if(btn)btn.textContent=t==='dark'?'☀ LIGHT':'☾ DARK';}
-function toggleTheme(){applyTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark');}
-(function(){const t=localStorage.getItem('ctg-theme')||'light';const btn=document.getElementById('theme-toggle');if(btn)btn.textContent=t==='dark'?'☀ LIGHT':'☾ DARK';})();
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="ctg-sync.js"></script>
+<script src="ctg-theme.js"></script>
 </body>
 </html>

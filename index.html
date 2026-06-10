@@ -100,12 +100,46 @@
   <div class="slideup-inner">
     <button class="slideup-close" onclick="closeSync()">✕ CLOSE</button>
     <div class="slideup-title">SYNC &amp; BACKUP</div>
-    <div class="slideup-sub">// EXPORT · IMPORT · CLOUD (set up via Claude Code)</div>
+    <div class="slideup-sub">// EXPORT · IMPORT · CLOUD SYNC</div>
     <div class="su-row"><div class="su-field" style="flex:2;"><span class="su-label">SAVE CODE — EXPORT</span><textarea class="su-area" id="export-area" readonly placeholder="Click Generate to create your portable save code..."></textarea></div></div>
     <div class="su-btns"><button class="su-btn" onclick="genExport()">⬇ GENERATE CODE</button><button class="su-btn ghost" onclick="copyExport()">⧉ COPY</button></div>
     <div class="su-row" style="margin-top:18px;"><div class="su-field" style="flex:2;"><span class="su-label">SAVE CODE — IMPORT</span><textarea class="su-area" id="import-area" placeholder="Paste a save code here to restore..."></textarea></div></div>
     <div class="su-btns"><button class="su-btn" onclick="doImport()">⬆ RESTORE</button><button class="su-btn danger ghost" onclick="clearAll()">⌫ CLEAR ALL DATA</button></div>
-    <div class="su-hint" id="su-hint">Tip: export a code as backup before clearing. Cloud login can be wired in later via Supabase.</div>
+    <div class="su-hint" id="su-hint">Tip: export a save code as a backup before clearing data.</div>
+
+    <!-- CLOUD SYNC -->
+    <div style="margin-top:22px;border-top:2px solid var(--border);padding-top:18px;">
+      <div style="font-family:'Anton',sans-serif;font-style:italic;font-size:1.2rem;letter-spacing:2px;color:var(--ink);margin-bottom:3px;">CLOUD SYNC</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.58rem;letter-spacing:2px;color:var(--purple);margin-bottom:14px;">// LINK YOUR DOSSIER ACROSS DEVICES</div>
+
+      <div id="cloud-logged-out">
+        <div class="su-row">
+          <div class="su-field"><span class="su-label">CODENAME</span><input class="su-input" id="sync-user" placeholder="your-handle" maxlength="32" autocomplete="off" spellcheck="false"></div>
+          <div class="su-field"><span class="su-label">PIN (4 DIGITS)</span><input class="su-input" id="sync-pin" type="password" inputmode="numeric" placeholder="••••" maxlength="4" autocomplete="off"></div>
+        </div>
+        <div class="su-btns"><button class="su-btn" onclick="doCloudLogin()">☁ LOGIN / CREATE DOSSIER</button></div>
+      </div>
+
+      <div id="cloud-logged-in" style="display:none;">
+        <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap;margin-bottom:12px;padding:10px 0;border-bottom:2px solid var(--border);">
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:0.7rem;letter-spacing:2px;color:var(--purple);">OPERATIVE</div>
+            <div id="cloud-username" style="font-family:'Anton',sans-serif;font-size:1.1rem;letter-spacing:1px;color:var(--ink);">—</div>
+          </div>
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:0.7rem;letter-spacing:2px;color:var(--text-dim);">LAST SYNC</div>
+            <div id="last-synced" style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--green2);">never</div>
+          </div>
+        </div>
+        <div class="su-btns">
+          <button class="su-btn" onclick="doCloudPush()">⬆ PUSH NOW</button>
+          <button class="su-btn ghost" onclick="doCloudPull()">⬇ PULL</button>
+          <button class="su-btn danger ghost" onclick="doCloudLogout()">✕ LOG OUT</button>
+        </div>
+      </div>
+
+      <div class="su-hint" id="cloud-hint"></div>
+    </div>
   </div>
 </div>
 
@@ -135,8 +169,55 @@ const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p2:['ctg-inventory','ctg-
 document.querySelectorAll('.dd').forEach(dd=>{const pg=dd.dataset.page;let has=false;(map[pg]||[]).forEach(k=>{const v=lg(k);if(v&&v!=='[]'&&v!=='{}'&&v!=='')has=true;});if(has)dd.classList.add('has-data');});
 
 // sync panel
-function openSync(){document.getElementById('slideup').classList.add('open');document.getElementById('scrim').classList.add('open');}
+function openSync(){document.getElementById('slideup').classList.add('open');document.getElementById('scrim').classList.add('open');refreshCloudUI();}
 function closeSync(){document.getElementById('slideup').classList.remove('open');document.getElementById('scrim').classList.remove('open');}
+
+// cloud sync UI
+function refreshCloudUI(){
+  var user=window.ctgSync?window.ctgSync.getUser():null;
+  document.getElementById('cloud-logged-out').style.display=user?'none':'';
+  document.getElementById('cloud-logged-in').style.display=user?'':'none';
+  if(user)document.getElementById('cloud-username').textContent=user;
+  if(window.ctgSync)window.ctgSync.updateLastSyncedDisplay();
+}
+async function doCloudLogin(){
+  var u=document.getElementById('sync-user').value.trim();
+  var p=document.getElementById('sync-pin').value.trim();
+  var hint=document.getElementById('cloud-hint');
+  if(!u){hint.textContent='Enter a codename.';hint.style.color='var(--red)';return;}
+  if(!/^\d{4}$/.test(p)){hint.textContent='PIN must be exactly 4 digits.';hint.style.color='var(--red)';return;}
+  hint.textContent='Connecting...';hint.style.color='var(--text-dim)';
+  try{
+    var r=await ctgSync.login(u,p);
+    ctgSync.start();
+    hint.textContent=r.isNew?'✓ New dossier created. Sync active.':'✓ Logged in. Dossier loaded.';
+    hint.style.color='var(--green3)';
+    refreshCloudUI();
+    setTimeout(()=>location.reload(),1400);
+  }catch(e){
+    hint.textContent='✕ '+e.message;
+    hint.style.color='var(--red)';
+  }
+}
+async function doCloudPush(){
+  var hint=document.getElementById('cloud-hint');
+  hint.textContent='Pushing...';hint.style.color='var(--text-dim)';
+  await ctgSync.push();
+  hint.textContent='✓ Pushed to cloud.';hint.style.color='var(--green3)';
+}
+async function doCloudPull(){
+  var hint=document.getElementById('cloud-hint');
+  hint.textContent='Pulling from cloud...';hint.style.color='var(--text-dim)';
+  var ok=await ctgSync.pull(ctgSync.getUser());
+  if(ok){hint.textContent='✓ Pulled. Reloading...';hint.style.color='var(--green3)';setTimeout(()=>location.reload(),1200);}
+  else{hint.textContent='✕ Pull failed.';hint.style.color='var(--red)';}
+}
+function doCloudLogout(){
+  ctgSync.logout();
+  refreshCloudUI();
+  document.getElementById('cloud-hint').textContent='Logged out.';
+  document.getElementById('cloud-hint').style.color='var(--text-dim)';
+}
 function genExport(){const data={};allKeys().forEach(k=>data[k]=localStorage.getItem(k));document.getElementById('export-area').value=btoa(unescape(encodeURIComponent(JSON.stringify(data))));}
 function copyExport(){const t=document.getElementById('export-area');if(!t.value)genExport();navigator.clipboard.writeText(t.value).then(()=>{document.getElementById('su-hint').textContent='✓ Copied to clipboard.';}).catch(()=>t.select());}
 function doImport(){const raw=document.getElementById('import-area').value.trim();const h=document.getElementById('su-hint');try{const d=JSON.parse(decodeURIComponent(escape(atob(raw))));Object.entries(d).forEach(([k,v])=>localStorage.setItem(k,v));h.textContent='✓ Restored. Reloading...';h.style.color='var(--green3)';setTimeout(()=>location.reload(),900);}catch(e){h.textContent='✕ Invalid save code.';h.style.color='var(--red)';}}
@@ -146,5 +227,8 @@ function clearAll(){if(!confirm('Clear ALL character data? Export a backup first
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const href=a.getAttribute('href');document.getElementById('hub').style.animation='pileOut .22s ease both';setTimeout(()=>location.href=href,180);});});
 const st=document.createElement('style');st.textContent='@keyframes pileOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-40px);}}';document.head.appendChild(st);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="ctg-sync.js"></script>
+<script src="ctg-theme.js"></script>
 </body>
 </html>

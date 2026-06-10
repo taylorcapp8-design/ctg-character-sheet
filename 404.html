@@ -1,148 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>(function(){const t=localStorage.getItem('ctg-theme')||'light';document.documentElement.setAttribute('data-theme',t);})();</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080a04">
-<link rel="stylesheet" href="ctg-themes.css">
-<title>CTG — Page Not Found</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400;700&family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0a0a0d">
+<title>CTG — 404</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ctg.css">
 <style>
-:root{
-  --gold:#c8a020;--gold2:#e8c040;--gold-dim:#5a4a08;
-  --bg:#090b05;--panel:#111408;
-  --border:rgba(200,160,32,0.22);
-  --text:#cfc080;--text-dim:#6a6040;--text-bright:#f0e0a0;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-html,body{height:100%;}
-body{
-  background:var(--bg);
-  background-image:
-    radial-gradient(ellipse 60% 50% at 50% 40%,rgba(40,48,12,0.5) 0%,transparent 65%),
-    radial-gradient(ellipse 40% 40% at 80% 80%,rgba(100,20,20,0.2) 0%,transparent 60%),
-    repeating-linear-gradient(0deg,transparent,transparent 40px,rgba(200,160,32,0.013) 40px,rgba(200,160,32,0.013) 41px),
-    repeating-linear-gradient(90deg,transparent,transparent 40px,rgba(200,160,32,0.013) 40px,rgba(200,160,32,0.013) 41px);
-  color:var(--text);
-  font-family:'Rajdhani',sans-serif;
-  display:flex;align-items:center;justify-content:center;
+body.err-body{
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   min-height:100vh;
-  padding:40px 20px;
 }
-.corner-ornament{position:fixed;width:80px;height:80px;pointer-events:none;z-index:0;opacity:0.18;}
-.corner-ornament svg{width:100%;height:100%;}
-.co-tl{top:10px;left:10px;}.co-tr{top:10px;right:10px;transform:scaleX(-1);}
-.co-bl{bottom:10px;left:10px;transform:scaleY(-1);}.co-br{bottom:10px;right:10px;transform:scale(-1);}
-
-.frame{
-  position:relative;z-index:1;
+.err-stage{
+  position:relative;
   text-align:center;
-  max-width:500px;
-  width:100%;
-  padding:48px 40px;
-  background:var(--panel);
-  border:1px solid var(--border);
-  clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0 calc(100% - 12px),0 12px);
+  max-width:480px;
+  width:calc(100% - 40px);
+  padding:52px 40px 44px;
+  background:var(--paper);
+  border:3px solid var(--ink);
+  clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);
+  filter:drop-shadow(7px 7px 0 var(--purple));
+  animation:errIn .5s cubic-bezier(.2,.9,.3,1.2) both;
 }
-.frame::before{
-  content:'';position:absolute;inset:3px;
-  border:1px solid rgba(200,160,32,0.06);
-  pointer-events:none;
-  clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 10px,100% calc(100% - 10px),calc(100% - 10px) 100%,10px 100%,0 calc(100% - 10px),0 10px);
-}
-.frame::after{
-  content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:linear-gradient(90deg,transparent,var(--gold),transparent);
-  opacity:0.6;
-}
-
-.err-label{
+@keyframes errIn{0%{opacity:0;transform:scale(1.06) rotate(-4deg);}100%{opacity:1;transform:scale(1) rotate(-0.5deg);}}
+.err-stamp{
   font-family:'Share Tech Mono',monospace;
   font-size:0.52rem;letter-spacing:5px;
-  color:var(--gold-dim);
-  margin-bottom:12px;
+  color:var(--purple);
+  margin-bottom:16px;
 }
-.err-code{
-  font-family:'Bebas Neue',sans-serif;
-  font-size:6rem;
-  color:var(--gold);
-  line-height:1;
-  letter-spacing:8px;
-  text-shadow:0 0 60px rgba(200,160,32,0.25),0 0 20px rgba(200,160,32,0.1);
-  margin-bottom:8px;
+.err-num{
+  font-family:'Anton',sans-serif;
+  font-style:italic;
+  font-size:8rem;
+  line-height:0.9;
+  color:var(--ink);
+  letter-spacing:6px;
+  text-shadow:6px 6px 0 var(--purple);
+  margin-bottom:14px;
+  display:block;
 }
-.err-title{
-  font-family:'Cinzel',serif;
-  font-size:1.1rem;
-  color:var(--text-bright);
-  letter-spacing:3px;
-  margin-bottom:20px;
-}
-.err-divider{
-  width:60px;height:1px;
-  background:linear-gradient(90deg,transparent,var(--gold-dim),transparent);
-  margin:0 auto 20px;
-}
-.err-body{
-  font-family:'Rajdhani',sans-serif;
-  font-size:0.9rem;
-  color:var(--text-dim);
-  line-height:1.6;
-  margin-bottom:28px;
-}
-.err-suits{
-  font-size:1rem;letter-spacing:10px;
-  color:var(--gold);opacity:0.3;
-  margin-bottom:28px;
-}
-.return-btn{
+.err-bar{
   display:inline-block;
-  background:transparent;
-  border:1px solid var(--border);
-  color:var(--gold);
-  font-family:'Share Tech Mono',monospace;
-  font-size:0.62rem;letter-spacing:3px;
+  background:var(--ink);
+  color:#fff;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:1.15rem;
+  letter-spacing:4px;
+  padding:5px 26px;
+  transform:skewX(-10deg) rotate(-1deg);
+  box-shadow:4px 4px 0 var(--purple);
+  margin-bottom:22px;
+}
+.err-bar span{transform:skewX(10deg);display:inline-block;}
+.err-suits{
+  font-size:1.2rem;
+  letter-spacing:8px;
+  margin:16px 0 20px;
+}
+.err-body-text{
+  font-family:'Rajdhani',sans-serif;
+  font-weight:500;
+  font-size:0.95rem;
+  color:var(--text2);
+  line-height:1.7;
+  margin-bottom:28px;
+}
+.err-return{
+  display:inline-block;
+  background:var(--purple);
+  border:2px solid var(--ink);
+  color:#fff;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:0.92rem;
+  letter-spacing:2px;
   padding:10px 28px;
   text-decoration:none;
-  transition:all 0.2s;
-  clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0 calc(100% - 6px),0 6px);
+  transform:skewX(-9deg);
+  box-shadow:4px 4px 0 var(--ink);
+  transition:all .15s;
 }
-.return-btn:hover{
-  background:rgba(200,160,32,0.08);
-  border-color:var(--gold);
-  box-shadow:0 0 20px rgba(200,160,32,0.1);
-}
+.err-return span{transform:skewX(9deg);display:inline-block;}
+.err-return:hover{background:var(--ink);box-shadow:2px 2px 0 var(--purple);}
 .err-foot{
-  margin-top:28px;
+  margin-top:26px;
   font-family:'Share Tech Mono',monospace;
-  font-size:0.48rem;letter-spacing:3px;
+  font-size:0.48rem;
+  letter-spacing:3px;
   color:var(--text-dim);
-  opacity:0.5;
 }
-
-@keyframes fadeIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.frame{animation:fadeIn 0.5s ease both;}
+/* dark mode overrides for text-shadow */
+[data-theme="dark"] .err-num{color:var(--ink);text-shadow:6px 6px 0 var(--purple);}
 </style>
 </head>
-<body>
+<body class="hub-body err-body">
 
-<div class="corner-ornament co-tl"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-<div class="corner-ornament co-tr"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-<div class="corner-ornament co-bl"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-<div class="corner-ornament co-br"><svg viewBox="0 0 80 80" fill="none"><path d="M2 2 L30 2 M2 2 L2 30" stroke="#c8a020" stroke-width="1"/><circle cx="2" cy="2" r="2" fill="#c8a020"/></svg></div>
-
-<div class="frame">
-  <div class="err-label">OPERATIVE ERROR · SIGNAL LOST</div>
-  <div class="err-code">404</div>
-  <div class="err-title">Page Not Found</div>
-  <div class="err-divider"></div>
-  <div class="err-suits">♠ ◈ ♦</div>
-  <div class="err-body">
-    The dossier page you're looking for has been redacted,<br>
-    reassigned, or never existed in the first place.<br><br>
+<div class="err-stage">
+  <div class="err-stamp">// OPERATIVE ERROR · SIGNAL LOST</div>
+  <span class="err-num">404</span>
+  <div class="err-bar"><span>PAGE NOT FOUND</span></div>
+  <div class="err-suits">
+    <span class="s1">♠</span>
+    <span class="s2">♣</span>
+    <span class="s3">♥</span>
+    <span class="s4">♦</span>
+  </div>
+  <div class="err-body-text">
+    The dossier page you're looking for has been<br>
+    redacted, reassigned, or never existed.<br><br>
     Return to base and try again, Operative.
   </div>
-  <a class="return-btn" href="index.html">← Return to Dossier Hub</a>
+  <a class="err-return" href="index.html"><span>← RETURN TO BASE</span></a>
   <div class="err-foot">CALL TO GALLAHAD · CLASSIFIED</div>
 </div>
 

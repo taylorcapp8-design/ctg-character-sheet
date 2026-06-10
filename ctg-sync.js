@@ -3,11 +3,8 @@
   var SUPA_URL = 'https://lijzuwwhktgywytbmutf.supabase.co';
   var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxpanp1d3doa3RneXd5dGJtdXRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4ODM4MDEsImV4cCI6MjA5NjQ1OTgwMX0.Q0yi6VcgZuhORU6MZbOD02Od5ZYE8tYfOodHBQ0MypI';
 
-  var CTG_KEYS = [
-    'ctg-char-name', 'ctg-p1', 'ctg-p1-portrait',
-    'ctg-p2', 'ctg-faculties', 'ctg-p4', 'ctg-skills',
-    'ctg-last-updated', 'ctg-edit-count', 'ctg-theme'
-  ];
+  // keys excluded from cloud sync (portrait is a base64 image — too large)
+  var SKIP_KEYS = ['ctg-portrait'];
 
   var _client = null;
   var _interval = null;
@@ -35,47 +32,53 @@
     try { sessionStorage.removeItem('ctg-session-user'); } catch (e) {}
   }
 
-  // ── Sync indicator (injected into every page nav) ────────────────────
+  // ── Sync indicator injected into nav ─────────────────────────────────
   function setIndicator(state) {
     var el = document.getElementById('nav-sync');
     if (!el) return;
     el.style.transition = 'color 0.3s,opacity 0.3s';
     if (state === 'saving') {
       el.textContent = 'Saving...';
-      el.style.color = '#7a6018';
-      el.style.opacity = '0.8';
+      el.style.color = '#9b7800';
+      el.style.opacity = '0.9';
     } else if (state === 'saved') {
       el.textContent = '☁ Saved';
-      el.style.color = '#4a9a4a';
+      el.style.color = '#159a3c';
       el.style.opacity = '1';
     } else if (state === 'offline') {
       el.textContent = '⚠ Offline';
-      el.style.color = '#c8801a';
+      el.style.color = '#d8143a';
       el.style.opacity = '1';
     } else {
       el.style.opacity = '0';
     }
   }
 
-  // ── Data helpers ──────────────────────────────────────────────────────
+  // ── Collect all ctg- keys from localStorage ───────────────────────────
   function collect() {
     var d = {};
-    CTG_KEYS.forEach(function (k) {
-      try { var v = localStorage.getItem(k); if (v !== null) d[k] = v; } catch (e) {}
-    });
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.startsWith('ctg-') && SKIP_KEYS.indexOf(k) === -1) {
+          var v = localStorage.getItem(k);
+          if (v !== null) d[k] = v;
+        }
+      }
+    } catch (e) {}
     return d;
   }
 
   function restore(data) {
     if (!data || typeof data !== 'object') return;
     Object.keys(data).forEach(function (k) {
-      if (k.indexOf('ctg-') === 0) {
+      if (k.startsWith('ctg-')) {
         try { localStorage.setItem(k, data[k]); } catch (e) {}
       }
     });
   }
 
-  // ── "Last synced" display (index.html only) ───────────────────────────
+  // ── "Last synced" display ─────────────────────────────────────────────
   function updateLastSyncedDisplay() {
     var el = document.getElementById('last-synced');
     if (!el) return;
@@ -94,7 +97,7 @@
     if (!c) { setIndicator('offline'); return; }
     setIndicator('saving');
     try {
-      var result = await c.from('sheets').update({ data: collect() }).eq('username', user);
+      var result = await c.from('sheets').update({ data: collect(), updated_at: new Date().toISOString() }).eq('username', user);
       if (result.error) throw result.error;
       _lastSynced = new Date();
       setIndicator('saved');
@@ -122,7 +125,7 @@
   // ── Login / register ──────────────────────────────────────────────────
   async function login(username, pin) {
     var c = getClient();
-    if (!c) throw new Error('Cannot reach server — try offline mode');
+    if (!c) throw new Error('Cannot reach server — check network');
 
     var check = await c.from('sheets').select('username,pin').eq('username', username).single();
 
@@ -153,7 +156,7 @@
     setIndicator(null);
   }
 
-  // ── Start auto-sync (called after login, or on load if session exists) ─
+  // ── Start auto-sync ───────────────────────────────────────────────────
   function start() {
     if (!getUser()) return;
     if (_interval) clearInterval(_interval);
