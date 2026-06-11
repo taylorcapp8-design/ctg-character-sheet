@@ -369,8 +369,7 @@ function buildLoadout(){
     oddEl.innerHTML=`<div style="padding:12px 14px;border:2px solid var(--gold);border-left:5px solid var(--gold);background:rgba(217,119,6,0.06);clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
         <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--gold);">✤ ODDITY</span>
-        <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;padding:2px 8px;background:${eq.charged?'var(--green3)':'var(--text-dim)'};color:#fff;letter-spacing:1px;">${eq.charged?'CHARGED':'DEPLETED'}</span>
-        <span style="font-family:'Anton',sans-serif;font-size:0.9rem;color:var(--red);">${eq.harth||''}</span>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;padding:2px 8px;background:${eq.charged?'var(--gold)':'var(--text-dim)'};color:${eq.charged?'#000':'#fff'};letter-spacing:1px;">${eq.charged?'CHARGED':'DEPLETED'}</span>
       </div>
       <div style="font-family:'Anton',sans-serif;font-style:italic;font-size:1.1rem;color:var(--text);margin-bottom:4px;">${eq.name}</div>
       ${eq.flavor?`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);margin-bottom:6px;">${eq.flavor}</div>`:''}

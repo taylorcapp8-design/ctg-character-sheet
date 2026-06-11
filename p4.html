@@ -79,10 +79,12 @@ const DEF_WEAPONS=[
 let weapons=[];
 try{const s=load('ctg-weapons');weapons=s?JSON.parse(s):JSON.parse(JSON.stringify(DEF_WEAPONS));}catch(e){weapons=JSON.parse(JSON.stringify(DEF_WEAPONS));}
 function saveWeapons(){store('ctg-weapons',JSON.stringify(weapons));}
+function getStatNames(){try{const s=load('ctg-stats');if(s)return JSON.parse(s).map(x=>x.name).filter(Boolean);}catch(e){}return['Force','Finess','Endurance','Logic','Sense','Velvet','Shine'];}
 function tagClass(t){const k=t.trim().toLowerCase();if(k==='melee')return'melee-tag';if(k==='ranged')return'ranged-tag';if(k==='brass')return'brass-tag';if(k==='string')return'string-tag';if(k==='flicker')return'flicker-tag';if(k==='semi')return'semi-tag';if(k.startsWith('auto'))return'auto-tag';return'dist-tag';}
 function renderTags(str){return (str||'').split(',').map(t=>t.trim()).filter(Boolean).map(t=>`<span class="tag ${tagClass(t)}">${esc(t)}</span>`).join('');}
 function renderWeapons(){
   const wrap=document.getElementById('weapons');wrap.innerHTML='';
+  const statNames=getStatNames();
   weapons.forEach(w=>{
     const card=document.createElement('div');card.className='weapon-card '+w.type;card.dataset.id=w.id;
     card.innerHTML=`
@@ -95,7 +97,7 @@ function renderWeapons(){
         <div class="weapon-stats">
           <button class="type-toggle ${w.type}" data-type="${w.id}">${w.type==='melee'?'⚔ MELEE':'🎯 RANGED'}</button>
           <div class="wstat"><input class="ed wstat-val" data-f="dmg" type="number" min="0" value="${w.dmg}"><span class="wstat-label">DMG</span></div>
-          <div class="wstat"><input class="ed wstat-txt" data-f="rollStat" value="${esc(w.rollStat||'')}" placeholder="—"><span class="wstat-label">STAT</span></div>
+          <div class="wstat"><select class="ed wstat-sel" data-f="rollStat"><option value="">—</option>${statNames.map(n=>`<option value="${esc(n)}"${w.rollStat===n?' selected':''}>${esc(n)}</option>`).join('')}</select><span class="wstat-label">STAT</span></div>
           <div class="wstat"><input class="ed wstat-val" data-f="rollBonus" type="number" min="-9" max="9" value="${w.rollBonus||0}"><span class="wstat-label">BONUS</span></div>
         </div>
       </div>
@@ -117,7 +119,7 @@ function renderWeapons(){
     wrap.appendChild(card);
     // text edits: update model in place (no re-render, keep focus)
     card.querySelectorAll('[data-f]').forEach(inp=>{
-      inp.addEventListener('input',()=>{
+      inp.addEventListener(inp.tagName==='SELECT'?'change':'input',()=>{
         const f=inp.dataset.f;w[f]=inp.value;
         if(f==='tags')card.querySelector('.weapon-tags').innerHTML=renderTags(inp.value);
         saveWeapons();
@@ -137,12 +139,14 @@ function setEquip(wid,slotVal){
 
 /* ── ODDITIES ────────────────────────────────────────────── */
 const DEF_FOOD=[
-  {id:'f1',name:'Lemon-Static Eel Rinds',harth:'♥ 2',flavor:'Sour · Salty · Glassy-crunch · Slightly electric',quirk:'As a Free Reaction, shoot electricity from your fingertips — inflict Shock on an enemy in range. They withdraw their current card and redraw; if unable, they skip their turn.',quip:'"Zap your tongue. Respect the eel."',charged:true,slot:null},
-  {id:'f2',name:'Ink-Dipped Calamari',harth:'♥ 2',flavor:'Savory-sweet · Ocean-deep · Licorice · Stains lips black',quirk:'Your blood turns viscous black. Discard up to 2 Cards from your Hand and Redraw them.',quip:'"Pop it. Ink it. Regret nothing."',charged:true,slot:null},
-  {id:'f3',name:'Coal-Fire Tentacle Twist',harth:'♥ 1',flavor:'Burnt sugar · Ash · Peppered salt · Chewy',quirk:'Breathe flame from your fingertips — attack with ♦ Diamond Cards using your Flicker to inflict Burn. Roll D6: Evens = +1 damage, Odds = nothing.',quip:'"Chewy enough to fight back!"',charged:true,slot:null},
+  {id:'f1',name:'Lemon-Static Eel Rinds',flavor:'Sour · Salty · Glassy-crunch · Slightly electric',quirk:'As a Free Reaction, shoot electricity from your fingertips — inflict Shock on an enemy in range. They withdraw their current card and redraw; if unable, they skip their turn.',quip:'"Zap your tongue. Respect the eel."',charged:true,slot:null},
+  {id:'f2',name:'Ink-Dipped Calamari',flavor:'Savory-sweet · Ocean-deep · Licorice · Stains lips black',quirk:'Your blood turns viscous black. Discard up to 2 Cards from your Hand and Redraw them.',quip:'"Pop it. Ink it. Regret nothing."',charged:true,slot:null},
+  {id:'f3',name:'Coal-Fire Tentacle Twist',flavor:'Burnt sugar · Ash · Peppered salt · Chewy',quirk:'Breathe flame from your fingertips — attack with ♦ Diamond Cards using your Flicker to inflict Burn. Roll D6: Evens = +1 damage, Odds = nothing.',quip:'"Chewy enough to fight back!"',charged:true,slot:null},
 ];
 let food=[];
 try{const s=load('ctg-food');food=s?JSON.parse(s):JSON.parse(JSON.stringify(DEF_FOOD));}catch(e){food=JSON.parse(JSON.stringify(DEF_FOOD));}
+// migrate: ensure every item has slot field and no stale harth
+food.forEach(f=>{if(f.slot===undefined)f.slot=null;delete f.harth;});
 function saveFood(){store('ctg-food',JSON.stringify(food));}
 function setEquipOddity(fid){
   food.forEach(f=>{if(f.id!==fid)f.slot=null;});
@@ -158,7 +162,7 @@ function renderFood(){
       <button class="card-del" title="Delete oddity" data-del="${fd.id}">✕</button>
       <div class="food-head">
         <input class="ed food-name" data-f="name" value="${esc(fd.name)}" placeholder="Oddity name">
-        <div class="food-type-row"><span class="food-type-tag" style="${isEq?'background:var(--gold);color:#000;border-color:var(--gold);':''}">${isEq?'EQUIPPED':'Oddity'}</span><input class="ed food-harth" data-f="harth" value="${esc(fd.harth)}" placeholder="♥ 1" style="width:54px;color:var(--red);font-family:'Anton',sans-serif;"></div>
+        <div class="food-type-row"><span class="food-type-tag" style="${isEq?'background:var(--gold);color:#000;border-color:var(--gold);':''}">${isEq?'✤ EQUIPPED':'Oddity'}</span></div>
       </div>
       <input class="ed food-flavor" data-f="flavor" value="${esc(fd.flavor)}" placeholder="Flavour notes...">
       <div class="food-quirk">
@@ -177,7 +181,7 @@ function renderFood(){
     card.querySelector('[data-equip-odd]').addEventListener('click',()=>{setEquipOddity(fd.id);});
   });
 }
-function addFood(){food.push({id:uid(),name:'',harth:'♥ 1',flavor:'',quirk:'',quip:'',charged:true,slot:null});saveFood();renderFood();const cards=document.querySelectorAll('.food-card');cards[cards.length-1].querySelector('.food-name').focus();}
+function addFood(){food.push({id:uid(),name:'',flavor:'',quirk:'',quip:'',charged:true,slot:null});saveFood();renderFood();const cards=document.querySelectorAll('.food-card');cards[cards.length-1].querySelector('.food-name').focus();}
 
 /* ── KEYWORD GLOSSARY ───────────────────────────────────── */
 const KEYWORDS={

@@ -90,6 +90,9 @@ input.wstat-val:focus{color:var(--green2);}
 input.wstat-txt{width:58px;text-align:center;background:transparent;border:none;outline:none;font-family:'Bebas Neue',sans-serif;font-size:0.85rem;letter-spacing:1px;color:var(--purple);}
 input.wstat-txt::placeholder{color:var(--text-dim);}
 input.wstat-txt:focus{color:var(--purple);}
+select.wstat-sel{appearance:none;-webkit-appearance:none;width:64px;background:transparent;border:none;outline:none;font-family:'Bebas Neue',sans-serif;font-size:0.8rem;letter-spacing:1px;color:var(--purple);cursor:pointer;text-align-last:center;}
+select.wstat-sel option{background:var(--paper,#fff);color:var(--text,#15131a);}
+[data-theme="dark"] select.wstat-sel option{background:#1a1025;color:#fff;}
 .add-btn{background:var(--ink);border:2px solid var(--ink);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:0.92rem;letter-spacing:2px;padding:9px;width:100%;cursor:pointer;transition:all .15s;margin-top:8px;box-shadow:3px 3px 0 var(--purple);}
 .add-btn::before{content:'＋ ';color:var(--green-bright);}
 .add-btn:hover{background:var(--purple);box-shadow:1px 1px 0 var(--ink);}
