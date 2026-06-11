@@ -583,4 +583,31 @@ body.hub-body{padding:0;overflow-x:hidden;}
 }
 .theme-toggle:hover{background:var(--purple);color:#fff;border-color:var(--purple);}
 [data-theme="dark"] .theme-toggle{border-color:var(--ink);color:var(--ink);}
+
+/* ── ROLL BREAKDOWN ──────────────────────────────────────── */
+.roll-breakdown{display:flex;align-items:center;gap:8px;margin:8px 0;flex-wrap:wrap;}
+.roll-box{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7px 14px;border:2px solid var(--ink);clip-path:polygon(7px 0,100% 0,calc(100% - 7px) 100%,0 100%);}
+.roll-box .roll-lbl{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;text-transform:uppercase;}
+.roll-box .roll-num{font-family:'Anton',sans-serif;font-style:italic;line-height:1.1;}
+.roll-box.rb-stat{background:rgba(109,40,217,0.08);border-color:var(--purple);}
+.roll-box.rb-stat .roll-lbl{color:var(--purple);}
+.roll-box.rb-stat .roll-num{font-size:1.7rem;color:var(--text);}
+.roll-box.rb-bonus{background:var(--paper2,rgba(0,0,0,0.04));}
+.roll-box.rb-bonus .roll-lbl{color:var(--text-dim);}
+.roll-box.rb-bonus .roll-num{font-size:1.7rem;color:var(--green2);}
+.roll-box.rb-total{background:var(--ink);border-color:var(--gold);}
+.roll-box.rb-total .roll-lbl{color:var(--gold);}
+.roll-box.rb-total .roll-num{font-size:2.2rem;color:#fff;}
+.roll-op{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;color:var(--text-dim);}
+[data-theme="dark"] .roll-box.rb-stat{background:rgba(109,40,217,0.22);}
+[data-theme="dark"] .roll-box.rb-bonus{background:rgba(255,255,255,0.06);}
+[data-theme="dark"] .roll-box.rb-total{background:var(--purple);border-color:var(--gold);}
+
+/* ── EQUIP SLOT BUTTONS ──────────────────────────────────── */
+.equip-btn{font-family:'Bebas Neue',sans-serif;font-size:0.78rem;letter-spacing:1px;padding:4px 12px;cursor:pointer;border:2px solid var(--border2);background:transparent;color:var(--text-dim);transform:skewX(-8deg);transition:all .14s;}
+.equip-btn.is-main{background:var(--red);border-color:var(--red);color:#fff;}
+.equip-btn.is-side{background:var(--purple);border-color:var(--purple);color:#fff;}
+.equip-btn:hover{border-color:var(--ink);color:var(--text);}
+/* Loadout slot */
+.loadout-empty{border:2px dashed var(--border2);padding:20px 16px;text-align:center;opacity:0.45;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);}
 [data-theme="dark"] .theme-toggle:hover{background:var(--purple2);border-color:var(--purple2);}

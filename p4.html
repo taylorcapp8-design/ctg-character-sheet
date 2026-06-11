@@ -44,6 +44,9 @@
   <div id="weapons"></div>
   <button class="add-btn add-row" onclick="addWeapon()">ADD WEAPON</button>
 
+  <div class="sec-label mt"><span class="mk">✤</span>ODDITY SLOT <span class="note">— 1 max</span></div>
+  <div id="oddity-wrap"></div>
+
   <div class="sec-label mt"><span class="mk">◆</span>PROVISIONS — RECHARGEABLE</div>
   <div class="food-grid" id="food-grid"></div>
   <button class="add-btn add-row" onclick="addFood()">ADD PROVISION</button>
@@ -99,6 +102,12 @@ function renderWeapons(){
           <div class="wstat"><input class="ed wstat-val" data-f="rollBonus" type="number" min="-9" max="9" value="${w.rollBonus||0}"><span class="wstat-label">BONUS</span></div>
         </div>
       </div>
+      <div style="display:flex;align-items:center;gap:6px;padding:8px 14px 4px;border-top:1.5px solid var(--border);flex-wrap:wrap;">
+        <span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:var(--text-dim);">EQUIP AS:</span>
+        <button class="equip-btn equip-main ${w.slot==='main'?'is-main':''}" data-equip="${w.id}" data-val="main">⚔ MAIN</button>
+        <button class="equip-btn equip-side ${w.slot==='side'?'is-side':''}" data-equip="${w.id}" data-val="side">◈ SIDE</button>
+        ${w.slot?`<button class="equip-btn" data-equip="${w.id}" data-val="" style="font-size:0.65rem;">✕ UNEQUIP</button><span style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:2px;color:${w.slot==='main'?'var(--red)':'var(--purple)'};">${w.slot.toUpperCase()} SLOT</span>`:''}
+      </div>
       <div class="weapon-tags-edit">
         <input class="ed tag-input" data-f="tags" value="${esc(w.tags)}" placeholder="Comma, separated, tags">
         <div class="weapon-tags">${renderTags(w.tags)}</div>
@@ -119,9 +128,38 @@ function renderWeapons(){
     });
     card.querySelector('[data-type]').addEventListener('click',()=>{w.type=w.type==='melee'?'ranged':'melee';saveWeapons();renderWeapons();});
     card.querySelector('[data-del]').addEventListener('click',()=>{if(confirm('Delete "'+(w.name||'this weapon')+'"?')){weapons=weapons.filter(x=>x.id!==w.id);saveWeapons();renderWeapons();}});
+    card.querySelectorAll('[data-equip]').forEach(btn=>{btn.addEventListener('click',()=>{setEquip(w.id,btn.dataset.val||null);});});
   });
 }
-function addWeapon(){weapons.push({id:uid(),type:'melee',name:'',dmg:1,tags:'Melee',desc:'',quirkName:'',quirkText:'',rollStat:'',rollBonus:0});saveWeapons();renderWeapons();const cards=document.querySelectorAll('.weapon-card');cards[cards.length-1].querySelector('.weapon-name').focus();}
+function addWeapon(){weapons.push({id:uid(),type:'melee',name:'',dmg:1,tags:'Melee',desc:'',quirkName:'',quirkText:'',rollStat:'',rollBonus:0,slot:null});saveWeapons();renderWeapons();const cards=document.querySelectorAll('.weapon-card');cards[cards.length-1].querySelector('.weapon-name').focus();}
+function setEquip(wid,slotVal){
+  if(slotVal)weapons.forEach(w=>{if(w.id!==wid&&w.slot===slotVal)w.slot=null;});
+  const w=weapons.find(x=>x.id===wid);if(w)w.slot=slotVal||null;
+  saveWeapons();renderWeapons();
+}
+
+/* ── ODDITY ─────────────────────────────────────────────── */
+let oddity=null;
+try{const os=load('ctg-oddity');oddity=os?JSON.parse(os):null;}catch(e){}
+function saveOddity(){store('ctg-oddity',JSON.stringify(oddity));}
+function renderOddity(){
+  const el=document.getElementById('oddity-wrap');
+  if(!oddity){el.innerHTML='<button class="add-btn add-row" onclick="addOddity()">ADD ODDITY</button>';return;}
+  el.innerHTML=`<div class="weapon-card melee" style="border-left-color:var(--gold);border-top-color:var(--gold);">
+    <button class="card-del" onclick="removeOddity()">✕</button>
+    <div style="display:flex;flex-direction:column;gap:8px;padding:4px 0;">
+      <input class="ed weapon-name" id="odd-name" value="${esc(oddity.name)}" placeholder="Oddity name" style="font-style:italic;">
+      <textarea class="ed weapon-desc" id="odd-desc" rows="2" placeholder="Description...">${esc(oddity.desc||'')}</textarea>
+      <div class="quirk-label">EFFECT / ABILITY</div>
+      <textarea class="ed quirk-text" id="odd-effect" rows="3" placeholder="What it does...">${esc(oddity.effect||'')}</textarea>
+    </div>
+  </div>`;
+  document.getElementById('odd-name').addEventListener('input',e=>{oddity.name=e.target.value;saveOddity();});
+  document.getElementById('odd-desc').addEventListener('input',e=>{oddity.desc=e.target.value;saveOddity();});
+  document.getElementById('odd-effect').addEventListener('input',e=>{oddity.effect=e.target.value;saveOddity();});
+}
+function addOddity(){oddity={name:'',desc:'',effect:''};saveOddity();renderOddity();document.getElementById('odd-name').focus();}
+function removeOddity(){if(confirm('Remove oddity?')){oddity=null;saveOddity();renderOddity();}}
 
 /* ── FOOD / PROVISIONS ───────────────────────────────────── */
 const DEF_FOOD=[
@@ -201,7 +239,7 @@ buildGlossary();
 /* ── nav + transitions ───────────────────────────────────── */
 (function(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
-renderWeapons();renderFood();
+renderWeapons();renderFood();renderOddity();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="ctg-sync.js"></script>
