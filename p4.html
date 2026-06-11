@@ -95,6 +95,8 @@ function renderWeapons(){
         <div class="weapon-stats">
           <button class="type-toggle ${w.type}" data-type="${w.id}">${w.type==='melee'?'⚔ MELEE':'🎯 RANGED'}</button>
           <div class="wstat"><input class="ed wstat-val" data-f="dmg" type="number" min="0" value="${w.dmg}"><span class="wstat-label">DMG</span></div>
+          <div class="wstat"><input class="ed wstat-txt" data-f="rollStat" value="${esc(w.rollStat||'')}" placeholder="—"><span class="wstat-label">STAT</span></div>
+          <div class="wstat"><input class="ed wstat-val" data-f="rollBonus" type="number" min="-9" max="9" value="${w.rollBonus||0}"><span class="wstat-label">BONUS</span></div>
         </div>
       </div>
       <div class="weapon-tags-edit">
@@ -119,7 +121,7 @@ function renderWeapons(){
     card.querySelector('[data-del]').addEventListener('click',()=>{if(confirm('Delete "'+(w.name||'this weapon')+'"?')){weapons=weapons.filter(x=>x.id!==w.id);saveWeapons();renderWeapons();}});
   });
 }
-function addWeapon(){weapons.push({id:uid(),type:'melee',name:'',dmg:1,tags:'Melee',desc:'',quirkName:'',quirkText:''});saveWeapons();renderWeapons();const cards=document.querySelectorAll('.weapon-card');cards[cards.length-1].querySelector('.weapon-name').focus();}
+function addWeapon(){weapons.push({id:uid(),type:'melee',name:'',dmg:1,tags:'Melee',desc:'',quirkName:'',quirkText:'',rollStat:'',rollBonus:0});saveWeapons();renderWeapons();const cards=document.querySelectorAll('.weapon-card');cards[cards.length-1].querySelector('.weapon-name').focus();}
 
 /* ── FOOD / PROVISIONS ───────────────────────────────────── */
 const DEF_FOOD=[

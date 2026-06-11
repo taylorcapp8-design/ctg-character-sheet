@@ -41,9 +41,9 @@
     <div class="panel">
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;">
 
-        <!-- Harth current/max -->
+        <!-- HP -->
         <div class="vital-box harth" style="text-align:center;">
-          <span class="vital-label">HARTH</span>
+          <span class="vital-label">HP</span>
           <div style="display:flex;align-items:baseline;justify-content:center;gap:4px;">
             <span id="c-harth-cur" style="font-family:'Anton',sans-serif;font-size:2.4rem;color:var(--green3);">6</span>
             <span style="color:var(--text-dim);font-family:'Anton',sans-serif;">/</span>
@@ -281,21 +281,51 @@ function buildWeapons(){
   let weapons=[];
   const s=load('ctg-weapons');if(s){try{weapons=JSON.parse(s);}catch(e){}}
   if(!weapons.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.62rem;color:var(--text-dim);">No weapons saved — add them on Page IV</div>';return;}
+  // pull stats for roll modifier lookup
+  let stats=[];try{const sd=load('ctg-stats');if(sd)stats=JSON.parse(sd);}catch(e){}
   weapons.forEach(w=>{
-    const row=document.createElement('div');
-    row.style.cssText='display:grid;grid-template-columns:auto 1fr auto auto;gap:10px;align-items:start;padding:10px 14px;margin-bottom:8px;border:2px solid var(--border);border-left:5px solid '+(w.type==='melee'?'var(--red)':'var(--purple)')+';background:var(--paper2,rgba(0,0,0,0.04));clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);';
+    const accentCol=w.type==='melee'?'var(--red)':'var(--purple)';
     const tagHtml=(w.tags||'').split(',').map(t=>`<span class="tag dist-tag" style="font-size:0.55rem;padding:1px 6px;">${t.trim()}</span>`).join('');
+    // roll modifier calculation
+    let rollHtml='';
+    if(w.rollStat){
+      const st=stats.find(x=>x.name&&x.name.toLowerCase()===w.rollStat.toLowerCase());
+      const base=st?parseInt(st.score)||0:null;
+      const bonus=parseInt(w.rollBonus)||0;
+      if(base!==null){
+        const total=base+bonus;
+        rollHtml=`<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:7px;padding:6px 8px;background:var(--paper,rgba(0,0,0,0.04));border:1.5px solid var(--ink);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);">${w.rollStat.toUpperCase()}</span>
+          <span style="font-family:'Anton',sans-serif;font-size:1.1rem;color:var(--text);">+${base}</span>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:0.8rem;color:var(--text-dim);">+</span>
+          <span style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);">BONUS</span>
+          <span style="font-family:'Anton',sans-serif;font-size:1.1rem;color:var(--green2);">+${bonus}</span>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:0.8rem;color:var(--text-dim);">=</span>
+          <span style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);">TOTAL</span>
+          <span style="font-family:'Anton',sans-serif;font-size:1.4rem;color:var(--purple2);font-style:italic;">+${total}</span>
+        </div>`;
+      }else{
+        rollHtml=`<div style="margin-top:5px;font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);">ROLL BONUS: +${bonus} (stat '${w.rollStat}' not found in your stats)</div>`;
+      }
+    }
+    const row=document.createElement('div');
+    row.style.cssText='padding:10px 14px;margin-bottom:8px;border:2px solid var(--border);border-left:5px solid '+accentCol+';background:var(--paper2,rgba(0,0,0,0.04));clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);';
     row.innerHTML=`
-      <div style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:${w.type==='melee'?'var(--red)':'var(--purple2)'};padding-top:2px;">${w.type==='melee'?'⚔':'🎯'}</div>
-      <div>
-        <div style="font-family:'Anton',sans-serif;font-style:italic;font-size:1.1rem;color:var(--text);">${w.name||'Unnamed'}</div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--purple2);margin:3px 0;">${w.quirkName||''}</div>
-        <div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.4;">${w.quirkText||''}</div>
-        <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">${tagHtml}</div>
-      </div>
-      <div style="text-align:center;padding:5px 10px;background:var(--paper,#fff);border:2px solid var(--ink);clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%);">
-        <span style="font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--green3);display:block;">${w.dmg||1}</span>
-        <span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;color:var(--text-dim);">DMG</span>
+      <div style="display:flex;align-items:flex-start;gap:10px;">
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">
+            <span style="font-size:0.8rem;color:${accentCol};">${w.type==='melee'?'⚔':'🎯'}</span>
+            <span style="font-family:'Anton',sans-serif;font-style:italic;font-size:1.1rem;color:var(--text);">${w.name||'Unnamed'}</span>
+          </div>
+          ${rollHtml}
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--purple2);margin-top:5px;">${w.quirkName||''}</div>
+          <div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.4;margin-top:2px;">${w.quirkText||''}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">${tagHtml}</div>
+        </div>
+        <div style="text-align:center;padding:6px 12px;background:var(--paper,#fff);border:2px solid var(--ink);clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%);flex-shrink:0;">
+          <span style="font-family:'Anton',sans-serif;font-size:1.4rem;color:var(--green3);display:block;">${w.dmg||1}</span>
+          <span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;color:var(--text-dim);">DMG</span>
+        </div>
       </div>`;
     el.appendChild(row);
   });
