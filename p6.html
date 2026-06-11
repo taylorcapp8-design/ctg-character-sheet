@@ -282,7 +282,7 @@ function buildStats(){
   const statsData=load('ctg-stats');
   let stats=[];
   if(statsData){try{stats=JSON.parse(statsData);}catch(e){}}
-  if(!stats.length)stats=[{name:'Force',icon:'♣',score:5},{name:'Finess',icon:'≫',score:4},{name:'Endurance',icon:'♠',score:3},{name:'Logic',icon:'◆',score:3},{name:'Sense',icon:'◉',score:2},{name:'Velvet',icon:'♥',score:0},{name:'Shine',icon:'✤',score:1}];
+  if(!stats.length)stats=[{name:'Force',icon:'♣',score:0},{name:'Finess',icon:'≫',score:0},{name:'Endurance',icon:'♠',score:0},{name:'Logic',icon:'◆',score:0},{name:'Sense',icon:'◉',score:0},{name:'Velvet',icon:'♥',score:0},{name:'Shine',icon:'✤',score:0}];
   const wrap=document.createElement('div');
   wrap.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:4px;';
   stats.forEach(st=>{
@@ -303,6 +303,7 @@ function useOddity(id){
 function buildLoadout(){
   let weapons=[];try{const s=load('ctg-weapons');if(s)weapons=JSON.parse(s);}catch(e){}
   let stats=[];try{const sd=load('ctg-stats');if(sd)stats=JSON.parse(sd);}catch(e){}
+  if(!stats.length)stats=[{name:'Force',icon:'♣',score:0},{name:'Finess',icon:'≫',score:0},{name:'Endurance',icon:'♠',score:0},{name:'Logic',icon:'◆',score:0},{name:'Sense',icon:'◉',score:0},{name:'Velvet',icon:'♥',score:0},{name:'Shine',icon:'✤',score:0}];
   const hasSlots=weapons.some(w=>w.slot==='main'||w.slot==='side');
   const mainW=hasSlots?weapons.find(w=>w.slot==='main')||null:weapons[0]||null;
   const sideW=hasSlots?weapons.find(w=>w.slot==='side')||null:weapons[1]||null;

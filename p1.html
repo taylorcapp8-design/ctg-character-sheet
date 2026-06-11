@@ -182,8 +182,8 @@ const sp=s=>Math.floor((parseInt(s)||0)/2);
 
 /* ── ATTRIBUTES (editable + addable) ─────────────────────── */
 const DEF_STATS=[
-  {name:'Force',icon:'♣',score:5},{name:'Finess',icon:'≫',score:4},{name:'Endurance',icon:'♠',score:3},
-  {name:'Logic',icon:'◆',score:3},{name:'Sense',icon:'◉',score:2},{name:'Velvet',icon:'♥',score:0},{name:'Shine',icon:'✤',score:1},
+  {name:'Force',icon:'♣',score:0},{name:'Finess',icon:'≫',score:0},{name:'Endurance',icon:'♠',score:0},
+  {name:'Logic',icon:'◆',score:0},{name:'Sense',icon:'◉',score:0},{name:'Velvet',icon:'♥',score:0},{name:'Shine',icon:'✤',score:0},
 ];
 let stats=[];
 (function(){
@@ -193,6 +193,8 @@ let stats=[];
     // migrate old per-key values if they exist
     const keymap={Force:'force',Finess:'finess',Endurance:'endurance',Logic:'logic',Sense:'sense',Velvet:'velvet',Shine:'shine'};
     stats=DEF_STATS.map(d=>{const old=load('ctg-stat-'+keymap[d.name]);return{name:d.name,icon:d.icon,score:old!==null?parseInt(old):d.score};});
+    // persist defaults immediately so p4/p6 can read stat names without a fallback
+    try{localStorage.setItem('ctg-stats',JSON.stringify(stats));}catch(e){}
   }
   // migrate old icon symbols to new ones
   const _im={'♦':'≫','◈':'◆','✦':'✤'};
