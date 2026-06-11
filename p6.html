@@ -164,7 +164,7 @@
 
   <!-- ROW 4: EQUIPPED LOADOUT -->
   <div class="block">
-    <div class="sec-label"><span class="mk">⚔</span>EQUIPPED LOADOUT</div>
+    <div class="sec-label"><span class="mk">⚔</span>ATTACK CALCULATOR</div>
     <div class="panel">
       <div class="two-col" id="c-loadout"></div>
       <div id="c-oddity" style="margin-top:10px;"></div>
@@ -278,36 +278,60 @@ function buildStats(){
   });
 }
 
-// ── EQUIPPED LOADOUT ──
+// ── ATTACK CALCULATOR ──
+function useOddity(id){
+  let odds=[];try{const s=load('ctg-food');if(s)odds=JSON.parse(s);}catch(e){}
+  const o=odds.find(x=>x.id===id);
+  if(o){o.charged=false;store('ctg-food',JSON.stringify(odds));buildLoadout();}
+}
 function buildLoadout(){
   let weapons=[];try{const s=load('ctg-weapons');if(s)weapons=JSON.parse(s);}catch(e){}
   let stats=[];try{const sd=load('ctg-stats');if(sd)stats=JSON.parse(sd);}catch(e){}
   const mainW=weapons.find(w=>w.slot==='main')||null;
   const sideW=weapons.find(w=>w.slot==='side')||null;
 
-  function rollBreakdown(w){
-    if(!w.rollStat)return`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);margin:8px 0;letter-spacing:1px;">NO ROLL STAT SET — configure on Page IV</div>`;
+  function getMod(w){
+    if(!w||!w.rollStat)return null;
     const st=stats.find(x=>x.name&&x.name.toLowerCase()===w.rollStat.toLowerCase());
     const base=st?parseInt(st.score)||0:null;
-    const bonus=parseInt(w.rollBonus)||0;
-    if(base===null)return`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);margin:8px 0;">BONUS +${bonus} · stat "${w.rollStat}" not found — check Page I</div>`;
-    const total=base+bonus;
-    return`<div class="roll-breakdown">
-      <div class="roll-box rb-stat"><span class="roll-lbl">${w.rollStat.toUpperCase()}</span><span class="roll-num">+${base}</span></div>
-      <span class="roll-op">+</span>
-      <div class="roll-box rb-bonus"><span class="roll-lbl">BONUS</span><span class="roll-num">+${bonus}</span></div>
-      <span class="roll-op">=</span>
-      <div class="roll-box rb-total"><span class="roll-lbl">ROLL</span><span class="roll-num">+${total}</span></div>
-    </div>`;
+    if(base===null)return null;
+    return{base,bonus:parseInt(w.rollBonus)||0,total:base+(parseInt(w.rollBonus)||0),statName:w.rollStat};
   }
 
-  function slotHtml(w, label, accentCss){
-    if(!w)return`<div class="loadout-empty"><div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;color:var(--text-dim);">${label} — EMPTY</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);margin-top:4px;">Equip from Page IV</div></div>`;
+  function slotHtml(w,label,accentCss,slotKey){
+    if(!w)return`<div class="loadout-empty"><div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;color:var(--text-dim);">${label} — EMPTY</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);margin-top:5px;">Equip from Page IV</div></div>`;
     const ac=w.type==='melee'?'var(--red)':'var(--purple)';
     const tagHtml=(w.tags||'').split(',').map(t=>`<span class="tag dist-tag" style="font-size:0.5rem;padding:1px 5px;">${t.trim()}</span>`).join('');
+    const mod=getMod(w);
+    const rollBreak=mod
+      ?`<div class="roll-breakdown">
+          <div class="roll-box rb-stat"><span class="roll-lbl">${mod.statName.toUpperCase()}</span><span class="roll-num">+${mod.base}</span></div>
+          <span class="roll-op">+</span>
+          <div class="roll-box rb-bonus"><span class="roll-lbl">BONUS</span><span class="roll-num">+${mod.bonus}</span></div>
+          <span class="roll-op">=</span>
+          <div class="roll-box rb-total"><span class="roll-lbl">MOD</span><span class="roll-num">+${mod.total}</span></div>
+        </div>`
+      :`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);margin:6px 0;letter-spacing:1px;">${w.rollStat?`stat "${w.rollStat}" not found — check Page I`:'NO ROLL STAT — set on Page IV'}</div>`;
+    const calcHtml=mod
+      ?`<div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 12px;background:rgba(0,0,0,0.07);border:2px solid var(--ink);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+            <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--text-dim);letter-spacing:1px;">D20 ROLL</label>
+            <input id="roll-${slotKey}" type="number" min="1" max="20" value="10" data-mod="${mod.total}" style="width:54px;background:transparent;border:2px solid var(--purple);color:var(--text);font-family:'Anton',sans-serif;font-size:1.4rem;text-align:center;padding:3px;outline:none;">
+          </div>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--text-dim);">+</span>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+            <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--text-dim);letter-spacing:1px;">MODIFIER</label>
+            <span style="font-family:'Anton',sans-serif;font-size:1.4rem;color:var(--purple2);">+${mod.total}</span>
+          </div>
+          <span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--text-dim);">=</span>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:1px;flex:1;">
+            <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--gold);letter-spacing:1px;">ATTACK TOTAL</label>
+            <span id="res-${slotKey}" style="font-family:'Anton',sans-serif;font-size:2.2rem;color:var(--gold);font-style:italic;line-height:1;">10</span>
+          </div>
+        </div>`:'';
     return`<div style="padding:12px 14px;border:2px solid var(--border);border-left:5px solid ${ac};background:var(--paper2,rgba(0,0,0,0.04));clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
       <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:${accentCss};margin-bottom:6px;">${label}</div>
-      <div style="display:flex;align-items:center;gap:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
         <span style="font-size:1rem;color:${ac};">${w.type==='melee'?'⚔':'🎯'}</span>
         <span style="font-family:'Anton',sans-serif;font-style:italic;font-size:1.2rem;color:var(--text);flex:1;">${w.name||'Unnamed'}</span>
         <div style="text-align:center;padding:5px 12px;background:var(--paper,#fff);border:2px solid var(--ink);clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%);">
@@ -315,29 +339,48 @@ function buildLoadout(){
           <span style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--text-dim);">DMG</span>
         </div>
       </div>
-      ${rollBreakdown(w)}
-      ${w.quirkName?`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--purple2);margin-top:6px;">${w.quirkName}</div>`:''}
+      ${rollBreak}${calcHtml}
+      ${w.quirkName?`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--purple2);margin-top:8px;">${w.quirkName}</div>`:''}
       ${w.quirkText?`<div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.8rem;color:var(--text2);line-height:1.4;margin-top:2px;">${w.quirkText}</div>`:''}
       <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">${tagHtml}</div>
     </div>`;
   }
 
   document.getElementById('c-loadout').innerHTML=
-    slotHtml(mainW,'⚔ MAIN WEAPON','var(--red)')+
-    slotHtml(sideW,'◈ SIDE WEAPON','var(--purple)');
+    slotHtml(mainW,'⚔ MAIN WEAPON','var(--red)','main')+
+    slotHtml(sideW,'◈ SIDE WEAPON','var(--purple)','side');
 
-  // oddity
-  let oddity=null;try{const os=load('ctg-oddity');if(os)oddity=JSON.parse(os);}catch(e){}
+  // wire up live calculators
+  ['main','side'].forEach(slot=>{
+    const rollEl=document.getElementById('roll-'+slot);
+    const resEl=document.getElementById('res-'+slot);
+    if(rollEl&&resEl){
+      const mod=parseInt(rollEl.dataset.mod)||0;
+      const upd=()=>{resEl.textContent=(parseInt(rollEl.value)||0)+mod;};
+      rollEl.addEventListener('input',upd);upd();
+    }
+  });
+
+  // equipped oddity (from ctg-food)
+  let odds=[];try{const os=load('ctg-food');if(os)odds=JSON.parse(os);}catch(e){}
+  const eq=odds.find(o=>o.slot==='equipped')||null;
   const oddEl=document.getElementById('c-oddity');
-  if(oddity&&oddity.name){
+  if(eq){
     oddEl.innerHTML=`<div style="padding:12px 14px;border:2px solid var(--gold);border-left:5px solid var(--gold);background:rgba(217,119,6,0.06);clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
-      <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--gold);margin-bottom:6px;">✤ ODDITY</div>
-      <div style="font-family:'Anton',sans-serif;font-style:italic;font-size:1.1rem;color:var(--text);">${oddity.name}</div>
-      ${oddity.desc?`<div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.8rem;color:var(--text2);margin-top:4px;">${oddity.desc}</div>`:''}
-      ${oddity.effect?`<div style="font-family:'Bebas Neue',sans-serif;font-size:0.78rem;letter-spacing:1px;color:var(--gold);margin-top:8px;">EFFECT</div><div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.4;margin-top:2px;">${oddity.effect}</div>`:''}
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+        <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--gold);">✤ ODDITY</span>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;padding:2px 8px;background:${eq.charged?'var(--green3)':'var(--text-dim)'};color:#fff;letter-spacing:1px;">${eq.charged?'CHARGED':'DEPLETED'}</span>
+        <span style="font-family:'Anton',sans-serif;font-size:0.9rem;color:var(--red);">${eq.harth||''}</span>
+      </div>
+      <div style="font-family:'Anton',sans-serif;font-style:italic;font-size:1.1rem;color:var(--text);margin-bottom:4px;">${eq.name}</div>
+      ${eq.flavor?`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);margin-bottom:6px;">${eq.flavor}</div>`:''}
+      <div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.4;margin-bottom:8px;">${eq.quirk||''}</div>
+      ${eq.charged
+        ?`<button onclick="useOddity('${eq.id}')" style="background:var(--gold);border:2px solid var(--ink);color:#000;font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;padding:7px 18px;cursor:pointer;transform:skewX(-9deg);">USE — DEPLETE ▶</button>`
+        :`<div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;color:var(--text-dim);letter-spacing:1px;">DEPLETED — recharge after rest</div>`}
     </div>`;
   }else{
-    oddEl.innerHTML=`<div class="loadout-empty"><div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;color:var(--text-dim);">✤ ODDITY SLOT — EMPTY</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);margin-top:4px;">Add from Page IV</div></div>`;
+    oddEl.innerHTML=`<div class="loadout-empty"><div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;color:var(--text-dim);">✤ ODDITY — EMPTY</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);margin-top:5px;">Equip an oddity from Page IV</div></div>`;
   }
 }
 
