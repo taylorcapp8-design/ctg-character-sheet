@@ -21,6 +21,18 @@
     return _client;
   }
 
+  // ── Clear all local ctg-* data ───────────────────────────────────────
+  function clearLocal() {
+    try {
+      var toRemove = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.startsWith('ctg-')) toRemove.push(k);
+      }
+      toRemove.forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} });
+    } catch (e) {}
+  }
+
   // ── Session ──────────────────────────────────────────────────────────
   function getUser() {
     try { return sessionStorage.getItem('ctg-session-user') || null; } catch (e) { return null; }
@@ -71,6 +83,8 @@
 
   function restore(data) {
     if (!data || typeof data !== 'object') return;
+    // wipe existing local keys so stale data from a previous user can't bleed through
+    clearLocal();
     Object.keys(data).forEach(function (k) {
       if (k.startsWith('ctg-')) {
         try { localStorage.setItem(k, data[k]); } catch (e) {}
@@ -135,11 +149,14 @@
 
     var isNew = false;
     if (check.data) {
+      // existing account — pull replaces local data entirely
       if (check.data.pin !== pin) throw new Error('Incorrect PIN');
       await pull(username);
     } else {
+      // new account — clear any local data so the new sheet starts blank
       isNew = true;
-      var ins = await c.from('sheets').insert({ username: username, pin: pin, data: collect() });
+      clearLocal();
+      var ins = await c.from('sheets').insert({ username: username, pin: pin, data: {} });
       if (ins.error) throw new Error('Could not create dossier');
     }
 
@@ -151,6 +168,7 @@
   // ── Logout ────────────────────────────────────────────────────────────
   function logout() {
     _clearUser();
+    clearLocal(); // wipe local data so the next user doesn't inherit it
     if (_interval) { clearInterval(_interval); _interval = null; }
     if (_tickInterval) { clearInterval(_tickInterval); _tickInterval = null; }
     setIndicator(null);
@@ -197,6 +215,7 @@
     pull: pull,
     start: start,
     getUser: getUser,
+    clearLocal: clearLocal,
     setIndicator: setIndicator,
     updateLastSyncedDisplay: updateLastSyncedDisplay,
   };

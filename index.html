@@ -313,10 +313,12 @@ async function doCloudPull(){
   else{hint.textContent='✕ Pull failed.';hint.style.color='var(--red)';}
 }
 function doCloudLogout(){
+  if(!confirm('Log out?\n\nThis will clear all local character data from this device so the next user starts fresh.\n\nMake sure your latest changes are synced to the cloud before logging out.'))return;
   ctgSync.logout();
   refreshCloudUI();
-  document.getElementById('cloud-hint').textContent='Logged out.';
+  document.getElementById('cloud-hint').textContent='Logged out — local data cleared.';
   document.getElementById('cloud-hint').style.color='var(--text-dim)';
+  setTimeout(()=>location.reload(),800);
 }
 function genExport(){const data={};allKeys().forEach(k=>data[k]=localStorage.getItem(k));document.getElementById('export-area').value=btoa(unescape(encodeURIComponent(JSON.stringify(data))));}
 function copyExport(){const t=document.getElementById('export-area');if(!t.value)genExport();navigator.clipboard.writeText(t.value).then(()=>{document.getElementById('su-hint').textContent='✓ Copied to clipboard.';}).catch(()=>t.select());}

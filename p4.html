@@ -88,7 +88,7 @@ const DEF_WEAPONS=[
   {id:'w5',type:'ranged',name:'Gun-Brella',dmg:1,tags:'Medium, Ranged, Semi, Auto 4, String',desc:'A rifle barrel used as the handle — the umbrella folds out after a shot, ready to make it rain.',quirkName:'"Weather Forecast"',quirkText:'Use an Action and a ♥ Hearts Card to switch modes. ☔ HEAVY RAIN (Auto): roll D6s up to the Auto value (4) — all 5s & 6s hit. 🌂 SPITTING (Semi): landing a shot deploys the umbrella shield, granting Advance to Defence Checks.'},
 ];
 let weapons=[];
-try{const s=load('ctg-weapons');weapons=s?JSON.parse(s):JSON.parse(JSON.stringify(DEF_WEAPONS));}catch(e){weapons=JSON.parse(JSON.stringify(DEF_WEAPONS));}
+try{const s=load('ctg-weapons');weapons=s?JSON.parse(s):[];}catch(e){weapons=[];}
 function saveWeapons(){store('ctg-weapons',JSON.stringify(weapons));}
 function getStatNames(){try{const s=load('ctg-stats');if(s)return JSON.parse(s).map(x=>x.name).filter(Boolean);}catch(e){}return['Force','Finess','Endurance','Logic','Sense','Velvet','Shine'];}
 function tagClass(t){const k=t.trim().toLowerCase();if(k==='melee')return'melee-tag';if(k==='ranged')return'ranged-tag';if(k==='brass')return'brass-tag';if(k==='string')return'string-tag';if(k==='flicker')return'flicker-tag';if(k==='semi')return'semi-tag';if(k.startsWith('auto'))return'auto-tag';return'dist-tag';}
@@ -155,7 +155,7 @@ const DEF_FOOD=[
   {id:'f3',name:'Coal-Fire Tentacle Twist',flavor:'Burnt sugar · Ash · Peppered salt · Chewy',quirk:'Breathe flame from your fingertips — attack with ♦ Diamond Cards using your Flicker to inflict Burn. Roll D6: Evens = +1 damage, Odds = nothing.',quip:'"Chewy enough to fight back!"',charged:true,slot:null},
 ];
 let food=[];
-try{const s=load('ctg-food');food=s?JSON.parse(s):JSON.parse(JSON.stringify(DEF_FOOD));}catch(e){food=JSON.parse(JSON.stringify(DEF_FOOD));}
+try{const s=load('ctg-food');food=s?JSON.parse(s):[];}catch(e){food=[];}
 // migrate: ensure every item has slot field and no stale harth
 food.forEach(f=>{if(f.slot===undefined)f.slot=null;delete f.harth;});
 function saveFood(){store('ctg-food',JSON.stringify(food));}
