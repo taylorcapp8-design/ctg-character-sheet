@@ -48,6 +48,17 @@
   <div class="food-grid" id="food-grid"></div>
   <button class="add-btn add-row" onclick="addFood()">ADD ODDITY</button>
 
+  <!-- CATALOG -->
+  <div class="sec-label mt"><span class="mk">◈</span>ITEM CATALOG <span class="note">— browse &amp; add to sheet</span></div>
+  <div class="panel" style="padding:14px 16px;">
+    <div class="cat-tabs">
+      <button class="cat-tab active" data-tab="weapons" onclick="showCatTab('weapons')">⚔ WEAPONS</button>
+      <button class="cat-tab" data-tab="oddities" onclick="showCatTab('oddities')">✤ ODDITIES</button>
+    </div>
+    <div id="catalog-list"></div>
+    <button class="add-btn add-row" onclick="addCustomCatalogItem()" style="margin-top:8px;">+ ADD CUSTOM ENTRY</button>
+  </div>
+
   <!-- KEYWORD GLOSSARY -->
   <div class="sec-label mt"><span class="mk">◆</span>KEYWORD GLOSSARY <span class="note">— click to expand</span></div>
   <div class="panel" id="glossary-panel">
@@ -183,6 +194,121 @@ function renderFood(){
 }
 function addFood(){food.push({id:uid(),name:'',flavor:'',quirk:'',quip:'',charged:true,slot:null});saveFood();renderFood();const cards=document.querySelectorAll('.food-card');cards[cards.length-1].querySelector('.food-name').focus();}
 
+/* ── CATALOG ─────────────────────────────────────────────── */
+const DEF_CAT={
+  weapons:[
+    {id:'cw1',type:'melee',name:'Toothpick',dmg:1,tags:'Melee, Brass, String',desc:'A needle-thin rapier with a small incense chamber in the guard. Smells faintly of burnt cinnamon and lost animal friends.',quirkName:'"Mind The Strings"',quirkText:'When you successfully counter an attack and strike back with this weapon it will not consume your Reaction.',rollStat:'',rollBonus:0},
+    {id:'cw2',type:'ranged',name:'Dockwhistle Argument',dmg:1,tags:'Close, Medium, Ranged, String',desc:'A long-barrelled flintlock with three tiny brass whistles. It wheezes before firing — like it\'s clearing its throat.',quirkName:'"State Your Case"',quirkText:'When you land a Crit and choose the head you cannot deal lower than 2 damage. If you miss, the whistle lets out a disapproving toot.',rollStat:'',rollBonus:0},
+    {id:'cw3',type:'melee',name:"Hunter's Bloody Axe",dmg:1,tags:'Melee, Brass',desc:'A large wooden axe with a menacing bit of metal on top. Big, Bloody, and ready for fun.',quirkName:'"Red Painted"',quirkText:'When you kill an enemy creature you may gain an additional action.',rollStat:'',rollBonus:0},
+    {id:'cw4',type:'ranged',name:'The Newsletter',dmg:2,tags:'Far, Ranged, Flicker',desc:'A flat-barrelled sniper rifle with three levels of magnification.',quirkName:'"Letter Opener"',quirkText:'When you make an attack Out Of Combat with this weapon it deals double damage.',rollStat:'',rollBonus:0},
+    {id:'cw5',type:'ranged',name:'Gun-Brella',dmg:1,tags:'Medium, Ranged, Semi, Auto 4, String',desc:'A rifle barrel used as the handle — the umbrella folds out after a shot, ready to make it rain.',quirkName:'"Weather Forecast"',quirkText:'Use an Action and a ♥ Hearts Card to switch modes. ☔ HEAVY RAIN (Auto): roll D6s up to the Auto value (4) — all 5s & 6s hit. 🌂 SPITTING (Semi): landing a shot grants Advance to Defence Checks.',rollStat:'',rollBonus:0},
+  ],
+  oddities:[
+    {id:'co1',name:'Lemon-Static Eel Rinds',flavor:'Sour · Salty · Glassy-crunch · Slightly electric',quirk:'As a Free Reaction, shoot electricity from your fingertips — inflict Shock on an enemy in range. They withdraw their current card and redraw; if unable, they skip their turn.',quip:'"Zap your tongue. Respect the eel."'},
+    {id:'co2',name:'Ink-Dipped Calamari',flavor:'Savory-sweet · Ocean-deep · Licorice · Stains lips black',quirk:'Your blood turns viscous black. Discard up to 2 Cards from your Hand and Redraw them.',quip:'"Pop it. Ink it. Regret nothing."'},
+    {id:'co3',name:'Coal-Fire Tentacle Twist',flavor:'Burnt sugar · Ash · Peppered salt · Chewy',quirk:'Breathe flame from your fingertips — attack with ♦ Diamond Cards using your Flicker to inflict Burn. Roll D6: Evens = +1 damage, Odds = nothing.',quip:'"Chewy enough to fight back!"'},
+  ]
+};
+let catalog={weapons:[],oddities:[]};
+try{const cs=load('ctg-catalog');catalog=cs?JSON.parse(cs):{weapons:JSON.parse(JSON.stringify(DEF_CAT.weapons)),oddities:JSON.parse(JSON.stringify(DEF_CAT.oddities))};}
+catch(e){catalog={weapons:JSON.parse(JSON.stringify(DEF_CAT.weapons)),oddities:JSON.parse(JSON.stringify(DEF_CAT.oddities))};}
+function saveCatalog(){store('ctg-catalog',JSON.stringify(catalog));}
+let catTab='weapons';let catEditId=null;
+function showCatTab(t){
+  catTab=t;catEditId=null;
+  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  renderCatalog();
+}
+function renderCatalog(){
+  const list=document.getElementById('catalog-list');list.innerHTML='';
+  const items=catalog[catTab]||[];
+  if(!items.length){list.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.6rem;color:var(--text-dim);padding:8px 0;">Catalog empty — use the button below to add a custom entry.</div>';return;}
+  const isW=catTab==='weapons';const statNames=getStatNames();
+  items.forEach(item=>{
+    const ac=isW?(item.type==='melee'?'var(--red)':'var(--purple)'):'var(--gold)';
+    const icon=isW?(item.type==='melee'?'⚔':'🎯'):'✤';
+    const entry=document.createElement('div');entry.className='cat-entry';
+    if(catEditId===item.id){
+      if(isW){
+        const statOpts=statNames.map(n=>`<option value="${esc(n)}"${item.rollStat===n?' selected':''}>${esc(n)}</option>`).join('');
+        entry.innerHTML=`<div style="padding:12px 14px;border-left:5px solid ${ac};">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;">
+            <input class="ed weapon-name" data-cf="name" value="${esc(item.name)}" placeholder="Weapon name" style="flex:1;min-width:120px;">
+            <button class="type-toggle ${item.type}" data-cat-toggle>${item.type==='melee'?'⚔ MELEE':'🎯 RANGED'}</button>
+          </div>
+          <textarea class="ed weapon-desc" data-cf="desc" rows="2" placeholder="Description...">${esc(item.desc||'')}</textarea>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;">
+            <div class="wstat"><input class="ed wstat-val" data-cf="dmg" type="number" min="0" value="${item.dmg||1}"><span class="wstat-label">DMG</span></div>
+            <div class="wstat"><select class="ed wstat-sel" data-cf="rollStat"><option value="">—</option>${statOpts}</select><span class="wstat-label">STAT</span></div>
+            <div class="wstat"><input class="ed wstat-val" data-cf="rollBonus" type="number" min="-9" max="9" value="${item.rollBonus||0}"><span class="wstat-label">BONUS</span></div>
+          </div>
+          <input class="ed tag-input" data-cf="tags" value="${esc(item.tags||'')}" placeholder="Comma, separated, tags" style="margin-bottom:8px;">
+          <div class="quirk-label">QUIRK</div>
+          <input class="ed quirk-name" data-cf="quirkName" value="${esc(item.quirkName||'')}" placeholder="Quirk name">
+          <textarea class="ed quirk-text" data-cf="quirkText" rows="3" placeholder="What it does...">${esc(item.quirkText||'')}</textarea>
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <button class="cat-btn cat-done" style="background:var(--purple);border-color:var(--purple);color:#fff;">✓ DONE</button>
+            <button class="cat-btn cat-del" style="color:var(--red);border-color:var(--red);">✕ REMOVE</button>
+            <button class="cat-btn add cat-sheet" style="margin-left:auto;">+ ADD TO SHEET</button>
+          </div>
+        </div>`;
+      }else{
+        entry.innerHTML=`<div style="padding:12px 14px;border-left:5px solid ${ac};">
+          <input class="ed weapon-name" data-cf="name" value="${esc(item.name)}" placeholder="Oddity name" style="display:block;width:100%;margin-bottom:8px;">
+          <input class="ed food-flavor" data-cf="flavor" value="${esc(item.flavor||'')}" placeholder="Flavour / description...">
+          <div class="quirk-label" style="margin-top:8px;">EFFECT</div>
+          <textarea class="ed food-quirk-text" data-cf="quirk" rows="4" placeholder="What it does...">${esc(item.quirk||'')}</textarea>
+          <input class="ed food-quip" data-cf="quip" value="${esc(item.quip||'')}" placeholder="Tagline...">
+          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+            <button class="cat-btn cat-done" style="background:var(--purple);border-color:var(--purple);color:#fff;">✓ DONE</button>
+            <button class="cat-btn cat-del" style="color:var(--red);border-color:var(--red);">✕ REMOVE</button>
+            <button class="cat-btn add cat-sheet" style="margin-left:auto;">+ ADD TO SHEET</button>
+          </div>
+        </div>`;
+      }
+      entry.querySelectorAll('[data-cf]').forEach(inp=>{inp.addEventListener(inp.tagName==='SELECT'?'change':'input',()=>{item[inp.dataset.cf]=inp.value;saveCatalog();});});
+      entry.querySelector('[data-cat-toggle]')?.addEventListener('click',()=>{item.type=item.type==='melee'?'ranged':'melee';saveCatalog();renderCatalog();});
+      entry.querySelector('.cat-done').addEventListener('click',()=>{catEditId=null;renderCatalog();});
+      entry.querySelector('.cat-del').addEventListener('click',()=>{if(confirm('Remove "'+(item.name||'item')+'" from catalog?')){catalog[catTab]=catalog[catTab].filter(x=>x.id!==item.id);catEditId=null;saveCatalog();renderCatalog();}});
+      entry.querySelector('.cat-sheet').addEventListener('click',()=>addToSheet(item));
+    }else{
+      const tagsHtml=isW?renderTags(item.tags||''):'';
+      const meta=isW?`<span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);white-space:nowrap;">DMG ${item.dmg||1}${item.rollStat?' · '+item.rollStat+(item.rollBonus?'+'+item.rollBonus:''):''}</span>`:'';
+      entry.innerHTML=`<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-left:5px solid ${ac};flex-wrap:wrap;">
+        <span style="color:${ac};font-size:0.9rem;flex-shrink:0;">${icon}</span>
+        <span style="font-family:'Anton',sans-serif;font-style:italic;font-size:1rem;color:var(--text);flex:1;min-width:100px;">${item.name||'Unnamed'}</span>
+        ${meta}
+        <div style="display:flex;flex-wrap:wrap;gap:3px;">${tagsHtml}</div>
+        <div style="display:flex;gap:6px;flex-shrink:0;margin-left:auto;">
+          <button class="cat-btn cat-edit" title="Edit">✎ EDIT</button>
+          <button class="cat-btn add cat-sheet">+ SHEET</button>
+        </div>
+      </div>
+      ${(item.quirkText||item.quirk)?`<div style="padding:2px 28px 8px;font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.78rem;color:var(--text2);line-height:1.4;">${item.quirkName?`<span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;color:var(--purple2);display:block;">${item.quirkName}</span>`:''}${item.quirkText||item.quirk||''}</div>`:''}`;
+      entry.querySelector('.cat-edit').addEventListener('click',()=>{catEditId=item.id;renderCatalog();entry.scrollIntoView({behavior:'smooth',block:'nearest'});});
+      entry.querySelector('.cat-sheet').addEventListener('click',()=>addToSheet(item));
+    }
+    list.appendChild(entry);
+  });
+}
+function addToSheet(item){
+  const isW=catTab==='weapons';
+  const copy=Object.assign({},item,{id:uid(),slot:null,charged:true});
+  if(isW){weapons.push(copy);saveWeapons();renderWeapons();}
+  else{food.push(copy);saveFood();renderFood();}
+  flashSaved();
+  document.getElementById(isW?'weapons':'food-grid')?.scrollIntoView({behavior:'smooth'});
+}
+function addCustomCatalogItem(){
+  const isW=catTab==='weapons';
+  const item=isW
+    ?{id:uid(),type:'melee',name:'',dmg:1,tags:'',desc:'',quirkName:'',quirkText:'',rollStat:'',rollBonus:0}
+    :{id:uid(),name:'',flavor:'',quirk:'',quip:''};
+  catalog[catTab].push(item);catEditId=item.id;
+  saveCatalog();renderCatalog();
+  document.getElementById('catalog-list').lastElementChild?.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
 /* ── KEYWORD GLOSSARY ───────────────────────────────────── */
 const KEYWORDS={
   'Melee':'Attack must be in close range (adjacent). Uses ♣ Clubs cards.',
@@ -228,7 +354,7 @@ buildGlossary();
 /* ── nav + transitions ───────────────────────────────────── */
 (function(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
-renderWeapons();renderFood();
+renderWeapons();renderFood();renderCatalog();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="ctg-sync.js"></script>
