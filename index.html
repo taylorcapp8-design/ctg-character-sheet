@@ -255,18 +255,18 @@ document.querySelectorAll('.word').forEach(w=>{
   w.appendChild(frag);
 });
 
-// char line + HUD
-(function(){
+// char line + HUD + data dots
+const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p2:['ctg-inventory','ctg-mula','ctg-armour-list','ctg-charms'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-food'],p5:['ctg-skills'],p6:['ctg-combat-notes']};
+function updateHUD(){
   const n=lg('ctg-f-name'),c=lg('ctg-f-code');
   const line=document.getElementById('char-line');
   if(n||c)line.innerHTML=(n||'Unnamed')+(c?' <span class="code">"'+c+'"</span>':'');
+  else line.innerHTML='<span>NO OPERATIVE LOADED</span>';
   document.getElementById('hud-mula').textContent=lg('ctg-mula')||'0';
   document.getElementById('hud-level').textContent=lg('ctg-f-level')||'1';
-})();
-
-// data dots
-const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p2:['ctg-inventory','ctg-mula','ctg-armour-list','ctg-charms'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-food'],p5:['ctg-skills'],p6:['ctg-combat-notes']};
-document.querySelectorAll('.dd').forEach(dd=>{const pg=dd.dataset.page;let has=false;(map[pg]||[]).forEach(k=>{const v=lg(k);if(v&&v!=='[]'&&v!=='{}'&&v!=='')has=true;});if(has)dd.classList.add('has-data');});
+  document.querySelectorAll('.dd').forEach(dd=>{const pg=dd.dataset.page;let has=false;(map[pg]||[]).forEach(k=>{const v=lg(k);if(v&&v!=='[]'&&v!=='{}'&&v!=='')has=true;});dd.classList.toggle('has-data',has);});
+}
+updateHUD();
 
 // sync panel
 function openSync(){document.getElementById('slideup').classList.add('open');document.getElementById('scrim').classList.add('open');refreshCloudUI();}
@@ -341,7 +341,7 @@ async function doOverlayLogin(){
     hint.textContent=r.isNew?'✓ New dossier created.':'✓ Welcome back, '+u+'.';
     hint.style.color='var(--green3)';
     btn.textContent='✓ SYNCED';
-    setTimeout(()=>{dismissOverlay();refreshCloudUI();},900);
+    setTimeout(()=>{dismissOverlay();refreshCloudUI();updateHUD();},900);
   }catch(e){
     hint.textContent='✕ '+e.message;
     hint.style.color='var(--red)';
