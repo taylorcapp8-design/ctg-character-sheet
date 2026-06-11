@@ -293,44 +293,53 @@ function buildLoadout(){
   const sideW=hasSlots?weapons.find(w=>w.slot==='side')||null:weapons[1]||null;
 
   function getMod(w){
-    if(!w||!w.rollStat)return null;
+    if(!w) return null;
+    const bonus=parseInt(w.rollBonus)||0;
+    if(!w.rollStat) return {base:null,bonus,total:bonus,statName:null,noStat:true};
     const st=stats.find(x=>x.name&&x.name.toLowerCase()===w.rollStat.toLowerCase());
     const base=st?parseInt(st.score)||0:null;
-    if(base===null)return null;
-    return{base,bonus:parseInt(w.rollBonus)||0,total:base+(parseInt(w.rollBonus)||0),statName:w.rollStat};
+    return {base,bonus,total:(base||0)+bonus,statName:w.rollStat,notFound:base===null};
   }
 
   function slotHtml(w,label,accentCss,slotKey){
-    if(!w)return`<div class="loadout-empty"><div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;color:var(--text-dim);">${label} — EMPTY</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);margin-top:5px;">Equip from Page IV</div></div>`;
+    if(!w)return`<div class="loadout-empty" style="padding:18px 16px;"><div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;color:var(--text-dim);margin-bottom:8px;">${label} — EMPTY</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.82rem;color:var(--text-dim);margin-bottom:12px;">Add a weapon from the Item Catalog on Page IV, then use the Equip buttons to assign it here.</div><a href="p4.html" style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:2px;padding:6px 16px;border:2px solid var(--purple);color:var(--purple);text-decoration:none;transform:skewX(-8deg);display:inline-block;transition:all .14s;" onmouseover="this.style.background='var(--purple)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='var(--purple)'">GO TO PAGE IV →</a></div>`;
     const ac=w.type==='melee'?'var(--red)':'var(--purple)';
     const tagHtml=(w.tags||'').split(',').map(t=>`<span class="tag dist-tag" style="font-size:0.5rem;padding:1px 5px;">${t.trim()}</span>`).join('');
     const mod=getMod(w);
-    const rollBreak=mod
-      ?`<div class="roll-breakdown">
-          <div class="roll-box rb-stat"><span class="roll-lbl">${mod.statName.toUpperCase()}</span><span class="roll-num">+${mod.base}</span></div>
-          <span class="roll-op">+</span>
-          <div class="roll-box rb-bonus"><span class="roll-lbl">BONUS</span><span class="roll-num">+${mod.bonus}</span></div>
-          <span class="roll-op">=</span>
-          <div class="roll-box rb-total"><span class="roll-lbl">MOD</span><span class="roll-num">+${mod.total}</span></div>
-        </div>`
-      :`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);margin:6px 0;letter-spacing:1px;">${w.rollStat?`stat "${w.rollStat}" not found — check Page I`:'NO ROLL STAT — set on Page IV'}</div>`;
-    const calcHtml=mod
-      ?`<div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 12px;background:rgba(0,0,0,0.07);border:2px solid var(--ink);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);">
-          <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
-            <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--text-dim);letter-spacing:1px;">D20 ROLL</label>
-            <input id="roll-${slotKey}" type="number" min="1" max="20" value="10" data-mod="${mod.total}" style="width:54px;background:transparent;border:2px solid var(--purple);color:var(--text);font-family:'Anton',sans-serif;font-size:1.4rem;text-align:center;padding:3px;outline:none;">
-          </div>
-          <span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--text-dim);">+</span>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
-            <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--text-dim);letter-spacing:1px;">MODIFIER</label>
-            <span style="font-family:'Anton',sans-serif;font-size:1.4rem;color:var(--purple2);">+${mod.total}</span>
-          </div>
-          <span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--text-dim);">=</span>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:1px;flex:1;">
-            <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--gold);letter-spacing:1px;">ATTACK TOTAL</label>
-            <span id="res-${slotKey}" style="font-family:'Anton',sans-serif;font-size:2.2rem;color:var(--gold);font-style:italic;line-height:1;">10</span>
-          </div>
-        </div>`:'';
+    const total=mod?mod.total:0;
+
+    let rollBreak='';
+    if(mod&&mod.base!==null){
+      rollBreak=`<div class="roll-breakdown">
+        <div class="roll-box rb-stat"><span class="roll-lbl">${mod.statName.toUpperCase()}</span><span class="roll-num">+${mod.base}</span></div>
+        <span class="roll-op">+</span>
+        <div class="roll-box rb-bonus"><span class="roll-lbl">BONUS</span><span class="roll-num">+${mod.bonus}</span></div>
+        <span class="roll-op">=</span>
+        <div class="roll-box rb-total"><span class="roll-lbl">MOD</span><span class="roll-num">+${mod.total}</span></div>
+      </div>`;
+    }else if(mod&&mod.notFound){
+      rollBreak=`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--red);margin:6px 0;letter-spacing:1px;">Stat "${mod.statName}" not found — add it on Page I</div>`;
+    }else{
+      rollBreak=`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);margin:6px 0;letter-spacing:1px;">No roll stat set — pick one on Page IV (weapon STAT dropdown)</div>`;
+    }
+
+    const calcHtml=`<div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 12px;background:rgba(0,0,0,0.07);border:2px solid var(--ink);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+        <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--text-dim);letter-spacing:1px;">D20 ROLL</label>
+        <input id="roll-${slotKey}" type="number" min="1" max="20" value="10" data-mod="${total}" style="width:54px;background:transparent;border:2px solid var(--purple);color:var(--text);font-family:'Anton',sans-serif;font-size:1.4rem;text-align:center;padding:3px;outline:none;">
+      </div>
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--text-dim);">+</span>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+        <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--text-dim);letter-spacing:1px;">MODIFIER</label>
+        <span style="font-family:'Anton',sans-serif;font-size:1.4rem;color:var(--purple2);">${total>=0?'+':''}${total}</span>
+      </div>
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--text-dim);">=</span>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:1px;flex:1;">
+        <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--gold);letter-spacing:1px;">ATTACK TOTAL</label>
+        <span id="res-${slotKey}" style="font-family:'Anton',sans-serif;font-size:2.2rem;color:var(--gold);font-style:italic;line-height:1;">10</span>
+      </div>
+    </div>`;
+
     return`<div style="padding:12px 14px;border:2px solid var(--border);border-left:5px solid ${ac};background:var(--paper2,rgba(0,0,0,0.04));clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
       <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:${accentCss};margin-bottom:6px;">${label}</div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">

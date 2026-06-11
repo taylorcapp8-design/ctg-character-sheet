@@ -90,6 +90,17 @@ const DEF_WEAPONS=[
 let weapons=[];
 try{const s=load('ctg-weapons');weapons=s?JSON.parse(s):[];}catch(e){weapons=[];}
 weapons.forEach(w=>{if(w.slot===undefined)w.slot=null;});
+// fix old free-text rollStat values that don't exactly match stored stat names
+(function(){
+  const s=load('ctg-stats');const names=s?JSON.parse(s).map(x=>x.name):[];
+  let c=false;
+  weapons.forEach(w=>{
+    if(!w.rollStat)return;
+    const match=names.find(n=>n.toLowerCase()===w.rollStat.toLowerCase());
+    if(match&&match!==w.rollStat){w.rollStat=match;c=true;}
+  });
+  if(c)try{store('ctg-weapons',JSON.stringify(weapons));}catch(e){}
+})();
 function saveWeapons(){store('ctg-weapons',JSON.stringify(weapons));}
 function getStatNames(){try{const s=load('ctg-stats');if(s)return JSON.parse(s).map(x=>x.name).filter(Boolean);}catch(e){}return['Force','Finess','Endurance','Logic','Sense','Velvet','Shine'];}
 function tagClass(t){const k=t.trim().toLowerCase();if(k==='melee')return'melee-tag';if(k==='ranged')return'ranged-tag';if(k==='brass')return'brass-tag';if(k==='string')return'string-tag';if(k==='flicker')return'flicker-tag';if(k==='semi')return'semi-tag';if(k.startsWith('auto'))return'auto-tag';return'dist-tag';}
