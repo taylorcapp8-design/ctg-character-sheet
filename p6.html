@@ -35,11 +35,19 @@
     <div class="head-stamp">PAGE VI</div>
   </div>
 
-  <!-- ROW 1: HP + EF + TURN TRACKER -->
+  <!-- CONDITIONS — compact strip at top -->
+  <div class="block" style="margin-bottom:10px;">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 14px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--text-dim);white-space:nowrap;">CONDITIONS</span>
+      <div id="c-conditions" style="display:flex;flex-wrap:wrap;gap:5px;flex:1;"></div>
+    </div>
+  </div>
+
+  <!-- ROW 1: VITALS -->
   <div class="block">
     <div class="sec-label"><span class="mk">♥&#xFE0E;</span>VITALS AT A GLANCE</div>
     <div class="panel">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
 
         <!-- HP -->
         <div class="vital-box harth" style="text-align:center;">
@@ -88,64 +96,44 @@
         </div>
       </div>
 
-      <!-- Damage calculator -->
-      <div style="background:var(--paper2,rgba(0,0,0,0.06));border:1.5px solid var(--border);padding:10px 14px;margin-top:4px;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:0.78rem;letter-spacing:2px;color:var(--purple);margin-bottom:8px;">DAMAGE CALCULATOR</div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <div style="display:flex;flex-direction:column;gap:2px;">
-            <label style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);">INCOMING DMG</label>
-            <input type="number" id="dmg-in" value="1" min="0" style="width:60px;background:transparent;border:2px solid var(--ink);color:var(--text);font-family:'Anton',sans-serif;font-size:1.3rem;text-align:center;padding:3px;outline:none;">
-          </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--text-dim);">−</div>
-          <div style="display:flex;flex-direction:column;gap:2px;">
-            <label style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);">EF</label>
-            <span id="dmg-ef" style="width:44px;background:var(--paper2,rgba(0,0,0,0.04));border:2px solid var(--border);color:var(--purple2);font-family:'Anton',sans-serif;font-size:1.3rem;text-align:center;padding:3px;display:inline-block;">0</span>
-          </div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--text-dim);">=</div>
-          <div style="display:flex;flex-direction:column;gap:2px;">
-            <label style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--red);">ACTUAL DMG</label>
-            <span id="dmg-out" style="width:60px;background:var(--paper2,rgba(0,0,0,0.04));border:2px solid var(--red);color:var(--red);font-family:'Anton',sans-serif;font-size:1.5rem;text-align:center;padding:3px;display:inline-block;">1</span>
-          </div>
-          <button onclick="applyDmg()" style="background:var(--red-deep,#a8102c);border:2px solid var(--ink);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;padding:8px 16px;cursor:pointer;transform:skewX(-9deg);margin-left:6px;">APPLY DAMAGE</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ROW 2: STATS QUICK REF + CARD COMBAT -->
-  <div class="block">
-    <div class="two-col">
-      <div>
-        <div class="sec-label"><span class="mk">♣&#xFE0E;</span>ATTRIBUTES</div>
-        <div class="panel">
-          <div id="c-stats"></div>
-        </div>
-      </div>
-      <div>
-        <div class="sec-label"><span class="mk">◆</span>CARD COMBAT</div>
-        <div class="panel">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
-            <div class="suit-card spade"><div class="suit-sym">♠&#xFE0E;</div><div class="suit-info"><div class="suit-name">Spades</div><div class="suit-desc">Defence — block incoming attacks</div></div><div class="suit-watermark">♠&#xFE0E;</div></div>
-            <div class="suit-card club"><div class="suit-sym">♣&#xFE0E;</div><div class="suit-info"><div class="suit-name">Clubs</div><div class="suit-desc">Attacks — deal damage</div></div><div class="suit-watermark">♣&#xFE0E;</div></div>
-            <div class="suit-card heart"><div class="suit-sym">♥&#xFE0E;</div><div class="suit-info"><div class="suit-name">Hearts</div><div class="suit-desc">Wild — any action</div></div><div class="suit-watermark">♥&#xFE0E;</div></div>
-            <div class="suit-card diamond"><div class="suit-sym">♦&#xFE0E;</div><div class="suit-info"><div class="suit-name">Diamonds</div><div class="suit-desc">Magic — special abilities</div></div><div class="suit-watermark">♦&#xFE0E;</div></div>
-          </div>
-          <!-- hand tracker -->
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:0.78rem;letter-spacing:2px;color:var(--purple);margin-bottom:6px;">CARDS IN HAND</div>
-          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-            <button class="counter-btn" onclick="adjHand(-1)">−</button>
-            <span id="c-hand" style="font-family:'Anton',sans-serif;font-size:1.6rem;color:var(--gold);min-width:28px;text-align:center;">5</span>
-            <button class="counter-btn" onclick="adjHand(1)">+</button>
-            <button onclick="document.getElementById('c-hand').textContent=5;cstate.hand=5;saveCS();" style="background:var(--purple);border:2px solid var(--ink);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:0.7rem;letter-spacing:1px;padding:3px 10px;cursor:pointer;transform:skewX(-8deg);margin-left:4px;">DRAW 5</button>
+      <!-- Damage calculator — collapsed by default -->
+      <div style="margin-top:10px;">
+        <button onclick="toggleDmgCalc()" id="dmg-toggle" style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:2px;color:var(--text-dim);background:transparent;border:1px solid var(--border2);padding:4px 14px;cursor:pointer;transition:color .15s;">▸ DAMAGE CALC</button>
+        <div id="dmg-calc-panel" style="display:none;margin-top:8px;background:var(--paper2,rgba(0,0,0,0.06));border:1.5px solid var(--border);padding:10px 14px;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <label style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);">INCOMING DMG</label>
+              <input type="number" id="dmg-in" value="1" min="0" style="width:60px;background:transparent;border:2px solid var(--ink);color:var(--text);font-family:'Anton',sans-serif;font-size:1.3rem;text-align:center;padding:3px;outline:none;">
+            </div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--text-dim);">−</div>
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <label style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);">EF</label>
+              <span id="dmg-ef" style="width:44px;background:var(--paper2,rgba(0,0,0,0.04));border:2px solid var(--border);color:var(--purple2);font-family:'Anton',sans-serif;font-size:1.3rem;text-align:center;padding:3px;display:inline-block;">0</span>
+            </div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;color:var(--text-dim);">=</div>
+            <div style="display:flex;flex-direction:column;gap:2px;">
+              <label style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--red);">ACTUAL DMG</label>
+              <span id="dmg-out" style="width:60px;background:var(--paper2,rgba(0,0,0,0.04));border:2px solid var(--red);color:var(--red);font-family:'Anton',sans-serif;font-size:1.5rem;text-align:center;padding:3px;display:inline-block;">1</span>
+            </div>
+            <button onclick="applyDmg()" style="background:var(--red-deep,#a8102c);border:2px solid var(--ink);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;padding:8px 16px;cursor:pointer;transform:skewX(-9deg);margin-left:6px;">APPLY DAMAGE</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ROW 3: ACTIVE SKILLS + ACTIVE FACULTY -->
+  <!-- ROW 2: ATTACK CALCULATOR (moved up) -->
   <div class="block">
-    <div class="two-col">
+    <div class="sec-label"><span class="mk">⚔</span>ATTACK CALCULATOR</div>
+    <div class="panel">
+      <div class="two-col" id="c-loadout"></div>
+      <div id="c-oddity" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <!-- ROW 3: ACTIVE SKILLS + FACULTIES (skills wider) -->
+  <div class="block">
+    <div style="display:grid;grid-template-columns:3fr 2fr;gap:16px;">
       <div>
         <div class="sec-label"><span class="mk">✤</span>ACTIVE SKILLS</div>
         <div class="panel">
@@ -162,33 +150,55 @@
     </div>
   </div>
 
-  <!-- ROW 4: EQUIPPED LOADOUT -->
-  <div class="block">
-    <div class="sec-label"><span class="mk">⚔</span>ATTACK CALCULATOR</div>
-    <div class="panel">
-      <div class="two-col" id="c-loadout"></div>
-      <div id="c-oddity" style="margin-top:10px;"></div>
-    </div>
-  </div>
-
-  <!-- ROW 5: CONDITIONS + NOTES -->
+  <!-- ROW 4: ATTRIBUTES (compact) + CARD COMBAT (compact) -->
   <div class="block">
     <div class="two-col">
       <div>
-        <div class="sec-label"><span class="mk">◆</span>CONDITIONS</div>
-        <div class="panel">
-          <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;" id="c-conditions">
-            <!-- conditions toggled in JS -->
-          </div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;color:var(--text-dim);letter-spacing:1px;">Click to toggle active conditions</div>
+        <div class="sec-label"><span class="mk">♣&#xFE0E;</span>ATTRIBUTES</div>
+        <div class="panel" style="padding:8px 10px;">
+          <div id="c-stats"></div>
         </div>
       </div>
       <div>
-        <div class="sec-label"><span class="mk">◆</span>COMBAT NOTES</div>
-        <div class="panel">
-          <textarea id="c-notes" class="notes-area" placeholder="Initiative order, enemy HP, terrain notes, anything mid-combat..."></textarea>
+        <div class="sec-label"><span class="mk">◆</span>CARD COMBAT</div>
+        <div class="panel" style="padding:10px 12px;">
+          <!-- Compact suit list -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:10px;">
+            <div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);">
+              <span style="font-family:'Share Tech Mono',monospace;font-size:1rem;font-variant-emoji:text;color:#3b5bdb;">♠&#xFE0E;</span>
+              <div><div style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:1px;line-height:1.1;">Spades</div><div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;color:var(--text-dim);">Defence / block</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);">
+              <span style="font-family:'Share Tech Mono',monospace;font-size:1rem;font-variant-emoji:text;color:#2f9e44;">♣&#xFE0E;</span>
+              <div><div style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:1px;line-height:1.1;">Clubs</div><div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;color:var(--text-dim);">Attacks / damage</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);">
+              <span style="font-family:'Share Tech Mono',monospace;font-size:1rem;font-variant-emoji:text;color:var(--red);">♥&#xFE0E;</span>
+              <div><div style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:1px;line-height:1.1;">Hearts</div><div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;color:var(--text-dim);">Wild / any action</div></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;padding:5px 8px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);">
+              <span style="font-family:'Share Tech Mono',monospace;font-size:1rem;font-variant-emoji:text;color:var(--purple2);">♦&#xFE0E;</span>
+              <div><div style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:1px;line-height:1.1;">Diamonds</div><div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;color:var(--text-dim);">Magic / specials</div></div>
+            </div>
+          </div>
+          <!-- hand tracker -->
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:0.72rem;letter-spacing:2px;color:var(--purple);margin-bottom:6px;">CARDS IN HAND</div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            <button class="counter-btn" onclick="adjHand(-1)">−</button>
+            <span id="c-hand" style="font-family:'Anton',sans-serif;font-size:1.6rem;color:var(--gold);min-width:28px;text-align:center;">5</span>
+            <button class="counter-btn" onclick="adjHand(1)">+</button>
+            <button onclick="document.getElementById('c-hand').textContent=5;cstate.hand=5;saveCS();" style="background:var(--purple);border:2px solid var(--ink);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:0.7rem;letter-spacing:1px;padding:3px 10px;cursor:pointer;transform:skewX(-8deg);margin-left:4px;">DRAW 5</button>
+          </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ROW 5: COMBAT NOTES -->
+  <div class="block">
+    <div class="sec-label"><span class="mk">◆</span>COMBAT NOTES</div>
+    <div class="panel">
+      <textarea id="c-notes" class="notes-area" placeholder="Initiative order, enemy HP, terrain notes, anything mid-combat..."></textarea>
     </div>
   </div>
 
@@ -204,7 +214,7 @@ function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function store(k,v){try{localStorage.setItem(k,v);localStorage.setItem('ctg-last-edit',Date.now());flashSaved();}catch(e){}}
 let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
 
-// ── COMBAT STATE (session-only, doesn't persist between sessions) ──
+// ── COMBAT STATE ──
 const cstate={harth:6,harthMax:6,temp:0,ef:0,round:1,hand:5,conditions:new Set()};
 
 // ── PULL DATA FROM OTHER PAGES ──
@@ -212,7 +222,6 @@ function pullData(){
   cstate.harthMax=parseInt(load('ctg-harth-max'))||6;
   cstate.harth=parseInt(load('ctg-harth-cur'))||cstate.harthMax;
   cstate.temp=parseInt(load('ctg-harth-temp'))||0;
-  // EF: try armour list first for accuracy
   const armour=load('ctg-armour-list');
   if(armour){try{cstate.ef=JSON.parse(armour).reduce((s,a)=>s+(parseInt(a.ef)||0),0);}catch(e){cstate.ef=parseInt(load('ctg-ef'))||0;}}
   else{cstate.ef=parseInt(load('ctg-ef'))||0;}
@@ -229,7 +238,6 @@ function refreshVitals(){
   document.getElementById('c-ef').textContent=cstate.ef;
   document.getElementById('dmg-ef').textContent=cstate.ef;
   calcDmg();
-  // hp track
   const track=document.getElementById('c-hp-track');track.innerHTML='';
   for(let i=0;i<cstate.harthMax;i++){
     const s=document.createElement('div');s.className='hp-seg'+(i<cstate.harth?' filled':'');
@@ -238,7 +246,7 @@ function refreshVitals(){
   }
 }
 function combatDmg(n){
-  let d=Math.max(0,n-cstate.ef); // EF reduces damage
+  let d=Math.max(0,n-cstate.ef);
   if(cstate.temp>=d){cstate.temp-=d;d=0;}else{d-=cstate.temp;cstate.temp=0;}
   cstate.harth=Math.max(0,cstate.harth-d);
   refreshVitals();saveCS();
@@ -259,23 +267,31 @@ function applyDmg(){
 }
 document.getElementById('dmg-in').addEventListener('input',calcDmg);
 
-// ── STATS ──
+// ── DAMAGE CALC TOGGLE ──
+function toggleDmgCalc(){
+  const panel=document.getElementById('dmg-calc-panel');
+  const btn=document.getElementById('dmg-toggle');
+  const open=panel.style.display==='none';
+  panel.style.display=open?'block':'none';
+  btn.textContent=open?'▾ DAMAGE CALC':'▸ DAMAGE CALC';
+}
+
+// ── STATS (compact 2-col) ──
 function buildStats(){
   const el=document.getElementById('c-stats');el.innerHTML='';
   const statsData=load('ctg-stats');
   let stats=[];
   if(statsData){try{stats=JSON.parse(statsData);}catch(e){}}
   if(!stats.length)stats=[{name:'Force',icon:'♣',score:5},{name:'Finess',icon:'≫',score:4},{name:'Endurance',icon:'♠',score:3},{name:'Logic',icon:'◆',score:3},{name:'Sense',icon:'◉',score:2},{name:'Velvet',icon:'♥',score:0},{name:'Shine',icon:'✤',score:1}];
-  const sp=s=>Math.floor((parseInt(s)||0)/2);
+  const wrap=document.createElement('div');
+  wrap.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:4px;';
   stats.forEach(st=>{
     const row=document.createElement('div');
-    row.style.cssText='display:flex;align-items:center;gap:10px;padding:5px 10px;background:var(--paper2,rgba(0,0,0,0.05));margin-bottom:5px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);border:1.5px solid var(--border);';
-    row.innerHTML=`<span style="color:var(--purple2);font-size:0.85rem;width:16px;">${st.icon||'◆'}</span>
-      <span style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;color:var(--text);flex:1;">${st.name||'—'}</span>
-      <span style="font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--green3);">${st.score||0}</span>
-      <span style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--purple2);">${sp(st.score||0)}SP</span>`;
-    el.appendChild(row);
+    row.style.cssText='display:flex;align-items:center;gap:5px;padding:4px 7px;background:var(--paper2,rgba(0,0,0,0.05));border:1px solid var(--border);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);';
+    row.innerHTML=`<span style="color:var(--purple2);font-size:0.78rem;width:14px;flex-shrink:0;">${st.icon||'◆'}</span><span style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:1px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${st.name||'—'}</span><span style="font-family:'Anton',sans-serif;font-size:1.1rem;color:var(--green3);flex-shrink:0;">${st.score||0}</span>`;
+    wrap.appendChild(row);
   });
+  el.appendChild(wrap);
 }
 
 // ── ATTACK CALCULATOR ──
@@ -287,7 +303,6 @@ function useOddity(id){
 function buildLoadout(){
   let weapons=[];try{const s=load('ctg-weapons');if(s)weapons=JSON.parse(s);}catch(e){}
   let stats=[];try{const sd=load('ctg-stats');if(sd)stats=JSON.parse(sd);}catch(e){}
-  // if no weapons have been explicitly slotted, fall back to first two weapons
   const hasSlots=weapons.some(w=>w.slot==='main'||w.slot==='side');
   const mainW=hasSlots?weapons.find(w=>w.slot==='main')||null:weapons[0]||null;
   const sideW=hasSlots?weapons.find(w=>w.slot==='side')||null:weapons[1]||null;
@@ -361,7 +376,6 @@ function buildLoadout(){
     slotHtml(mainW,'⚔ MAIN WEAPON','var(--red)','main')+
     slotHtml(sideW,'◈ SIDE WEAPON','var(--purple)','side');
 
-  // wire up live calculators
   ['main','side'].forEach(slot=>{
     const rollEl=document.getElementById('roll-'+slot);
     const resEl=document.getElementById('res-'+slot);
@@ -372,7 +386,6 @@ function buildLoadout(){
     }
   });
 
-  // equipped oddity (from ctg-food)
   let odds=[];try{const os=load('ctg-food');if(os)odds=JSON.parse(os);}catch(e){}
   const eq=odds.find(o=>o.slot==='equipped')||null;
   const oddEl=document.getElementById('c-oddity');
@@ -465,7 +478,7 @@ function buildConditions(){
   CONDITIONS.forEach(c=>{
     const btn=document.createElement('button');
     btn.textContent=c;btn.dataset.cond=c;
-    btn.style.cssText='font-family:\'Bebas Neue\',sans-serif;font-size:0.8rem;letter-spacing:1px;padding:5px 12px;cursor:pointer;border:2px solid var(--border2);background:transparent;color:var(--text2);transform:skewX(-8deg);transition:all .15s;';
+    btn.style.cssText='font-family:\'Bebas Neue\',sans-serif;font-size:0.75rem;letter-spacing:1px;padding:3px 10px;cursor:pointer;border:1.5px solid var(--border2);background:transparent;color:var(--text2);transform:skewX(-8deg);transition:all .15s;';
     btn.addEventListener('click',()=>{
       if(cstate.conditions.has(c)){cstate.conditions.delete(c);btn.style.background='transparent';btn.style.color='var(--text2)';btn.style.borderColor='var(--border2)';}
       else{cstate.conditions.add(c);btn.style.background=c==='Burning'?'var(--red)':c==='Shocked'?'var(--purple)':c==='Drunk'?'var(--gold)':'var(--red-deep)';btn.style.color='#fff';btn.style.borderColor='var(--ink)';}
