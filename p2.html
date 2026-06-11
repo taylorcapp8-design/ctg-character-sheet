@@ -2,17 +2,12 @@
 <html lang="en">
 <head>
 <script>
-// ── THEME INIT (runs before paint to avoid flash) ──
-(function(){
-  const t=localStorage.getItem('ctg-theme')||'light';
-  document.documentElement.setAttribute('data-theme',t);
-})();
+(function(){const t=localStorage.getItem('ctg-theme')||'light';document.documentElement.setAttribute('data-theme',t);})();
 </script>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#07060c">
-<title>CTG — Inventory & Armour</title>
+<title>CTG — Gear</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ctg.css">
 </head>
@@ -36,7 +31,7 @@
 <div class="sheet">
   <div class="sheet-header">
     <div class="head-tag">CALL TO GALLAHAD // OPERATIONAL RECORD</div>
-    <div class="sheet-title">INVENTORY &amp; <em>ARMOUR</em></div>
+    <div class="sheet-title">GEAR &amp; <em>ARMOUR</em></div>
     <div class="head-stamp">PAGE II</div>
   </div>
 
@@ -61,7 +56,7 @@
 
     <div>
       <div class="block">
-        <div class="sec-label"><span class="mk">♣&#xFE0E;</span>INVENTORY</div>
+        <div class="sec-label"><span class="mk">♣&#xFE0E;</span>CARRY</div>
         <div class="panel">
           <ul class="inv-list" id="inv-list"></ul>
           <button class="add-btn add-row" onclick="addItem()">ADD ITEM</button>
@@ -72,7 +67,7 @@
         <div class="panel">
           <div class="mula-block">
             <div class="mula-sym">₩</div>
-            <input class="mula-input" type="number" id="mula" value="26" min="0">
+            <input class="mula-input" type="number" id="mula" value="0" min="0">
             <div class="mula-note">Make it rain — but not too much. These are your life savings.</div>
           </div>
         </div>
@@ -80,9 +75,26 @@
     </div>
   </div>
 
+  <!-- ITEM CATALOG -->
+  <div class="block">
+    <div class="sec-label"><span class="mk">◆</span>ITEM CATALOG</div>
+    <div class="panel">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);letter-spacing:1px;margin-bottom:10px;">Browse available items — click ADD to put them in your carry list. You can also add custom entries.</div>
+      <div class="cat-tabs">
+        <button class="cat-tab active" data-tab="all" onclick="showItemTab('all')">ALL</button>
+        <button class="cat-tab" data-tab="consumable" onclick="showItemTab('consumable')">CONSUMABLE</button>
+        <button class="cat-tab" data-tab="gear" onclick="showItemTab('gear')">GEAR</button>
+        <button class="cat-tab" data-tab="ammo" onclick="showItemTab('ammo')">AMMO</button>
+        <button class="cat-tab" data-tab="misc" onclick="showItemTab('misc')">MISC</button>
+      </div>
+      <div id="item-catalog-list"></div>
+      <button class="add-btn add-row" onclick="addCustomItemToCatalog()">+ ADD CUSTOM ENTRY</button>
+    </div>
+  </div>
+
   <div class="sheet-footer">
     <div class="suits"><span class="s1">♠&#xFE0E;</span><span class="s2">♣&#xFE0E;</span><span class="s3">♥&#xFE0E;</span><span class="s4">♦&#xFE0E;</span></div>
-    CALL TO GALLAHAD · INVENTORY &amp; ARMOUR · PAGE II
+    CALL TO GALLAHAD · GEAR &amp; ARMOUR · PAGE II
   </div>
 </div>
 </div>
@@ -92,11 +104,12 @@ function save(k,v){try{localStorage.setItem(k,v);localStorage.setItem('ctg-last-
 function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
 const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 
-/* ── ARMOUR (editable + addable) ─────────────────────────── */
+/* ── ARMOUR ──────────────────────────────────────────────── */
 const DEF_ARMOUR=[
-  {loc:'🪖 Head',name:'Change Name',ef:0,ability:''},{loc:'🧥 Torso',name:'Rubbish Slicks',ef:0,ability:''},
-  {loc:'💪 Arms',name:'Garbage Pads',ef:0,ability:''},{loc:'🦵 Legs',name:'Two diff. Winter Socks',ef:0,ability:''},
+  {loc:'🪖 Head',name:'',ef:0,ability:''},{loc:'🧥 Torso',name:'',ef:0,ability:''},
+  {loc:'💪 Arms',name:'',ef:0,ability:''},{loc:'🦵 Legs',name:'',ef:0,ability:''},
 ];
 let armour=[];
 (function(){
@@ -109,7 +122,6 @@ let armour=[];
 })();
 function saveArmour(){
   save('ctg-armour-list',JSON.stringify(armour));
-  // keep ctg-ef in sync so Stats page reads the correct total
   const t=armour.reduce((s,a)=>s+(parseInt(a.ef)||0),0);
   try{localStorage.setItem('ctg-ef',t);}catch(e){}
 }
@@ -122,7 +134,6 @@ function renderArmour(){
   const w=document.getElementById('armour-list');w.innerHTML='';
   armour.forEach((a,i)=>{
     const d=document.createElement('div');d.className='armour-slot';d.style.cssText='clip-path:none;padding:12px;display:block;';
-    const hasAbility = a.ability && a.ability.trim();
     d.innerHTML=`
       <div style="display:grid;grid-template-columns:90px 1fr 60px auto;gap:10px;align-items:center;">
         <input class="ed armour-loc" data-f="loc" value="${esc(a.loc)}" placeholder="Location" style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1px;color:var(--purple2);">
@@ -151,10 +162,9 @@ function addCharm(name='',quirk=''){
   d.querySelector('.charm-input').addEventListener('input',saveCharms);
   d.querySelector('.charm-quirk-input').addEventListener('input',saveCharms);
 }
-(function(){const s=load('ctg-charms');if(s){JSON.parse(s).forEach(c=>addCharm(c.name,c.quirk));}else{addCharm('Useless Miscoloured Shoe String','You may change the shoe string on your boots once per encounter.');}})();
+(function(){const s=load('ctg-charms');if(s){JSON.parse(s).forEach(c=>addCharm(c.name,c.quirk));}})();
 
-/* ── INVENTORY ───────────────────────────────────────────── */
-const startItems=['1× Large Stim (Healing)','1× Gun-Brella','1× Toothpick','1× Ink-Dipped Calamari','1× Rotten Supplies','2× Shotgun Ammo','1× Pistol Silencer'];
+/* ── CARRY (inventory) ───────────────────────────────────── */
 function saveInv(){
   const items=[...document.querySelectorAll('.inv-item')].map(li=>({
     name:li.querySelector('.inv-input')?.value||'',
@@ -183,19 +193,149 @@ function addItem(val='',notes=''){
   if(s){
     const arr=JSON.parse(s);
     arr.forEach(item=>{
-      if(typeof item==='string')addItem(item,''); // old format
-      else addItem(item.name||'',item.notes||''); // new format
+      if(typeof item==='string')addItem(item,'');
+      else addItem(item.name||'',item.notes||'');
     });
-  } else {startItems.forEach(v=>addItem(v,''));}
+  }
 })();
 
 /* ── MULA ────────────────────────────────────────────────── */
 (function(){const el=document.getElementById('mula');const s=load('ctg-mula');if(s!==null)el.value=s;el.addEventListener('input',()=>save('ctg-mula',el.value));})();
 
-/* ── nav + transitions ───────────────────────────────────── */
+/* ── ITEM CATALOG ────────────────────────────────────────── */
+const DEF_ITEMS=[
+  // consumables
+  {id:'ic1',type:'consumable',name:'Large Stim',desc:'Heals 3 HP when used. Comes in a pressurised injector.'},
+  {id:'ic2',type:'consumable',name:'Small Stim',desc:'Heals 1 HP. A quick fix for minor scrapes.'},
+  {id:'ic3',type:'consumable',name:'Pressure Syringe',desc:'Removes 1 active condition (not Bleeding). Sharp and reliable.'},
+  {id:'ic4',type:'consumable',name:'Smelling Salts',desc:'Instantly removes the Stunned or Panicked condition.'},
+  {id:'ic5',type:'consumable',name:'Alcohol Flask',desc:'Removes one negative condition but may inflict Drunk. Roll D6: 4+ you get Drunk too.'},
+  {id:'ic6',type:'consumable',name:'Bandage Roll',desc:'Stabilises a Bleeding wound. Removes the Bleeding condition.'},
+  {id:'ic7',type:'consumable',name:'Iron Rations',desc:'Sustenance for 1 day. Tastes like cardboard soaked in salt.'},
+  // gear
+  {id:'ig1',type:'gear',name:'Lockpicks',desc:'Open locked containers or doors. Requires a Logic check.'},
+  {id:'ig2',type:'gear',name:'Torchlight',desc:'Handheld illumination. Removes Blinded caused by darkness.'},
+  {id:'ig3',type:'gear',name:'Rope & Hook',desc:'15m of rope with a grappling hook. Useful for climbing and restraining.'},
+  {id:'ig4',type:'gear',name:'Binoculars',desc:'Scout distant areas. Grants Advance on Sense checks for far targets.'},
+  {id:'ig5',type:'gear',name:'Crowbar',desc:'Force open doors or use as improvised weapon (Dmg 1, Melee). Heavy.'},
+  {id:'ig6',type:'gear',name:'Toolkit',desc:'Repair mechanical devices and disable traps. Requires a Logic check.'},
+  {id:'ig7',type:'gear',name:'Smoke Canister',desc:'Deploy a smoke cloud. All Ranged attacks through smoke have Disadvantage.'},
+  {id:'ig8',type:'gear',name:'Canteen',desc:'Holds 1L of liquid. Keep hydrated — the wasteland is dry.'},
+  // ammo
+  {id:'ia1',type:'ammo',name:'Pistol Ammo ×6',desc:'Standard pistol rounds. Fits most semi-automatic sidearms.'},
+  {id:'ia2',type:'ammo',name:'Shotgun Shells ×2',desc:'Wide-spread shells. High damage at close range.'},
+  {id:'ia3',type:'ammo',name:'Rifle Rounds ×4',desc:'Long-range precision rounds for bolt-action and semi-auto rifles.'},
+  {id:'ia4',type:'ammo',name:'Auto Rounds ×10',desc:'High-volume rounds for automatic weapons. Burns through fast.'},
+  {id:'ia5',type:'ammo',name:'Junk Rounds ×6',desc:'Improvised ammunition. Neutral on hit (no bonus, no penalty).'},
+  // misc
+  {id:'im1',type:'misc',name:'Notebook & Pen',desc:'Record clues, maps, and plans. Always useful.'},
+  {id:'im2',type:'misc',name:'Fake Credentials',desc:'Forged ID and papers. Useful for bluffing past checkpoints.'},
+  {id:'im3',type:'misc',name:'Whetstone',desc:'Sharpen bladed weapons. Grants +1 Dmg on your next melee attack after use.'},
+  {id:'im4',type:'misc',name:'Tarp & Cord',desc:'Improvised shelter or concealment. Set up in 10 minutes.'},
+];
+
+let itemCatalog=[];
+(function(){
+  const s=load('ctg-item-catalog');
+  if(s){try{itemCatalog=JSON.parse(s);}catch(e){itemCatalog=[];}}
+  if(!itemCatalog.length){itemCatalog=DEF_ITEMS.map(x=>({...x}));}
+})();
+function saveItemCatalog(){try{localStorage.setItem('ctg-item-catalog',JSON.stringify(itemCatalog));}catch(e){}}
+
+let itemTab='all';
+function showItemTab(tab){
+  itemTab=tab;
+  document.querySelectorAll('.cat-tab[data-tab]').forEach(b=>{b.classList.toggle('active',b.dataset.tab===tab);});
+  renderItemCatalog();
+}
+
+let editingItem=null;
+function renderItemCatalog(){
+  const el=document.getElementById('item-catalog-list');el.innerHTML='';
+  const typeColor={consumable:'var(--green3)',gear:'var(--purple2)',ammo:'var(--red)',misc:'var(--gold)'};
+  const filtered=itemTab==='all'?itemCatalog:itemCatalog.filter(x=>x.type===itemTab);
+  if(!filtered.length){
+    el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.58rem;color:var(--text-dim);padding:10px 0;">No items in this category.</div>';
+    return;
+  }
+  filtered.forEach(item=>{
+    const isEditing=editingItem===item.id;
+    const div=document.createElement('div');div.className='cat-entry';
+    if(isEditing){
+      div.innerHTML=`
+        <div style="display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--paper2,rgba(0,0,0,0.06));border:1.5px solid var(--purple);margin-bottom:6px;">
+          <div style="display:grid;grid-template-columns:1fr 120px;gap:8px;">
+            <input id="ei-name-${item.id}" value="${esc(item.name)}" placeholder="Item name" style="background:transparent;border:2px solid var(--ink);color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1px;padding:4px 8px;outline:none;">
+            <select id="ei-type-${item.id}" style="background:var(--paper);border:2px solid var(--ink);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:0.58rem;padding:4px;outline:none;">
+              <option value="consumable"${item.type==='consumable'?' selected':''}>Consumable</option>
+              <option value="gear"${item.type==='gear'?' selected':''}>Gear</option>
+              <option value="ammo"${item.type==='ammo'?' selected':''}>Ammo</option>
+              <option value="misc"${item.type==='misc'?' selected':''}>Misc</option>
+            </select>
+          </div>
+          <textarea id="ei-desc-${item.id}" rows="2" placeholder="Description / effect..." style="background:transparent;border:1.5px dashed var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:0.85rem;padding:5px 8px;resize:vertical;outline:none;line-height:1.4;">${esc(item.desc||'')}</textarea>
+          <div style="display:flex;gap:8px;">
+            <button class="cat-btn add" onclick="saveItemEdit('${item.id}')">✓ SAVE</button>
+            <button class="cat-btn" onclick="editingItem=null;renderItemCatalog();">CANCEL</button>
+            <button class="cat-btn" style="margin-left:auto;color:var(--red);border-color:var(--red);" onclick="deleteItemFromCatalog('${item.id}')">✕ DELETE</button>
+          </div>
+        </div>`;
+    }else{
+      const tc=typeColor[item.type]||'var(--text-dim)';
+      div.innerHTML=`
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border:1.5px solid var(--border);margin-bottom:5px;background:var(--paper2,rgba(0,0,0,0.03));">
+          <div style="flex:1;min-width:0;">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
+              <span style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:1px;color:var(--text);">${esc(item.name)}</span>
+              <span style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;padding:1px 6px;border:1px solid ${tc};color:${tc};letter-spacing:1px;text-transform:uppercase;">${item.type}</span>
+            </div>
+            ${item.desc?`<div style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;color:var(--text2);line-height:1.4;">${esc(item.desc)}</div>`:''}
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;">
+            <button class="cat-btn add" onclick="addItemToCarry('${item.id}')">+ ADD</button>
+            <button class="cat-btn" onclick="editingItem='${item.id}';renderItemCatalog();">EDIT</button>
+          </div>
+        </div>`;
+    }
+    el.appendChild(div);
+  });
+}
+
+function addItemToCarry(id){
+  const item=itemCatalog.find(x=>x.id===id);
+  if(!item)return;
+  addItem(item.name,item.desc||'');
+  saveInv();
+  const btn=document.querySelector(`[onclick="addItemToCarry('${id}')"]`);
+  if(btn){btn.textContent='✓ ADDED';btn.style.background='var(--green3)';setTimeout(()=>{btn.textContent='+ ADD';btn.style.background='';},1400);}
+}
+
+function saveItemEdit(id){
+  const item=itemCatalog.find(x=>x.id===id);if(!item)return;
+  item.name=document.getElementById('ei-name-'+id).value.trim()||item.name;
+  item.type=document.getElementById('ei-type-'+id).value;
+  item.desc=document.getElementById('ei-desc-'+id).value.trim();
+  editingItem=null;saveItemCatalog();renderItemCatalog();
+}
+
+function deleteItemFromCatalog(id){
+  if(!confirm('Remove this item from the catalog?'))return;
+  itemCatalog=itemCatalog.filter(x=>x.id!==id);
+  editingItem=null;saveItemCatalog();renderItemCatalog();
+}
+
+function addCustomItemToCatalog(){
+  const item={id:uid(),type:'misc',name:'New Item',desc:''};
+  itemCatalog.push(item);saveItemCatalog();
+  editingItem=item.id;renderItemCatalog();
+  document.getElementById('item-catalog-list').lastElementChild?.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+/* ── NAV ─────────────────────────────────────────────────── */
 (function(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
-renderArmour();recalcEF();
+
+renderArmour();recalcEF();renderItemCatalog();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="ctg-sync.js"></script>

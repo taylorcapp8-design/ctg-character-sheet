@@ -88,7 +88,7 @@ const FACULTIES=[
     {name:'Tongue-less',sub:'Extreme tolerance',actions:'Consume the worst of the worst, perform impossible feats of endurance. Drink seawater.'}]},
 ];
 const state={selected:{},active:[null,null]};
-(function(){const s=load('ctg-faculties');if(s){const d=JSON.parse(s);state.selected=d.selected||{};state.active=d.active||[null,null];}else{state.selected={force:1,finess:0};state.active=['force','finess'];}})();
+(function(){const s=load('ctg-faculties');if(s){const d=JSON.parse(s);state.selected=d.selected||{};state.active=d.active||[null,null];}})();
 function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
 function persist(){try{localStorage.setItem('ctg-faculties',JSON.stringify(state));localStorage.setItem('ctg-last-edit',Date.now());flashSaved();}catch(e){}}

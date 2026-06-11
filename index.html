@@ -148,6 +148,18 @@
     <div class="hud-row"><span class="hud-k">MULA</span><span class="hud-v mula" id="hud-mula">0</span></div>
     <div class="hud-row"><span class="hud-k">LEVEL</span><span class="hud-v" id="hud-level">1</span></div>
     <div class="char-line" id="char-line"><span>NO OPERATIVE LOADED</span></div>
+    <!-- setup checklist — shown when character has no name -->
+    <div id="hub-setup" style="display:none;margin-top:10px;border-top:1px solid var(--border2);padding-top:10px;text-align:right;">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:2px;color:var(--gold);margin-bottom:7px;">▸ SETUP CHECKLIST</div>
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <a id="sc-p1" href="p1.html" style="display:flex;align-items:center;justify-content:flex-end;gap:8px;font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:1.5px;text-decoration:none;padding:3px 0;transition:color .15s;" onmouseover="this.style.color='var(--purple)'" onmouseout="this.style.color=''"><span id="sc-p1-tick" style="font-size:0.6rem;color:var(--text-dim);">○</span> I · STATS</a>
+        <a id="sc-p2" href="p2.html" style="display:flex;align-items:center;justify-content:flex-end;gap:8px;font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:1.5px;text-decoration:none;padding:3px 0;transition:color .15s;" onmouseover="this.style.color='var(--purple)'" onmouseout="this.style.color=''"><span id="sc-p2-tick" style="font-size:0.6rem;color:var(--text-dim);">○</span> II · GEAR</a>
+        <a id="sc-p3" href="p3.html" style="display:flex;align-items:center;justify-content:flex-end;gap:8px;font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:1.5px;text-decoration:none;padding:3px 0;transition:color .15s;" onmouseover="this.style.color='var(--purple)'" onmouseout="this.style.color=''"><span id="sc-p3-tick" style="font-size:0.6rem;color:var(--text-dim);">○</span> III · FACULTIES</a>
+        <a id="sc-p4" href="p4.html" style="display:flex;align-items:center;justify-content:flex-end;gap:8px;font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:1.5px;text-decoration:none;padding:3px 0;transition:color .15s;" onmouseover="this.style.color='var(--purple)'" onmouseout="this.style.color=''"><span id="sc-p4-tick" style="font-size:0.6rem;color:var(--text-dim);">○</span> IV · ARSENAL</a>
+        <a id="sc-p5" href="p5.html" style="display:flex;align-items:center;justify-content:flex-end;gap:8px;font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:1.5px;text-decoration:none;padding:3px 0;transition:color .15s;" onmouseover="this.style.color='var(--purple)'" onmouseout="this.style.color=''"><span id="sc-p5-tick" style="font-size:0.6rem;color:var(--text-dim);">○</span> V · SKILLS</a>
+      </div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;color:var(--text-dim);margin-top:8px;letter-spacing:1px;">✓ = data saved on that page</div>
+    </div>
   </div>
 
   <!-- data dots -->
@@ -222,6 +234,45 @@
   </div>
 </div>
 
+<!-- ONBOARDING OVERLAY — shown once after new account creation -->
+<div class="login-overlay" id="onboard-overlay">
+  <div class="login-card" style="max-width:500px;">
+    <div class="lc-logo">CTG</div>
+    <div class="lc-title">WELCOME,<br>OPERATIVE</div>
+    <div class="lc-sub">// YOUR DOSSIER IS READY — HERE'S HOW TO SET UP YOUR SHEET</div>
+    <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:22px;">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--text-dim);margin-bottom:2px;">FILL THESE IN ORDER — EACH PAGE BUILDS ON THE LAST</div>
+      <a href="p1.html" style="display:flex;align-items:center;gap:12px;padding:9px 14px;border:2px solid var(--border);background:var(--paper2,rgba(0,0,0,0.05));text-decoration:none;color:inherit;transition:border-color .15s;" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span style="font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--purple);min-width:28px;">I</span>
+        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;color:var(--ink);">STATS</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);">Set your 7 core attribute scores — they power all your rolls</div></div>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;color:var(--purple);margin-left:auto;">→</span>
+      </a>
+      <a href="p2.html" style="display:flex;align-items:center;gap:12px;padding:9px 14px;border:2px solid var(--border);background:var(--paper2,rgba(0,0,0,0.05));text-decoration:none;color:inherit;transition:border-color .15s;" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span style="font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--purple);min-width:28px;">II</span>
+        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;color:var(--ink);">GEAR</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);">Add armour to each body slot, charms, and your carry inventory</div></div>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;color:var(--purple);margin-left:auto;">→</span>
+      </a>
+      <a href="p3.html" style="display:flex;align-items:center;gap:12px;padding:9px 14px;border:2px solid var(--border);background:var(--paper2,rgba(0,0,0,0.05));text-decoration:none;color:inherit;transition:border-color .15s;" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span style="font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--purple);min-width:28px;">III</span>
+        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;color:var(--ink);">FACULTIES</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);">Pick up to 2 active faculties and choose their tuning style</div></div>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;color:var(--purple);margin-left:auto;">→</span>
+      </a>
+      <a href="p4.html" style="display:flex;align-items:center;gap:12px;padding:9px 14px;border:2px solid var(--border);background:var(--paper2,rgba(0,0,0,0.05));text-decoration:none;color:inherit;transition:border-color .15s;" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span style="font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--purple);min-width:28px;">IV</span>
+        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;color:var(--ink);">ARSENAL</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);">Browse the item catalog, add weapons and equip your loadout</div></div>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;color:var(--purple);margin-left:auto;">→</span>
+      </a>
+      <a href="p5.html" style="display:flex;align-items:center;gap:12px;padding:9px 14px;border:2px solid var(--border);background:var(--paper2,rgba(0,0,0,0.05));text-decoration:none;color:inherit;transition:border-color .15s;" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'">
+        <span style="font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--purple);min-width:28px;">V</span>
+        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;color:var(--ink);">SKILLS</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);">Spend stat points from Page I to unlock skills in the skill tree</div></div>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;color:var(--purple);margin-left:auto;">→</span>
+      </a>
+    </div>
+    <button class="lc-btn" onclick="location.href='p1.html'">▶ BEGIN SETUP — START AT PAGE I · STATS</button>
+    <button class="lc-offline" onclick="dismissOnboard()">I know what I'm doing — skip for now</button>
+  </div>
+</div>
+
 <!-- LOGIN OVERLAY — shown on load when not logged in -->
 <div class="login-overlay" id="login-overlay">
   <div class="login-card">
@@ -255,8 +306,9 @@ document.querySelectorAll('.word').forEach(w=>{
   w.appendChild(frag);
 });
 
-// char line + HUD + data dots
+// char line + HUD + data dots + setup checklist
 const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p2:['ctg-inventory','ctg-mula','ctg-armour-list','ctg-charms'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-food'],p5:['ctg-skills'],p6:['ctg-combat-notes']};
+const checkMap={p1:['ctg-f-name'],p2:['ctg-armour-list','ctg-charms','ctg-inventory'],p3:['ctg-faculties'],p4:['ctg-weapons'],p5:['ctg-skills']};
 function updateHUD(){
   const n=lg('ctg-f-name'),c=lg('ctg-f-code');
   const line=document.getElementById('char-line');
@@ -265,6 +317,22 @@ function updateHUD(){
   document.getElementById('hud-mula').textContent=lg('ctg-mula')||'0';
   document.getElementById('hud-level').textContent=lg('ctg-f-level')||'1';
   document.querySelectorAll('.dd').forEach(dd=>{const pg=dd.dataset.page;let has=false;(map[pg]||[]).forEach(k=>{const v=lg(k);if(v&&v!=='[]'&&v!=='{}'&&v!=='')has=true;});dd.classList.toggle('has-data',has);});
+  // setup checklist
+  const setup=document.getElementById('hub-setup');
+  if(!n){
+    setup.style.display='block';
+    Object.keys(checkMap).forEach(pg=>{
+      const tick=document.getElementById('sc-'+pg+'-tick');
+      const link=document.getElementById('sc-'+pg);
+      if(!tick||!link)return;
+      const done=checkMap[pg].some(k=>{const v=lg(k);return v&&v!=='[]'&&v!=='{}'&&v!=='';});
+      tick.textContent=done?'✓':'○';
+      tick.style.color=done?'var(--green3)':'var(--text-dim)';
+      link.style.color=done?'var(--text-dim)':'var(--ink)';
+    });
+  }else{
+    setup.style.display='none';
+  }
 }
 updateHUD();
 
@@ -341,7 +409,7 @@ async function doOverlayLogin(){
     hint.textContent=r.isNew?'✓ New dossier created.':'✓ Welcome back, '+u+'.';
     hint.style.color='var(--green3)';
     btn.textContent='✓ SYNCED';
-    setTimeout(()=>{dismissOverlay();refreshCloudUI();updateHUD();},900);
+    setTimeout(()=>{dismissOverlay();refreshCloudUI();updateHUD();if(r.isNew)showOnboard();},900);
   }catch(e){
     hint.textContent='✕ '+e.message;
     hint.style.color='var(--red)';
@@ -350,6 +418,14 @@ async function doOverlayLogin(){
 }
 function dismissOverlay(){
   var ov=document.getElementById('login-overlay');
+  ov.style.animation='ovOut .2s ease both';
+  setTimeout(()=>ov.classList.remove('visible'),200);
+}
+function showOnboard(){
+  document.getElementById('onboard-overlay').classList.add('visible');
+}
+function dismissOnboard(){
+  var ov=document.getElementById('onboard-overlay');
   ov.style.animation='ovOut .2s ease both';
   setTimeout(()=>ov.classList.remove('visible'),200);
 }
