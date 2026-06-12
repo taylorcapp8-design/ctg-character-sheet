@@ -220,7 +220,7 @@ function renderStats(){
     const buff=getBuffBonusFor(st.name);
     const buffBadge=buff?`<span style="font-family:'Anton',sans-serif;font-size:0.65rem;color:var(--gold,#cf9500);background:rgba(207,149,0,0.12);border:1px solid var(--gold,#cf9500);padding:1px 5px;white-space:nowrap;">⚡${buff>=0?'+':''}${buff} = ${score+buff}</span>`:'';
     const row=document.createElement('div');row.className='stat-bar';
-    row.style.cssText=buff?'border-left-color:var(--gold,#cf9500);':'';
+    if(buff){row.style.borderColor='var(--gold,#cf9500)';row.style.background='rgba(207,149,0,0.07)';}
     row.innerHTML=`
       <div class="stat-bar-top">
         <span class="stat-icon" style="${buff?'color:var(--gold,#cf9500);':''}">${st.icon||'◆'}</span>

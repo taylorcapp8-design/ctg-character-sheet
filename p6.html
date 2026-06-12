@@ -550,6 +550,13 @@ function buildLoadout(){
     const mod=getMod(w);
     const total=mod?mod.total:0;
 
+    // Buffs active on this weapon's stat
+    const activeBuffsForStat=w.rollStat?tempBuffs.map(b=>normBuff(b)).filter(b=>b.bonuses.some(x=>x.stat&&x.stat.toLowerCase()===w.rollStat.toLowerCase())):[];
+    const buffStrip=activeBuffsForStat.length?`<div style="display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:6px;padding:4px 8px;background:rgba(207,149,0,0.1);border:1.5px solid var(--gold,#cf9500);">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:0.42rem;letter-spacing:1px;color:var(--gold,#cf9500);">⚡ BUFFS ACTIVE</span>
+      ${activeBuffsForStat.map(b=>{const v=b.bonuses.filter(x=>x.stat.toLowerCase()===w.rollStat.toLowerCase()).reduce((s,x)=>s+(parseInt(x.value)||0),0);return`<span style="font-family:'Bebas Neue',sans-serif;font-size:0.78rem;color:var(--text);">${b.label}</span><span style="font-family:'Anton',sans-serif;font-size:0.85rem;color:var(--gold,#cf9500);">${v>=0?'+':''}${v}</span>`;}).join('<span style="color:var(--border2);">·</span>')}
+    </div>`:'';
+
     let rollBreak='';
     if(mod&&mod.base!==null){
       const buffRow=mod.buffBonus?`<span class="roll-op">+</span><div class="roll-box" style="border-color:var(--gold,#cf9500);"><span class="roll-lbl" style="color:var(--gold,#cf9500);">BUFF</span><span class="roll-num" style="color:var(--gold,#cf9500);">${mod.buffBonus>=0?'+':''}${mod.buffBonus}</span></div>`:'';
@@ -605,7 +612,7 @@ function buildLoadout(){
           <span style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--text-dim);">DMG</span>
         </div>
       </div>
-      ${rollBreak}${calcHtml}
+      ${buffStrip}${rollBreak}${calcHtml}
       ${w.quirkName?`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--purple2);margin-top:8px;">${w.quirkName}</div>`:''}
       ${w.quirkText?`<div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.8rem;color:var(--text2);line-height:1.4;margin-top:2px;">${w.quirkText}</div>`:''}
       <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">${tagHtml}</div>
