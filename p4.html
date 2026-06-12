@@ -60,8 +60,9 @@
   </div>
 
   <!-- KEYWORD GLOSSARY -->
-  <div class="sec-label mt"><span class="mk">◆</span>KEYWORD GLOSSARY <span class="note">— click to expand</span></div>
+  <div class="sec-label mt" id="glossary-toggle" style="cursor:pointer;user-select:none;" onclick="(function(){const p=document.getElementById('glossary-panel');const open=p.style.display!=='none';p.style.display=open?'none':'block';document.getElementById('glossary-arrow').textContent=open?'▸':'▾';})()"><span class="mk">◆</span>KEYWORD GLOSSARY <span class="note" id="glossary-arrow">▾</span></div>
   <div class="panel" id="glossary-panel">
+    <div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:10px;">Click any keyword tag to see its definition.</div>
     <div style="display:flex;flex-wrap:wrap;gap:8px;" id="glossary-list"></div>
   </div>
 
@@ -162,14 +163,20 @@ function setEquip(wid,slotVal){
 
 /* ── ODDITIES ────────────────────────────────────────────── */
 const DEF_FOOD=[
-  {id:'f1',name:'Lemon-Static Eel Rinds',flavor:'Sour · Salty · Glassy-crunch · Slightly electric',quirk:'As a Free Reaction, shoot electricity from your fingertips — inflict Shock on an enemy in range. They withdraw their current card and redraw; if unable, they skip their turn.',quip:'"Zap your tongue. Respect the eel."',charged:true,slot:null},
-  {id:'f2',name:'Ink-Dipped Calamari',flavor:'Savory-sweet · Ocean-deep · Licorice · Stains lips black',quirk:'Your blood turns viscous black. Discard up to 2 Cards from your Hand and Redraw them.',quip:'"Pop it. Ink it. Regret nothing."',charged:true,slot:null},
-  {id:'f3',name:'Coal-Fire Tentacle Twist',flavor:'Burnt sugar · Ash · Peppered salt · Chewy',quirk:'Breathe flame from your fingertips — attack with ♦ Diamond Cards using your Flicker to inflict Burn. Roll D6: Evens = +1 damage, Odds = nothing.',quip:'"Chewy enough to fight back!"',charged:true,slot:null},
+  {id:'f1',name:'Lemon-Static Eel Rinds',flavor:'Sour · Salty · Glassy-crunch · Slightly electric',quirk:'As a Free Reaction, shoot electricity from your fingertips — inflict Shock on an enemy in range. They withdraw their current card and redraw; if unable, they skip their turn.',quip:'"Zap your tongue. Respect the eel."',charges:1,maxCharges:1,slot:null},
+  {id:'f2',name:'Ink-Dipped Calamari',flavor:'Savory-sweet · Ocean-deep · Licorice · Stains lips black',quirk:'Your blood turns viscous black. Discard up to 2 Cards from your Hand and Redraw them.',quip:'"Pop it. Ink it. Regret nothing."',charges:1,maxCharges:1,slot:null},
+  {id:'f3',name:'Coal-Fire Tentacle Twist',flavor:'Burnt sugar · Ash · Peppered salt · Chewy',quirk:'Breathe flame from your fingertips — attack with ♦ Diamond Cards using your Flicker to inflict Burn. Roll D6: Evens = +1 damage, Odds = nothing.',quip:'"Chewy enough to fight back!"',charges:1,maxCharges:1,slot:null},
 ];
 let food=[];
 try{const s=load('ctg-food');food=s?JSON.parse(s):[];}catch(e){food=[];}
-// migrate: ensure every item has slot field and no stale harth
-food.forEach(f=>{if(f.slot===undefined)f.slot=null;delete f.harth;});
+// migrate: ensure every item has slot, charges, maxCharges; strip stale fields
+food.forEach(f=>{
+  if(f.slot===undefined)f.slot=null;
+  delete f.harth;
+  if(f.charges===undefined){f.charges=f.charged?1:0;}
+  if(f.maxCharges===undefined){f.maxCharges=1;}
+  delete f.charged;
+});
 function saveFood(){store('ctg-food',JSON.stringify(food));}
 function setEquipOddity(fid){
   food.forEach(f=>{if(f.id!==fid)f.slot=null;});
@@ -180,7 +187,9 @@ function renderFood(){
   const grid=document.getElementById('food-grid');grid.innerHTML='';
   food.forEach(fd=>{
     const isEq=fd.slot==='equipped';
-    const card=document.createElement('div');card.className='food-card'+(fd.charged?'':' depleted');card.dataset.id=fd.id;
+    const hasCharges=fd.charges>0;
+    const card=document.createElement('div');card.className='food-card'+(hasCharges?'':' depleted');card.dataset.id=fd.id;
+    const pips=Array.from({length:fd.maxCharges},(_,i)=>`<span class="charge-pip${i<fd.charges?' full':''}" data-pip="${i}" title="${i<fd.charges?'Spend charge':'Restore charge'}"></span>`).join('');
     card.innerHTML=`
       <button class="card-del" title="Delete oddity" data-del="${fd.id}">✕</button>
       <div class="food-head">
@@ -193,18 +202,26 @@ function renderFood(){
         <input class="ed food-quip" data-f="quip" value="${esc(fd.quip)}" placeholder="Tagline...">
       </div>
       <div class="food-footer">
-        <span class="food-charge-label">${fd.charged?'CHARGED':'DEPLETED'}</span>
-        <span class="charge-toggle ${fd.charged?'charged':''}" data-charge="${fd.id}"></span>
+        <div class="food-charge-area">
+          <div class="charge-pips">${pips}</div>
+          <span class="food-charge-label">${fd.charges}/${fd.maxCharges} CHARGE${fd.maxCharges!==1?'S':''}</span>
+          <button class="charge-max-btn" data-add title="Add charge slot">+</button>
+          ${fd.maxCharges>1?`<button class="charge-max-btn" data-rem title="Remove charge slot">−</button>`:''}
+        </div>
         <button class="equip-btn ${isEq?'is-main':''}" data-equip-odd="${fd.id}" style="margin-left:auto;">${isEq?'✓ EQUIPPED':'EQUIP FOR COMBAT'}</button>
       </div>`;
     grid.appendChild(card);
     card.querySelectorAll('[data-f]').forEach(inp=>{inp.addEventListener('input',()=>{fd[inp.dataset.f]=inp.value;saveFood();});});
-    card.querySelector('[data-charge]').addEventListener('click',()=>{fd.charged=!fd.charged;saveFood();renderFood();});
+    card.querySelectorAll('.charge-pip').forEach(pip=>{
+      pip.addEventListener('click',()=>{const i=parseInt(pip.dataset.pip);fd.charges=i<fd.charges?i:i+1;saveFood();renderFood();});
+    });
+    card.querySelector('[data-add]')?.addEventListener('click',()=>{fd.maxCharges++;saveFood();renderFood();});
+    card.querySelector('[data-rem]')?.addEventListener('click',()=>{if(fd.maxCharges>1){fd.maxCharges--;fd.charges=Math.min(fd.charges,fd.maxCharges);saveFood();renderFood();}});
     card.querySelector('[data-del]').addEventListener('click',()=>{if(confirm('Delete "'+(fd.name||'this oddity')+'"?')){food=food.filter(x=>x.id!==fd.id);saveFood();renderFood();}});
     card.querySelector('[data-equip-odd]').addEventListener('click',()=>{setEquipOddity(fd.id);});
   });
 }
-function addFood(){food.push({id:uid(),name:'',flavor:'',quirk:'',quip:'',charged:true,slot:null});saveFood();renderFood();const cards=document.querySelectorAll('.food-card');cards[cards.length-1].querySelector('.food-name').focus();}
+function addFood(){food.push({id:uid(),name:'',flavor:'',quirk:'',quip:'',charges:1,maxCharges:1,slot:null});saveFood();renderFood();const cards=document.querySelectorAll('.food-card');cards[cards.length-1].querySelector('.food-name').focus();}
 
 /* ── CATALOG ─────────────────────────────────────────────── */
 const DEF_CAT={
@@ -305,7 +322,7 @@ function renderCatalog(){
 }
 function addToSheet(item){
   const isW=catTab==='weapons';
-  const copy=Object.assign({},item,{id:uid(),slot:null,charged:true});
+  const copy=Object.assign({},item,{id:uid(),slot:null,charges:1,maxCharges:1});
   if(isW){weapons.push(copy);saveWeapons();renderWeapons();}
   else{food.push(copy);saveFood();renderFood();}
   flashSaved();
@@ -355,9 +372,10 @@ function buildGlossary(){
         <strong style="font-family:'Bebas Neue',sans-serif;letter-spacing:1px;color:var(--purple,#6d28d9);display:block;margin-bottom:4px;">${kw}</strong>${def}
       </div>`;
     const tag=chip.querySelector('.tag');const def_el=chip.querySelector('.kw-def');
-    let open=false;
-    tag.addEventListener('click',e=>{e.stopPropagation();open=!open;def_el.style.display=open?'block':'none';});
-    document.addEventListener('click',()=>{open=false;def_el.style.display='none';});
+    chip.addEventListener('mouseenter',()=>{def_el.style.display='block';});
+    chip.addEventListener('mouseleave',()=>{def_el.style.display='none';});
+    tag.addEventListener('click',e=>{e.stopPropagation();def_el.style.display=def_el.style.display==='none'?'block':'none';});
+    document.addEventListener('click',()=>{def_el.style.display='none';});
     list.appendChild(chip);
   });
 }

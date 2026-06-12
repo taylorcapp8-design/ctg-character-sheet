@@ -320,6 +320,12 @@ function updateNavName(){const n=load('ctg-f-name');const c=load('ctg-f-code');d
 /* transitions */
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
 
+// Cross-tab sync — pick up HP/temp changes made on the combat page
+window.addEventListener('storage',e=>{
+  if(e.key==='ctg-harth-cur'){document.getElementById('harth-cur').value=parseInt(e.newValue)||0;refreshTracks();}
+  if(e.key==='ctg-harth-temp'){document.getElementById('harth-temp').value=parseInt(e.newValue)||0;refreshTracks();}
+});
+
 /* init */
 renderStats();renderSupplies();renderEquip();refreshTracks();updateNavName();
 </script>

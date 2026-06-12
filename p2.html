@@ -284,7 +284,6 @@ function renderEFDetail(){
 
 function renderEFOverview(panel){
   const totalEF=EF_PART_IDS.reduce((s,id)=>s+(efParts[id]?parseInt(efParts[id].ef)||0:0),0);
-  const anyEquipped=EF_PART_IDS.some(id=>efParts[id]);
   const rows=EF_PART_IDS.map(id=>{
     const ef=efParts[id];
     const label=PART_LABELS[id];
@@ -302,22 +301,18 @@ function renderEFOverview(panel){
       <span class="ef-ov-unarmoured">unarmoured — click to equip</span>
     </div>`;
   }).join('');
-  const charmsHtml=charms.length>0
-    ?`<div class="ef-ov-row ef-ov-charms-row" onclick="selectPart('belt')">
-        <span class="ef-ov-zone" style="color:rgba(207,149,0,0.65);">BELT</span>
-        <span class="ef-ov-charm-count">${charms.length} charm${charms.length!==1?'s':''} equipped</span>
-      </div>`
-    :'';
-  const noneHtml=!anyEquipped
-    ?`<div class="ef-ov-none">◌ NO EXTRA FLESH EQUIPPED<span>Select a zone on the silhouette to begin.</span></div>`
-    :'';
+  const charmsHtml=`<div class="ef-ov-row ef-ov-charms-row" onclick="selectPart('belt')">
+      <span class="ef-ov-zone" style="color:rgba(207,149,0,0.7);">BELT</span>
+      ${charms.length>0
+        ?`<span class="ef-ov-charm-count">${charms.length} charm${charms.length!==1?'s':''} equipped</span>`
+        :`<span class="ef-ov-no-charms">no charms — click to add</span>`}
+    </div>`;
   panel.innerHTML=`
     <div class="ef-ov-header">
       <span class="ef-ov-title">EF LOADOUT</span>
       <span class="ef-ov-total-ef">+${totalEF}</span>
     </div>
-    <div class="ef-ov-list">${rows}${charmsHtml}</div>
-    ${noneHtml}`;
+    <div class="ef-ov-list">${rows}${charmsHtml}</div>`;
 }
 
 function renderEFPartPanel(panel){
