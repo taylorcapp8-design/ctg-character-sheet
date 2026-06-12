@@ -591,13 +591,9 @@ function buildLoadout(){
         <span id="res-${slotKey}" style="font-family:'Anton',sans-serif;font-size:2.2rem;color:var(--gold);font-style:italic;line-height:1;">10</span>
       </div>
       <div style="width:1px;background:var(--border);align-self:stretch;margin:0 4px;flex-shrink:0;"></div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-        <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--green3);letter-spacing:1px;">DMG DICE</label>
-        <div style="display:flex;align-items:center;gap:5px;">
-          <span style="font-family:'Anton',sans-serif;font-size:1rem;color:var(--green3);">${diceLabel}</span>
-          <button id="xd-roll-${slotKey}" style="font-family:'Bebas Neue',sans-serif;font-size:0.72rem;letter-spacing:2px;padding:3px 10px;background:var(--green3);border:2px solid var(--ink);color:#000;cursor:pointer;transform:skewX(-7deg);">ROLL</button>
-        </div>
-        <span id="xd-result-${slotKey}" style="font-family:'Anton',sans-serif;font-size:1.1rem;color:var(--green3);font-style:italic;min-height:1.2em;"></span>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
+        <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--green3);letter-spacing:1px;">${diceLabel}</label>
+        <input id="xd-roll-${slotKey}" type="number" min="1" value="1" style="width:54px;background:transparent;border:2px solid var(--green3);color:var(--text);font-family:'Anton',sans-serif;font-size:1.4rem;text-align:center;padding:3px;outline:none;">
       </div>
     </div>`;
 
@@ -629,18 +625,6 @@ function buildLoadout(){
       const mod=parseInt(rollEl.dataset.mod)||0;
       const upd=()=>{resEl.textContent=(parseInt(rollEl.value)||0)+mod;};
       rollEl.addEventListener('input',upd);upd();
-    }
-    const xdBtn=document.getElementById('xd-roll-'+slot);
-    if(xdBtn){
-      const w=slot==='main'?mainW:sideW;
-      const count=Math.max(1,parseInt(w&&w.diceCount||1));
-      const sides=Math.max(2,parseInt(w&&w.diceSides||6));
-      xdBtn.addEventListener('click',()=>{
-        const rolls=Array.from({length:count},()=>Math.floor(Math.random()*sides)+1);
-        const total=rolls.reduce((a,b)=>a+b,0);
-        const el=document.getElementById('xd-result-'+slot);
-        el.innerHTML=`[${rolls.join(',')}] <span style="color:var(--gold);">= ${total}</span>`;
-      });
     }
   });
 
