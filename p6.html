@@ -497,15 +497,53 @@ function buildFaculties(){
 
 // ── CONDITIONS ──
 const CONDITIONS=['Poisoned','Burning','Shocked','Blinded','Stunned','Panicked','Prone','Restrained','Drunk','Bleeding'];
+const COND_FX={
+  'Poisoned':   {color:'#22c55e', anim:'slow'},
+  'Burning':    {color:'#f97316', anim:'flicker'},
+  'Shocked':    {color:'#a78bfa', anim:'flicker'},
+  'Blinded':    {color:'#64748b', anim:null},
+  'Stunned':    {color:'#94a3b8', anim:'slow'},
+  'Panicked':   {color:'#fbbf24', anim:'fast'},
+  'Prone':      {color:'#a16207', anim:null},
+  'Restrained': {color:'#60a5fa', anim:'slow'},
+  'Drunk':      {color:'#d97706', anim:'slow'},
+  'Bleeding':   {color:'#dc2626', anim:'heartbeat'},
+};
+function updateConditionFX(){
+  const box=document.querySelector('.vital-box.harth');
+  if(!box)return;
+  const active=[...cstate.conditions];
+  box.classList.remove('cond-slow','cond-fast','cond-flicker','cond-heartbeat');
+  if(!active.length){box.style.boxShadow='';box.style.borderColor='';return;}
+  const shadows=active.map(c=>{
+    const col=COND_FX[c]?.color;
+    return col?`0 0 10px ${col},0 0 22px ${col}90,inset 0 0 14px ${col}1a`:null;
+  }).filter(Boolean).join(',');
+  box.style.boxShadow=shadows;
+  const last=COND_FX[active[active.length-1]];
+  if(last)box.style.borderColor=last.color;
+  const anims=active.map(c=>COND_FX[c]?.anim).filter(Boolean);
+  if(anims.includes('heartbeat'))box.classList.add('cond-heartbeat');
+  else if(anims.includes('flicker'))box.classList.add('cond-flicker');
+  else if(anims.includes('fast'))box.classList.add('cond-fast');
+  else if(anims.includes('slow'))box.classList.add('cond-slow');
+}
 function buildConditions(){
   const el=document.getElementById('c-conditions');
   CONDITIONS.forEach(c=>{
     const btn=document.createElement('button');
     btn.textContent=c;btn.dataset.cond=c;
+    const col=COND_FX[c]?.color||'#a8102c';
     btn.style.cssText='font-family:\'Bebas Neue\',sans-serif;font-size:0.75rem;letter-spacing:1px;padding:3px 10px;cursor:pointer;border:1.5px solid var(--border2);background:transparent;color:var(--text2);transform:skewX(-8deg);transition:all .15s;';
     btn.addEventListener('click',()=>{
-      if(cstate.conditions.has(c)){cstate.conditions.delete(c);btn.style.background='transparent';btn.style.color='var(--text2)';btn.style.borderColor='var(--border2)';}
-      else{cstate.conditions.add(c);btn.style.background=c==='Burning'?'var(--red)':c==='Shocked'?'var(--purple)':c==='Drunk'?'var(--gold)':'var(--red-deep)';btn.style.color='#fff';btn.style.borderColor='var(--ink)';}
+      if(cstate.conditions.has(c)){
+        cstate.conditions.delete(c);
+        btn.style.background='transparent';btn.style.color='var(--text2)';btn.style.borderColor='var(--border2)';btn.style.boxShadow='';
+      } else {
+        cstate.conditions.add(c);
+        btn.style.background=col;btn.style.color='#fff';btn.style.borderColor=col;btn.style.boxShadow=`0 0 8px ${col}90`;
+      }
+      updateConditionFX();
     });
     el.appendChild(btn);
   });

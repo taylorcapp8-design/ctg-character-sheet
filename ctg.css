@@ -758,3 +758,13 @@ body.hub-body{padding:0;overflow-x:hidden;}
 [data-theme="dark"] .ef-type-select,[data-theme="dark"] .ef-ef-input,[data-theme="dark"] .ef-ct-ef{background:var(--paper2);}
 [data-theme="dark"] .ef-ability-input,[data-theme="dark"] .ef-charm-quirk{background:var(--paper2);border-color:var(--border);}
 [data-theme="dark"] .ef-charm-item{background:var(--paper2);border-color:var(--border);}
+
+/* ── CONDITION FX ON HP BOX ──────────────────────────────── */
+@keyframes condPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.012)}}
+@keyframes condFast{0%,100%{transform:scale(1)}25%,75%{transform:scale(1.02)}50%{transform:scale(1)}}
+@keyframes condFlicker{0%,100%{opacity:1}20%{opacity:.65}40%{opacity:1}60%{opacity:.5}80%{opacity:.85}}
+@keyframes condHeartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.035)}28%{transform:scale(1)}42%{transform:scale(1.022)}56%{transform:scale(1)}}
+.vital-box.cond-slow{animation:condPulse 2.2s ease-in-out infinite;}
+.vital-box.cond-fast{animation:condFast .55s ease-in-out infinite;}
+.vital-box.cond-flicker{animation:condFlicker .32s linear infinite;}
+.vital-box.cond-heartbeat{animation:condHeartbeat 1.1s ease-in-out infinite;}
