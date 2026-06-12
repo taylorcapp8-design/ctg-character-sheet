@@ -130,12 +130,8 @@
 
       </div>
 
-      <!-- Footer: total EF + custom types -->
+      <!-- Footer: custom types -->
       <div class="ef-footer">
-        <div class="armour-total" style="margin-top:0;">
-          <span class="armour-total-label">TOTAL EF</span>
-          <span class="armour-total-val" id="ef-total">+0</span>
-        </div>
         <div class="ef-custom-section">
           <div class="ef-custom-header">CUSTOM EF TYPES</div>
           <div id="ef-custom-types-list"></div>
@@ -251,9 +247,10 @@ function saveCharms(){save('ctg-charms',JSON.stringify(charms));}
 
 function syncEFTotal(){
   const t=EF_PART_IDS.reduce((s,id)=>s+(efParts[id]?parseInt(efParts[id].ef)||0:0),0);
-  document.getElementById('ef-total').textContent=(t>=0?'+':'')+t;
   try{localStorage.setItem('ctg-ef',t);}catch(e){}
 }
+
+function closeZone(){selectedPart=null;updateSVGStates();renderEFDetail();}
 
 function allEFTypes(){return[...PRESET_EF_TYPES,...customEfTypes];}
 
@@ -330,6 +327,7 @@ function renderEFPartPanel(panel){
   const selId=current?current.typeId:(types[0]?.id||'');
   const selType=types.find(t=>t.id===selId)||types[0];
   panel.innerHTML=`
+    <button class="ef-back-btn" onclick="closeZone()">← LOADOUT</button>
     <div class="ef-detail-part-name">${label}</div>
     ${current
       ?`<div class="ef-applied-badge">EF+${current.ef} · ${esc(current.name)}</div>`
@@ -369,6 +367,7 @@ function renderEFPartPanel(panel){
 
 function renderBeltPanel(panel){
   panel.innerHTML=`
+    <button class="ef-back-btn" onclick="closeZone()">← LOADOUT</button>
     <div class="ef-detail-part-name">BELT</div>
     <div class="ef-form-label" style="margin-bottom:10px;letter-spacing:2px;">${charms.length} CHARM${charms.length!==1?'S':''} EQUIPPED</div>
     <div class="ef-charm-list" id="ef-charm-list"></div>

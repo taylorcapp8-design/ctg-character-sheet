@@ -789,25 +789,28 @@ body.hub-body{padding:0;overflow-x:hidden;}
 /* Dark mode adjustments for ef-body-ui scanner */
 [data-theme="dark"] .ef-body-ui{background:linear-gradient(160deg,#06040e 0%,#080b18 100%);border-color:rgba(52,214,255,0.2);}
 /* EF overview (no zone selected) */
-.ef-ov-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid rgba(52,214,255,0.15);}
-.ef-ov-title{font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:3px;color:rgba(52,214,255,0.5);}
-.ef-ov-total-ef{font-family:'Anton',sans-serif;font-size:1.15rem;color:#39c94f;text-shadow:0 0 8px rgba(57,201,79,0.45);}
+.ef-ov-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid rgba(52,214,255,0.2);}
+.ef-ov-title{font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:3px;color:rgba(52,214,255,0.8);}
+.ef-ov-total-ef{font-family:'Anton',sans-serif;font-size:1.2rem;color:#5dff6e;text-shadow:0 0 10px rgba(93,255,110,0.5);}
 .ef-ov-list{display:flex;flex-direction:column;gap:3px;}
 .ef-ov-row{display:flex;align-items:flex-start;gap:8px;padding:5px 7px;cursor:pointer;border:1px solid transparent;transition:background .12s,border-color .12s;clip-path:polygon(0 0,100% 0,calc(100% - 6px) 100%,0 100%);}
-.ef-ov-row:hover{background:rgba(52,214,255,0.07);border-color:rgba(52,214,255,0.22);}
-.ef-ov-equipped{border-color:rgba(52,214,255,0.13);}
-.ef-ov-zone{font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1.5px;color:rgba(52,214,255,0.6);white-space:nowrap;min-width:42px;padding-top:3px;}
+.ef-ov-row:hover{background:rgba(52,214,255,0.09);border-color:rgba(52,214,255,0.28);}
+.ef-ov-equipped{border-color:rgba(52,214,255,0.18);}
+.ef-ov-zone{font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1.5px;color:rgba(52,214,255,0.85);white-space:nowrap;min-width:42px;padding-top:3px;}
 .ef-ov-info{flex:1;}
-.ef-ov-name{font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:1px;color:#e2daff;display:flex;align-items:baseline;justify-content:space-between;gap:6px;}
-.ef-ov-val{font-family:'Anton',sans-serif;font-size:0.9rem;color:#39c94f;}
-.ef-ov-ability{font-family:'Rajdhani',sans-serif;font-size:0.72rem;color:rgba(200,185,255,0.55);line-height:1.3;margin-top:1px;}
-.ef-ov-bare{opacity:0.45;}
-.ef-ov-unarmoured{font-family:'Share Tech Mono',monospace;font-size:0.4rem;letter-spacing:1px;color:rgba(52,214,255,0.28);padding-top:3px;}
-.ef-ov-charms-row{border-color:rgba(207,149,0,0.15);}
-.ef-ov-charms-row:hover{background:rgba(207,149,0,0.06);border-color:rgba(207,149,0,0.3);}
-.ef-ov-charm-count{font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:rgba(207,149,0,0.7);padding-top:2px;}
-.ef-ov-none{font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:rgba(52,214,255,0.25);text-align:center;padding:20px 8px 8px;line-height:2;}
-.ef-ov-none span{display:block;font-size:0.42rem;opacity:0.65;margin-top:2px;}
+.ef-ov-name{font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1px;color:#f5f0ff;display:flex;align-items:baseline;justify-content:space-between;gap:6px;}
+.ef-ov-val{font-family:'Anton',sans-serif;font-size:0.95rem;color:#5dff6e;text-shadow:0 0 6px rgba(93,255,110,0.4);}
+.ef-ov-ability{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.78rem;color:rgba(220,210,255,0.82);line-height:1.3;margin-top:2px;}
+.ef-ov-bare{opacity:0.5;}
+.ef-ov-unarmoured{font-family:'Share Tech Mono',monospace;font-size:0.4rem;letter-spacing:1px;color:rgba(52,214,255,0.38);padding-top:3px;font-style:italic;}
+.ef-ov-charms-row{border-color:rgba(207,149,0,0.2);}
+.ef-ov-charms-row:hover{background:rgba(207,149,0,0.07);border-color:rgba(207,149,0,0.4);}
+.ef-ov-charm-count{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:rgba(207,149,0,0.9);padding-top:2px;}
+.ef-ov-none{font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:rgba(52,214,255,0.38);text-align:center;padding:20px 8px 8px;line-height:2;}
+.ef-ov-none span{display:block;font-size:0.42rem;color:rgba(52,214,255,0.28);margin-top:2px;}
+/* Back button on zone panels */
+.ef-back-btn{font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1.5px;background:transparent;border:none;color:rgba(52,214,255,0.6);cursor:pointer;padding:0 0 10px;display:block;transition:color .12s;}
+.ef-back-btn:hover{color:rgba(52,214,255,1);}
 
 /* ── CONDITION FX ON HP BOX ──────────────────────────────── */
 @keyframes condPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.012)}}
