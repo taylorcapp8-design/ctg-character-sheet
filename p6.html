@@ -238,14 +238,15 @@ function buildEFPassives(){
   const LABELS={head:'HEAD',torso:'TORSO','l-arm':'L·ARM','r-arm':'R·ARM','l-leg':'L·LEG','r-leg':'R·LEG'};
   if(!raw){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.56rem;color:var(--text-dim);">No EF equipped — add on Page II</div>';return;}
   let parts;try{parts=JSON.parse(raw);}catch(e){return;}
-  const equipped=Object.entries(parts).filter(([,v])=>v&&v.type);
+  const equipped=Object.entries(parts).filter(([,v])=>v&&(v.name||v.typeId||v.type));
   if(!equipped.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.56rem;color:var(--text-dim);">No EF equipped — add on Page II</div>';return;}
   equipped.forEach(([zone,ef])=>{
+    const label=ef.name||ef.type||ef.typeId||'Unknown';
     const row=document.createElement('div');
     row.style.cssText='display:flex;align-items:flex-start;gap:9px;padding:6px 10px;margin-bottom:4px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);border-left:4px solid var(--purple2);clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%);';
     row.innerHTML=`<span style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:1px;color:var(--purple2);white-space:nowrap;min-width:38px;padding-top:1px;">${LABELS[zone]||zone.toUpperCase()}</span>
       <div style="flex:1;">
-        <div style="display:flex;align-items:baseline;gap:6px;"><span style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1px;color:var(--text);">${ef.type||'Unknown'}</span><span style="font-family:'Anton',sans-serif;font-size:0.85rem;color:var(--green3);">+${ef.ef||0}</span></div>
+        <div style="display:flex;align-items:baseline;gap:6px;"><span style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1px;color:var(--text);">${label}</span><span style="font-family:'Anton',sans-serif;font-size:0.85rem;color:var(--green3);">+${ef.ef||0}</span></div>
         ${ef.ability?`<div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.35;margin-top:2px;">${ef.ability}</div>`:`<div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;color:var(--text-dim);margin-top:2px;">no passive noted</div>`}
       </div>`;
     el.appendChild(row);
