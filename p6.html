@@ -100,6 +100,7 @@
       <div style="margin-top:10px;">
         <button onclick="toggleDmgCalc()" id="dmg-toggle" style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:2px;color:var(--text-dim);background:transparent;border:1px solid var(--border2);padding:4px 14px;cursor:pointer;transition:color .15s;">▸ DAMAGE CALC</button>
         <div id="dmg-calc-panel" style="display:none;margin-top:8px;background:var(--paper2,rgba(0,0,0,0.06));border:1.5px solid var(--border);padding:10px 14px;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:8px;">EF is subtracted here. The −1 / −2 HP buttons above are raw HP — no EF applied.</div>
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
             <div style="display:flex;flex-direction:column;gap:2px;">
               <label style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);">INCOMING DMG</label>
@@ -118,6 +119,11 @@
             <button onclick="applyDmg()" style="background:var(--red-deep,#a8102c);border:2px solid var(--ink);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;padding:8px 16px;cursor:pointer;transform:skewX(-9deg);margin-left:6px;">APPLY DAMAGE</button>
           </div>
         </div>
+      </div>
+      <!-- EF Passives -->
+      <div id="ef-passives-wrap" style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--text-dim);margin-bottom:7px;">EF PASSIVES &amp; ABILITIES</div>
+        <div id="ef-passives-list"></div>
       </div>
     </div>
   </div>
@@ -222,11 +228,28 @@ function pullData(){
   cstate.harthMax=parseInt(load('ctg-harth-max'))||6;
   cstate.harth=parseInt(load('ctg-harth-cur'))||cstate.harthMax;
   cstate.temp=parseInt(load('ctg-harth-temp'))||0;
-  const armour=load('ctg-armour-list');
-  if(armour){try{cstate.ef=JSON.parse(armour).reduce((s,a)=>s+(parseInt(a.ef)||0),0);}catch(e){cstate.ef=parseInt(load('ctg-ef'))||0;}}
-  else{cstate.ef=parseInt(load('ctg-ef'))||0;}
+  cstate.ef=parseInt(load('ctg-ef'))||0;
   refreshVitals();
-  buildStats();buildLoadout();buildSkills();buildFaculties();
+  buildStats();buildLoadout();buildSkills();buildFaculties();buildEFPassives();
+}
+function buildEFPassives(){
+  const el=document.getElementById('ef-passives-list');el.innerHTML='';
+  const raw=load('ctg-ef-parts');
+  const LABELS={head:'HEAD',torso:'TORSO','l-arm':'L·ARM','r-arm':'R·ARM','l-leg':'L·LEG','r-leg':'R·LEG'};
+  if(!raw){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.56rem;color:var(--text-dim);">No EF equipped — add on Page II</div>';return;}
+  let parts;try{parts=JSON.parse(raw);}catch(e){return;}
+  const equipped=Object.entries(parts).filter(([,v])=>v&&v.type);
+  if(!equipped.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.56rem;color:var(--text-dim);">No EF equipped — add on Page II</div>';return;}
+  equipped.forEach(([zone,ef])=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:flex;align-items:flex-start;gap:9px;padding:6px 10px;margin-bottom:4px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);border-left:4px solid var(--purple2);clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%);';
+    row.innerHTML=`<span style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:1px;color:var(--purple2);white-space:nowrap;min-width:38px;padding-top:1px;">${LABELS[zone]||zone.toUpperCase()}</span>
+      <div style="flex:1;">
+        <div style="display:flex;align-items:baseline;gap:6px;"><span style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1px;color:var(--text);">${ef.type||'Unknown'}</span><span style="font-family:'Anton',sans-serif;font-size:0.85rem;color:var(--green3);">+${ef.ef||0}</span></div>
+        ${ef.ability?`<div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.35;margin-top:2px;">${ef.ability}</div>`:`<div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;color:var(--text-dim);margin-top:2px;">no passive noted</div>`}
+      </div>`;
+    el.appendChild(row);
+  });
 }
 function saveCS(){store('ctg-harth-cur',cstate.harth);store('ctg-harth-temp',cstate.temp);}
 
@@ -245,10 +268,9 @@ function refreshVitals(){
     track.appendChild(s);
   }
 }
+// Direct HP reduction — eats temp HP first, no EF involved
 function combatDmg(n){
-  let d=Math.max(0,n-cstate.ef);
-  if(cstate.temp>=d){cstate.temp-=d;d=0;}else{d-=cstate.temp;cstate.temp=0;}
-  cstate.harth=Math.max(0,cstate.harth-d);
+  if(cstate.temp>=n){cstate.temp-=n;}else{const r=n-cstate.temp;cstate.temp=0;cstate.harth=Math.max(0,cstate.harth-r);}
   refreshVitals();saveCS();
 }
 function combatHeal(n){cstate.harth=Math.min(cstate.harthMax,cstate.harth+n);refreshVitals();saveCS();}
@@ -261,9 +283,10 @@ function calcDmg(){
   const actual=Math.max(0,inc-cstate.ef);
   document.getElementById('dmg-out').textContent=actual;
 }
+// Damage calc apply — subtracts EF first, then applies raw HP damage
 function applyDmg(){
   const inc=parseInt(document.getElementById('dmg-in').value)||0;
-  combatDmg(inc);
+  combatDmg(Math.max(0,inc-cstate.ef));
 }
 document.getElementById('dmg-in').addEventListener('input',calcDmg);
 
