@@ -39,54 +39,83 @@
   <div class="block">
     <div class="sec-label"><span class="mk">♠&#xFE0E;</span>EXTRA FLESH <span class="note">+ BELT</span></div>
     <div class="panel ef-panel">
+      <div class="wip-notice">⚠&#xFE0E; WORK IN PROGRESS — features subject to change</div>
       <div class="ef-body-ui">
 
         <!-- Silhouette -->
         <div class="ef-silhouette-wrap">
           <div class="ef-svg-hint">Click a zone to equip</div>
           <svg class="ef-silhouette" viewBox="0 0 120 252" xmlns="http://www.w3.org/2000/svg">
+            <!-- NECK (decorative) -->
+            <rect class="ef-neck" x="54" y="50" width="12" height="9"/>
             <!-- HEAD -->
             <g class="ef-part-group" data-part="head">
-              <ellipse class="ef-body-part" cx="60" cy="22" rx="17" ry="20"/>
-              <text class="ef-part-label" x="60" y="25">HEAD</text>
-              <text class="ef-badge" x="60" y="37" id="badge-head"></text>
+              <polygon class="ef-body-part" points="46,2 74,2 80,12 78,46 60,52 42,46 40,12"/>
+              <polygon class="ef-panel-detail" points="42,20 52,18 53,28 43,30"/>
+              <polygon class="ef-panel-detail" points="67,18 77,20 77,30 67,28"/>
+              <line class="ef-panel-detail" x1="52" y1="44" x2="68" y2="44"/>
+              <line class="ef-panel-detail" x1="60" y1="2" x2="60" y2="14"/>
+              <text class="ef-part-label" x="60" y="36">HEAD</text>
+              <text class="ef-badge" x="60" y="13" id="badge-head"></text>
               <title>Head</title>
             </g>
             <!-- TORSO -->
             <g class="ef-part-group" data-part="torso">
-              <path class="ef-body-part" d="M38,48 L82,48 L79,120 L41,120 Z"/>
-              <text class="ef-part-label" x="60" y="82">TORSO</text>
+              <polygon class="ef-body-part" points="34,58 86,58 82,120 38,120"/>
+              <polyline class="ef-panel-detail" points="34,58 60,80 86,58"/>
+              <line class="ef-panel-detail" x1="38" y1="80" x2="82" y2="80"/>
+              <line class="ef-panel-detail" x1="40" y1="100" x2="80" y2="100"/>
+              <line class="ef-panel-detail" x1="60" y1="58" x2="60" y2="120"/>
+              <polygon class="ef-panel-detail" points="60,82 68,91 60,100 52,91"/>
+              <polygon class="ef-panel-detail" points="44,100 76,100 74,118 46,118"/>
+              <text class="ef-part-label" x="60" y="74">TORSO</text>
               <text class="ef-badge" x="60" y="113" id="badge-torso"></text>
               <title>Torso</title>
             </g>
             <!-- L-ARM (viewer left) -->
             <g class="ef-part-group" data-part="l-arm">
-              <path class="ef-body-part" d="M38,52 L18,60 L14,120 L28,120 Z"/>
-              <text class="ef-badge" x="23" y="93" id="badge-l-arm"></text>
+              <polygon class="ef-body-part" points="34,60 14,68 10,120 26,120 34,112"/>
+              <circle class="ef-panel-detail" cx="20" cy="73" r="5"/>
+              <polygon class="ef-panel-detail" points="11,92 27,90 27,102 11,104"/>
+              <line class="ef-panel-detail" x1="18" y1="68" x2="12" y2="120"/>
+              <text class="ef-badge" x="21" y="85" id="badge-l-arm"></text>
               <title>Left Arm</title>
             </g>
             <!-- R-ARM (viewer right) -->
             <g class="ef-part-group" data-part="r-arm">
-              <path class="ef-body-part" d="M82,52 L102,60 L106,120 L92,120 Z"/>
-              <text class="ef-badge" x="97" y="93" id="badge-r-arm"></text>
+              <polygon class="ef-body-part" points="86,60 106,68 110,120 94,120 86,112"/>
+              <circle class="ef-panel-detail" cx="100" cy="73" r="5"/>
+              <polygon class="ef-panel-detail" points="93,90 109,92 109,104 93,102"/>
+              <line class="ef-panel-detail" x1="102" y1="68" x2="108" y2="120"/>
+              <text class="ef-badge" x="99" y="85" id="badge-r-arm"></text>
               <title>Right Arm</title>
             </g>
             <!-- BELT -->
             <g class="ef-part-group ef-belt-group" data-part="belt">
-              <rect class="ef-body-part" x="40" y="122" width="40" height="12"/>
+              <polygon class="ef-body-part" points="38,122 82,122 84,134 36,134"/>
+              <line class="ef-panel-detail" x1="38" y1="128" x2="82" y2="128"/>
+              <polygon class="ef-panel-detail" points="52,122 68,122 69,134 51,134"/>
               <text class="ef-part-label" x="60" y="131">BELT</text>
               <title>Belt Charms</title>
             </g>
             <!-- L-LEG (viewer left) -->
             <g class="ef-part-group" data-part="l-leg">
-              <path class="ef-body-part" d="M41,136 L62,136 L60,248 L43,248 Z"/>
-              <text class="ef-badge" x="52" y="196" id="badge-l-leg"></text>
+              <polygon class="ef-body-part" points="38,136 62,136 60,250 38,250"/>
+              <polygon class="ef-panel-detail" points="38,170 62,170 61,188 37,188"/>
+              <circle class="ef-panel-detail" cx="50" cy="179" r="7"/>
+              <line class="ef-panel-detail" x1="40" y1="156" x2="60" y2="156"/>
+              <line class="ef-panel-detail" x1="40" y1="212" x2="58" y2="212"/>
+              <text class="ef-badge" x="50" y="197" id="badge-l-leg"></text>
               <title>Left Leg</title>
             </g>
             <!-- R-LEG (viewer right) -->
             <g class="ef-part-group" data-part="r-leg">
-              <path class="ef-body-part" d="M58,136 L79,136 L77,248 L59,248 Z"/>
-              <text class="ef-badge" x="68" y="196" id="badge-r-leg"></text>
+              <polygon class="ef-body-part" points="58,136 82,136 82,250 60,250"/>
+              <polygon class="ef-panel-detail" points="59,170 83,170 83,188 61,188"/>
+              <circle class="ef-panel-detail" cx="70" cy="179" r="7"/>
+              <line class="ef-panel-detail" x1="60" y1="156" x2="80" y2="156"/>
+              <line class="ef-panel-detail" x1="62" y1="212" x2="80" y2="212"/>
+              <text class="ef-badge" x="70" y="197" id="badge-r-leg"></text>
               <title>Right Leg</title>
             </g>
           </svg>
@@ -124,7 +153,7 @@
       <div class="block">
         <div class="sec-label"><span class="mk">♣&#xFE0E;</span>CARRY</div>
         <div class="panel">
-          <ul class="inv-list" id="inv-list"></ul>
+          <ul class="inv-list scroll-box" id="inv-list"></ul>
           <button class="add-btn add-row" onclick="addItem()">ADD ITEM</button>
         </div>
       </div>
@@ -155,7 +184,7 @@
         <button class="cat-tab" data-tab="ammo" onclick="showItemTab('ammo')">AMMO</button>
         <button class="cat-tab" data-tab="misc" onclick="showItemTab('misc')">MISC</button>
       </div>
-      <div id="item-catalog-list"></div>
+      <div id="item-catalog-list" class="scroll-box"></div>
       <button class="add-btn add-row" onclick="addCustomItemToCatalog()">+ ADD CUSTOM ENTRY</button>
     </div>
   </div>

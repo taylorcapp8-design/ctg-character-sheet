@@ -41,11 +41,11 @@
   </div>
 
   <div class="sec-label"><span class="mk">♣&#xFE0E;</span>WEAPONS</div>
-  <div id="weapons"></div>
+  <div id="weapons" class="scroll-box"></div>
   <button class="add-btn add-row" onclick="addWeapon()">ADD WEAPON</button>
 
   <div class="sec-label mt"><span class="mk">✤</span>ODDITIES <span class="note">— equip 1 for combat</span></div>
-  <div class="food-grid" id="food-grid"></div>
+  <div class="food-grid scroll-box" id="food-grid"></div>
   <button class="add-btn add-row" onclick="addFood()">ADD ODDITY</button>
 
   <!-- CATALOG -->
@@ -55,7 +55,7 @@
       <button class="cat-tab active" data-tab="weapons" onclick="showCatTab('weapons')">⚔ WEAPONS</button>
       <button class="cat-tab" data-tab="oddities" onclick="showCatTab('oddities')">✤ ODDITIES</button>
     </div>
-    <div id="catalog-list"></div>
+    <div id="catalog-list" class="scroll-box"></div>
     <button class="add-btn add-row" onclick="addCustomCatalogItem()" style="margin-top:8px;">+ ADD CUSTOM ENTRY</button>
   </div>
 
