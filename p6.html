@@ -266,7 +266,19 @@
 </div>
 </div>
 
+<!-- REST BAR — fixed to bottom of viewport -->
+<div style="position:fixed;bottom:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:center;gap:14px;padding:10px 20px;background:var(--ink);border-top:3px solid var(--green3);box-shadow:0 -4px 24px rgba(0,0,0,0.4);">
+  <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--text-dim);text-align:right;line-height:1.5;">
+    HP · HEARTH<br>CHARGES · TEMP
+  </div>
+  <button onclick="doRest()" style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:3px;padding:10px 40px;background:var(--green3);border:3px solid var(--ink);color:#000;cursor:pointer;transform:skewX(-8deg);transition:all .15s;box-shadow:0 0 18px rgba(34,196,81,0.35);" onmouseover="this.style.background='#1aad45';this.style.boxShadow='0 0 28px rgba(34,196,81,0.6)'" onmouseout="this.style.background='var(--green3)';this.style.boxShadow='0 0 18px rgba(34,196,81,0.35)'">⬡ REST</button>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--text-dim);line-height:1.5;">
+    RESTORES ALL<br>TEMP VALUES
+  </div>
+</div>
+
 <script>
+document.getElementById('page-wrap').style.paddingBottom='70px';
 function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function store(k,v){try{localStorage.setItem(k,v);localStorage.setItem('ctg-last-edit',Date.now());flashSaved();}catch(e){}}
 let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
@@ -419,6 +431,24 @@ function applyBuff(){
 
 function adjHearth(d){cstate.hearth=Math.max(0,Math.min(cstate.hearthMax,cstate.hearth+d));refreshVitals();saveCS();}
 function adjHearthMax(d){cstate.hearthMax=Math.max(1,cstate.hearthMax+d);cstate.hearth=Math.min(cstate.hearth,cstate.hearthMax);store('ctg-hearth-max',cstate.hearthMax);refreshVitals();saveCS();}
+function doRest(){
+  // Restore HP, Hearth, clear Temp HP
+  cstate.harth=cstate.harthMax;
+  cstate.hearth=cstate.hearthMax;
+  cstate.temp=0;
+  saveCS();refreshVitals();
+  // Reset oddity charges to max
+  let odds=[];try{const s=load('ctg-food');if(s)odds=JSON.parse(s);}catch(e){}
+  let changed=false;
+  odds.forEach(o=>{if((o.maxCharges??1)&&o.charges<(o.maxCharges??1)){o.charges=o.maxCharges??1;changed=true;}});
+  if(changed)store('ctg-food',JSON.stringify(odds));
+  // Clear active temp buffs (they're temporary by nature)
+  tempBuffs=[];saveTempBuffs();
+  buildTempBuffs();buildStats();buildLoadout();
+  // Flash feedback on the REST button
+  const btn=document.querySelector('[onclick="doRest()"]');
+  if(btn){const orig=btn.textContent;btn.textContent='✓ RESTED';btn.style.background='var(--purple)';setTimeout(()=>{btn.textContent=orig;btn.style.background='var(--green3)';},1400);}
+}
 function combatDmg(n){
   if(cstate.temp>=n){cstate.temp-=n;}else{const r=n-cstate.temp;cstate.temp=0;cstate.harth=Math.max(0,cstate.harth-r);}
   refreshVitals();saveCS();
