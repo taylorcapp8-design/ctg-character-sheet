@@ -351,7 +351,7 @@ function addTempBuff(){
   const label=window.prompt('Buff name (e.g. Fury Stance):','');
   if(label===null)return;
   const statOpts=statNames.length?statNames.join(', '):'Force, Finess, etc.';
-  const stat=window.prompt(`Which stat? (${statOpts}):',statNames[0]||'Force');
+  const stat=window.prompt(`Which stat? (${statOpts}):`,statNames[0]||'Force');
   if(!stat)return;
   const valStr=window.prompt('Bonus value (e.g. 2 or -1):','2');
   if(valStr===null)return;
