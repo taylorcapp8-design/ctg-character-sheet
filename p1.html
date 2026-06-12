@@ -193,24 +193,33 @@ function saveStats(){save('ctg-stats',JSON.stringify(stats));}
 function renderStats(){
   const w=document.getElementById('stat-bars');w.innerHTML='';
   stats.forEach((st,i)=>{
+    const score=parseInt(st.score)||0;
     const row=document.createElement('div');row.className='stat-bar';
     row.innerHTML=`
-      <div class="stat-bar-fill"></div>
-      <span class="stat-icon">${st.icon||'◆'}</span>
-      <input class="stat-name-input" data-f="name" value="${esc(st.name)}" placeholder="Attribute name..." style="flex:1;background:transparent;border:none;border-bottom:1.5px dashed rgba(0,0,0,0.2);color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:1.05rem;letter-spacing:1px;outline:none;padding:2px 4px;transition:border-color .15s;" onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='rgba(0,0,0,0.2)'">
-      <input type="number" class="stat-input" data-f="score" value="${parseInt(st.score)||0}" min="0" max="9">
-      <span class="stat-sp">${sp(st.score)}<span>SP</span></span>
-      <button class="mini-del" title="Remove" data-del="${i}">✕</button>`;
+      <div class="stat-bar-top">
+        <span class="stat-icon">${st.icon||'◆'}</span>
+        <input class="stat-name-input" data-f="name" value="${esc(st.name)}" placeholder="Attribute name...">
+        <span class="stat-score-disp">${score}</span>
+        <span class="stat-sp">${sp(score)}<span>SP</span></span>
+        <button class="mini-del" title="Remove" data-del="${i}">✕</button>
+      </div>
+      <input type="range" class="stat-slider" min="0" max="9" value="${score}" style="--pct:${score/9*100}%">`;
     w.appendChild(row);
-    const fill=row.querySelector('.stat-bar-fill');
-    setTimeout(()=>fill.style.width=((parseInt(st.score)||0)/9*100)+'%',40+i*55);
+    const slider=row.querySelector('.stat-slider');
+    const scoreEl=row.querySelector('.stat-score-disp');
+    const spEl=row.querySelector('.stat-sp');
+    slider.addEventListener('input',()=>{
+      st.score=parseInt(slider.value)||0;
+      scoreEl.textContent=st.score;
+      spEl.innerHTML=sp(st.score)+'<span>SP</span>';
+      slider.style.setProperty('--pct',(st.score/9*100)+'%');
+      saveStats();
+    });
     row.querySelector('.stat-name-input').addEventListener('input',e=>{st.name=e.target.value;saveStats();});
-    const sc=row.querySelector('[data-f="score"]');
-    sc.addEventListener('input',()=>{st.score=parseInt(sc.value)||0;row.querySelector('.stat-sp').innerHTML=sp(st.score)+'<span>SP</span>';fill.style.width=(st.score/9*100)+'%';saveStats();});
     row.querySelector('[data-del]').addEventListener('click',()=>{stats.splice(i,1);saveStats();renderStats();});
   });
 }
-function addStat(){stats.push({name:'',icon:'◆',score:0});saveStats();renderStats();const rows=document.querySelectorAll('.stat-name');rows[rows.length-1].focus();}
+function addStat(){stats.push({name:'',icon:'◆',score:0});saveStats();renderStats();const rows=document.querySelectorAll('.stat-name-input');if(rows.length)rows[rows.length-1].focus();}
 
 /* ── SUPPLIES (editable + addable) ───────────────────────── */
 const DEF_SUPPLIES=[{name:'Stim L',val:1},{name:'Ammo',val:0},{name:'Pack',val:2}];
