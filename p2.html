@@ -35,25 +35,91 @@
     <div class="head-stamp">PAGE II</div>
   </div>
 
-  <div class="two-col">
-    <div>
-      <div class="block">
-        <div class="sec-label"><span class="mk">♠&#xFE0E;</span>EXTRA FLESH</div>
-        <div class="panel">
-          <div id="armour-list"></div>
-          <div class="armour-total"><span class="armour-total-label">TOTAL EF</span><span class="armour-total-val" id="ef-total">+0</span></div>
-          <button class="add-btn add-row" onclick="addArmour()">ADD ARMOUR SLOT</button>
+  <!-- EXTRA FLESH + BELT CHARMS -->
+  <div class="block">
+    <div class="sec-label"><span class="mk">♠&#xFE0E;</span>EXTRA FLESH <span class="note">+ BELT</span></div>
+    <div class="panel ef-panel">
+      <div class="ef-body-ui">
+
+        <!-- Silhouette -->
+        <div class="ef-silhouette-wrap">
+          <div class="ef-svg-hint">Click a zone to equip</div>
+          <svg class="ef-silhouette" viewBox="0 0 120 252" xmlns="http://www.w3.org/2000/svg">
+            <!-- HEAD -->
+            <g class="ef-part-group" data-part="head">
+              <ellipse class="ef-body-part" cx="60" cy="22" rx="17" ry="20"/>
+              <text class="ef-part-label" x="60" y="25">HEAD</text>
+              <text class="ef-badge" x="60" y="37" id="badge-head"></text>
+              <title>Head</title>
+            </g>
+            <!-- TORSO -->
+            <g class="ef-part-group" data-part="torso">
+              <path class="ef-body-part" d="M38,48 L82,48 L79,120 L41,120 Z"/>
+              <text class="ef-part-label" x="60" y="82">TORSO</text>
+              <text class="ef-badge" x="60" y="113" id="badge-torso"></text>
+              <title>Torso</title>
+            </g>
+            <!-- L-ARM (viewer left) -->
+            <g class="ef-part-group" data-part="l-arm">
+              <path class="ef-body-part" d="M38,52 L18,60 L14,120 L28,120 Z"/>
+              <text class="ef-badge" x="23" y="93" id="badge-l-arm"></text>
+              <title>Left Arm</title>
+            </g>
+            <!-- R-ARM (viewer right) -->
+            <g class="ef-part-group" data-part="r-arm">
+              <path class="ef-body-part" d="M82,52 L102,60 L106,120 L92,120 Z"/>
+              <text class="ef-badge" x="97" y="93" id="badge-r-arm"></text>
+              <title>Right Arm</title>
+            </g>
+            <!-- BELT -->
+            <g class="ef-part-group ef-belt-group" data-part="belt">
+              <rect class="ef-body-part" x="40" y="122" width="40" height="12"/>
+              <text class="ef-part-label" x="60" y="131">BELT</text>
+              <title>Belt Charms</title>
+            </g>
+            <!-- L-LEG (viewer left) -->
+            <g class="ef-part-group" data-part="l-leg">
+              <path class="ef-body-part" d="M41,136 L62,136 L60,248 L43,248 Z"/>
+              <text class="ef-badge" x="52" y="196" id="badge-l-leg"></text>
+              <title>Left Leg</title>
+            </g>
+            <!-- R-LEG (viewer right) -->
+            <g class="ef-part-group" data-part="r-leg">
+              <path class="ef-body-part" d="M58,136 L79,136 L77,248 L59,248 Z"/>
+              <text class="ef-badge" x="68" y="196" id="badge-r-leg"></text>
+              <title>Right Leg</title>
+            </g>
+          </svg>
+          <div class="ef-legend">
+            <span class="ef-legend-ef">EF EQUIPPED</span>
+            <span class="ef-legend-belt">CHARM</span>
+          </div>
         </div>
+
+        <!-- Detail panel -->
+        <div class="ef-detail-panel" id="ef-detail-panel">
+          <div class="ef-empty-hint">← SELECT A ZONE</div>
+        </div>
+
       </div>
-      <div class="block">
-        <div class="sec-label"><span class="mk">◆</span>BELT CHARMS</div>
-        <div class="panel">
-          <div id="charms-list"></div>
-          <button class="add-btn add-row" onclick="addCharm()">ADD BELT CHARM</button>
+
+      <!-- Footer: total EF + custom types -->
+      <div class="ef-footer">
+        <div class="armour-total" style="margin-top:0;">
+          <span class="armour-total-label">TOTAL EF</span>
+          <span class="armour-total-val" id="ef-total">+0</span>
+        </div>
+        <div class="ef-custom-section">
+          <div class="ef-custom-header">CUSTOM EF TYPES</div>
+          <div id="ef-custom-types-list"></div>
+          <button class="add-btn add-row" onclick="addCustomType()">+ ADD CUSTOM TYPE</button>
         </div>
       </div>
     </div>
+  </div>
 
+  <!-- CARRY + MULA -->
+  <div class="two-col">
     <div>
       <div class="block">
         <div class="sec-label"><span class="mk">♣&#xFE0E;</span>CARRY</div>
@@ -62,6 +128,8 @@
           <button class="add-btn add-row" onclick="addItem()">ADD ITEM</button>
         </div>
       </div>
+    </div>
+    <div>
       <div class="block">
         <div class="sec-label"><span class="mk">◆</span>MULA</div>
         <div class="panel">
@@ -106,63 +174,219 @@ let flashT;function flashSaved(){const f=document.getElementById('save-flash');f
 const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
 
-/* ── ARMOUR ──────────────────────────────────────────────── */
-const DEF_ARMOUR=[
-  {loc:'🪖 Head',name:'',ef:0,ability:''},{loc:'🧥 Torso',name:'',ef:0,ability:''},
-  {loc:'💪 Arms',name:'',ef:0,ability:''},{loc:'🦵 Legs',name:'',ef:0,ability:''},
+/* ── EXTRA FLESH & BELT CHARMS ────────────────────────────── */
+const PRESET_EF_TYPES=[
+  {id:'sp',name:'Subdermal Plate',  ef:2,desc:'Thin titanium mesh woven beneath skin. Rigid and completely invisible.'},
+  {id:'rf',name:'Reactive Foam',    ef:1,desc:'Impact-expanding polymer layer. Excellent against blunt force.'},
+  {id:'cw',name:'Carbon Weave',     ef:3,desc:'Dense carbon-fibre lattice. Heavy but highly effective.'},
+  {id:'bg',name:'Bio-Gel Layer',    ef:1,desc:'Self-sealing organic gel pocket. Flexible and near-invisible.'},
+  {id:'nm',name:'Nano-Scale Mail',  ef:2,desc:'Microscopic chain rings. Silk-soft to the touch, stops a blade cold.'},
+  {id:'bl',name:'Bone Lattice',     ef:4,desc:'Reinforced skeletal structure grafted to bone. Major surgery required.'},
+  {id:'sd',name:'Shock Dampener',   ef:2,desc:'Piezoelectric muscle fibres that absorb and dissipate kinetic energy.'},
+  {id:'cs',name:'Ceramic Shards',   ef:3,desc:'Anti-ballistic ceramic embedded beneath skin. Cracks on heavy impact — one-use.'},
 ];
-let armour=[];
+
+const EF_PART_IDS=['head','torso','l-arm','r-arm','l-leg','r-leg'];
+const PART_LABELS={head:'HEAD',torso:'TORSO','l-arm':'L·ARM','r-arm':'R·ARM','l-leg':'L·LEG','r-leg':'R·LEG',belt:'BELT'};
+
+let efParts={};
+let customEfTypes=[];
+let selectedPart=null;
+let charms=[];
+
 (function(){
-  const s=load('ctg-armour-list');
-  if(s){try{armour=JSON.parse(s);}catch(e){armour=null;}}
-  if(!armour){
-    const o={'🪖 Head':['arm-head','ef-head'],'🧥 Torso':['arm-torso','ef-torso'],'💪 Arms':['arm-arms','ef-arms'],'🦵 Legs':['arm-legs','ef-legs']};
-    armour=DEF_ARMOUR.map(d=>{const k=o[d.loc];const on=k?load('ctg-'+k[0]):null;const oe=k?load('ctg-'+k[1]):null;return{loc:d.loc,name:on!==null?on:d.name,ef:oe!==null?parseInt(oe):d.ef};});
+  // Load EF parts
+  const s=load('ctg-ef-parts');
+  if(s){try{efParts=JSON.parse(s);}catch(e){efParts={};}}
+  EF_PART_IDS.forEach(id=>{if(!(id in efParts))efParts[id]=null;});
+  // Migrate old armour data
+  if(!s){
+    const old=load('ctg-armour-list');
+    if(old){try{
+      const map={'🪖 Head':'head','🧥 Torso':'torso','💪 Arms':'l-arm','🦵 Legs':'l-leg'};
+      JSON.parse(old).forEach(a=>{
+        const pid=map[a.loc];
+        if(pid&&(a.name||a.ef))efParts[pid]={typeId:'sp',name:a.name||'Armour',ef:parseInt(a.ef)||0,ability:a.ability||''};
+      });
+    }catch(e){}}
   }
+  // Load custom EF types
+  const ct=load('ctg-ef-custom-types');
+  if(ct){try{customEfTypes=JSON.parse(ct);}catch(e){customEfTypes=[];}}
+  // Load charms (backward-compatible)
+  const cs=load('ctg-charms');
+  if(cs){try{charms=JSON.parse(cs).map(c=>typeof c==='string'?{name:c,quirk:''}:{name:c.name||'',quirk:c.quirk||''});}catch(e){charms=[];}}
 })();
-function saveArmour(){
-  save('ctg-armour-list',JSON.stringify(armour));
-  const t=armour.reduce((s,a)=>s+(parseInt(a.ef)||0),0);
-  try{localStorage.setItem('ctg-ef',t);}catch(e){}
-}
-function recalcEF(){
-  const t=armour.reduce((s,a)=>s+(parseInt(a.ef)||0),0);
+
+function saveEFParts(){save('ctg-ef-parts',JSON.stringify(efParts));syncEFTotal();}
+function saveCustomTypes(){save('ctg-ef-custom-types',JSON.stringify(customEfTypes));}
+function saveCharms(){save('ctg-charms',JSON.stringify(charms));}
+
+function syncEFTotal(){
+  const t=EF_PART_IDS.reduce((s,id)=>s+(efParts[id]?parseInt(efParts[id].ef)||0:0),0);
   document.getElementById('ef-total').textContent=(t>=0?'+':'')+t;
   try{localStorage.setItem('ctg-ef',t);}catch(e){}
 }
-function renderArmour(){
-  const w=document.getElementById('armour-list');w.innerHTML='';
-  armour.forEach((a,i)=>{
-    const d=document.createElement('div');d.className='armour-slot';d.style.cssText='clip-path:none;padding:12px;display:block;';
-    d.innerHTML=`
-      <div style="display:grid;grid-template-columns:90px 1fr 60px auto;gap:10px;align-items:center;">
-        <input class="ed armour-loc" data-f="loc" value="${esc(a.loc)}" placeholder="Location" style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1px;color:var(--purple2);">
-        <input class="ed armour-input" data-f="name" value="${esc(a.name)}" placeholder="Armour name...">
-        <div class="ef-wrap"><div class="ef-label">EF+</div><input class="ef-input" type="number" data-f="ef" value="${parseInt(a.ef)||0}" min="0"></div>
-        <button class="mini-del" title="Remove" data-del="${i}">✕</button>
-      </div>
-      <div style="margin-top:7px;">
-        <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--green2);margin-bottom:3px;">ABILITY / PASSIVE</div>
-        <textarea class="ed armour-ability" data-f="ability" rows="2" placeholder="Special ability or passive effect..." style="width:100%;background:var(--paper2,rgba(0,0,0,0.06));border:1.5px dashed var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:0.85rem;padding:5px 8px;resize:vertical;outline:none;line-height:1.4;transition:border-color .15s;" onfocus="this.style.borderColor='var(--purple)'" onblur="this.style.borderColor='var(--border)'">${esc(a.ability||'')}</textarea>
-      </div>`;
-    d.style.position='relative';
-    w.appendChild(d);
-    d.querySelectorAll('[data-f]').forEach(inp=>inp.addEventListener('input',()=>{a[inp.dataset.f]=inp.dataset.f==='ef'?(parseInt(inp.value)||0):inp.value;saveArmour();if(inp.dataset.f==='ef')recalcEF();}));
-    d.querySelector('[data-del]').addEventListener('click',()=>{armour.splice(i,1);saveArmour();renderArmour();recalcEF();});
+
+function allEFTypes(){return[...PRESET_EF_TYPES,...customEfTypes];}
+
+function selectPart(partId){
+  selectedPart=partId;
+  updateSVGStates();
+  renderEFDetail();
+}
+
+function updateSVGStates(){
+  document.querySelectorAll('.ef-part-group').forEach(g=>{
+    const id=g.dataset.part;
+    g.classList.toggle('selected',id===selectedPart);
+    if(id==='belt')g.classList.toggle('has-charm',charms.length>0);
+    else g.classList.toggle('has-ef',!!efParts[id]);
+  });
+  // Update badges
+  EF_PART_IDS.forEach(id=>{
+    const b=document.getElementById('badge-'+id);
+    if(b)b.textContent=efParts[id]?'+'+efParts[id].ef:'';
   });
 }
-function addArmour(){armour.push({loc:'New Slot',name:'',ef:0,ability:''});saveArmour();renderArmour();}
 
-/* ── CHARMS ──────────────────────────────────────────────── */
-function saveCharms(){const c=[...document.querySelectorAll('.charm-slot')].map(s=>({name:s.querySelector('.charm-input').value,quirk:s.querySelector('.charm-quirk-input').value}));save('ctg-charms',JSON.stringify(c));}
-function addCharm(name='',quirk=''){
-  const d=document.createElement('div');d.className='charm-slot';
-  d.innerHTML=`<div class="charm-row"><span class="charm-label">CHARM</span><input class="charm-input" value="${esc(name)}" placeholder="Charm name..."><button class="mini-del" onclick="this.closest('.charm-slot').remove();saveCharms();">✕</button></div><div class="charm-quirk-label">SPECIAL QUIRK</div><textarea class="charm-quirk-input" placeholder="Quirk...">${esc(quirk)}</textarea>`;
-  document.getElementById('charms-list').appendChild(d);
-  d.querySelector('.charm-input').addEventListener('input',saveCharms);
-  d.querySelector('.charm-quirk-input').addEventListener('input',saveCharms);
+function renderEFDetail(){
+  const panel=document.getElementById('ef-detail-panel');
+  if(!selectedPart){panel.innerHTML='<div class="ef-empty-hint">← SELECT A ZONE</div>';return;}
+  if(selectedPart==='belt')renderBeltPanel(panel);
+  else renderEFPartPanel(panel);
 }
-(function(){const s=load('ctg-charms');if(s){JSON.parse(s).forEach(c=>addCharm(c.name,c.quirk));}})();
+
+function renderEFPartPanel(panel){
+  const label=PART_LABELS[selectedPart]||selectedPart.toUpperCase();
+  const current=efParts[selectedPart];
+  const types=allEFTypes();
+  const selId=current?current.typeId:(types[0]?.id||'');
+  const selType=types.find(t=>t.id===selId)||types[0];
+  panel.innerHTML=`
+    <div class="ef-detail-part-name">${label}</div>
+    ${current
+      ?`<div class="ef-applied-badge">EF+${current.ef} · ${esc(current.name)}</div>`
+      :`<div class="ef-no-flesh">NO EXTRA FLESH</div>`}
+    <div class="ef-form">
+      <div class="ef-form-row">
+        <div class="ef-form-label">TYPE</div>
+        <select class="ef-type-select" id="ef-type-sel">
+          ${types.map(t=>`<option value="${esc(t.id)}"${t.id===selId?' selected':''}>${esc(t.name)} · EF+${t.ef}</option>`).join('')}
+        </select>
+      </div>
+      <div class="ef-type-desc" id="ef-type-desc">${selType?esc(selType.desc):''}</div>
+      <div class="ef-form-row" style="flex-direction:row;align-items:center;gap:10px;">
+        <div class="ef-form-label" style="white-space:nowrap;">EF VALUE</div>
+        <input class="ef-ef-input" type="number" id="ef-ef-val" min="0" value="${current?current.ef:(selType?selType.ef:0)}">
+      </div>
+      <div class="ef-form-row">
+        <div class="ef-form-label">ABILITY / PASSIVE</div>
+        <textarea class="ef-ability-input" id="ef-ability-val" rows="2" placeholder="Special effect or passive...">${current?esc(current.ability||''):''}</textarea>
+      </div>
+      <div class="ef-form-actions">
+        ${current
+          ?`<button class="ef-btn ef-btn-remove" onclick="removeEF('${selectedPart}')">✕ REMOVE</button>
+             <button class="ef-btn ef-btn-apply" onclick="applyEF('${selectedPart}')">↻ CHANGE</button>`
+          :`<button class="ef-btn ef-btn-apply" onclick="applyEF('${selectedPart}')">✓ APPLY</button>`}
+      </div>
+    </div>`;
+  const sel=document.getElementById('ef-type-sel');
+  sel.addEventListener('change',()=>{
+    const t=allEFTypes().find(x=>x.id===sel.value);
+    const desc=document.getElementById('ef-type-desc');
+    if(desc&&t)desc.textContent=t.desc;
+    const efInp=document.getElementById('ef-ef-val');
+    if(efInp&&t)efInp.value=t.ef;
+  });
+}
+
+function renderBeltPanel(panel){
+  panel.innerHTML=`
+    <div class="ef-detail-part-name">BELT</div>
+    <div class="ef-form-label" style="margin-bottom:10px;letter-spacing:2px;">${charms.length} CHARM${charms.length!==1?'S':''} EQUIPPED</div>
+    <div class="ef-charm-list" id="ef-charm-list"></div>
+    <button class="ef-btn ef-btn-apply" style="width:100%;text-align:center;display:block;" onclick="addCharmEF()">+ ADD CHARM</button>`;
+  renderCharmList();
+}
+
+function renderCharmList(){
+  const list=document.getElementById('ef-charm-list');
+  if(!list)return;
+  list.innerHTML='';
+  charms.forEach((c,i)=>{
+    const d=document.createElement('div');d.className='ef-charm-item';
+    d.innerHTML=`
+      <button class="ef-charm-del" onclick="delCharm(${i})">✕</button>
+      <input class="ef-charm-name" value="${esc(c.name)}" placeholder="Charm name...">
+      <div class="ef-form-label" style="margin-top:5px;letter-spacing:2px;">SPECIAL QUIRK</div>
+      <textarea class="ef-charm-quirk" rows="2" placeholder="What does it do...">${esc(c.quirk||'')}</textarea>`;
+    d.querySelector('.ef-charm-name').addEventListener('input',e=>{c.name=e.target.value;saveCharms();updateSVGStates();});
+    d.querySelector('.ef-charm-quirk').addEventListener('input',e=>{c.quirk=e.target.value;saveCharms();});
+    list.appendChild(d);
+  });
+}
+
+function addCharmEF(){
+  charms.push({name:'',quirk:''});
+  saveCharms();updateSVGStates();
+  const countLbl=document.querySelector('#ef-detail-panel .ef-form-label');
+  if(countLbl)countLbl.textContent=`${charms.length} CHARM${charms.length!==1?'S':''} EQUIPPED`;
+  renderCharmList();
+  setTimeout(()=>document.getElementById('ef-charm-list')?.lastElementChild?.querySelector('.ef-charm-name')?.focus(),40);
+}
+
+function delCharm(i){
+  charms.splice(i,1);saveCharms();updateSVGStates();
+  if(selectedPart==='belt')renderBeltPanel(document.getElementById('ef-detail-panel'));
+}
+
+function applyEF(partId){
+  const sel=document.getElementById('ef-type-sel');
+  const efInp=document.getElementById('ef-ef-val');
+  const abilInp=document.getElementById('ef-ability-val');
+  if(!sel||!efInp)return;
+  const typeId=sel.value;
+  const t=allEFTypes().find(x=>x.id===typeId);
+  efParts[partId]={typeId,name:t?t.name:typeId,ef:parseInt(efInp.value)||0,ability:abilInp?abilInp.value:''};
+  saveEFParts();updateSVGStates();renderEFDetail();
+}
+
+function removeEF(partId){
+  efParts[partId]=null;
+  saveEFParts();updateSVGStates();renderEFDetail();
+}
+
+function renderCustomTypes(){
+  const list=document.getElementById('ef-custom-types-list');if(!list)return;
+  list.innerHTML='';
+  if(!customEfTypes.length){
+    list.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.5rem;color:var(--text-dim);padding:8px 0;letter-spacing:1px;">No custom types yet — add one below.</div>';
+    return;
+  }
+  customEfTypes.forEach((t,i)=>{
+    const d=document.createElement('div');d.className='ef-custom-type-row';
+    d.innerHTML=`
+      <input class="ef-ct-name" value="${esc(t.name)}" placeholder="Type name...">
+      <div class="ef-ct-ef-wrap"><span class="ef-ct-ef-label">EF+</span><input class="ef-ct-ef" type="number" value="${t.ef}" min="0"></div>
+      <input class="ef-ct-desc" value="${esc(t.desc||'')}" placeholder="Description...">
+      <button class="mini-del" onclick="deleteCustomType(${i})">✕</button>`;
+    d.querySelector('.ef-ct-name').addEventListener('input',e=>{t.name=e.target.value;saveCustomTypes();if(selectedPart&&selectedPart!=='belt')renderEFDetail();});
+    d.querySelector('.ef-ct-ef').addEventListener('input',e=>{t.ef=parseInt(e.target.value)||0;saveCustomTypes();});
+    d.querySelector('.ef-ct-desc').addEventListener('input',e=>{t.desc=e.target.value;saveCustomTypes();});
+    list.appendChild(d);
+  });
+}
+
+function addCustomType(){
+  customEfTypes.push({id:uid(),name:'Custom Type',ef:1,desc:''});
+  saveCustomTypes();renderCustomTypes();
+}
+
+function deleteCustomType(i){
+  customEfTypes.splice(i,1);saveCustomTypes();renderCustomTypes();
+  if(selectedPart&&selectedPart!=='belt')renderEFDetail();
+}
 
 /* ── CARRY (inventory) ───────────────────────────────────── */
 function saveInv(){
@@ -191,11 +415,10 @@ function addItem(val='',notes=''){
 (function(){
   const s=load('ctg-inventory');
   if(s){
-    const arr=JSON.parse(s);
-    arr.forEach(item=>{
-      if(typeof item==='string')addItem(item,'');
-      else addItem(item.name||'',item.notes||'');
-    });
+    try{
+      const arr=JSON.parse(s);
+      arr.forEach(item=>{if(typeof item==='string')addItem(item,'');else addItem(item.name||'',item.notes||'');});
+    }catch(e){}
   }
 })();
 
@@ -204,7 +427,6 @@ function addItem(val='',notes=''){
 
 /* ── ITEM CATALOG ────────────────────────────────────────── */
 const DEF_ITEMS=[
-  // consumables
   {id:'ic1',type:'consumable',name:'Large Stim',desc:'Heals 3 HP when used. Comes in a pressurised injector.'},
   {id:'ic2',type:'consumable',name:'Small Stim',desc:'Heals 1 HP. A quick fix for minor scrapes.'},
   {id:'ic3',type:'consumable',name:'Pressure Syringe',desc:'Removes 1 active condition (not Bleeding). Sharp and reliable.'},
@@ -212,7 +434,6 @@ const DEF_ITEMS=[
   {id:'ic5',type:'consumable',name:'Alcohol Flask',desc:'Removes one negative condition but may inflict Drunk. Roll D6: 4+ you get Drunk too.'},
   {id:'ic6',type:'consumable',name:'Bandage Roll',desc:'Stabilises a Bleeding wound. Removes the Bleeding condition.'},
   {id:'ic7',type:'consumable',name:'Iron Rations',desc:'Sustenance for 1 day. Tastes like cardboard soaked in salt.'},
-  // gear
   {id:'ig1',type:'gear',name:'Lockpicks',desc:'Open locked containers or doors. Requires a Logic check.'},
   {id:'ig2',type:'gear',name:'Torchlight',desc:'Handheld illumination. Removes Blinded caused by darkness.'},
   {id:'ig3',type:'gear',name:'Rope & Hook',desc:'15m of rope with a grappling hook. Useful for climbing and restraining.'},
@@ -221,13 +442,11 @@ const DEF_ITEMS=[
   {id:'ig6',type:'gear',name:'Toolkit',desc:'Repair mechanical devices and disable traps. Requires a Logic check.'},
   {id:'ig7',type:'gear',name:'Smoke Canister',desc:'Deploy a smoke cloud. All Ranged attacks through smoke have Disadvantage.'},
   {id:'ig8',type:'gear',name:'Canteen',desc:'Holds 1L of liquid. Keep hydrated — the wasteland is dry.'},
-  // ammo
   {id:'ia1',type:'ammo',name:'Pistol Ammo ×6',desc:'Standard pistol rounds. Fits most semi-automatic sidearms.'},
   {id:'ia2',type:'ammo',name:'Shotgun Shells ×2',desc:'Wide-spread shells. High damage at close range.'},
   {id:'ia3',type:'ammo',name:'Rifle Rounds ×4',desc:'Long-range precision rounds for bolt-action and semi-auto rifles.'},
   {id:'ia4',type:'ammo',name:'Auto Rounds ×10',desc:'High-volume rounds for automatic weapons. Burns through fast.'},
   {id:'ia5',type:'ammo',name:'Junk Rounds ×6',desc:'Improvised ammunition. Neutral on hit (no bonus, no penalty).'},
-  // misc
   {id:'im1',type:'misc',name:'Notebook & Pen',desc:'Record clues, maps, and plans. Always useful.'},
   {id:'im2',type:'misc',name:'Fake Credentials',desc:'Forged ID and papers. Useful for bluffing past checkpoints.'},
   {id:'im3',type:'misc',name:'Whetstone',desc:'Sharpen bladed weapons. Grants +1 Dmg on your next melee attack after use.'},
@@ -302,10 +521,8 @@ function renderItemCatalog(){
 }
 
 function addItemToCarry(id){
-  const item=itemCatalog.find(x=>x.id===id);
-  if(!item)return;
-  addItem(item.name,item.desc||'');
-  saveInv();
+  const item=itemCatalog.find(x=>x.id===id);if(!item)return;
+  addItem(item.name,item.desc||'');saveInv();
   const btn=document.querySelector(`[onclick="addItemToCarry('${id}')"]`);
   if(btn){btn.textContent='✓ ADDED';btn.style.background='var(--green3)';setTimeout(()=>{btn.textContent='+ ADD';btn.style.background='';},1400);}
 }
@@ -335,7 +552,14 @@ function addCustomItemToCatalog(){
 (function(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
 
-renderArmour();recalcEF();renderItemCatalog();
+/* ── INIT ────────────────────────────────────────────────── */
+document.querySelectorAll('.ef-part-group').forEach(g=>{
+  g.addEventListener('click',()=>selectPart(g.dataset.part));
+});
+updateSVGStates();
+syncEFTotal();
+renderCustomTypes();
+renderItemCatalog();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="ctg-sync.js"></script>

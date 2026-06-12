@@ -109,7 +109,7 @@ function build(){
       <div class="faculty-header"><span class="faculty-icon">${fac.icon}</span><span class="faculty-name">${fac.name}</span></div>
       <div class="faculty-note">${fac.note}</div>
       <div class="tuning-list">
-        ${fac.tuning.map((t,i)=>`<div class="tuning-entry ${t.strikethrough&&sel!==i?'strikethrough':''} ${sel===i?'selected':''}" onclick="selectTuning('${fac.id}',${i})"><div class="tuning-name">${t.name}${t.sub?`<span class="tuning-sub"> — ${t.sub}</span>`:''}</div><div class="tuning-actions"><strong>Actions:</strong> ${t.actions}</div></div>`).join('')}
+        ${fac.tuning.map((t,i)=>`<div class="tuning-entry ${sel===i?'selected':''}${sel===i&&isActive?' active-sel':''}" onclick="selectTuning('${fac.id}',${i})"><div class="tuning-name">${t.name}${t.sub?`<span class="tuning-sub"> — ${t.sub}</span>`:''}</div><div class="tuning-actions"><strong>Actions:</strong> ${t.actions}</div></div>`).join('')}
       </div>
       <div class="select-rule"><span class="sel-ind ${isActive?'on':''}"></span><span>${isActive?'ACTIVE — click tuning to switch':'Click tuning to select'}</span></div>`;
     grid.appendChild(card);
