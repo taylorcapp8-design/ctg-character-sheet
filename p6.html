@@ -590,10 +590,10 @@ function buildLoadout(){
         <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--gold);letter-spacing:1px;">ATTACK TOTAL</label>
         <span id="res-${slotKey}" style="font-family:'Anton',sans-serif;font-size:2.2rem;color:var(--gold);font-style:italic;line-height:1;">10</span>
       </div>
-      <div style="width:1px;background:var(--border);align-self:stretch;margin:0 4px;flex-shrink:0;"></div>
+      <button id="xd-toggle-${slotKey}" data-on="0" title="Click to add/remove dice from total" style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;padding:4px 7px;background:transparent;border:2px dashed var(--border2);color:var(--text-dim);cursor:pointer;transition:all .15s;flex-shrink:0;align-self:center;margin-top:14px;">+</button>
       <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
-        <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--green3);letter-spacing:1px;">${diceLabel}</label>
-        <input id="xd-roll-${slotKey}" type="number" min="1" value="1" style="width:54px;background:transparent;border:2px solid var(--green3);color:var(--text);font-family:'Anton',sans-serif;font-size:1.4rem;text-align:center;padding:3px;outline:none;">
+        <label id="xd-label-${slotKey}" style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--text-dim);letter-spacing:1px;">${diceLabel}</label>
+        <input id="xd-roll-${slotKey}" type="number" min="1" value="1" style="width:54px;background:transparent;border:2px solid var(--border2);color:var(--text-dim);font-family:'Anton',sans-serif;font-size:1.4rem;text-align:center;padding:3px;outline:none;transition:all .15s;">
       </div>
     </div>`;
 
@@ -621,10 +621,36 @@ function buildLoadout(){
   ['main','side'].forEach(slot=>{
     const rollEl=document.getElementById('roll-'+slot);
     const resEl=document.getElementById('res-'+slot);
+    const diceEl=document.getElementById('xd-roll-'+slot);
+    const toggleEl=document.getElementById('xd-toggle-'+slot);
+    const labelEl=document.getElementById('xd-label-'+slot);
     if(rollEl&&resEl){
       const mod=parseInt(rollEl.dataset.mod)||0;
-      const upd=()=>{resEl.textContent=(parseInt(rollEl.value)||0)+mod;};
-      rollEl.addEventListener('input',upd);upd();
+      const upd=()=>{
+        const diceVal=(toggleEl&&toggleEl.dataset.on==='1')?(parseInt(diceEl&&diceEl.value)||0):0;
+        resEl.textContent=(parseInt(rollEl.value)||0)+mod+diceVal;
+      };
+      rollEl.addEventListener('input',upd);
+      if(diceEl)diceEl.addEventListener('input',upd);
+      if(toggleEl){
+        toggleEl.addEventListener('click',()=>{
+          const on=toggleEl.dataset.on==='1';
+          toggleEl.dataset.on=on?'0':'1';
+          if(!on){
+            // turning ON
+            toggleEl.style.borderStyle='solid';toggleEl.style.borderColor='var(--green3)';toggleEl.style.color='var(--green3)';
+            if(diceEl){diceEl.style.borderColor='var(--green3)';diceEl.style.color='var(--text)';}
+            if(labelEl)labelEl.style.color='var(--green3)';
+          }else{
+            // turning OFF
+            toggleEl.style.borderStyle='dashed';toggleEl.style.borderColor='var(--border2)';toggleEl.style.color='var(--text-dim)';
+            if(diceEl){diceEl.style.borderColor='var(--border2)';diceEl.style.color='var(--text-dim)';}
+            if(labelEl)labelEl.style.color='var(--text-dim)';
+          }
+          upd();
+        });
+      }
+      upd();
     }
   });
 
