@@ -191,10 +191,27 @@
         <div class="panel" style="padding:8px 10px;">
           <div id="c-stats"></div>
           <div style="margin-top:7px;padding-top:6px;border-top:1px dashed var(--border);">
-            <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+            <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;min-height:18px;">
               <span style="font-family:'Share Tech Mono',monospace;font-size:0.42rem;letter-spacing:1px;color:var(--gold,#cf9500);white-space:nowrap;">⚡ BUFFS</span>
               <div id="c-temp-buffs" style="display:flex;flex-wrap:wrap;gap:4px;flex:1;"></div>
-              <button onclick="addTempBuff()" style="font-family:'Share Tech Mono',monospace;font-size:0.42rem;letter-spacing:1px;padding:2px 7px;background:transparent;border:1px solid var(--gold,#cf9500);color:var(--gold,#cf9500);cursor:pointer;white-space:nowrap;">+ ADD</button>
+              <button id="buff-add-btn" onclick="toggleBuffForm()" style="font-family:'Share Tech Mono',monospace;font-size:0.42rem;letter-spacing:1px;padding:2px 7px;background:transparent;border:1px solid var(--gold,#cf9500);color:var(--gold,#cf9500);cursor:pointer;white-space:nowrap;transition:all .12s;">+ ADD</button>
+            </div>
+            <!-- Quick presets -->
+            <div id="buff-presets" style="display:flex;flex-wrap:wrap;gap:3px;margin-top:4px;align-items:center;"></div>
+            <!-- Inline add form -->
+            <div id="buff-form" style="display:none;margin-top:7px;padding:8px 10px;background:rgba(207,149,0,0.06);border:1px solid var(--gold,#cf9500);">
+              <div style="font-family:'Share Tech Mono',monospace;font-size:0.42rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:6px;">SELECT STAT TO BUFF</div>
+              <div id="buff-stat-btns" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;"></div>
+              <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                <input id="buff-name-input" placeholder="Buff name (optional)" style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;padding:3px 7px;background:transparent;border:1px solid var(--border2);color:var(--text);outline:none;flex:1;min-width:80px;">
+                <div style="display:flex;align-items:center;gap:2px;">
+                  <button onclick="buffValAdj(-1)" style="font-family:'Anton',sans-serif;font-size:0.9rem;width:22px;height:22px;background:transparent;border:1px solid var(--border2);color:var(--text);cursor:pointer;padding:0;line-height:1;">−</button>
+                  <input id="buff-val-input" type="number" value="2" style="width:36px;text-align:center;background:transparent;border:1px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:1rem;outline:none;padding:2px;">
+                  <button onclick="buffValAdj(1)" style="font-family:'Anton',sans-serif;font-size:0.9rem;width:22px;height:22px;background:transparent;border:1px solid var(--border2);color:var(--text);cursor:pointer;padding:0;line-height:1;">+</button>
+                </div>
+                <button onclick="applyBuff()" style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:2px;padding:4px 16px;background:var(--gold,#cf9500);border:2px solid var(--ink);color:#000;cursor:pointer;transform:skewX(-7deg);">APPLY</button>
+                <button onclick="toggleBuffForm()" style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;padding:3px 8px;background:transparent;border:1px solid var(--border2);color:var(--text-dim);cursor:pointer;">✕</button>
+              </div>
             </div>
           </div>
         </div>
@@ -266,7 +283,7 @@ function pullData(){
   cstate.hearthMax=parseInt(load('ctg-hearth-max'))||6;
   cstate.hearth=parseInt(load('ctg-hearth-cur'))??cstate.hearthMax;
   refreshVitals();
-  buildStats();buildLoadout();buildSkills();buildFaculties();buildEFPassives();buildCustomAbilities();buildTempBuffs();
+  buildStats();buildLoadout();buildSkills();buildFaculties();buildEFPassives();buildCustomAbilities();buildTempBuffs();buildBuffPresets();
 }
 function buildEFPassives(){
   const el=document.getElementById('ef-passives-list');el.innerHTML='';
@@ -316,6 +333,7 @@ function refreshVitals(){
 // Direct HP reduction — eats temp HP first, no EF involved
 // ── TEMP BUFFS ──
 let tempBuffs=[];
+let _selBuffStat=null;
 (function(){try{const s=load('ctg-temp-buffs');if(s)tempBuffs=JSON.parse(s);}catch(e){tempBuffs=[];}})();
 function saveTempBuffs(){store('ctg-temp-buffs',JSON.stringify(tempBuffs));}
 function buildTempBuffs(){
@@ -323,25 +341,79 @@ function buildTempBuffs(){
   if(!tempBuffs.length){el.innerHTML='<span style="font-family:\'Share Tech Mono\',monospace;font-size:0.42rem;color:var(--text-dim);">none</span>';return;}
   tempBuffs.forEach((b,i)=>{
     const chip=document.createElement('span');
-    chip.style.cssText='display:inline-flex;align-items:center;gap:3px;padding:1px 5px 1px 6px;background:rgba(207,149,0,0.12);border:1px solid var(--gold,#cf9500);font-family:\'Share Tech Mono\',monospace;font-size:0.42rem;color:var(--gold,#cf9500);white-space:nowrap;';
-    chip.innerHTML=`<span style="color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:0.65rem;letter-spacing:0.5px;">${b.label||b.stat}</span> <span style="font-family:'Anton',sans-serif;font-size:0.7rem;">${b.value>=0?'+':''}${b.value}</span><button data-del style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.6rem;padding:0 0 0 2px;line-height:1;">✕</button>`;
-    chip.querySelector('[data-del]').addEventListener('click',()=>{tempBuffs.splice(i,1);saveTempBuffs();buildTempBuffs();buildStats();buildLoadout();});
+    chip.style.cssText='display:inline-flex;align-items:center;gap:3px;padding:2px 6px 2px 7px;background:rgba(207,149,0,0.15);border:1.5px solid var(--gold,#cf9500);white-space:nowrap;';
+    chip.innerHTML=`<span style="color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:0.72rem;letter-spacing:0.5px;">${b.label||b.stat}</span><span style="font-family:'Anton',sans-serif;font-size:0.78rem;color:var(--gold,#cf9500);margin:0 2px;">${b.value>=0?'+':''}${b.value}</span><span style="font-family:'Share Tech Mono',monospace;font-size:0.4rem;color:var(--text-dim);">${b.stat}</span><button data-del style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.65rem;padding:0 0 0 3px;line-height:1;">✕</button>`;
+    chip.querySelector('[data-del]').addEventListener('click',()=>{tempBuffs.splice(i,1);saveTempBuffs();buildTempBuffs();buildBuffPresets();buildStats();buildLoadout();});
     el.appendChild(chip);
   });
 }
-function addTempBuff(){
+function buildBuffPresets(){
+  const el=document.getElementById('buff-presets');if(!el)return;
+  let presets=[];try{const ps=load('ctg-buff-presets');if(ps)presets=JSON.parse(ps);}catch(e){}
+  el.innerHTML='';
+  if(!presets.length)return;
+  const lbl=document.createElement('span');
+  lbl.style.cssText='font-family:\'Share Tech Mono\',monospace;font-size:0.4rem;color:var(--text-dim);letter-spacing:1px;white-space:nowrap;margin-right:2px;';
+  lbl.textContent='SAVED:';
+  el.appendChild(lbl);
+  presets.forEach((p,i)=>{
+    const wrap=document.createElement('span');
+    wrap.style.cssText='display:inline-flex;align-items:center;gap:0;';
+    const btn=document.createElement('button');
+    btn.style.cssText='font-family:\'Share Tech Mono\',monospace;font-size:0.4rem;padding:2px 6px;background:rgba(0,0,0,0.06);border:1px solid var(--border2);color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .1s;';
+    btn.title='Click to apply';
+    btn.innerHTML=`<span style="font-family:'Bebas Neue',sans-serif;font-size:0.6rem;">${p.label}</span> <span style="color:var(--gold,#cf9500);font-family:'Anton',sans-serif;">${p.value>=0?'+':''}${p.value}</span> <span style="color:var(--text-dim);">${p.stat}</span>`;
+    btn.addEventListener('mouseenter',()=>{btn.style.borderColor='var(--gold,#cf9500)';btn.style.background='rgba(207,149,0,0.1)';});
+    btn.addEventListener('mouseleave',()=>{btn.style.borderColor='var(--border2)';btn.style.background='rgba(0,0,0,0.06)';});
+    btn.addEventListener('click',()=>{tempBuffs.push({label:p.label,stat:p.stat,value:p.value});saveTempBuffs();buildTempBuffs();buildStats();buildLoadout();});
+    const del=document.createElement('button');
+    del.style.cssText='font-size:0.5rem;padding:2px 4px;background:transparent;border:1px solid var(--border2);border-left:none;color:var(--text-dim);cursor:pointer;line-height:1;';
+    del.textContent='✕';del.title='Remove preset';
+    del.addEventListener('click',()=>{presets.splice(i,1);store('ctg-buff-presets',JSON.stringify(presets));buildBuffPresets();});
+    wrap.appendChild(btn);wrap.appendChild(del);
+    el.appendChild(wrap);
+  });
+}
+function toggleBuffForm(){
+  const form=document.getElementById('buff-form');
+  const isOpen=form.style.display!=='none';
+  if(isOpen){form.style.display='none';document.getElementById('buff-add-btn').textContent='+ ADD';return;}
+  form.style.display='block';
+  document.getElementById('buff-add-btn').textContent='▲ CLOSE';
+  _selBuffStat=null;
+  document.getElementById('buff-name-input').value='';
+  document.getElementById('buff-val-input').value='2';
+  const btns=document.getElementById('buff-stat-btns');btns.innerHTML='';
   let stats=[];try{const sd=load('ctg-stats');if(sd)stats=JSON.parse(sd);}catch(e){}
-  const statNames=stats.map(s=>s.name).filter(Boolean);
-  const label=window.prompt('Buff name (e.g. Fury Stance):','');
-  if(label===null)return;
-  const statOpts=statNames.length?statNames.join(', '):'Force, Finess, etc.';
-  const stat=window.prompt(`Which stat? (${statOpts}):`,statNames[0]||'Force');
-  if(!stat)return;
-  const valStr=window.prompt('Bonus value (e.g. 2 or -1):','2');
-  if(valStr===null)return;
-  const value=parseInt(valStr)||0;
-  tempBuffs.push({label:label||stat,stat,value});
-  saveTempBuffs();buildTempBuffs();buildLoadout();
+  if(!stats.length)stats=[{name:'Force'},{name:'Finess'},{name:'Endurance'},{name:'Logic'},{name:'Sense'},{name:'Velvet'},{name:'Shine'}];
+  stats.forEach(st=>{
+    const b=document.createElement('button');
+    b.textContent=st.name;
+    b.style.cssText='font-family:\'Bebas Neue\',sans-serif;font-size:0.78rem;letter-spacing:1px;padding:4px 10px;cursor:pointer;border:1.5px solid var(--border2);background:transparent;color:var(--text2);transform:skewX(-6deg);transition:all .12s;';
+    b.addEventListener('click',()=>{
+      _selBuffStat=st.name;
+      btns.querySelectorAll('button').forEach(x=>{x.style.background='transparent';x.style.borderColor='var(--border2)';x.style.color='var(--text2)';});
+      b.style.background='var(--gold,#cf9500)';b.style.borderColor='var(--gold,#cf9500)';b.style.color='#000';
+      if(!document.getElementById('buff-name-input').value)document.getElementById('buff-name-input').value=st.name+' Buff';
+    });
+    btns.appendChild(b);
+  });
+}
+function buffValAdj(d){const el=document.getElementById('buff-val-input');el.value=Math.max(-20,Math.min(20,(parseInt(el.value)||0)+d));}
+function applyBuff(){
+  if(!_selBuffStat){const btns=document.getElementById('buff-stat-btns');btns.style.outline='2px solid var(--red)';setTimeout(()=>btns.style.outline='',600);return;}
+  const label=(document.getElementById('buff-name-input').value.trim())||_selBuffStat;
+  const value=parseInt(document.getElementById('buff-val-input').value)||0;
+  tempBuffs.push({label,stat:_selBuffStat,value});
+  saveTempBuffs();
+  let presets=[];try{const ps=load('ctg-buff-presets');if(ps)presets=JSON.parse(ps);}catch(e){}
+  if(!presets.some(p=>p.label===label&&p.stat===_selBuffStat&&p.value===value)){
+    presets.push({label,stat:_selBuffStat,value});
+    store('ctg-buff-presets',JSON.stringify(presets));
+  }
+  document.getElementById('buff-form').style.display='none';
+  document.getElementById('buff-add-btn').textContent='+ ADD';
+  buildTempBuffs();buildBuffPresets();buildStats();buildLoadout();
 }
 
 
@@ -388,10 +460,16 @@ function buildStats(){
   wrap.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:4px;';
   stats.forEach(st=>{
     const buffBonus=tempBuffs.filter(b=>b.stat&&b.stat.toLowerCase()===st.name.toLowerCase()).reduce((s,b)=>s+(parseInt(b.value)||0),0);
-    const buffBadge=buffBonus?`<span style="font-family:'Anton',sans-serif;font-size:0.6rem;color:var(--gold,#cf9500);margin-left:1px;">⚡${buffBonus>=0?'+':''}${buffBonus}</span>`:'';
+    const base=st.score||0;
+    const total=base+buffBonus;
+    const scoreHtml=buffBonus
+      ?`<span style="font-family:'Anton',sans-serif;font-size:1rem;color:var(--green3);flex-shrink:0;text-decoration:line-through;opacity:0.5;">${base}</span><span style="font-family:'Share Tech Mono',monospace;font-size:0.55rem;color:var(--gold,#cf9500);margin:0 2px;">→</span><span style="font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--gold,#cf9500);flex-shrink:0;line-height:1;">${total}</span>`
+      :`<span style="font-family:'Anton',sans-serif;font-size:1.1rem;color:var(--green3);flex-shrink:0;">${base}</span>`;
     const row=document.createElement('div');
-    row.style.cssText='display:flex;align-items:center;gap:5px;padding:4px 7px;background:var(--paper2,rgba(0,0,0,0.05));border:1px solid var(--border);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);';
-    row.innerHTML=`<span style="color:var(--purple2);font-size:0.78rem;width:14px;flex-shrink:0;">${st.icon||'◆'}</span><span style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:1px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${st.name||'—'}</span><span style="font-family:'Anton',sans-serif;font-size:1.1rem;color:var(--green3);flex-shrink:0;">${st.score||0}</span>${buffBadge}`;
+    row.style.cssText=buffBonus
+      ?'display:flex;align-items:center;gap:5px;padding:4px 7px;background:rgba(207,149,0,0.08);border:1.5px solid var(--gold,#cf9500);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);'
+      :'display:flex;align-items:center;gap:5px;padding:4px 7px;background:var(--paper2,rgba(0,0,0,0.05));border:1px solid var(--border);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);';
+    row.innerHTML=`<span style="color:${buffBonus?'var(--gold,#cf9500)':'var(--purple2)'};font-size:0.78rem;width:14px;flex-shrink:0;">${st.icon||'◆'}</span><span style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:1px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${st.name||'—'}</span><span style="display:flex;align-items:baseline;gap:2px;">${scoreHtml}</span>`;
     wrap.appendChild(row);
   });
   el.appendChild(wrap);
@@ -463,9 +541,9 @@ function buildLoadout(){
     </div>
     <div style="margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:5px 10px;background:rgba(0,0,0,0.04);border:1px dashed var(--border2);">
       <span style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);">+ EXTRA DICE</span>
-      <input id="xd-count-${slotKey}" type="number" min="1" max="20" value="1" style="width:28px;text-align:center;background:transparent;border:1px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:0.95rem;outline:none;padding:1px 2px;">
+      <input id="xd-count-${slotKey}" type="number" min="1" max="20" value="${w.diceCount||1}" style="width:28px;text-align:center;background:transparent;border:1px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:0.95rem;outline:none;padding:1px 2px;">
       <select id="xd-sides-${slotKey}" style="background:transparent;border:1.5px solid var(--purple);color:var(--purple);font-family:'Share Tech Mono',monospace;font-size:0.6rem;outline:none;padding:2px 4px;cursor:pointer;">
-        ${[4,6,8,10,12,20].map(s=>`<option value="${s}">d${s}</option>`).join('')}
+        ${[4,6,8,10,12,20].map(s=>`<option value="${s}"${(w.diceSides||6)==s?' selected':''}>d${s}</option>`).join('')}
       </select>
       <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);">+</span>
       <input id="xd-mod-${slotKey}" type="number" value="0" style="width:30px;text-align:center;background:transparent;border:1px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:0.95rem;outline:none;padding:1px 2px;">
