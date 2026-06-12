@@ -62,7 +62,8 @@
   <!-- KEYWORD GLOSSARY -->
   <div class="sec-label mt" id="glossary-toggle" style="cursor:pointer;user-select:none;" onclick="(function(){const p=document.getElementById('glossary-panel');const open=p.style.display!=='none';p.style.display=open?'none':'block';document.getElementById('glossary-arrow').textContent=open?'▸':'▾';})()"><span class="mk">◆</span>KEYWORD GLOSSARY <span class="note" id="glossary-arrow">▾</span></div>
   <div class="panel" id="glossary-panel">
-    <div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:10px;">Click any keyword tag to see its definition.</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:4px;">Hover or click any keyword tag to see its definition.</div>
+    <div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.76rem;color:var(--gold);background:rgba(207,149,0,0.08);border-left:3px solid var(--gold);padding:5px 10px;margin-bottom:12px;">⚠&#xFE0E; These definitions are placeholders — review and update them to match your ruleset.</div>
     <div style="display:flex;flex-wrap:wrap;gap:8px;" id="glossary-list"></div>
   </div>
 
@@ -364,18 +365,39 @@ const KEYWORDS={
 };
 function buildGlossary(){
   const list=document.getElementById('glossary-list');list.innerHTML='';
+  // Popups are appended to body so panel clip-path never clips them
+  const allPopups=[];
+  function hideAll(){allPopups.forEach(p=>{p.style.display='none';});}
+  document.addEventListener('click',hideAll);
   Object.entries(KEYWORDS).forEach(([kw,def])=>{
     const chip=document.createElement('div');
-    chip.style.cssText='cursor:pointer;position:relative;';
-    chip.innerHTML=`<span class="tag dist-tag" style="cursor:pointer;user-select:none;">${kw}</span>
-      <div class="kw-def" style="display:none;position:absolute;bottom:calc(100% + 6px);left:0;z-index:50;background:var(--paper,#fff);border:2.5px solid var(--ink,#15131a);padding:10px 14px;width:260px;font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.88rem;line-height:1.5;color:var(--text,#15131a);box-shadow:4px 4px 0 var(--purple,#6d28d9);">
-        <strong style="font-family:'Bebas Neue',sans-serif;letter-spacing:1px;color:var(--purple,#6d28d9);display:block;margin-bottom:4px;">${kw}</strong>${def}
-      </div>`;
-    const tag=chip.querySelector('.tag');const def_el=chip.querySelector('.kw-def');
-    chip.addEventListener('mouseenter',()=>{def_el.style.display='block';});
-    chip.addEventListener('mouseleave',()=>{def_el.style.display='none';});
-    tag.addEventListener('click',e=>{e.stopPropagation();def_el.style.display=def_el.style.display==='none'?'block':'none';});
-    document.addEventListener('click',()=>{def_el.style.display='none';});
+    chip.style.cssText='cursor:pointer;display:inline-block;';
+    chip.innerHTML=`<span class="tag dist-tag" style="cursor:pointer;user-select:none;">${kw}</span>`;
+    const popup=document.createElement('div');
+    popup.style.cssText='display:none;position:fixed;z-index:9999;background:var(--paper,#fff);border:2.5px solid var(--ink,#15131a);padding:10px 14px;width:260px;font-family:Rajdhani,sans-serif;font-weight:500;font-size:0.88rem;line-height:1.5;color:var(--text,#15131a);box-shadow:4px 4px 0 var(--purple,#6d28d9);pointer-events:none;';
+    popup.innerHTML=`<strong style="font-family:'Bebas Neue',sans-serif;letter-spacing:1px;color:var(--purple,#6d28d9);display:block;margin-bottom:4px;">${kw}</strong>${def}`;
+    document.body.appendChild(popup);
+    allPopups.push(popup);
+    function showPopup(){
+      hideAll();
+      const r=chip.getBoundingClientRect();
+      let left=r.left;
+      if(left+270>window.innerWidth)left=window.innerWidth-274;
+      if(left<4)left=4;
+      popup.style.left=left+'px';
+      // Show above if chip is in lower half of screen, below if upper half
+      if(r.top>window.innerHeight/2){
+        popup.style.bottom=(window.innerHeight-r.top+6)+'px';
+        popup.style.top='';
+      }else{
+        popup.style.top=(r.bottom+6)+'px';
+        popup.style.bottom='';
+      }
+      popup.style.display='block';
+    }
+    chip.addEventListener('mouseenter',showPopup);
+    chip.addEventListener('mouseleave',hideAll);
+    chip.querySelector('.tag').addEventListener('click',e=>{e.stopPropagation();popup.style.display==='none'?showPopup():hideAll();});
     list.appendChild(chip);
   });
 }

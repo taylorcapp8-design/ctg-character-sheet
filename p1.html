@@ -102,15 +102,6 @@
           <div class="hp-track" id="ef-track"></div>
           <div style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;color:var(--text-dim);text-align:center;margin-top:3px;">from armour page</div>
         </div>
-        <!-- STIM S -->
-        <div class="vital-box">
-          <span class="vital-label">STIM S</span>
-          <div class="consumable-counter" style="margin-top:6px;">
-            <button class="counter-btn" onclick="adjustStimS(-1)">−</button>
-            <span class="counter-val" id="stims-val">0</span>
-            <button class="counter-btn" onclick="adjustStimS(1)">+</button>
-          </div>
-        </div>
       </div>
     </div>
     </div>
@@ -129,17 +120,10 @@
       </div>
       <div style="display:flex;flex-direction:column;gap:18px;">
         <div>
-          <div class="sec-label"><span class="mk">◆</span>SUPPLIES</div>
+          <div class="sec-label"><span class="mk">♣&#xFE0E;</span>CARRY</div>
           <div class="panel">
-            <div class="consumables-grid" id="supplies-grid"></div>
-            <button class="add-btn add-row" onclick="addSupply()">ADD SUPPLY</button>
-          </div>
-        </div>
-        <div>
-          <div class="sec-label"><span class="mk">♣&#xFE0E;</span>EQUIPMENT</div>
-          <div class="panel">
-            <div id="equipment-list"></div>
-            <button class="add-btn add-row" onclick="addEquip()">ADD EQUIPMENT SLOT</button>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;color:var(--text-dim);letter-spacing:1px;margin-bottom:8px;">Managed from Gear page — updates automatically.</div>
+            <ul class="inv-list" id="carry-mirror" style="list-style:none;margin:0;padding:0;"></ul>
           </div>
         </div>
       </div>
@@ -221,51 +205,26 @@ function renderStats(){
 }
 function addStat(){stats.push({name:'',icon:'◆',score:0});saveStats();renderStats();const rows=document.querySelectorAll('.stat-name-input');if(rows.length)rows[rows.length-1].focus();}
 
-/* ── SUPPLIES (editable + addable) ───────────────────────── */
-const DEF_SUPPLIES=[{name:'Stim L',val:1},{name:'Ammo',val:0},{name:'Pack',val:2}];
-let supplies=[];
-(function(){
-  const s=load('ctg-supplies');
-  if(s){try{supplies=JSON.parse(s);}catch(e){supplies=null;}}
-  if(!supplies){
-    const o={stiml:'Stim L',ammo:'Ammo',pack:'Pack'};
-    supplies=DEF_SUPPLIES.map(d=>{const k=Object.keys(o).find(k=>o[k]===d.name);const old=k?load('ctg-cnt-'+k):null;return{name:d.name,val:old!==null?parseInt(old):d.val};});
-  }
-})();
-function saveSupplies(){save('ctg-supplies',JSON.stringify(supplies));}
-function renderSupplies(){
-  const g=document.getElementById('supplies-grid');g.innerHTML='';
-  supplies.forEach((su,i)=>{
-    const d=document.createElement('div');d.className='supply-slot';
-    d.innerHTML=`<button class="mini-del" title="Remove" data-del="${i}">✕</button>
-      <input class="ed supply-name-ed" data-f="name" value="${esc(su.name)}" placeholder="Name">
-      <div class="consumable-counter"><button class="counter-btn" data-d="-1">−</button><span class="counter-val">${su.val}</span><button class="counter-btn" data-d="1">+</button></div>`;
-    g.appendChild(d);
-    d.querySelector('[data-f="name"]').addEventListener('input',e=>{su.name=e.target.value;saveSupplies();});
-    d.querySelectorAll('.counter-btn').forEach(b=>b.addEventListener('click',()=>{su.val=Math.max(0,su.val+parseInt(b.dataset.d));d.querySelector('.counter-val').textContent=su.val;saveSupplies();}));
-    d.querySelector('[data-del]').addEventListener('click',()=>{supplies.splice(i,1);saveSupplies();renderSupplies();});
-  });
+/* ── CARRY MIRROR (read-only, synced from Gear page) ─────── */
+function renderCarryMirror(){
+  const ul=document.getElementById('carry-mirror');ul.innerHTML='';
+  try{
+    const s=load('ctg-inventory');
+    const arr=s?JSON.parse(s):[];
+    if(!arr.length){ul.innerHTML='<li style="font-family:Rajdhani,sans-serif;font-size:0.85rem;color:var(--text-dim);padding:8px 4px;">No items — add them on the Gear page.</li>';return;}
+    arr.forEach(item=>{
+      const name=typeof item==='string'?item:(item.name||'');
+      const notes=typeof item==='object'?(item.notes||''):'';
+      const li=document.createElement('li');
+      li.style.cssText='display:block;border-bottom:2px solid var(--border);padding:6px 4px;';
+      li.innerHTML=`<div style="display:grid;grid-template-columns:20px 1fr;gap:8px;align-items:center;">
+        <span style="color:var(--purple2,#8b3df5);font-size:0.85rem;">◆</span>
+        <span style="font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.92rem;color:var(--text);">${esc(name)}</span>
+      </div>${notes?`<div style="padding-left:28px;margin-top:2px;font-family:'Rajdhani',sans-serif;font-size:0.8rem;color:var(--text-dim);line-height:1.35;">${esc(notes)}</div>`:''}`;
+      ul.appendChild(li);
+    });
+  }catch(e){ul.innerHTML='<li style="color:var(--text-dim);padding:8px 4px;font-family:Rajdhani,sans-serif;font-size:0.85rem;">Error loading carry list.</li>';}
 }
-function addSupply(){supplies.push({name:'',val:0});saveSupplies();renderSupplies();const ns=document.querySelectorAll('.supply-name-ed');ns[ns.length-1].focus();}
-
-/* ── EQUIPMENT (editable + addable) ──────────────────────── */
-const DEF_EQUIP=[{label:'⚔ Main Hand',name:'',ability:''},{label:'🛡 Secondary',name:'',ability:''},{label:'⟡ Oddity',name:'',ability:''}];
-let equip=[];
-(function(){const s=load('ctg-equipment');if(s){try{equip=JSON.parse(s);}catch(e){equip=null;}}if(!equip)equip=JSON.parse(JSON.stringify(DEF_EQUIP));})();
-function saveEquip(){save('ctg-equipment',JSON.stringify(equip));}
-function renderEquip(){
-  const w=document.getElementById('equipment-list');w.innerHTML='';
-  equip.forEach((eq,i)=>{
-    const d=document.createElement('div');d.className='equipment-slot';
-    d.innerHTML=`<input class="ed slot-label" data-f="label" value="${esc(eq.label)}" placeholder="Slot">
-      <input class="ed equip-input" data-f="name" value="${esc(eq.name)}" placeholder="Item name...">
-      <div style="display:flex;align-items:center;gap:8px;"><input class="ed equip-input" data-f="ability" value="${esc(eq.ability)}" placeholder="Ability / notes..."><button class="mini-del" title="Remove" data-del="${i}">✕</button></div>`;
-    w.appendChild(d);
-    d.querySelectorAll('[data-f]').forEach(inp=>inp.addEventListener('input',()=>{eq[inp.dataset.f]=inp.value;saveEquip();}));
-    d.querySelector('[data-del]').addEventListener('click',()=>{equip.splice(i,1);saveEquip();renderEquip();});
-  });
-}
-function addEquip(){equip.push({label:'New Slot',name:'',ability:''});saveEquip();renderEquip();}
 
 /* ── VITALS / HP TRACK ───────────────────────────────────── */
 function buildTrack(curId,maxId,trackId,efClass){
@@ -296,10 +255,6 @@ function adjustHarth(d){
   refreshTracks();saveVitals();
 }
 
-/* ── STIM S counter (kept in vitals) ─────────────────────── */
-let stimS=parseInt(load('ctg-cnt-stims')||'0');
-function adjustStimS(d){stimS=Math.max(0,stimS+d);document.getElementById('stims-val').textContent=stimS;save('ctg-cnt-stims',stimS);}
-
 /* ── PORTRAIT ────────────────────────────────────────────── */
 document.getElementById('portrait-upload').addEventListener('change',function(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{const img=document.getElementById('portrait-img');img.src=ev.target.result;img.style.display='block';document.getElementById('portrait-placeholder').style.display='none';try{localStorage.setItem('ctg-portrait',ev.target.result);}catch(e){}};r.readAsDataURL(f);});
 
@@ -314,7 +269,7 @@ function updateNavName(){const n=load('ctg-f-name');const c=load('ctg-f-code');d
   const armourData=load('ctg-armour-list');
   if(armourData){try{const arr=JSON.parse(armourData);const t=arr.reduce((s,a)=>s+(parseInt(a.ef)||0),0);save('ctg-ef',t);}catch(e){}}
   const hc=load('ctg-harth-cur'),hm=load('ctg-harth-max'),ef=load('ctg-ef'),ht=load('ctg-harth-temp');if(hc!==null)document.getElementById('harth-cur').value=hc;if(hm!==null)document.getElementById('harth-max').value=hm;if(ef!==null)document.getElementById('ef-val').value=ef;
-  if(ht!==null)document.getElementById('harth-temp').value=ht;const p=load('ctg-portrait');if(p){const img=document.getElementById('portrait-img');img.src=p;img.style.display='block';document.getElementById('portrait-placeholder').style.display='none';}document.getElementById('stims-val').textContent=stimS;document.getElementById('lvl-display').textContent=document.getElementById('f-level').value;})();
+  if(ht!==null)document.getElementById('harth-temp').value=ht;const p=load('ctg-portrait');if(p){const img=document.getElementById('portrait-img');img.src=p;img.style.display='block';document.getElementById('portrait-placeholder').style.display='none';}document.getElementById('lvl-display').textContent=document.getElementById('f-level').value;})();
 ['harth-cur','harth-max','ef-val','harth-temp'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{refreshTracks();saveVitals();}));
 
 /* transitions */
@@ -324,10 +279,11 @@ document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e
 window.addEventListener('storage',e=>{
   if(e.key==='ctg-harth-cur'){document.getElementById('harth-cur').value=parseInt(e.newValue)||0;refreshTracks();}
   if(e.key==='ctg-harth-temp'){document.getElementById('harth-temp').value=parseInt(e.newValue)||0;refreshTracks();}
+  if(e.key==='ctg-inventory'){renderCarryMirror();}
 });
 
 /* init */
-renderStats();renderSupplies();renderEquip();refreshTracks();updateNavName();
+renderStats();renderCarryMirror();refreshTracks();updateNavName();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="ctg-sync.js"></script>
