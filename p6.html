@@ -574,7 +574,8 @@ function buildLoadout(){
       rollBreak=`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);margin:6px 0;letter-spacing:1px;">No roll stat set — pick one on Page IV (weapon STAT dropdown)</div>`;
     }
 
-    const calcHtml=`<div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 12px;background:rgba(0,0,0,0.07);border:2px solid var(--ink);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);">
+    const diceLabel=`${w.diceCount||1}d${w.diceSides||6}`;
+    const calcHtml=`<div style="display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 12px;background:rgba(0,0,0,0.07);border:2px solid var(--ink);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);flex-wrap:wrap;">
       <div style="display:flex;flex-direction:column;align-items:center;gap:1px;">
         <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--text-dim);letter-spacing:1px;">D20 ROLL</label>
         <input id="roll-${slotKey}" type="number" min="1" max="20" value="10" data-mod="${total}" style="width:54px;background:transparent;border:2px solid var(--purple);color:var(--text);font-family:'Anton',sans-serif;font-size:1.4rem;text-align:center;padding:3px;outline:none;">
@@ -585,21 +586,19 @@ function buildLoadout(){
         <span style="font-family:'Anton',sans-serif;font-size:1.4rem;color:var(--purple2);">${total>=0?'+':''}${total}</span>
       </div>
       <span style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;color:var(--text-dim);">=</span>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:1px;flex:1;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:1px;flex:1;min-width:60px;">
         <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--gold);letter-spacing:1px;">ATTACK TOTAL</label>
         <span id="res-${slotKey}" style="font-family:'Anton',sans-serif;font-size:2.2rem;color:var(--gold);font-style:italic;line-height:1;">10</span>
       </div>
-    </div>
-    <div style="margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:5px 10px;background:rgba(0,0,0,0.04);border:1px dashed var(--border2);">
-      <span style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);">+ EXTRA DICE</span>
-      <input id="xd-count-${slotKey}" type="number" min="1" max="20" value="${w.diceCount||1}" style="width:28px;text-align:center;background:transparent;border:1px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:0.95rem;outline:none;padding:1px 2px;">
-      <select id="xd-sides-${slotKey}" style="background:transparent;border:1.5px solid var(--purple);color:var(--purple);font-family:'Share Tech Mono',monospace;font-size:0.6rem;outline:none;padding:2px 4px;cursor:pointer;">
-        ${[4,6,8,10,12,20].map(s=>`<option value="${s}"${(w.diceSides||6)==s?' selected':''}>d${s}</option>`).join('')}
-      </select>
-      <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);">+</span>
-      <input id="xd-mod-${slotKey}" type="number" value="0" style="width:30px;text-align:center;background:transparent;border:1px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:0.95rem;outline:none;padding:1px 2px;">
-      <button id="xd-roll-${slotKey}" style="font-family:'Bebas Neue',sans-serif;font-size:0.72rem;letter-spacing:2px;padding:3px 12px;background:var(--green3);border:2px solid var(--ink);color:#000;cursor:pointer;transform:skewX(-7deg);">ROLL</button>
-      <span id="xd-result-${slotKey}" style="font-family:'Anton',sans-serif;font-size:0.95rem;color:var(--green3);font-style:italic;"></span>
+      <div style="width:1px;background:var(--border);align-self:stretch;margin:0 4px;flex-shrink:0;"></div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--green3);letter-spacing:1px;">DMG DICE</label>
+        <div style="display:flex;align-items:center;gap:5px;">
+          <span style="font-family:'Anton',sans-serif;font-size:1rem;color:var(--green3);">${diceLabel}</span>
+          <button id="xd-roll-${slotKey}" style="font-family:'Bebas Neue',sans-serif;font-size:0.72rem;letter-spacing:2px;padding:3px 10px;background:var(--green3);border:2px solid var(--ink);color:#000;cursor:pointer;transform:skewX(-7deg);">ROLL</button>
+        </div>
+        <span id="xd-result-${slotKey}" style="font-family:'Anton',sans-serif;font-size:1.1rem;color:var(--green3);font-style:italic;min-height:1.2em;"></span>
+      </div>
     </div>`;
 
     return`<div style="padding:12px 14px;border:2px solid var(--border);border-left:5px solid ${ac};background:var(--paper2,rgba(0,0,0,0.04));clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
@@ -633,14 +632,14 @@ function buildLoadout(){
     }
     const xdBtn=document.getElementById('xd-roll-'+slot);
     if(xdBtn){
+      const w=slot==='main'?mainW:sideW;
+      const count=Math.max(1,parseInt(w&&w.diceCount||1));
+      const sides=Math.max(2,parseInt(w&&w.diceSides||6));
       xdBtn.addEventListener('click',()=>{
-        const count=Math.max(1,Math.min(20,parseInt(document.getElementById('xd-count-'+slot).value)||1));
-        const sides=parseInt(document.getElementById('xd-sides-'+slot).value)||6;
-        const mod=parseInt(document.getElementById('xd-mod-'+slot).value)||0;
         const rolls=Array.from({length:count},()=>Math.floor(Math.random()*sides)+1);
-        const total=rolls.reduce((a,b)=>a+b,0)+mod;
+        const total=rolls.reduce((a,b)=>a+b,0);
         const el=document.getElementById('xd-result-'+slot);
-        el.innerHTML=`[${rolls.join(',')}]${mod?(mod>=0?'+':'')+mod:''} <span style="color:var(--gold);">= ${total}</span>`;
+        el.innerHTML=`[${rolls.join(',')}] <span style="color:var(--gold);">= ${total}</span>`;
       });
     }
   });
