@@ -126,9 +126,7 @@
         </div>
 
         <!-- Detail panel -->
-        <div class="ef-detail-panel" id="ef-detail-panel">
-          <div class="ef-empty-hint">← SELECT A ZONE</div>
-        </div>
+        <div class="ef-detail-panel" id="ef-detail-panel"></div>
 
       </div>
 
@@ -281,9 +279,48 @@ function updateSVGStates(){
 
 function renderEFDetail(){
   const panel=document.getElementById('ef-detail-panel');
-  if(!selectedPart){panel.innerHTML='<div class="ef-empty-hint">← SELECT A ZONE</div>';return;}
+  if(!panel)return;
+  if(!selectedPart){renderEFOverview(panel);return;}
   if(selectedPart==='belt')renderBeltPanel(panel);
   else renderEFPartPanel(panel);
+}
+
+function renderEFOverview(panel){
+  const totalEF=EF_PART_IDS.reduce((s,id)=>s+(efParts[id]?parseInt(efParts[id].ef)||0:0),0);
+  const anyEquipped=EF_PART_IDS.some(id=>efParts[id]);
+  const rows=EF_PART_IDS.map(id=>{
+    const ef=efParts[id];
+    const label=PART_LABELS[id];
+    if(ef){
+      return `<div class="ef-ov-row ef-ov-equipped" onclick="selectPart('${id}')">
+        <span class="ef-ov-zone">${label}</span>
+        <div class="ef-ov-info">
+          <div class="ef-ov-name">${esc(ef.name||'Unknown')}<span class="ef-ov-val">+${ef.ef||0}</span></div>
+          ${ef.ability?`<div class="ef-ov-ability">${esc(ef.ability)}</div>`:''}
+        </div>
+      </div>`;
+    }
+    return `<div class="ef-ov-row ef-ov-bare" onclick="selectPart('${id}')">
+      <span class="ef-ov-zone">${label}</span>
+      <span class="ef-ov-unarmoured">unarmoured — click to equip</span>
+    </div>`;
+  }).join('');
+  const charmsHtml=charms.length>0
+    ?`<div class="ef-ov-row ef-ov-charms-row" onclick="selectPart('belt')">
+        <span class="ef-ov-zone" style="color:rgba(207,149,0,0.65);">BELT</span>
+        <span class="ef-ov-charm-count">${charms.length} charm${charms.length!==1?'s':''} equipped</span>
+      </div>`
+    :'';
+  const noneHtml=!anyEquipped
+    ?`<div class="ef-ov-none">◌ NO EXTRA FLESH EQUIPPED<span>Select a zone on the silhouette to begin.</span></div>`
+    :'';
+  panel.innerHTML=`
+    <div class="ef-ov-header">
+      <span class="ef-ov-title">EF LOADOUT</span>
+      <span class="ef-ov-total-ef">+${totalEF}</span>
+    </div>
+    <div class="ef-ov-list">${rows}${charmsHtml}</div>
+    ${noneHtml}`;
 }
 
 function renderEFPartPanel(panel){
@@ -583,12 +620,16 @@ document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e
 
 /* ── INIT ────────────────────────────────────────────────── */
 document.querySelectorAll('.ef-part-group').forEach(g=>{
-  g.addEventListener('click',()=>selectPart(g.dataset.part));
+  g.addEventListener('click',e=>{e.stopPropagation();selectPart(g.dataset.part);});
+});
+document.querySelector('.ef-silhouette').addEventListener('click',()=>{
+  selectedPart=null;updateSVGStates();renderEFDetail();
 });
 updateSVGStates();
 syncEFTotal();
 renderCustomTypes();
 renderItemCatalog();
+renderEFDetail();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="ctg-sync.js"></script>
