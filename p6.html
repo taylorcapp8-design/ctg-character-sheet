@@ -345,16 +345,21 @@ function refreshVitals(){
 // Direct HP reduction — eats temp HP first, no EF involved
 // ── TEMP BUFFS ──
 let tempBuffs=[];
-let _selBuffStat=null;
+let _selBuffStats=new Set();
+// normalize old {label,stat,value} → new {label,bonuses:[{stat,value}]}
+function normBuff(b){if(b.bonuses)return b;return{label:b.label||b.stat,bonuses:[{stat:b.stat,value:parseInt(b.value)||0}]};}
+function buffBonusFor(statName){return tempBuffs.reduce((sum,b)=>{const n=normBuff(b);return sum+n.bonuses.filter(x=>x.stat&&x.stat.toLowerCase()===statName.toLowerCase()).reduce((s,x)=>s+(parseInt(x.value)||0),0);},0);}
 (function(){try{const s=load('ctg-temp-buffs');if(s)tempBuffs=JSON.parse(s);}catch(e){tempBuffs=[];}})();
 function saveTempBuffs(){store('ctg-temp-buffs',JSON.stringify(tempBuffs));}
 function buildTempBuffs(){
   const el=document.getElementById('c-temp-buffs');el.innerHTML='';
   if(!tempBuffs.length){el.innerHTML='<span style="font-family:\'Share Tech Mono\',monospace;font-size:0.42rem;color:var(--text-dim);">none</span>';return;}
   tempBuffs.forEach((b,i)=>{
+    const nb=normBuff(b);
+    const bonusText=nb.bonuses.map(x=>`<span style="font-family:'Share Tech Mono',monospace;font-size:0.38rem;color:var(--text-dim);">${x.stat}</span><span style="font-family:'Anton',sans-serif;font-size:0.72rem;color:var(--gold,#cf9500);">${x.value>=0?'+':''}${x.value}</span>`).join('<span style="color:var(--border2);font-size:0.5rem;padding:0 1px;">·</span>');
     const chip=document.createElement('span');
-    chip.style.cssText='display:inline-flex;align-items:center;gap:3px;padding:2px 6px 2px 7px;background:rgba(207,149,0,0.15);border:1.5px solid var(--gold,#cf9500);white-space:nowrap;';
-    chip.innerHTML=`<span style="color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:0.72rem;letter-spacing:0.5px;">${b.label||b.stat}</span><span style="font-family:'Anton',sans-serif;font-size:0.78rem;color:var(--gold,#cf9500);margin:0 2px;">${b.value>=0?'+':''}${b.value}</span><span style="font-family:'Share Tech Mono',monospace;font-size:0.4rem;color:var(--text-dim);">${b.stat}</span><button data-del style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.65rem;padding:0 0 0 3px;line-height:1;">✕</button>`;
+    chip.style.cssText='display:inline-flex;align-items:center;gap:4px;padding:2px 6px 2px 8px;background:rgba(207,149,0,0.15);border:1.5px solid var(--gold,#cf9500);white-space:nowrap;';
+    chip.innerHTML=`<span style="color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:0.72rem;letter-spacing:0.5px;">${nb.label}</span><span style="display:flex;align-items:center;gap:2px;">${bonusText}</span><button data-del style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.65rem;padding:0 0 0 3px;line-height:1;">✕</button>`;
     chip.querySelector('[data-del]').addEventListener('click',()=>{tempBuffs.splice(i,1);saveTempBuffs();buildTempBuffs();buildBuffPresets();buildStats();buildLoadout();});
     el.appendChild(chip);
   });
@@ -374,10 +379,12 @@ function buildBuffPresets(){
     const btn=document.createElement('button');
     btn.style.cssText='font-family:\'Share Tech Mono\',monospace;font-size:0.4rem;padding:2px 6px;background:rgba(0,0,0,0.06);border:1px solid var(--border2);color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .1s;';
     btn.title='Click to apply';
-    btn.innerHTML=`<span style="font-family:'Bebas Neue',sans-serif;font-size:0.6rem;">${p.label}</span> <span style="color:var(--gold,#cf9500);font-family:'Anton',sans-serif;">${p.value>=0?'+':''}${p.value}</span> <span style="color:var(--text-dim);">${p.stat}</span>`;
+    const np=normBuff(p);
+    const previewText=np.bonuses.map(x=>`${x.stat} ${x.value>=0?'+':''}${x.value}`).join(', ');
+    btn.innerHTML=`<span style="font-family:'Bebas Neue',sans-serif;font-size:0.6rem;">${np.label}</span> <span style="color:var(--gold,#cf9500);font-family:'Share Tech Mono',monospace;font-size:0.38rem;">${previewText}</span>`;
     btn.addEventListener('mouseenter',()=>{btn.style.borderColor='var(--gold,#cf9500)';btn.style.background='rgba(207,149,0,0.1)';});
     btn.addEventListener('mouseleave',()=>{btn.style.borderColor='var(--border2)';btn.style.background='rgba(0,0,0,0.06)';});
-    btn.addEventListener('click',()=>{tempBuffs.push({label:p.label,stat:p.stat,value:p.value});saveTempBuffs();buildTempBuffs();buildStats();buildLoadout();});
+    btn.addEventListener('click',()=>{tempBuffs.push({label:np.label,bonuses:np.bonuses.map(x=>({...x}))});saveTempBuffs();buildTempBuffs();buildStats();buildLoadout();});
     const del=document.createElement('button');
     del.style.cssText='font-size:0.5rem;padding:2px 4px;background:transparent;border:1px solid var(--border2);border-left:none;color:var(--text-dim);cursor:pointer;line-height:1;';
     del.textContent='✕';del.title='Remove preset';
@@ -392,7 +399,7 @@ function toggleBuffForm(){
   if(isOpen){form.style.display='none';document.getElementById('buff-add-btn').textContent='+ ADD';return;}
   form.style.display='block';
   document.getElementById('buff-add-btn').textContent='▲ CLOSE';
-  _selBuffStat=null;
+  _selBuffStats=new Set();
   document.getElementById('buff-name-input').value='';
   document.getElementById('buff-val-input').value='2';
   const btns=document.getElementById('buff-stat-btns');btns.innerHTML='';
@@ -403,25 +410,32 @@ function toggleBuffForm(){
     b.textContent=st.name;
     b.style.cssText='font-family:\'Bebas Neue\',sans-serif;font-size:0.78rem;letter-spacing:1px;padding:4px 10px;cursor:pointer;border:1.5px solid var(--border2);background:transparent;color:var(--text2);transform:skewX(-6deg);transition:all .12s;';
     b.addEventListener('click',()=>{
-      _selBuffStat=st.name;
-      btns.querySelectorAll('button').forEach(x=>{x.style.background='transparent';x.style.borderColor='var(--border2)';x.style.color='var(--text2)';});
-      b.style.background='var(--gold,#cf9500)';b.style.borderColor='var(--gold,#cf9500)';b.style.color='#000';
-      if(!document.getElementById('buff-name-input').value)document.getElementById('buff-name-input').value=st.name+' Buff';
+      if(_selBuffStats.has(st.name)){
+        _selBuffStats.delete(st.name);
+        b.style.background='transparent';b.style.borderColor='var(--border2)';b.style.color='var(--text2)';
+      }else{
+        _selBuffStats.add(st.name);
+        b.style.background='var(--gold,#cf9500)';b.style.borderColor='var(--gold,#cf9500)';b.style.color='#000';
+        if(_selBuffStats.size===1&&!document.getElementById('buff-name-input').value)
+          document.getElementById('buff-name-input').value=st.name+' Buff';
+      }
     });
     btns.appendChild(b);
   });
 }
 function buffValAdj(d){const el=document.getElementById('buff-val-input');el.value=Math.max(-20,Math.min(20,(parseInt(el.value)||0)+d));}
 function applyBuff(){
-  if(!_selBuffStat){const btns=document.getElementById('buff-stat-btns');btns.style.outline='2px solid var(--red)';setTimeout(()=>btns.style.outline='',600);return;}
-  const label=(document.getElementById('buff-name-input').value.trim())||_selBuffStat;
+  if(!_selBuffStats.size){const btns=document.getElementById('buff-stat-btns');btns.style.outline='2px solid var(--red)';setTimeout(()=>btns.style.outline='',600);return;}
   const value=parseInt(document.getElementById('buff-val-input').value)||0;
-  tempBuffs.push({label,stat:_selBuffStat,value});
+  const bonuses=[..._selBuffStats].map(s=>({stat:s,value}));
+  const label=(document.getElementById('buff-name-input').value.trim())||(bonuses.length===1?bonuses[0].stat+' Buff':'Multi Buff');
+  const entry={label,bonuses};
+  tempBuffs.push(entry);
   saveTempBuffs();
   let presets=[];try{const ps=load('ctg-buff-presets');if(ps)presets=JSON.parse(ps);}catch(e){}
-  if(!presets.some(p=>p.label===label&&p.stat===_selBuffStat&&p.value===value)){
-    presets.push({label,stat:_selBuffStat,value});
-    store('ctg-buff-presets',JSON.stringify(presets));
+  const key=label+'|'+bonuses.map(x=>x.stat+x.value).join(',');
+  if(!presets.some(p=>{const np=normBuff(p);return(np.label+'|'+np.bonuses.map(x=>x.stat+x.value).join(','))===key;})){
+    presets.push(entry);store('ctg-buff-presets',JSON.stringify(presets));
   }
   document.getElementById('buff-form').style.display='none';
   document.getElementById('buff-add-btn').textContent='+ ADD';
@@ -489,7 +503,7 @@ function buildStats(){
   const wrap=document.createElement('div');
   wrap.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:4px;';
   stats.forEach(st=>{
-    const buffBonus=tempBuffs.filter(b=>b.stat&&b.stat.toLowerCase()===st.name.toLowerCase()).reduce((s,b)=>s+(parseInt(b.value)||0),0);
+    const buffBonus=buffBonusFor(st.name);
     const base=st.score||0;
     const total=base+buffBonus;
     const scoreHtml=buffBonus
@@ -525,7 +539,7 @@ function buildLoadout(){
     if(!w.rollStat) return {base:null,bonus,buffBonus:0,total:bonus,statName:null,noStat:true};
     const st=stats.find(x=>x.name&&x.name.toLowerCase()===w.rollStat.toLowerCase());
     const base=st?parseInt(st.score)||0:null;
-    const buffBonus=tempBuffs.filter(b=>b.stat&&b.stat.toLowerCase()===w.rollStat.toLowerCase()).reduce((s,b)=>s+(parseInt(b.value)||0),0);
+    const buffBonus=buffBonusFor(w.rollStat);
     return {base,bonus,buffBonus,total:(base||0)+bonus+buffBonus,statName:w.rollStat,notFound:base===null};
   }
 

@@ -203,20 +203,34 @@ let stats=[];
   if(_nameChanged)saveStats();
 })();
 function saveStats(){save('ctg-stats',JSON.stringify(stats));}
+function getBuffBonusFor(statName){
+  try{
+    const raw=load('ctg-temp-buffs');if(!raw)return 0;
+    const buffs=JSON.parse(raw);
+    return buffs.reduce((sum,b)=>{
+      const bonuses=b.bonuses||[{stat:b.stat,value:parseInt(b.value)||0}];
+      return sum+bonuses.filter(x=>x.stat&&x.stat.toLowerCase()===statName.toLowerCase()).reduce((s,x)=>s+(parseInt(x.value)||0),0);
+    },0);
+  }catch(e){return 0;}
+}
 function renderStats(){
   const w=document.getElementById('stat-bars');w.innerHTML='';
   stats.forEach((st,i)=>{
     const score=parseInt(st.score)||0;
+    const buff=getBuffBonusFor(st.name);
+    const buffBadge=buff?`<span style="font-family:'Anton',sans-serif;font-size:0.65rem;color:var(--gold,#cf9500);background:rgba(207,149,0,0.12);border:1px solid var(--gold,#cf9500);padding:1px 5px;white-space:nowrap;">⚡${buff>=0?'+':''}${buff} = ${score+buff}</span>`:'';
     const row=document.createElement('div');row.className='stat-bar';
+    row.style.cssText=buff?'border-left-color:var(--gold,#cf9500);':'';
     row.innerHTML=`
       <div class="stat-bar-top">
-        <span class="stat-icon">${st.icon||'◆'}</span>
+        <span class="stat-icon" style="${buff?'color:var(--gold,#cf9500);':''}">${st.icon||'◆'}</span>
         <span class="stat-name-label">${esc(st.name)||'—'}</span>
         <div class="stat-counter">
           <button class="counter-btn stat-adj" data-d="-1">−</button>
           <input type="number" class="stat-score-input" value="${score}" min="0">
           <button class="counter-btn stat-adj" data-d="1">+</button>
         </div>
+        ${buffBadge}
         <span class="stat-sp">${sp(score)}<span>SP</span></span>
         <button class="mini-del" title="Remove" data-del="${i}">✕</button>
       </div>`;
@@ -343,6 +357,7 @@ window.addEventListener('storage',e=>{
   if(e.key==='ctg-hearth-cur'){document.getElementById('hearth-cur').value=parseInt(e.newValue)||0;refreshTracks();}
   if(e.key==='ctg-hearth-max'){document.getElementById('hearth-max').value=parseInt(e.newValue)||6;refreshTracks();}
   if(e.key==='ctg-inventory'){renderCarryMirror();}
+  if(e.key==='ctg-temp-buffs'){renderStats();}
 });
 
 /* init */
