@@ -47,7 +47,7 @@
   <div class="block">
     <div class="sec-label"><span class="mk">♥&#xFE0E;</span>VITALS AT A GLANCE</div>
     <div class="panel">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;">
 
         <!-- HP -->
         <div class="vital-box harth" style="text-align:center;">
@@ -82,6 +82,25 @@
           <span class="vital-label">EF (ARMOUR)</span>
           <span id="c-ef" style="font-family:'Anton',sans-serif;font-size:2.4rem;color:var(--purple2);">0</span>
           <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);margin-top:4px;">reduces incoming damage</div>
+        </div>
+
+        <!-- Hearth (mana) -->
+        <div class="vital-box" style="text-align:center;border-color:#3b82f6;">
+          <span class="vital-label" style="color:#3b82f6;">HEARTH</span>
+          <div style="display:flex;align-items:baseline;justify-content:center;gap:4px;">
+            <span id="c-hearth-cur" style="font-family:'Anton',sans-serif;font-size:2.4rem;color:#3b82f6;">6</span>
+            <span style="color:var(--text-dim);font-family:'Anton',sans-serif;">/</span>
+            <span id="c-hearth-max" style="font-family:'Anton',sans-serif;font-size:1.1rem;color:var(--text-dim);">6</span>
+          </div>
+          <div style="display:flex;gap:4px;justify-content:center;margin-top:6px;">
+            <button class="counter-btn" onclick="adjHearth(-1)">−</button>
+            <button class="counter-btn" onclick="adjHearth(1)" style="background:#3b82f6;border-color:#3b82f6;">+</button>
+          </div>
+          <div class="hp-track hearth-track" id="c-hearth-track" style="margin-top:8px;"></div>
+          <div style="display:flex;gap:3px;justify-content:center;margin-top:5px;">
+            <button class="counter-btn" onclick="adjHearthMax(-1)" style="font-size:0.5rem;padding:1px 5px;" title="Lower max">MAX−</button>
+            <button class="counter-btn" onclick="adjHearthMax(1)" style="font-size:0.5rem;padding:1px 5px;" title="Raise max">MAX+</button>
+          </div>
         </div>
 
         <!-- Round / Turn tracker -->
@@ -128,12 +147,32 @@
     </div>
   </div>
 
+  <!-- TEMP BUFFS -->
+  <div class="block">
+    <div class="sec-label"><span class="mk">⚡</span>TEMP BUFFS <span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:var(--text-dim);font-style:normal;">— active bonuses added to attack modifiers</span></div>
+    <div class="panel" style="padding:10px 14px;">
+      <div id="c-temp-buffs" style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px;"></div>
+      <button class="add-btn" onclick="addTempBuff()" style="font-size:0.56rem;padding:4px 12px;">+ ADD BUFF</button>
+    </div>
+  </div>
+
   <!-- ROW 2: ATTACK CALCULATOR (moved up) -->
   <div class="block">
     <div class="sec-label"><span class="mk">⚔</span>ATTACK CALCULATOR</div>
     <div class="panel">
       <div class="two-col" id="c-loadout"></div>
       <div id="c-oddity" style="margin-top:10px;"></div>
+      <!-- DICE ROLLER -->
+      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:10px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--text-dim);">DICE ROLLER</span>
+          <button class="add-btn" onclick="addDie()" style="font-size:0.52rem;padding:3px 10px;">+ DIE</button>
+          <button onclick="rollAllDice()" style="font-family:'Bebas Neue',sans-serif;font-size:0.78rem;letter-spacing:2px;padding:4px 14px;background:var(--purple);border:2px solid var(--ink);color:#fff;cursor:pointer;transform:skewX(-8deg);">ROLL ALL</button>
+          <button onclick="clearDice()" style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;padding:3px 10px;background:transparent;border:1px solid var(--border2);color:var(--text-dim);cursor:pointer;">CLEAR</button>
+        </div>
+        <div id="c-dice-pool" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;"></div>
+        <div id="c-dice-results"></div>
+      </div>
     </div>
   </div>
 
@@ -156,7 +195,15 @@
     </div>
   </div>
 
-  <!-- ROW 4: ATTRIBUTES (compact) + CARD COMBAT (compact) -->
+  <!-- ROW 4: CUSTOM ABILITIES -->
+  <div class="block">
+    <div class="sec-label"><span class="mk">✤</span>CUSTOM ABILITIES</div>
+    <div class="panel">
+      <div id="c-custom-abilities" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;"></div>
+    </div>
+  </div>
+
+  <!-- ROW 5: ATTRIBUTES (compact) + CARD COMBAT (compact) -->
   <div class="block">
     <div class="two-col">
       <div>
@@ -221,7 +268,7 @@ function store(k,v){try{localStorage.setItem(k,v);localStorage.setItem('ctg-last
 let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
 
 // ── COMBAT STATE ──
-const cstate={harth:6,harthMax:6,temp:0,ef:0,round:1,hand:5,conditions:new Set()};
+const cstate={harth:6,harthMax:6,temp:0,ef:0,round:1,hand:5,conditions:new Set(),hearth:6,hearthMax:6};
 
 // ── PULL DATA FROM OTHER PAGES ──
 function pullData(){
@@ -229,8 +276,10 @@ function pullData(){
   cstate.harth=parseInt(load('ctg-harth-cur'))||cstate.harthMax;
   cstate.temp=parseInt(load('ctg-harth-temp'))||0;
   cstate.ef=parseInt(load('ctg-ef'))||0;
+  cstate.hearthMax=parseInt(load('ctg-hearth-max'))||6;
+  cstate.hearth=parseInt(load('ctg-hearth-cur'))??cstate.hearthMax;
   refreshVitals();
-  buildStats();buildLoadout();buildSkills();buildFaculties();buildEFPassives();
+  buildStats();buildLoadout();buildSkills();buildFaculties();buildEFPassives();buildCustomAbilities();buildTempBuffs();renderDicePool();
 }
 function buildEFPassives(){
   const el=document.getElementById('ef-passives-list');el.innerHTML='';
@@ -252,7 +301,7 @@ function buildEFPassives(){
     el.appendChild(row);
   });
 }
-function saveCS(){store('ctg-harth-cur',cstate.harth);store('ctg-harth-temp',cstate.temp);}
+function saveCS(){store('ctg-harth-cur',cstate.harth);store('ctg-harth-temp',cstate.temp);store('ctg-hearth-cur',cstate.hearth);}
 
 // ── VITALS ──
 function refreshVitals(){
@@ -268,8 +317,99 @@ function refreshVitals(){
     s.onclick=()=>{cstate.harth=i<cstate.harth?i:i+1;refreshVitals();saveCS();};
     track.appendChild(s);
   }
+  document.getElementById('c-hearth-cur').textContent=cstate.hearth;
+  document.getElementById('c-hearth-max').textContent=cstate.hearthMax;
+  const htrack=document.getElementById('c-hearth-track');htrack.innerHTML='';
+  for(let i=0;i<cstate.hearthMax;i++){
+    const s=document.createElement('div');s.className='hp-seg'+(i<cstate.hearth?' filled':'');
+    s.onclick=()=>{cstate.hearth=i<cstate.hearth?i:i+1;refreshVitals();saveCS();};
+    htrack.appendChild(s);
+  }
 }
 // Direct HP reduction — eats temp HP first, no EF involved
+// ── TEMP BUFFS ──
+let tempBuffs=[];
+(function(){try{const s=load('ctg-temp-buffs');if(s)tempBuffs=JSON.parse(s);}catch(e){tempBuffs=[];}})();
+function saveTempBuffs(){store('ctg-temp-buffs',JSON.stringify(tempBuffs));}
+function buildTempBuffs(){
+  const el=document.getElementById('c-temp-buffs');el.innerHTML='';
+  if(!tempBuffs.length){el.innerHTML='<span style="font-family:\'Share Tech Mono\',monospace;font-size:0.52rem;color:var(--text-dim);letter-spacing:1px;">No active buffs.</span>';return;}
+  tempBuffs.forEach((b,i)=>{
+    const chip=document.createElement('div');
+    chip.style.cssText='display:flex;align-items:center;gap:5px;padding:4px 8px 4px 10px;background:rgba(207,149,0,0.1);border:1.5px solid var(--gold,#cf9500);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);';
+    chip.innerHTML=`<span style="font-family:'Bebas Neue',sans-serif;font-size:0.85rem;letter-spacing:1px;color:var(--text);">${b.label||b.stat}</span>
+      <span style="font-family:'Anton',sans-serif;font-size:0.95rem;color:var(--gold,#cf9500);">${b.value>=0?'+':''}${b.value}</span>
+      <span style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;color:var(--text-dim);">${b.stat}</span>
+      <button data-del style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.75rem;padding:0 2px;line-height:1;">✕</button>`;
+    chip.querySelector('[data-del]').addEventListener('click',()=>{tempBuffs.splice(i,1);saveTempBuffs();buildTempBuffs();buildLoadout();});
+    el.appendChild(chip);
+  });
+}
+function addTempBuff(){
+  let stats=[];try{const sd=load('ctg-stats');if(sd)stats=JSON.parse(sd);}catch(e){}
+  const statNames=stats.map(s=>s.name).filter(Boolean);
+  const label=window.prompt('Buff name (e.g. Fury Stance):','');
+  if(label===null)return;
+  const statOpts=statNames.length?statNames.join(', '):'Force, Finess, etc.';
+  const stat=window.prompt(`Which stat? (${statOpts}):',statNames[0]||'Force');
+  if(!stat)return;
+  const valStr=window.prompt('Bonus value (e.g. 2 or -1):','2');
+  if(valStr===null)return;
+  const value=parseInt(valStr)||0;
+  tempBuffs.push({label:label||stat,stat,value});
+  saveTempBuffs();buildTempBuffs();buildLoadout();
+}
+
+// ── DICE ROLLER ──
+let dicePool=[];let diceIdSeq=1;
+function addDie(sides=6){
+  dicePool.push({id:diceIdSeq++,count:1,sides,mod:0});
+  renderDicePool();
+}
+function removeDie(id){dicePool=dicePool.filter(d=>d.id!==id);renderDicePool();}
+function clearDice(){dicePool=[];document.getElementById('c-dice-results').innerHTML='';renderDicePool();}
+function renderDicePool(){
+  const el=document.getElementById('c-dice-pool');el.innerHTML='';
+  if(!dicePool.length){el.innerHTML='<span style="font-family:\'Share Tech Mono\',monospace;font-size:0.5rem;color:var(--text-dim);">No dice — click + DIE to add.</span>';return;}
+  dicePool.forEach(die=>{
+    const d=document.createElement('div');
+    d.style.cssText='display:flex;align-items:center;gap:5px;padding:5px 8px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%);';
+    d.innerHTML=`<input type="number" class="dc-count" min="1" max="20" value="${die.count}" style="width:32px;text-align:center;background:transparent;border:1px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:1rem;outline:none;padding:1px 2px;">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--text-dim);">×</span>
+      <select class="dc-sides" style="background:transparent;border:1.5px solid var(--purple);color:var(--purple);font-family:'Share Tech Mono',monospace;font-size:0.65rem;outline:none;padding:2px 4px;cursor:pointer;">
+        ${[4,6,8,10,12,20,100].map(s=>`<option value="${s}"${s===die.sides?' selected':''}>${s===100?'d%':'d'+s}</option>`).join('')}
+      </select>
+      <span style="font-family:'Share Tech Mono',monospace;font-size:0.55rem;color:var(--text-dim);">+mod</span>
+      <input type="number" class="dc-mod" value="${die.mod}" style="width:36px;text-align:center;background:transparent;border:1px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:0.9rem;outline:none;padding:1px 2px;">
+      <button data-remove style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.75rem;padding:0 3px;">✕</button>`;
+    d.querySelector('.dc-count').addEventListener('change',e=>{die.count=Math.max(1,Math.min(20,parseInt(e.target.value)||1));e.target.value=die.count;});
+    d.querySelector('.dc-sides').addEventListener('change',e=>{die.sides=parseInt(e.target.value);});
+    d.querySelector('.dc-mod').addEventListener('change',e=>{die.mod=parseInt(e.target.value)||0;});
+    d.querySelector('[data-remove]').addEventListener('click',()=>removeDie(die.id));
+    el.appendChild(d);
+  });
+}
+function rollAllDice(){
+  if(!dicePool.length)return;
+  const el=document.getElementById('c-dice-results');
+  let grandTotal=0;
+  const lines=dicePool.map(die=>{
+    const rolls=Array.from({length:die.count},()=>Math.floor(Math.random()*die.sides)+1);
+    const rollSum=rolls.reduce((a,b)=>a+b,0);
+    const total=rollSum+die.mod;
+    grandTotal+=total;
+    const dieLabel=die.sides===100?'d%':'d'+die.sides;
+    return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);min-width:52px;">${die.count}${dieLabel}${die.mod?`${die.mod>=0?'+':''}${die.mod}`:''}:</span>
+      <span style="font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.82rem;color:var(--text);">[${rolls.join(', ')}]${die.mod?` + ${die.mod}`:''}</span>
+      <span style="font-family:'Anton',sans-serif;font-size:0.95rem;color:var(--purple2);">= ${total}</span>
+    </div>`;
+  });
+  el.innerHTML=`<div style="border-top:1px solid var(--border);padding-top:8px;">${lines.join('')}<div style="display:flex;align-items:baseline;gap:8px;margin-top:6px;border-top:1px dashed var(--border);padding-top:6px;"><span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);">TOTAL</span><span style="font-family:'Anton',sans-serif;font-size:1.8rem;color:var(--gold);line-height:1;">${grandTotal}</span></div></div>`;
+}
+
+function adjHearth(d){cstate.hearth=Math.max(0,Math.min(cstate.hearthMax,cstate.hearth+d));refreshVitals();saveCS();}
+function adjHearthMax(d){cstate.hearthMax=Math.max(1,cstate.hearthMax+d);cstate.hearth=Math.min(cstate.hearth,cstate.hearthMax);store('ctg-hearth-max',cstate.hearthMax);refreshVitals();saveCS();}
 function combatDmg(n){
   if(cstate.temp>=n){cstate.temp-=n;}else{const r=n-cstate.temp;cstate.temp=0;cstate.harth=Math.max(0,cstate.harth-r);}
   refreshVitals();saveCS();
@@ -335,10 +475,11 @@ function buildLoadout(){
   function getMod(w){
     if(!w) return null;
     const bonus=parseInt(w.rollBonus)||0;
-    if(!w.rollStat) return {base:null,bonus,total:bonus,statName:null,noStat:true};
+    if(!w.rollStat) return {base:null,bonus,buffBonus:0,total:bonus,statName:null,noStat:true};
     const st=stats.find(x=>x.name&&x.name.toLowerCase()===w.rollStat.toLowerCase());
     const base=st?parseInt(st.score)||0:null;
-    return {base,bonus,total:(base||0)+bonus,statName:w.rollStat,notFound:base===null};
+    const buffBonus=tempBuffs.filter(b=>b.stat&&b.stat.toLowerCase()===w.rollStat.toLowerCase()).reduce((s,b)=>s+(parseInt(b.value)||0),0);
+    return {base,bonus,buffBonus,total:(base||0)+bonus+buffBonus,statName:w.rollStat,notFound:base===null};
   }
 
   function slotHtml(w,label,accentCss,slotKey){
@@ -350,10 +491,12 @@ function buildLoadout(){
 
     let rollBreak='';
     if(mod&&mod.base!==null){
+      const buffRow=mod.buffBonus?`<span class="roll-op">+</span><div class="roll-box" style="border-color:var(--gold,#cf9500);"><span class="roll-lbl" style="color:var(--gold,#cf9500);">BUFF</span><span class="roll-num" style="color:var(--gold,#cf9500);">${mod.buffBonus>=0?'+':''}${mod.buffBonus}</span></div>`:'';
       rollBreak=`<div class="roll-breakdown">
         <div class="roll-box rb-stat"><span class="roll-lbl">${mod.statName.toUpperCase()}</span><span class="roll-num">+${mod.base}</span></div>
         <span class="roll-op">+</span>
         <div class="roll-box rb-bonus"><span class="roll-lbl">BONUS</span><span class="roll-num">+${mod.bonus}</span></div>
+        ${buffRow}
         <span class="roll-op">=</span>
         <div class="roll-box rb-total"><span class="roll-lbl">MOD</span><span class="roll-num">+${mod.total}</span></div>
       </div>`;
@@ -469,6 +612,21 @@ function buildSkills(){
   });
 }
 
+// ── CUSTOM ABILITIES ──
+function buildCustomAbilities(){
+  const el=document.getElementById('c-custom-abilities');el.innerHTML='';
+  let arr=[];
+  try{const s=load('ctg-custom-abilities');if(s)arr=JSON.parse(s);}catch(e){}
+  if(!arr.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.56rem;color:var(--text-dim);grid-column:1/-1;">No custom abilities — add them on Page I</div>';return;}
+  arr.forEach(ab=>{
+    const card=document.createElement('div');
+    card.style.cssText='padding:8px 12px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);border-left:4px solid var(--gold,#cf9500);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);';
+    card.innerHTML=`<div style="font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:1px;color:var(--text);margin-bottom:${ab.desc?'3px':'0'};">${ab.name||'—'}</div>
+      ${ab.desc?`<div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.35;">${ab.desc}</div>`:''}`;
+    el.appendChild(card);
+  });
+}
+
 // ── FACULTIES ──
 function buildFaculties(){
   const el=document.getElementById('c-faculties');el.innerHTML='';
@@ -569,6 +727,7 @@ window.addEventListener('storage',e=>{
   if(e.key==='ctg-harth-cur'){cstate.harth=parseInt(e.newValue)||0;refreshVitals();}
   if(e.key==='ctg-harth-temp'){cstate.temp=parseInt(e.newValue)||0;refreshVitals();}
   if(e.key==='ctg-harth-max'){cstate.harthMax=parseInt(e.newValue)||6;refreshVitals();}
+  if(e.key==='ctg-custom-abilities'){buildCustomAbilities();}
 });
 </script>
 

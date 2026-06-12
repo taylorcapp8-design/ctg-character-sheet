@@ -102,6 +102,21 @@
           <div class="hp-track" id="ef-track"></div>
           <div style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;color:var(--text-dim);text-align:center;margin-top:3px;">from armour page</div>
         </div>
+        <!-- HEARTH (mana) -->
+        <div class="vital-box" style="border-color:#3b82f6;">
+          <span class="vital-label" style="color:#3b82f6;">HEARTH</span>
+          <div style="display:flex;align-items:baseline;justify-content:center;gap:4px;">
+            <input type="number" class="vital-input" id="hearth-cur" value="6" min="0" style="font-size:2rem;width:54px;color:#3b82f6;">
+            <span style="color:var(--text-dim);font-family:'Anton',sans-serif;font-size:1rem;">/</span>
+            <input type="number" class="vital-input" id="hearth-max" value="6" min="1" style="font-size:1.1rem;width:54px;color:var(--text-dim);" title="Max Hearth — click to edit">
+          </div>
+          <div style="display:flex;gap:6px;justify-content:center;margin-top:4px;">
+            <button class="counter-btn" onclick="adjustHearth(-1)">−</button>
+            <button class="counter-btn" onclick="adjustHearth(1)" style="background:#3b82f6;border-color:#3b82f6;">+</button>
+            <button class="counter-btn" style="font-size:0.6rem;padding:0 6px;letter-spacing:0;" onclick="document.getElementById('hearth-cur').value=document.getElementById('hearth-max').value;refreshTracks();saveVitals();" title="Full restore">FULL</button>
+          </div>
+          <div class="hp-track hearth-track" id="hearth-track"></div>
+        </div>
       </div>
     </div>
     </div>
@@ -127,6 +142,15 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- CUSTOM ABILITIES -->
+  <div class="block">
+    <div class="sec-label"><span class="mk">✤</span>CUSTOM ABILITIES</div>
+    <div class="panel">
+      <div id="ability-list"></div>
+      <button class="add-btn add-row" onclick="addAbility()">ADD ABILITY</button>
     </div>
   </div>
 
@@ -172,6 +196,11 @@ let stats=[];
   let _iconChanged=false;
   stats.forEach(st=>{if(_im[st.icon]){st.icon=_im[st.icon];_iconChanged=true;}});
   if(_iconChanged)saveStats();
+  // migrate old attribute names to current names
+  const _nm={'Brass':'Force','String':'Finess','Fliker':'Sense'};
+  let _nameChanged=false;
+  stats.forEach(st=>{if(_nm[st.name]){st.name=_nm[st.name];_nameChanged=true;}});
+  if(_nameChanged)saveStats();
 })();
 function saveStats(){save('ctg-stats',JSON.stringify(stats));}
 function renderStats(){
@@ -182,28 +211,29 @@ function renderStats(){
     row.innerHTML=`
       <div class="stat-bar-top">
         <span class="stat-icon">${st.icon||'◆'}</span>
-        <input class="stat-name-input" data-f="name" value="${esc(st.name)}" placeholder="Attribute name...">
-        <span class="stat-score-disp">${score}</span>
+        <span class="stat-name-label">${esc(st.name)||'—'}</span>
+        <div class="stat-counter">
+          <button class="counter-btn stat-adj" data-d="-1">−</button>
+          <input type="number" class="stat-score-input" value="${score}" min="0">
+          <button class="counter-btn stat-adj" data-d="1">+</button>
+        </div>
         <span class="stat-sp">${sp(score)}<span>SP</span></span>
         <button class="mini-del" title="Remove" data-del="${i}">✕</button>
-      </div>
-      <input type="range" class="stat-slider" min="0" max="9" value="${score}" style="--pct:${score/9*100}%">`;
+      </div>`;
     w.appendChild(row);
-    const slider=row.querySelector('.stat-slider');
-    const scoreEl=row.querySelector('.stat-score-disp');
+    const scoreInput=row.querySelector('.stat-score-input');
     const spEl=row.querySelector('.stat-sp');
-    slider.addEventListener('input',()=>{
-      st.score=parseInt(slider.value)||0;
-      scoreEl.textContent=st.score;
-      spEl.innerHTML=sp(st.score)+'<span>SP</span>';
-      slider.style.setProperty('--pct',(st.score/9*100)+'%');
-      saveStats();
-    });
-    row.querySelector('.stat-name-input').addEventListener('input',e=>{st.name=e.target.value;saveStats();});
+    function applyScore(v){st.score=Math.max(0,v);scoreInput.value=st.score;spEl.innerHTML=sp(st.score)+'<span>SP</span>';saveStats();}
+    scoreInput.addEventListener('input',()=>applyScore(parseInt(scoreInput.value)||0));
+    row.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>applyScore((parseInt(scoreInput.value)||0)+parseInt(b.dataset.d))));
     row.querySelector('[data-del]').addEventListener('click',()=>{stats.splice(i,1);saveStats();renderStats();});
   });
 }
-function addStat(){stats.push({name:'',icon:'◆',score:0});saveStats();renderStats();const rows=document.querySelectorAll('.stat-name-input');if(rows.length)rows[rows.length-1].focus();}
+function addStat(){
+  const name=(window.prompt('Attribute name:','')||'').trim();
+  if(!name)return;
+  stats.push({name,icon:'◆',score:0});saveStats();renderStats();
+}
 
 /* ── CARRY MIRROR (read-only, synced from Gear page) ─────── */
 function renderCarryMirror(){
@@ -233,12 +263,14 @@ function buildTrack(curId,maxId,trackId,efClass){
   const c=document.getElementById(trackId);c.innerHTML='';
   for(let i=0;i<max;i++){const s=document.createElement('div');s.className='hp-seg'+(efClass?' ef-seg':'')+(i<cur?' filled':'');s.onclick=()=>{document.getElementById(curId).value=i<cur?i:i+1;refreshTracks();saveVitals();};c.appendChild(s);}
 }
-function refreshTracks(){buildTrack('harth-cur','harth-max','harth-track',false);buildTrack('ef-val',null,'ef-track',true);}
+function refreshTracks(){buildTrack('harth-cur','harth-max','harth-track',false);buildTrack('ef-val',null,'ef-track',true);buildTrack('hearth-cur','hearth-max','hearth-track',false);}
 function saveVitals(){
   save('ctg-harth-cur',document.getElementById('harth-cur').value);
   save('ctg-harth-max',document.getElementById('harth-max').value);
   save('ctg-ef',document.getElementById('ef-val').value);
   save('ctg-harth-temp',document.getElementById('harth-temp').value);
+  save('ctg-hearth-cur',document.getElementById('hearth-cur').value);
+  save('ctg-hearth-max',document.getElementById('hearth-max').value);
 }
 function adjustHarth(d){
   const tempEl=document.getElementById('harth-temp');
@@ -252,6 +284,12 @@ function adjustHarth(d){
     cur=Math.min(maxVal,cur+d);
   }
   tempEl.value=temp;curEl.value=cur;
+  refreshTracks();saveVitals();
+}
+function adjustHearth(d){
+  const el=document.getElementById('hearth-cur');
+  const maxVal=parseInt(document.getElementById('hearth-max').value)||6;
+  el.value=Math.max(0,Math.min(maxVal,(parseInt(el.value)||0)+d));
   refreshTracks();saveVitals();
 }
 
@@ -269,8 +307,31 @@ function updateNavName(){const n=load('ctg-f-name');const c=load('ctg-f-code');d
   const armourData=load('ctg-armour-list');
   if(armourData){try{const arr=JSON.parse(armourData);const t=arr.reduce((s,a)=>s+(parseInt(a.ef)||0),0);save('ctg-ef',t);}catch(e){}}
   const hc=load('ctg-harth-cur'),hm=load('ctg-harth-max'),ef=load('ctg-ef'),ht=load('ctg-harth-temp');if(hc!==null)document.getElementById('harth-cur').value=hc;if(hm!==null)document.getElementById('harth-max').value=hm;if(ef!==null)document.getElementById('ef-val').value=ef;
-  if(ht!==null)document.getElementById('harth-temp').value=ht;const p=load('ctg-portrait');if(p){const img=document.getElementById('portrait-img');img.src=p;img.style.display='block';document.getElementById('portrait-placeholder').style.display='none';}document.getElementById('lvl-display').textContent=document.getElementById('f-level').value;})();
-['harth-cur','harth-max','ef-val','harth-temp'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{refreshTracks();saveVitals();}));
+  if(ht!==null)document.getElementById('harth-temp').value=ht;const p=load('ctg-portrait');if(p){const img=document.getElementById('portrait-img');img.src=p;img.style.display='block';document.getElementById('portrait-placeholder').style.display='none';}document.getElementById('lvl-display').textContent=document.getElementById('f-level').value;
+  const htc=load('ctg-hearth-cur'),htm=load('ctg-hearth-max');if(htc!==null)document.getElementById('hearth-cur').value=htc;if(htm!==null)document.getElementById('hearth-max').value=htm;
+  refreshTracks();})();
+['harth-cur','harth-max','ef-val','harth-temp','hearth-cur','hearth-max'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{refreshTracks();saveVitals();}));
+
+/* ── CUSTOM ABILITIES ────────────────────────────────────── */
+let abilities=[];
+(function(){try{const s=load('ctg-custom-abilities');if(s)abilities=JSON.parse(s);}catch(e){abilities=[];}})();
+function saveAbilities(){save('ctg-custom-abilities',JSON.stringify(abilities));}
+function renderAbilities(){
+  const w=document.getElementById('ability-list');w.innerHTML='';
+  abilities.forEach((ab,i)=>{
+    const d=document.createElement('div');d.className='ability-entry';
+    d.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+      <input class="ed ability-name-input" value="${esc(ab.name)}" placeholder="Ability name...">
+      <button class="mini-del" data-del title="Remove">✕</button>
+    </div>
+    <textarea class="ability-desc-input" rows="2" placeholder="What does it do? When does it apply?">${esc(ab.desc||'')}</textarea>`;
+    w.appendChild(d);
+    d.querySelector('.ability-name-input').addEventListener('input',e=>{ab.name=e.target.value;saveAbilities();});
+    d.querySelector('.ability-desc-input').addEventListener('input',e=>{ab.desc=e.target.value;saveAbilities();});
+    d.querySelector('[data-del]').addEventListener('click',()=>{abilities.splice(i,1);saveAbilities();renderAbilities();});
+  });
+}
+function addAbility(){abilities.push({name:'',desc:''});saveAbilities();renderAbilities();const ns=document.querySelectorAll('.ability-name-input');if(ns.length)ns[ns.length-1].focus();}
 
 /* transitions */
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
@@ -279,11 +340,13 @@ document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e
 window.addEventListener('storage',e=>{
   if(e.key==='ctg-harth-cur'){document.getElementById('harth-cur').value=parseInt(e.newValue)||0;refreshTracks();}
   if(e.key==='ctg-harth-temp'){document.getElementById('harth-temp').value=parseInt(e.newValue)||0;refreshTracks();}
+  if(e.key==='ctg-hearth-cur'){document.getElementById('hearth-cur').value=parseInt(e.newValue)||0;refreshTracks();}
+  if(e.key==='ctg-hearth-max'){document.getElementById('hearth-max').value=parseInt(e.newValue)||6;refreshTracks();}
   if(e.key==='ctg-inventory'){renderCarryMirror();}
 });
 
 /* init */
-renderStats();renderCarryMirror();refreshTracks();updateNavName();
+renderStats();renderCarryMirror();renderAbilities();refreshTracks();updateNavName();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="ctg-sync.js"></script>

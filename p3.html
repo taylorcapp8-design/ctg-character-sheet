@@ -106,19 +106,25 @@ function build(){
     const isActive=state.active.includes(fac.id);const sel=state.selected[fac.id];
     const card=document.createElement('div');card.className='faculty-card'+(isActive?' active-card':'');
     card.innerHTML=`
-      <div class="faculty-header"><span class="faculty-icon">${fac.icon}</span><span class="faculty-name">${fac.name}</span></div>
+      <div class="faculty-header"><span class="faculty-icon">${fac.icon}</span><span class="faculty-name">${fac.name}</span>
+        <button class="fac-active-btn${isActive?' is-active':''}" onclick="toggleActive('${fac.id}')"><span class="fac-tick-box">${isActive?'✓':''}</span>${isActive?'ACTIVE':'ACTIVATE'}</button>
+      </div>
       <div class="faculty-note">${fac.note}</div>
       <div class="tuning-list">
         ${fac.tuning.map((t,i)=>`<div class="tuning-entry ${sel===i?'selected':''}${sel===i&&isActive?' active-sel':''}" onclick="selectTuning('${fac.id}',${i})"><div class="tuning-name">${t.name}${t.sub?`<span class="tuning-sub"> — ${t.sub}</span>`:''}</div><div class="tuning-actions"><strong>Actions:</strong> ${t.actions}</div></div>`).join('')}
-      </div>
-      <div class="select-rule"><span class="sel-ind ${isActive?'on':''}"></span><span>${isActive?'ACTIVE — click tuning to switch':'Click tuning to select'}</span></div>`;
+      </div>`;
     grid.appendChild(card);
   });
 }
 function selectTuning(fid,ti){
-  const isActive=state.active.includes(fid);
-  if(state.selected[fid]===ti){state.selected[fid]=null;if(isActive){state.active[state.active.indexOf(fid)]=null;}}
-  else{state.selected[fid]=ti;if(!isActive){const e=state.active.indexOf(null);if(e!==-1)state.active[e]=fid;else{state.active[0]=state.active[1];state.active[1]=fid;}}}
+  if(state.selected[fid]===ti)state.selected[fid]=null;
+  else state.selected[fid]=ti;
+  persist();build();updateActiveBar();
+}
+function toggleActive(fid){
+  const idx=state.active.indexOf(fid);
+  if(idx!==-1)state.active[idx]=null;
+  else{const e=state.active.indexOf(null);if(e!==-1)state.active[e]=fid;else{state.active[0]=state.active[1];state.active[1]=fid;}}
   persist();build();updateActiveBar();
 }
 (function(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();
