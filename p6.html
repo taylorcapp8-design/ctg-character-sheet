@@ -147,32 +147,12 @@
     </div>
   </div>
 
-  <!-- TEMP BUFFS -->
-  <div class="block">
-    <div class="sec-label"><span class="mk">⚡</span>TEMP BUFFS <span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:var(--text-dim);font-style:normal;">— active bonuses added to attack modifiers</span></div>
-    <div class="panel" style="padding:10px 14px;">
-      <div id="c-temp-buffs" style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px;"></div>
-      <button class="add-btn" onclick="addTempBuff()" style="font-size:0.56rem;padding:4px 12px;">+ ADD BUFF</button>
-    </div>
-  </div>
-
   <!-- ROW 2: ATTACK CALCULATOR (moved up) -->
   <div class="block">
     <div class="sec-label"><span class="mk">⚔</span>ATTACK CALCULATOR</div>
     <div class="panel">
       <div class="two-col" id="c-loadout"></div>
       <div id="c-oddity" style="margin-top:10px;"></div>
-      <!-- DICE ROLLER -->
-      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:10px;">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;">
-          <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--text-dim);">DICE ROLLER</span>
-          <button class="add-btn" onclick="addDie()" style="font-size:0.52rem;padding:3px 10px;">+ DIE</button>
-          <button onclick="rollAllDice()" style="font-family:'Bebas Neue',sans-serif;font-size:0.78rem;letter-spacing:2px;padding:4px 14px;background:var(--purple);border:2px solid var(--ink);color:#fff;cursor:pointer;transform:skewX(-8deg);">ROLL ALL</button>
-          <button onclick="clearDice()" style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;padding:3px 10px;background:transparent;border:1px solid var(--border2);color:var(--text-dim);cursor:pointer;">CLEAR</button>
-        </div>
-        <div id="c-dice-pool" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;"></div>
-        <div id="c-dice-results"></div>
-      </div>
     </div>
   </div>
 
@@ -210,6 +190,13 @@
         <div class="sec-label"><span class="mk">♣&#xFE0E;</span>ATTRIBUTES</div>
         <div class="panel" style="padding:8px 10px;">
           <div id="c-stats"></div>
+          <div style="margin-top:7px;padding-top:6px;border-top:1px dashed var(--border);">
+            <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap;">
+              <span style="font-family:'Share Tech Mono',monospace;font-size:0.42rem;letter-spacing:1px;color:var(--gold,#cf9500);white-space:nowrap;">⚡ BUFFS</span>
+              <div id="c-temp-buffs" style="display:flex;flex-wrap:wrap;gap:4px;flex:1;"></div>
+              <button onclick="addTempBuff()" style="font-family:'Share Tech Mono',monospace;font-size:0.42rem;letter-spacing:1px;padding:2px 7px;background:transparent;border:1px solid var(--gold,#cf9500);color:var(--gold,#cf9500);cursor:pointer;white-space:nowrap;">+ ADD</button>
+            </div>
+          </div>
         </div>
       </div>
       <div>
@@ -279,7 +266,7 @@ function pullData(){
   cstate.hearthMax=parseInt(load('ctg-hearth-max'))||6;
   cstate.hearth=parseInt(load('ctg-hearth-cur'))??cstate.hearthMax;
   refreshVitals();
-  buildStats();buildLoadout();buildSkills();buildFaculties();buildEFPassives();buildCustomAbilities();buildTempBuffs();renderDicePool();
+  buildStats();buildLoadout();buildSkills();buildFaculties();buildEFPassives();buildCustomAbilities();buildTempBuffs();
 }
 function buildEFPassives(){
   const el=document.getElementById('ef-passives-list');el.innerHTML='';
@@ -333,15 +320,12 @@ let tempBuffs=[];
 function saveTempBuffs(){store('ctg-temp-buffs',JSON.stringify(tempBuffs));}
 function buildTempBuffs(){
   const el=document.getElementById('c-temp-buffs');el.innerHTML='';
-  if(!tempBuffs.length){el.innerHTML='<span style="font-family:\'Share Tech Mono\',monospace;font-size:0.52rem;color:var(--text-dim);letter-spacing:1px;">No active buffs.</span>';return;}
+  if(!tempBuffs.length){el.innerHTML='<span style="font-family:\'Share Tech Mono\',monospace;font-size:0.42rem;color:var(--text-dim);">none</span>';return;}
   tempBuffs.forEach((b,i)=>{
-    const chip=document.createElement('div');
-    chip.style.cssText='display:flex;align-items:center;gap:5px;padding:4px 8px 4px 10px;background:rgba(207,149,0,0.1);border:1.5px solid var(--gold,#cf9500);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);';
-    chip.innerHTML=`<span style="font-family:'Bebas Neue',sans-serif;font-size:0.85rem;letter-spacing:1px;color:var(--text);">${b.label||b.stat}</span>
-      <span style="font-family:'Anton',sans-serif;font-size:0.95rem;color:var(--gold,#cf9500);">${b.value>=0?'+':''}${b.value}</span>
-      <span style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;color:var(--text-dim);">${b.stat}</span>
-      <button data-del style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.75rem;padding:0 2px;line-height:1;">✕</button>`;
-    chip.querySelector('[data-del]').addEventListener('click',()=>{tempBuffs.splice(i,1);saveTempBuffs();buildTempBuffs();buildLoadout();});
+    const chip=document.createElement('span');
+    chip.style.cssText='display:inline-flex;align-items:center;gap:3px;padding:1px 5px 1px 6px;background:rgba(207,149,0,0.12);border:1px solid var(--gold,#cf9500);font-family:\'Share Tech Mono\',monospace;font-size:0.42rem;color:var(--gold,#cf9500);white-space:nowrap;';
+    chip.innerHTML=`<span style="color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:0.65rem;letter-spacing:0.5px;">${b.label||b.stat}</span> <span style="font-family:'Anton',sans-serif;font-size:0.7rem;">${b.value>=0?'+':''}${b.value}</span><button data-del style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.6rem;padding:0 0 0 2px;line-height:1;">✕</button>`;
+    chip.querySelector('[data-del]').addEventListener('click',()=>{tempBuffs.splice(i,1);saveTempBuffs();buildTempBuffs();buildStats();buildLoadout();});
     el.appendChild(chip);
   });
 }
@@ -360,53 +344,6 @@ function addTempBuff(){
   saveTempBuffs();buildTempBuffs();buildLoadout();
 }
 
-// ── DICE ROLLER ──
-let dicePool=[];let diceIdSeq=1;
-function addDie(sides=6){
-  dicePool.push({id:diceIdSeq++,count:1,sides,mod:0});
-  renderDicePool();
-}
-function removeDie(id){dicePool=dicePool.filter(d=>d.id!==id);renderDicePool();}
-function clearDice(){dicePool=[];document.getElementById('c-dice-results').innerHTML='';renderDicePool();}
-function renderDicePool(){
-  const el=document.getElementById('c-dice-pool');el.innerHTML='';
-  if(!dicePool.length){el.innerHTML='<span style="font-family:\'Share Tech Mono\',monospace;font-size:0.5rem;color:var(--text-dim);">No dice — click + DIE to add.</span>';return;}
-  dicePool.forEach(die=>{
-    const d=document.createElement('div');
-    d.style.cssText='display:flex;align-items:center;gap:5px;padding:5px 8px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%);';
-    d.innerHTML=`<input type="number" class="dc-count" min="1" max="20" value="${die.count}" style="width:32px;text-align:center;background:transparent;border:1px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:1rem;outline:none;padding:1px 2px;">
-      <span style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--text-dim);">×</span>
-      <select class="dc-sides" style="background:transparent;border:1.5px solid var(--purple);color:var(--purple);font-family:'Share Tech Mono',monospace;font-size:0.65rem;outline:none;padding:2px 4px;cursor:pointer;">
-        ${[4,6,8,10,12,20,100].map(s=>`<option value="${s}"${s===die.sides?' selected':''}>${s===100?'d%':'d'+s}</option>`).join('')}
-      </select>
-      <span style="font-family:'Share Tech Mono',monospace;font-size:0.55rem;color:var(--text-dim);">+mod</span>
-      <input type="number" class="dc-mod" value="${die.mod}" style="width:36px;text-align:center;background:transparent;border:1px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:0.9rem;outline:none;padding:1px 2px;">
-      <button data-remove style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.75rem;padding:0 3px;">✕</button>`;
-    d.querySelector('.dc-count').addEventListener('change',e=>{die.count=Math.max(1,Math.min(20,parseInt(e.target.value)||1));e.target.value=die.count;});
-    d.querySelector('.dc-sides').addEventListener('change',e=>{die.sides=parseInt(e.target.value);});
-    d.querySelector('.dc-mod').addEventListener('change',e=>{die.mod=parseInt(e.target.value)||0;});
-    d.querySelector('[data-remove]').addEventListener('click',()=>removeDie(die.id));
-    el.appendChild(d);
-  });
-}
-function rollAllDice(){
-  if(!dicePool.length)return;
-  const el=document.getElementById('c-dice-results');
-  let grandTotal=0;
-  const lines=dicePool.map(die=>{
-    const rolls=Array.from({length:die.count},()=>Math.floor(Math.random()*die.sides)+1);
-    const rollSum=rolls.reduce((a,b)=>a+b,0);
-    const total=rollSum+die.mod;
-    grandTotal+=total;
-    const dieLabel=die.sides===100?'d%':'d'+die.sides;
-    return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-      <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);min-width:52px;">${die.count}${dieLabel}${die.mod?`${die.mod>=0?'+':''}${die.mod}`:''}:</span>
-      <span style="font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.82rem;color:var(--text);">[${rolls.join(', ')}]${die.mod?` + ${die.mod}`:''}</span>
-      <span style="font-family:'Anton',sans-serif;font-size:0.95rem;color:var(--purple2);">= ${total}</span>
-    </div>`;
-  });
-  el.innerHTML=`<div style="border-top:1px solid var(--border);padding-top:8px;">${lines.join('')}<div style="display:flex;align-items:baseline;gap:8px;margin-top:6px;border-top:1px dashed var(--border);padding-top:6px;"><span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);">TOTAL</span><span style="font-family:'Anton',sans-serif;font-size:1.8rem;color:var(--gold);line-height:1;">${grandTotal}</span></div></div>`;
-}
 
 function adjHearth(d){cstate.hearth=Math.max(0,Math.min(cstate.hearthMax,cstate.hearth+d));refreshVitals();saveCS();}
 function adjHearthMax(d){cstate.hearthMax=Math.max(1,cstate.hearthMax+d);cstate.hearth=Math.min(cstate.hearth,cstate.hearthMax);store('ctg-hearth-max',cstate.hearthMax);refreshVitals();saveCS();}
@@ -450,9 +387,11 @@ function buildStats(){
   const wrap=document.createElement('div');
   wrap.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:4px;';
   stats.forEach(st=>{
+    const buffBonus=tempBuffs.filter(b=>b.stat&&b.stat.toLowerCase()===st.name.toLowerCase()).reduce((s,b)=>s+(parseInt(b.value)||0),0);
+    const buffBadge=buffBonus?`<span style="font-family:'Anton',sans-serif;font-size:0.6rem;color:var(--gold,#cf9500);margin-left:1px;">⚡${buffBonus>=0?'+':''}${buffBonus}</span>`:'';
     const row=document.createElement('div');
     row.style.cssText='display:flex;align-items:center;gap:5px;padding:4px 7px;background:var(--paper2,rgba(0,0,0,0.05));border:1px solid var(--border);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);';
-    row.innerHTML=`<span style="color:var(--purple2);font-size:0.78rem;width:14px;flex-shrink:0;">${st.icon||'◆'}</span><span style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:1px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${st.name||'—'}</span><span style="font-family:'Anton',sans-serif;font-size:1.1rem;color:var(--green3);flex-shrink:0;">${st.score||0}</span>`;
+    row.innerHTML=`<span style="color:var(--purple2);font-size:0.78rem;width:14px;flex-shrink:0;">${st.icon||'◆'}</span><span style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:1px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${st.name||'—'}</span><span style="font-family:'Anton',sans-serif;font-size:1.1rem;color:var(--green3);flex-shrink:0;">${st.score||0}</span>${buffBadge}`;
     wrap.appendChild(row);
   });
   el.appendChild(wrap);
@@ -521,6 +460,17 @@ function buildLoadout(){
         <label style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--gold);letter-spacing:1px;">ATTACK TOTAL</label>
         <span id="res-${slotKey}" style="font-family:'Anton',sans-serif;font-size:2.2rem;color:var(--gold);font-style:italic;line-height:1;">10</span>
       </div>
+    </div>
+    <div style="margin-top:6px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:5px 10px;background:rgba(0,0,0,0.04);border:1px dashed var(--border2);">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);">+ EXTRA DICE</span>
+      <input id="xd-count-${slotKey}" type="number" min="1" max="20" value="1" style="width:28px;text-align:center;background:transparent;border:1px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:0.95rem;outline:none;padding:1px 2px;">
+      <select id="xd-sides-${slotKey}" style="background:transparent;border:1.5px solid var(--purple);color:var(--purple);font-family:'Share Tech Mono',monospace;font-size:0.6rem;outline:none;padding:2px 4px;cursor:pointer;">
+        ${[4,6,8,10,12,20].map(s=>`<option value="${s}">d${s}</option>`).join('')}
+      </select>
+      <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);">+</span>
+      <input id="xd-mod-${slotKey}" type="number" value="0" style="width:30px;text-align:center;background:transparent;border:1px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:0.95rem;outline:none;padding:1px 2px;">
+      <button id="xd-roll-${slotKey}" style="font-family:'Bebas Neue',sans-serif;font-size:0.72rem;letter-spacing:2px;padding:3px 12px;background:var(--green3);border:2px solid var(--ink);color:#000;cursor:pointer;transform:skewX(-7deg);">ROLL</button>
+      <span id="xd-result-${slotKey}" style="font-family:'Anton',sans-serif;font-size:0.95rem;color:var(--green3);font-style:italic;"></span>
     </div>`;
 
     return`<div style="padding:12px 14px;border:2px solid var(--border);border-left:5px solid ${ac};background:var(--paper2,rgba(0,0,0,0.04));clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
@@ -551,6 +501,18 @@ function buildLoadout(){
       const mod=parseInt(rollEl.dataset.mod)||0;
       const upd=()=>{resEl.textContent=(parseInt(rollEl.value)||0)+mod;};
       rollEl.addEventListener('input',upd);upd();
+    }
+    const xdBtn=document.getElementById('xd-roll-'+slot);
+    if(xdBtn){
+      xdBtn.addEventListener('click',()=>{
+        const count=Math.max(1,Math.min(20,parseInt(document.getElementById('xd-count-'+slot).value)||1));
+        const sides=parseInt(document.getElementById('xd-sides-'+slot).value)||6;
+        const mod=parseInt(document.getElementById('xd-mod-'+slot).value)||0;
+        const rolls=Array.from({length:count},()=>Math.floor(Math.random()*sides)+1);
+        const total=rolls.reduce((a,b)=>a+b,0)+mod;
+        const el=document.getElementById('xd-result-'+slot);
+        el.innerHTML=`[${rolls.join(',')}]${mod?(mod>=0?'+':'')+mod:''} <span style="color:var(--gold);">= ${total}</span>`;
+      });
     }
   });
 
