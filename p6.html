@@ -11,6 +11,14 @@
 details>summary{list-style:none;}
 details>summary::-webkit-details-marker{display:none;}
 details>summary::marker{display:none;}
+.calc-btn{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:1px;padding:10px 4px;background:var(--paper2,rgba(0,0,0,0.06));border:1.5px solid var(--border);color:var(--text);cursor:pointer;transition:all .1s;}
+.calc-btn:hover{background:var(--purple);border-color:var(--purple);color:#fff;}
+.calc-btn.calc-op{background:rgba(109,40,217,0.12);border-color:var(--purple);color:var(--purple);}
+.calc-btn.calc-op:hover{background:var(--purple);color:#fff;}
+.calc-btn.calc-fn{background:rgba(0,0,0,0.1);color:var(--text-dim);}
+.calc-btn.calc-fn:hover{background:var(--red);border-color:var(--red);color:#fff;}
+.calc-btn.calc-eq{background:var(--gold,#cf9500);border-color:var(--gold,#cf9500);color:#000;font-size:1.3rem;padding:12px 4px;}
+.calc-btn.calc-eq:hover{filter:brightness(1.15);}
 </style>
 <script>
 (function(){const t=localStorage.getItem('ctg-theme')||'light';document.documentElement.setAttribute('data-theme',t);})();
@@ -154,18 +162,13 @@ details>summary::marker{display:none;}
     </div>
   </div>
 
-  <!-- ROW 2: ATTACK CALCULATOR — collapsible -->
+  <!-- ROW 2: ATTACK CALCULATOR -->
   <div class="block">
-    <details id="attack-calc-details">
-      <summary class="sec-label" style="cursor:pointer;user-select:none;display:flex;align-items:center;gap:0;margin:0;">
-        <span id="atk-arrow" style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;color:var(--text-dim);margin-right:6px;">▸</span>
-        <span class="mk">⚔</span>ATTACK CALCULATOR
-      </summary>
-      <div class="panel" style="margin-top:8px;">
-        <div class="two-col" id="c-loadout"></div>
-        <div id="c-oddity" style="margin-top:10px;"></div>
-      </div>
-    </details>
+    <div class="sec-label"><span class="mk">⚔</span>ATTACK CALCULATOR</div>
+    <div class="panel">
+      <div class="two-col" id="c-loadout"></div>
+      <div id="c-oddity" style="margin-top:10px;"></div>
+    </div>
   </div>
 
   <!-- ROW 3: ACTIVE SKILLS + FACULTIES (skills wider) -->
@@ -261,6 +264,48 @@ details>summary::marker{display:none;}
     <div class="panel">
       <textarea id="c-notes" class="notes-area" placeholder="Initiative order, enemy HP, terrain notes, anything mid-combat..."></textarea>
     </div>
+  </div>
+
+  <!-- CALCULATOR — collapsible -->
+  <div class="block">
+    <details id="calc-details">
+      <summary class="sec-label" style="cursor:pointer;user-select:none;display:flex;align-items:center;gap:0;margin:0;">
+        <span id="calc-arrow" style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;color:var(--text-dim);margin-right:6px;">▸</span>
+        <span class="mk">◈</span>CALCULATOR
+      </summary>
+      <div class="panel" style="margin-top:8px;padding:14px 16px;">
+        <div id="calc-display" style="font-family:'Anton',sans-serif;font-size:1.8rem;color:var(--text);background:var(--paper2,rgba(0,0,0,0.06));border:2px solid var(--border);padding:8px 14px;text-align:right;min-height:52px;letter-spacing:1px;overflow:hidden;white-space:nowrap;margin-bottom:10px;position:relative;">
+          <span id="calc-expr" style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);position:absolute;top:5px;left:10px;"></span>
+          <span id="calc-val">0</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+          <button class="calc-btn calc-fn" onclick="calcClear()">C</button>
+          <button class="calc-btn calc-fn" onclick="calcOp('%')">%</button>
+          <button class="calc-btn calc-fn" onclick="calcBackspace()">⌫</button>
+          <button class="calc-btn calc-op" onclick="calcOp('÷')">÷</button>
+
+          <button class="calc-btn" onclick="calcNum('7')">7</button>
+          <button class="calc-btn" onclick="calcNum('8')">8</button>
+          <button class="calc-btn" onclick="calcNum('9')">9</button>
+          <button class="calc-btn calc-op" onclick="calcOp('×')">×</button>
+
+          <button class="calc-btn" onclick="calcNum('4')">4</button>
+          <button class="calc-btn" onclick="calcNum('5')">5</button>
+          <button class="calc-btn" onclick="calcNum('6')">6</button>
+          <button class="calc-btn calc-op" onclick="calcOp('−')">−</button>
+
+          <button class="calc-btn" onclick="calcNum('1')">1</button>
+          <button class="calc-btn" onclick="calcNum('2')">2</button>
+          <button class="calc-btn" onclick="calcNum('3')">3</button>
+          <button class="calc-btn calc-op" style="grid-row:span 2;" onclick="calcOp('+')">+</button>
+
+          <button class="calc-btn" style="grid-column:span 2;" onclick="calcNum('0')">0</button>
+          <button class="calc-btn" onclick="calcDot()">.</button>
+
+          <button class="calc-btn calc-eq" style="grid-column:span 4;" onclick="calcEquals()">=</button>
+        </div>
+      </div>
+    </details>
   </div>
 
   <!-- REST -->
@@ -479,12 +524,9 @@ function applyDmg(){
 }
 document.getElementById('dmg-in').addEventListener('input',calcDmg);
 
-// ── DETAILS ARROW TOGGLES ──
+// ── DETAILS ARROW TOGGLE ──
 document.getElementById('dmg-calc-details').addEventListener('toggle',function(){
   document.getElementById('dmg-arrow').textContent=this.open?'▾':'▸';
-});
-document.getElementById('attack-calc-details').addEventListener('toggle',function(){
-  document.getElementById('atk-arrow').textContent=this.open?'▾':'▸';
 });
 
 // ── STATS (compact 2-col) ──
@@ -820,6 +862,53 @@ function buildConditions(){
     el.appendChild(btn);
   });
 }
+
+// ── CALCULATOR ──
+(function(){
+  let _expr='';let _val='0';let _justEvaled=false;
+  const disp=()=>document.getElementById('calc-val');
+  const expr=()=>document.getElementById('calc-expr');
+  const OPS={'÷':'/','×':'*','−':'-','+':'+','%':'%'};
+  function render(){disp().textContent=_val;expr().textContent=_expr;}
+  window.calcNum=function(n){
+    if(_justEvaled){_expr='';_val='0';_justEvaled=false;}
+    if(_val==='0'&&n!=='.')_val=n;
+    else if(_val.length<12)_val+=n;
+    render();
+  };
+  window.calcDot=function(){
+    if(_justEvaled){_expr='';_val='0';_justEvaled=false;}
+    if(!_val.includes('.'))_val+='.';
+    render();
+  };
+  window.calcOp=function(op){
+    _justEvaled=false;
+    if(op==='%'){try{_val=String(parseFloat(_val)/100);}catch(e){_val='0';}render();return;}
+    _expr=(_expr?_expr:_val)+' '+op+' ';_val='0';render();
+  };
+  window.calcEquals=function(){
+    if(!_expr)return;
+    const full=_expr+_val;
+    expr().textContent=full+' =';
+    try{
+      const safe=full.replace(/÷/g,'/').replace(/×/g,'*').replace(/−/g,'-');
+      // eslint-disable-next-line no-new-func
+      let result=Function('"use strict";return ('+safe+')')();
+      if(!isFinite(result)){_val='Error';}
+      else{_val=parseFloat(result.toFixed(10)).toString();}
+    }catch(e){_val='Error';}
+    _expr='';_justEvaled=true;
+    disp().textContent=_val;
+  };
+  window.calcClear=function(){_expr='';_val='0';_justEvaled=false;render();};
+  window.calcBackspace=function(){
+    if(_justEvaled){calcClear();return;}
+    _val=_val.length>1?_val.slice(0,-1):'0';render();
+  };
+  document.getElementById('calc-details').addEventListener('toggle',function(){
+    document.getElementById('calc-arrow').textContent=this.open?'▾':'▸';
+  });
+})();
 
 // ── COMBAT NOTES ──
 const noteEl=document.getElementById('c-notes');
