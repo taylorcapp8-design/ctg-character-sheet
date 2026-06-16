@@ -1,81 +1,87 @@
-```
- ██████╗████████╗ ██████╗
-██╔════╝╚══██╔══╝██╔════╝
-██║        ██║   ██║  ███╗
-██║        ██║   ██║   ██║
-╚██████╗   ██║   ╚██████╔╝
- ╚═════╝   ╚═╝    ╚═════╝
+# CTG — Call To Gallahad · Operative Dossier
 
-C A L L   T O   G A L L A H A D
-◈ · OPERATIVE CHARACTER DOSSIER · ◈
-```
-
-A six-page TTRPG character sheet for the homebrew system **Call To Gallahad**.  
-Dark-themed, fully browser-based — no build step, no dependencies, no server required.
+A six-page digital character sheet for the homebrew TTRPG system **Call To Gallahad**.  
+Browser-based, no build step, no server required. Cloud sync via Supabase.
 
 ---
 
-## Setup
+## Quick Start
 
-1. Open `ctg-character-sheet-site/index.html` in any modern browser.
-2. That's it. All data saves automatically to your browser's `localStorage`.
-
-To use on multiple devices, export a save code from the hub page and paste it on the other device.
+1. Open `index.html` in any modern browser.
+2. Log in or create an account on the hub page to enable cloud sync.
+3. All changes auto-save locally and sync to the cloud every 30 seconds.
 
 ---
 
 ## File Map
 
 ```
-ctg-character-sheet-site/
-├── index.html          Hub page — character name, page cards, export/import
-├── p1.html             Page I   — Identity, Stats, Harth, EF, Equipment
-├── p2.html             Page II  — Inventory, Armour, Charms, Mula
+ctg-character-sheet/
+├── index.html          Hub — login, character overview, session management
+├── p1.html             Page I   — Identity, Stats, HP, Hearth, Carry
+├── p2.html             Page II  — Gear, Extra Flesh (armour), EF Kit, Carry, Mula
 ├── p3.html             Page III — Core Faculties & Tunings
-├── p4.html             Page IV  — Arsenal, Weapons, Provisions
-├── p5.html             Page V   — Skill Tree (6 columns, budget tracked)
-├── 404.html            Error page (matches site aesthetic)
-├── ctg-themes.css      8 visual themes (Gallahad, Umbra, Ember, Deep,
-│                         Scorch, Arcane, Verdant, Slate)
-└── ctg-theme.js        Theme switcher — injects dot picker into every nav bar
+├── p4.html             Page IV  — Arsenal (weapons), Oddities, Item Catalog
+├── p5.html             Page V   — Skill Tree
+├── p6.html             Page VI  — Combat: vitals, attack calculator, skills, buffs
+├── ctg.css             Main stylesheet
+├── ctg-themes.css      8 visual themes
+├── ctg-theme.js        Theme switcher (injects dot picker into every nav bar)
+├── ctg-sync.js         Supabase cloud sync — login, push, pull, collision guard
+└── 404.html            Error page
 ```
 
 ---
 
 ## Features
 
-| Feature | Pages |
+| Feature | Where |
 |---------|-------|
-| Auto-save to `localStorage` | All |
-| Character name synced across all pages | All |
-| 8 switchable colour themes | All |
-| Floating dice roller (D4–D20) | All |
-| Print stylesheet — clean black-on-white | All |
-| Mobile-responsive layout | All |
-| Skill tree with budget tracking | P5 |
-| Skill tree per-column reset | P5 |
-| Node select animation + connector shimmer | P5 |
-| Last-edited timestamp + session counter | Index |
-| Page data indicator dots | Index |
-| Export / import save code | Index |
+| Auto-save to `localStorage` | All pages |
+| Cloud sync (Supabase) with session collision guard | All pages |
+| 8 switchable colour themes | All pages |
+| Character name synced across all pages | All pages |
+| HP & Hearth (mana) trackers with pip display | P1, P6 |
+| Extra Flesh armour system with body-part SVG | P2 |
+| EF Kit inventory | P2 |
+| Core Faculties + Tuning selection (max 2 active) | P3 |
+| Weapon catalog with stat/dice/quirk editor | P4 |
+| Oddity system — Hearth Cost activation | P4, P6 |
+| Skill Tree with point budget | P5 |
+| Combat page — conditions, damage calc, attack rolls, buffs | P6 |
+| Temp buffs with multi-stat support and presets | P6 |
+| Cross-tab localStorage sync | P1 ↔ P6 |
+
+---
+
+## Cloud Sync
+
+Handled by `ctg-sync.js`. Each user logs in with a **username + PIN**. Data is stored in a single Supabase row keyed by username.
+
+**Collision guard:** before every push, the sync module reads the server's `updated_at` timestamp and session ID. If another session wrote more recently than your last sync, the push is aborted and you're alerted to reload first.
+
+---
+
+## Oddity System (Hearth Cost)
+
+Oddities no longer have charges. Each Oddity has a configurable **Hearth Cost** (set on Page IV). When activated on Page VI, that cost is subtracted directly from the character's Hearth pool. Activation is blocked if current Hearth is below the cost.
 
 ---
 
 ## Themes
 
-Pick from 8 themes using the diamond-dot row in the nav bar.  
-Selection persists across all pages via `localStorage('ctg-theme')`.
+8 themes via the dot row in every nav bar. Persists across pages in `localStorage`.
 
-| Dot | Name | Palette | Identity |
-|-----|------|---------|----------|
-| 🟡 | Gallahad | Olive / Gold | Default — field operator |
-| ⬜ | Umbra | Slate Silver | Shadow ops / noir |
-| 🔴 | Ember | Blood Red | Front-line combat |
-| 🔵 | Deep | Navy Cyan | Naval intelligence |
-| 🟠 | Scorch | Amber Rust | Wasteland survivor |
-| 🟣 | Arcane | Void Purple | Forbidden tech |
-| 🟢 | Verdant | Forest Green | Jungle ops |
-| 🩵 | Slate | Industrial Teal | Encrypted HQ |
+| Name | Palette |
+|------|---------|
+| Gallahad | Olive / Gold (default) |
+| Umbra | Slate Silver |
+| Ember | Blood Red |
+| Deep | Navy Cyan |
+| Scorch | Amber Rust |
+| Arcane | Void Purple |
+| Verdant | Forest Green |
+| Slate | Industrial Teal |
 
 ---
 
@@ -83,24 +89,34 @@ Selection persists across all pages via `localStorage('ctg-theme')`.
 
 | Key | Content |
 |-----|---------|
-| `ctg-char-name` | Character name string |
-| `ctg-p1` | JSON — stats, harth, EF, equipment, field notes |
-| `ctg-p1-portrait` | Base64 portrait image |
-| `ctg-p2` | JSON — armour, charms, inventory, mula |
+| `ctg-f-name` | Character name |
+| `ctg-f-code` | Code name |
+| `ctg-f-level` | Level |
+| `ctg-stats` | JSON array — attribute names, icons, scores |
+| `ctg-harth-cur` | Current HP |
+| `ctg-harth-max` | Max HP |
+| `ctg-harth-temp` | Temp HP |
+| `ctg-hearth-cur` | Current Hearth (mana) |
+| `ctg-hearth-max` | Max Hearth |
+| `ctg-ef` | Total EF (armour) value |
+| `ctg-ef-parts` | JSON — per-body-part EF equipment |
+| `ctg-ef-kit` | JSON — EF Kit items |
+| `ctg-charms` | JSON — belt charm list |
+| `ctg-inventory` | JSON — carry list |
+| `ctg-mula` | Currency amount |
+| `ctg-weapons` | JSON — weapon list with slot/stat/dice/quirk |
+| `ctg-food` | JSON — oddity list with hearthCost and slot |
+| `ctg-catalog` | JSON — weapon & oddity catalog |
+| `ctg-item-catalog` | JSON — gear/consumable item catalog |
 | `ctg-faculties` | JSON — active faculties + tuning selections |
-| `ctg-p4` | JSON — provision charge states |
-| `ctg-skills` | JSON array — selected skill IDs |
-| `ctg-last-updated` | ISO timestamp of last save |
-| `ctg-edit-count` | Integer — cumulative save count |
-| `ctg-theme` | Active theme class string |
-
----
-
-## Credits
-
-Homebrew system design — **Call To Gallahad**  
-Character sheet design & implementation — Claude Sonnet 4.6 + operator  
-Fonts — [Bebas Neue](https://fonts.google.com/specimen/Bebas+Neue), [Cinzel](https://fonts.google.com/specimen/Cinzel), [Rajdhani](https://fonts.google.com/specimen/Rajdhani), [Share Tech Mono](https://fonts.google.com/specimen/Share+Tech+Mono) via Google Fonts
+| `ctg-skills` | JSON array — purchased skill IDs |
+| `ctg-custom-abilities` | JSON — custom ability entries |
+| `ctg-temp-buffs` | JSON — active temp stat buffs |
+| `ctg-buff-presets` | JSON — saved buff presets |
+| `ctg-combat-notes` | Combat notes textarea |
+| `ctg-theme` | Active theme name |
+| `ctg-portrait` | Base64 portrait image |
+| `ctg-last-edit` | Timestamp of last local save |
 
 ---
 
