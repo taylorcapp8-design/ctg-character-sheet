@@ -171,18 +171,19 @@ function setEquip(wid,slotVal){
 
 /* ── ODDITIES ────────────────────────────────────────────── */
 const DEF_FOOD=[
-  {id:'f1',name:'Lemon-Static Eel Rinds',flavor:'Sour · Salty · Glassy-crunch · Slightly electric',quirk:'As a Free Reaction, shoot electricity from your fingertips — inflict Shock on an enemy in range. They withdraw their current card and redraw; if unable, they skip their turn.',quip:'"Zap your tongue. Respect the eel."',charges:1,maxCharges:1,slot:null},
-  {id:'f2',name:'Ink-Dipped Calamari',flavor:'Savory-sweet · Ocean-deep · Licorice · Stains lips black',quirk:'Your blood turns viscous black. Discard up to 2 Cards from your Hand and Redraw them.',quip:'"Pop it. Ink it. Regret nothing."',charges:1,maxCharges:1,slot:null},
-  {id:'f3',name:'Coal-Fire Tentacle Twist',flavor:'Burnt sugar · Ash · Peppered salt · Chewy',quirk:'Breathe flame from your fingertips — attack with ♦ Diamond Cards using your Flicker to inflict Burn. Roll D6: Evens = +1 damage, Odds = nothing.',quip:'"Chewy enough to fight back!"',charges:1,maxCharges:1,slot:null},
+  {id:'f1',name:'Lemon-Static Eel Rinds',flavor:'Sour · Salty · Glassy-crunch · Slightly electric',quirk:'As a Free Reaction, shoot electricity from your fingertips — inflict Shock on an enemy in range. They withdraw their current card and redraw; if unable, they skip their turn.',quip:'"Zap your tongue. Respect the eel."',hearthCost:1,slot:null},
+  {id:'f2',name:'Ink-Dipped Calamari',flavor:'Savory-sweet · Ocean-deep · Licorice · Stains lips black',quirk:'Your blood turns viscous black. Discard up to 2 Cards from your Hand and Redraw them.',quip:'"Pop it. Ink it. Regret nothing."',hearthCost:1,slot:null},
+  {id:'f3',name:'Coal-Fire Tentacle Twist',flavor:'Burnt sugar · Ash · Peppered salt · Chewy',quirk:'Breathe flame from your fingertips — attack with ♦ Diamond Cards using your Flicker to inflict Burn. Roll D6: Evens = +1 damage, Odds = nothing.',quip:'"Chewy enough to fight back!"',hearthCost:1,slot:null},
 ];
 let food=[];
 try{const s=load('ctg-food');food=s?JSON.parse(s):[];}catch(e){food=[];}
-// migrate: ensure every item has slot, charges, maxCharges; strip stale fields
+// migrate: ensure every item has slot and hearthCost; strip stale charge fields
 food.forEach(f=>{
   if(f.slot===undefined)f.slot=null;
   delete f.harth;
-  if(f.charges===undefined){f.charges=f.charged?1:0;}
-  if(f.maxCharges===undefined){f.maxCharges=1;}
+  if(f.hearthCost===undefined){f.hearthCost=f.maxCharges??1;}
+  delete f.charges;
+  delete f.maxCharges;
   delete f.charged;
 });
 function saveFood(){store('ctg-food',JSON.stringify(food));}
@@ -195,9 +196,7 @@ function renderFood(){
   const grid=document.getElementById('food-grid');grid.innerHTML='';
   food.forEach(fd=>{
     const isEq=fd.slot==='equipped';
-    const hasCharges=fd.charges>0;
-    const card=document.createElement('div');card.className='food-card'+(hasCharges?'':' depleted');card.dataset.id=fd.id;
-    const pips=Array.from({length:fd.maxCharges},(_,i)=>`<span class="charge-pip${i<fd.charges?' full':''}" data-pip="${i}" title="${i<fd.charges?'Spend charge':'Restore charge'}"></span>`).join('');
+    const card=document.createElement('div');card.className='food-card';card.dataset.id=fd.id;
     card.innerHTML=`
       <button class="card-del" title="Delete oddity" data-del="${fd.id}">✕</button>
       <div class="food-head">
@@ -210,26 +209,24 @@ function renderFood(){
         <input class="ed food-quip" data-f="quip" value="${esc(fd.quip)}" placeholder="Tagline...">
       </div>
       <div class="food-footer">
-        <div class="food-charge-area">
-          <div class="charge-pips">${pips}</div>
-          <span class="food-charge-label">${fd.charges}/${fd.maxCharges} CHARGE${fd.maxCharges!==1?'S':''}</span>
-          <button class="charge-max-btn" data-add title="Add charge slot">+</button>
-          ${fd.maxCharges>1?`<button class="charge-max-btn" data-rem title="Remove charge slot">−</button>`:''}
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:#3b82f6;white-space:nowrap;">💙 HEARTH COST</span>
+          <button class="charge-max-btn" data-hcost-dec title="Decrease cost">−</button>
+          <input type="number" class="ed" data-f="hearthCost" value="${fd.hearthCost??1}" min="0" style="width:36px;text-align:center;font-family:'Anton',sans-serif;font-size:1rem;background:transparent;border:1.5px solid #3b82f6;color:#3b82f6;outline:none;padding:2px;">
+          <button class="charge-max-btn" data-hcost-inc title="Increase cost">+</button>
         </div>
         <button class="equip-btn ${isEq?'is-main':''}" data-equip-odd="${fd.id}" style="margin-left:auto;">${isEq?'✓ EQUIPPED':'EQUIP FOR COMBAT'}</button>
       </div>`;
     grid.appendChild(card);
     card.querySelectorAll('[data-f]').forEach(inp=>{inp.addEventListener('input',()=>{fd[inp.dataset.f]=inp.value;saveFood();});});
-    card.querySelectorAll('.charge-pip').forEach(pip=>{
-      pip.addEventListener('click',()=>{const i=parseInt(pip.dataset.pip);fd.charges=i<fd.charges?i:i+1;saveFood();renderFood();});
-    });
-    card.querySelector('[data-add]')?.addEventListener('click',()=>{fd.maxCharges++;saveFood();renderFood();});
-    card.querySelector('[data-rem]')?.addEventListener('click',()=>{if(fd.maxCharges>1){fd.maxCharges--;fd.charges=Math.min(fd.charges,fd.maxCharges);saveFood();renderFood();}});
+    const hcInput=card.querySelector('[data-f="hearthCost"]');
+    card.querySelector('[data-hcost-dec]').addEventListener('click',()=>{fd.hearthCost=Math.max(0,(parseInt(fd.hearthCost)||1)-1);hcInput.value=fd.hearthCost;saveFood();});
+    card.querySelector('[data-hcost-inc]').addEventListener('click',()=>{fd.hearthCost=(parseInt(fd.hearthCost)||0)+1;hcInput.value=fd.hearthCost;saveFood();});
     card.querySelector('[data-del]').addEventListener('click',()=>{if(confirm('Delete "'+(fd.name||'this oddity')+'"?')){food=food.filter(x=>x.id!==fd.id);saveFood();renderFood();}});
     card.querySelector('[data-equip-odd]').addEventListener('click',()=>{setEquipOddity(fd.id);});
   });
 }
-function addFood(){food.push({id:uid(),name:'',flavor:'',quirk:'',quip:'',charges:1,maxCharges:1,slot:null});saveFood();renderFood();const cards=document.querySelectorAll('.food-card');cards[cards.length-1].querySelector('.food-name').focus();}
+function addFood(){food.push({id:uid(),name:'',flavor:'',quirk:'',quip:'',hearthCost:1,slot:null});saveFood();renderFood();const cards=document.querySelectorAll('.food-card');cards[cards.length-1].querySelector('.food-name').focus();}
 
 /* ── CATALOG ─────────────────────────────────────────────── */
 const DEF_CAT={
@@ -296,6 +293,10 @@ function renderCatalog(){
           <div class="quirk-label" style="margin-top:8px;">EFFECT</div>
           <textarea class="ed food-quirk-text" data-cf="quirk" rows="4" placeholder="What it does...">${esc(item.quirk||'')}</textarea>
           <input class="ed food-quip" data-cf="quip" value="${esc(item.quip||'')}" placeholder="Tagline...">
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+            <span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:#3b82f6;white-space:nowrap;">💙 HEARTH COST</span>
+            <input type="number" class="ed" data-cf="hearthCost" value="${item.hearthCost??1}" min="0" style="width:48px;text-align:center;font-family:'Anton',sans-serif;font-size:0.9rem;background:transparent;border:1.5px solid #3b82f6;color:#3b82f6;outline:none;padding:2px 4px;">
+          </div>
           <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
             <button class="cat-btn cat-done" style="background:var(--purple);border-color:var(--purple);color:#fff;">✓ DONE</button>
             <button class="cat-btn cat-del" style="color:var(--red);border-color:var(--red);">✕ REMOVE</button>
@@ -330,7 +331,9 @@ function renderCatalog(){
 }
 function addToSheet(item){
   const isW=catTab==='weapons';
-  const copy=Object.assign({},item,{id:uid(),slot:null,charges:1,maxCharges:1});
+  const copy=isW
+    ?Object.assign({},item,{id:uid(),slot:null})
+    :Object.assign({},item,{id:uid(),slot:null,hearthCost:item.hearthCost??1});
   if(isW){weapons.push(copy);saveWeapons();renderWeapons();}
   else{food.push(copy);saveFood();renderFood();}
   flashSaved();

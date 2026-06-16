@@ -10,6 +10,8 @@
   var _interval = null;
   var _tickInterval = null;
   var _lastSynced = null;
+  var _sessionId = 'S' + Math.random().toString(36).slice(2, 9) + Date.now().toString(36);
+  var _collisionWarned = false;
 
   function getClient() {
     if (_client) return _client;
@@ -111,9 +113,36 @@
     if (!c) { setIndicator('offline'); return; }
     setIndicator('saving');
     try {
-      var result = await c.from('sheets').update({ data: collect(), updated_at: new Date().toISOString() }).eq('username', user);
+      // Read current server state to detect a concurrent write from another session
+      var check = await c.from('sheets').select('updated_at,data').eq('username', user).single();
+      if (check.error) throw check.error;
+
+      var serverTs = check.data && check.data.updated_at ? new Date(check.data.updated_at) : null;
+      var serverSession = check.data && check.data.data && check.data.data._ctg_session_id;
+
+      // Collision: server was written by a DIFFERENT session more recently than our last sync
+      if (_lastSynced && serverTs && serverTs.getTime() > _lastSynced.getTime() + 2000 && serverSession !== _sessionId) {
+        setIndicator('offline');
+        if (!_collisionWarned) {
+          _collisionWarned = true;
+          alert(
+            '⚠ SYNC CONFLICT\n\n' +
+            'Another session saved this character after your last sync.\n' +
+            'Reload this page to pull the latest data before saving,\n' +
+            'or your changes will overwrite their work.\n\n' +
+            'Auto-save is paused until you reload.'
+          );
+        }
+        return;
+      }
+
+      var payload = collect();
+      payload._ctg_session_id = _sessionId; // tag this write with our session
+
+      var result = await c.from('sheets').update({ data: payload, updated_at: new Date().toISOString() }).eq('username', user);
       if (result.error) throw result.error;
       _lastSynced = new Date();
+      _collisionWarned = false;
       setIndicator('saved');
       updateLastSyncedDisplay();
     } catch (e) {

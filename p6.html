@@ -7,6 +7,11 @@
 <title>CTG — Combat</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ctg.css">
+<style>
+details>summary{list-style:none;}
+details>summary::-webkit-details-marker{display:none;}
+details>summary::marker{display:none;}
+</style>
 <script>
 (function(){const t=localStorage.getItem('ctg-theme')||'light';document.documentElement.setAttribute('data-theme',t);})();
 </script>
@@ -116,9 +121,11 @@
       </div>
 
       <!-- Damage calculator — collapsed by default -->
-      <div style="margin-top:10px;">
-        <button onclick="toggleDmgCalc()" id="dmg-toggle" style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:2px;color:var(--text-dim);background:transparent;border:1px solid var(--border2);padding:4px 14px;cursor:pointer;transition:color .15s;">▸ DAMAGE CALC</button>
-        <div id="dmg-calc-panel" style="display:none;margin-top:8px;background:var(--paper2,rgba(0,0,0,0.06));border:1.5px solid var(--border);padding:10px 14px;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
+      <details id="dmg-calc-details" style="margin-top:10px;">
+        <summary style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:2px;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;gap:6px;padding:4px 0;user-select:none;">
+          <span id="dmg-arrow">▸</span> DAMAGE CALC
+        </summary>
+        <div style="margin-top:8px;background:var(--paper2,rgba(0,0,0,0.06));border:1.5px solid var(--border);padding:10px 14px;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
           <div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:8px;">EF is subtracted here. The −1 / −2 HP buttons above are raw HP — no EF applied.</div>
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
             <div style="display:flex;flex-direction:column;gap:2px;">
@@ -138,7 +145,7 @@
             <button onclick="applyDmg()" style="background:var(--red-deep,#a8102c);border:2px solid var(--ink);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;padding:8px 16px;cursor:pointer;transform:skewX(-9deg);margin-left:6px;">APPLY DAMAGE</button>
           </div>
         </div>
-      </div>
+      </details>
       <!-- EF Passives -->
       <div id="ef-passives-wrap" style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px;">
         <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--text-dim);margin-bottom:7px;">EF PASSIVES &amp; ABILITIES</div>
@@ -147,13 +154,18 @@
     </div>
   </div>
 
-  <!-- ROW 2: ATTACK CALCULATOR (moved up) -->
+  <!-- ROW 2: ATTACK CALCULATOR — collapsible -->
   <div class="block">
-    <div class="sec-label"><span class="mk">⚔</span>ATTACK CALCULATOR</div>
-    <div class="panel">
-      <div class="two-col" id="c-loadout"></div>
-      <div id="c-oddity" style="margin-top:10px;"></div>
-    </div>
+    <details id="attack-calc-details">
+      <summary class="sec-label" style="cursor:pointer;user-select:none;display:flex;align-items:center;gap:0;margin:0;">
+        <span id="atk-arrow" style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;color:var(--text-dim);margin-right:6px;">▸</span>
+        <span class="mk">⚔</span>ATTACK CALCULATOR
+      </summary>
+      <div class="panel" style="margin-top:8px;">
+        <div class="two-col" id="c-loadout"></div>
+        <div id="c-oddity" style="margin-top:10px;"></div>
+      </div>
+    </details>
   </div>
 
   <!-- ROW 3: ACTIVE SKILLS + FACULTIES (skills wider) -->
@@ -238,14 +250,6 @@
               <div><div style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:1px;line-height:1.1;">Diamonds</div><div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;color:var(--text-dim);">Magic / specials</div></div>
             </div>
           </div>
-          <!-- hand tracker -->
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:0.72rem;letter-spacing:2px;color:var(--purple);margin-bottom:6px;">CARDS IN HAND</div>
-          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
-            <button class="counter-btn" onclick="adjHand(-1)">−</button>
-            <span id="c-hand" style="font-family:'Anton',sans-serif;font-size:1.6rem;color:var(--gold);min-width:28px;text-align:center;">5</span>
-            <button class="counter-btn" onclick="adjHand(1)">+</button>
-            <button onclick="document.getElementById('c-hand').textContent=5;cstate.hand=5;saveCS();" style="background:var(--purple);border:2px solid var(--ink);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:0.7rem;letter-spacing:1px;padding:3px 10px;cursor:pointer;transform:skewX(-8deg);margin-left:4px;">DRAW 5</button>
-          </div>
         </div>
       </div>
     </div>
@@ -264,7 +268,7 @@
     <div style="display:flex;align-items:center;gap:18px;padding:14px 20px;background:rgba(34,196,81,0.06);border:2px solid var(--green3);clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%);">
       <div style="flex:1;">
         <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--green3);margin-bottom:4px;">REST &amp; RECOVERY</div>
-        <div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text-dim);line-height:1.4;">Restores HP · Hearth · Temp HP — recharges all oddity uses · clears active buffs.</div>
+        <div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text-dim);line-height:1.4;">Restores HP · Hearth · Temp HP — clears active buffs.</div>
       </div>
       <button onclick="doRest()" style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:3px;padding:10px 36px;background:var(--green3);border:3px solid var(--ink);color:#000;cursor:pointer;transform:skewX(-8deg);transition:all .15s;flex-shrink:0;" onmouseover="this.style.filter='brightness(1.15)'" onmouseout="this.style.filter=''">⬡ REST</button>
     </div>
@@ -284,7 +288,7 @@ function store(k,v){try{localStorage.setItem(k,v);localStorage.setItem('ctg-last
 let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
 
 // ── COMBAT STATE ──
-const cstate={harth:6,harthMax:6,temp:0,ef:0,round:1,hand:5,conditions:new Set(),hearth:6,hearthMax:6};
+const cstate={harth:6,harthMax:6,temp:0,ef:0,round:1,conditions:new Set(),hearth:6,hearthMax:6};
 
 // ── PULL DATA FROM OTHER PAGES ──
 function pullData(){
@@ -446,20 +450,12 @@ function applyBuff(){
 function adjHearth(d){cstate.hearth=Math.max(0,Math.min(cstate.hearthMax,cstate.hearth+d));refreshVitals();saveCS();}
 function adjHearthMax(d){cstate.hearthMax=Math.max(1,cstate.hearthMax+d);cstate.hearth=Math.min(cstate.hearth,cstate.hearthMax);store('ctg-hearth-max',cstate.hearthMax);refreshVitals();saveCS();}
 function doRest(){
-  // Restore HP, Hearth, clear Temp HP
   cstate.harth=cstate.harthMax;
   cstate.hearth=cstate.hearthMax;
   cstate.temp=0;
   saveCS();refreshVitals();
-  // Reset oddity charges to max
-  let odds=[];try{const s=load('ctg-food');if(s)odds=JSON.parse(s);}catch(e){}
-  let changed=false;
-  odds.forEach(o=>{if((o.maxCharges??1)&&o.charges<(o.maxCharges??1)){o.charges=o.maxCharges??1;changed=true;}});
-  if(changed)store('ctg-food',JSON.stringify(odds));
-  // Clear active temp buffs (they're temporary by nature)
   tempBuffs=[];saveTempBuffs();
   buildTempBuffs();buildStats();buildLoadout();
-  // Flash feedback on the REST button
   const btn=document.querySelector('[onclick="doRest()"]');
   if(btn){const orig=btn.textContent;btn.textContent='✓ RESTED';btn.style.background='var(--purple)';setTimeout(()=>{btn.textContent=orig;btn.style.background='var(--green3)';},1400);}
 }
@@ -471,7 +467,6 @@ function combatHeal(n){cstate.harth=Math.min(cstate.harthMax,cstate.harth+n);ref
 function adjTemp(d){cstate.temp=Math.max(0,cstate.temp+d);refreshVitals();saveCS();}
 function adjRound(d){cstate.round=Math.max(1,cstate.round+d);document.getElementById('c-round').textContent=cstate.round;}
 function resetRound(){cstate.round=1;document.getElementById('c-round').textContent=1;}
-function adjHand(d){cstate.hand=Math.max(0,cstate.hand+d);document.getElementById('c-hand').textContent=cstate.hand;}
 function calcDmg(){
   const inc=parseInt(document.getElementById('dmg-in').value)||0;
   const actual=Math.max(0,inc-cstate.ef);
@@ -484,14 +479,13 @@ function applyDmg(){
 }
 document.getElementById('dmg-in').addEventListener('input',calcDmg);
 
-// ── DAMAGE CALC TOGGLE ──
-function toggleDmgCalc(){
-  const panel=document.getElementById('dmg-calc-panel');
-  const btn=document.getElementById('dmg-toggle');
-  const open=panel.style.display==='none';
-  panel.style.display=open?'block':'none';
-  btn.textContent=open?'▾ DAMAGE CALC':'▸ DAMAGE CALC';
-}
+// ── DETAILS ARROW TOGGLES ──
+document.getElementById('dmg-calc-details').addEventListener('toggle',function(){
+  document.getElementById('dmg-arrow').textContent=this.open?'▾':'▸';
+});
+document.getElementById('attack-calc-details').addEventListener('toggle',function(){
+  document.getElementById('atk-arrow').textContent=this.open?'▾':'▸';
+});
 
 // ── STATS (compact 2-col) ──
 function buildStats(){
@@ -523,7 +517,22 @@ function buildStats(){
 function useOddity(id){
   let odds=[];try{const s=load('ctg-food');if(s)odds=JSON.parse(s);}catch(e){}
   const o=odds.find(x=>x.id===id);
-  if(o){o.charges=Math.max(0,(o.charges??1)-1);store('ctg-food',JSON.stringify(odds));buildLoadout();}
+  if(!o)return;
+  const cost=parseInt(o.hearthCost)||1;
+  if(cstate.hearth<cost){
+    // Flash the Hearth display red — not enough Hearth to activate
+    const hearthEl=document.getElementById('c-hearth-cur');
+    if(hearthEl){
+      hearthEl.style.transition='color .1s,transform .1s';
+      hearthEl.style.color='var(--red)';hearthEl.style.transform='scale(1.25)';
+      setTimeout(()=>{hearthEl.style.color='#3b82f6';hearthEl.style.transform='';},700);
+    }
+    return;
+  }
+  cstate.hearth=Math.max(0,cstate.hearth-cost);
+  store('ctg-hearth-cur',cstate.hearth);
+  refreshVitals();
+  buildLoadout();
 }
 function buildLoadout(){
   let weapons=[];try{const s=load('ctg-weapons');if(s)weapons=JSON.parse(s);}catch(e){}
@@ -658,17 +667,21 @@ function buildLoadout(){
   const eq=odds.find(o=>o.slot==='equipped')||null;
   const oddEl=document.getElementById('c-oddity');
   if(eq){
+    const cost=parseInt(eq.hearthCost)||1;
+    const canUse=cstate.hearth>=cost;
     oddEl.innerHTML=`<div style="padding:12px 14px;border:2px solid var(--gold);border-left:5px solid var(--gold);background:rgba(217,119,6,0.06);clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
         <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--gold);">✤ ODDITY</span>
-        <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;padding:2px 8px;background:${(eq.charges??0)>0?'var(--gold)':'var(--text-dim)'};color:${(eq.charges??0)>0?'#000':'#fff'};letter-spacing:1px;">${(eq.charges??0)>0?`${eq.charges}/${eq.maxCharges??1} CHARGE${(eq.maxCharges??1)!==1?'S':''}`:'DEPLETED'}</span>
+        <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;padding:2px 8px;background:rgba(59,130,246,0.15);border:1px solid #3b82f6;color:#3b82f6;letter-spacing:1px;">💙 COSTS ${cost} HEARTH</span>
+        ${!canUse?`<span style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--red);letter-spacing:1px;">⚠ HEARTH TOO LOW (${cstate.hearth}/${cost})</span>`:''}
       </div>
       <div style="font-family:'Anton',sans-serif;font-style:italic;font-size:1.1rem;color:var(--text);margin-bottom:4px;">${eq.name}</div>
       ${eq.flavor?`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);margin-bottom:6px;">${eq.flavor}</div>`:''}
       <div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.4;margin-bottom:8px;">${eq.quirk||''}</div>
-      ${(eq.charges??0)>0
-        ?`<button onclick="useOddity('${eq.id}')" style="background:var(--gold);border:2px solid var(--ink);color:#000;font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;padding:7px 18px;cursor:pointer;transform:skewX(-9deg);">USE — SPEND CHARGE ▶</button>`
-        :`<div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;color:var(--text-dim);letter-spacing:1px;">DEPLETED — recharge after rest</div>`}
+      ${canUse
+        ?`<button onclick="useOddity('${eq.id}')" style="background:var(--gold);border:2px solid var(--ink);color:#000;font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;padding:7px 18px;cursor:pointer;transform:skewX(-9deg);">USE — SPEND ${cost} HEARTH ▶</button>`
+        :`<button disabled style="background:var(--text-dim);border:2px solid var(--border);color:#666;font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;padding:7px 18px;cursor:not-allowed;transform:skewX(-9deg);opacity:0.5;">USE — SPEND ${cost} HEARTH ▶</button>`
+      }
     </div>`;
   }else{
     oddEl.innerHTML=`<div class="loadout-empty"><div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;color:var(--text-dim);">✤ ODDITY — EMPTY</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);margin-top:5px;">Equip an oddity from Page IV</div></div>`;
