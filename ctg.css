@@ -20,7 +20,7 @@ body{
     radial-gradient(ellipse 60% 50% at 100% 0%,rgba(109,40,217,0.07) 0%,transparent 55%),
     radial-gradient(ellipse 55% 55% at 0% 100%,rgba(21,154,60,0.05) 0%,transparent 55%);
   background-size:7px 7px,100% 100%,100% 100%;
-  color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;line-height:1.5;min-height:100vh;padding-bottom:40px;
+  color:var(--text);font-family:'Rajdhani',sans-serif;font-size:16px;line-height:1.5;min-height:100vh;padding-bottom:40px;overflow-x:hidden;
 }
 
 /* ── tapered ink brush-strokes (thick → taper) ───────────── */
@@ -44,10 +44,7 @@ body{
 .save-flash.show{opacity:1;}
 
 /* ═══ TRANSITIONS ═══════════════════════════════════════════ */
-.page-wrap{animation:pageIn .32s cubic-bezier(.2,.8,.2,1) both;position:relative;z-index:2;}
-@keyframes pageIn{from{opacity:0;transform:translateX(48px) skewX(-3deg);}to{opacity:1;transform:translateX(0) skewX(0);}}
-.page-wrap.exit{animation:pageOut .2s ease-in both;}
-@keyframes pageOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-48px) skewX(3deg);}}
+.page-wrap{position:relative;z-index:2;} /* entry/exit handled by GSAP in ctg-motion.js */
 
 /* ═══ SHEET / HEADER ════════════════════════════════════════ */
 .sheet{max-width:1000px;margin:0 auto;padding:24px 20px 50px;position:relative;}
