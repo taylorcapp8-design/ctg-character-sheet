@@ -418,6 +418,8 @@ function dismissOnboard(){
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const href=a.getAttribute('href');document.getElementById('hub').style.animation='pileOut .22s ease both';setTimeout(()=>location.href=href,180);});});
 const st=document.createElement('style');st.textContent='@keyframes pileOut{from{opacity:1;transform:translateX(0);}to{opacity:0;transform:translateX(-40px);}}';document.head.appendChild(st);
 </script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="ctg-motion.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="ctg-sync.js"></script>
 <script>
