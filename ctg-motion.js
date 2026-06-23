@@ -62,21 +62,51 @@ function _currentPage() {
   return location.pathname.split('/').pop() || 'index.html';
 }
 
-// Entry: run immediately (DOM is ready since we're at end of body)
+// Returns the elements to cascade on entry, per page structure:
+//   sheet pages  → direct children of .sheet (header + blocks)
+//   index (hub)  → named interactive sections, skipping decorative bg divs
+//   p5 / other   → direct children of #page-wrap
+function _cascadePanels(wrap) {
+  const sheet = Array.from(wrap.children).find(el => el.classList.contains('sheet'));
+  if (sheet) return Array.from(sheet.children);
+  if (wrap.id === 'hub') {
+    return Array.from(wrap.querySelectorAll('.hub-top, .hub-char, #pile, .hub-hud, .hub-btns, .data-dots'));
+  }
+  return Array.from(wrap.children);
+}
+
+// Entry: run immediately (DOM + inline scripts already complete; we're at end of body)
 (function _enterPage() {
   const wrap = _navWrap();
   if (!wrap) return;
   const raw = sessionStorage.getItem('ctg-nav-entry-x');
-  const entryX = raw !== null ? Number(raw) : 48; // default: slide in from right
+  const entryX = raw !== null ? Number(raw) : 48;
   sessionStorage.removeItem('ctg-nav-entry-x');
+
+  // Page-level: directional slide + scale only.
+  // Opacity is intentionally omitted — blocks own their own fade so there's
+  // no double-fade (fading container × fading children = muddy timing).
   gsap.from(wrap, {
     x: entryX,
-    opacity: 0,
-    scale: 0.96,
-    skewX: entryX > 0 ? -2 : 2, // lean into the direction of travel
+    scale: 0.97,
+    skewX: entryX > 0 ? -1.5 : entryX < 0 ? 1.5 : 0,
     duration: CTGMotion.duration.base,
     ease: CTGMotion.ease.enter,
   });
+
+  // Panel cascade: header first, then sections in DOM order.
+  // 0.3s per panel + 0.07s stagger → worst case (10 panels) = 0.93s total.
+  const panels = _cascadePanels(wrap);
+  if (panels.length) {
+    gsap.from(panels, {
+      y: 14,
+      opacity: 0,
+      duration: 0.3,
+      ease: CTGMotion.ease.enter,
+      stagger: 0.07,
+      clearProps: 'transform,opacity',
+    });
+  }
 }());
 
 // Exit: capture-phase listener fires BEFORE the existing per-page handlers,
