@@ -1,52 +1,60 @@
 // CTG audio system — hub + all sheet pages
-// Adjust this one constant to change global SFX volume (0–1)
 const SOUND_VOLUME = 0.45;
 
 const CTGSound = (() => {
   const MUTE_KEY = 'ctg-muted';
   let muted = localStorage.getItem(MUTE_KEY) === '1';
 
-  // Per-clip config:
-  //   rate   — playback speed (also shifts pitch: >1 = higher/brighter, <1 = lower/darker)
-  //   maxMs  — hard stop after this many ms, trims long files to punchy hits
+  // rate: playback speed / pitch shift. maxMs: hard stop (only for wav pack sounds).
+  // BetterSFX entries have no maxMs — let them play to their natural end.
   const CLIP_MAP = {
     // Hub
     'hover':       { src: 'sounds/hover.mp3' },
     'select':      { src: 'sounds/BetterSFX/futuristic-ui-digital-click-davies-aguirre-1-00-00.mp3' },
     'transition':  { src: 'sounds/transition.mp3' },
     'back':        { src: 'sounds/back.mp3' },
-    // Stat changes — BetterSFX futuristic UI pack
-    'stat-up':     { src: 'sounds/BetterSFX/futuristic-ui-positive-selection-davies-aguirre-2-2-00-00.mp3', maxMs: 600 },
-    'stat-down':   { src: 'sounds/BetterSFX/futuristic-ui-negative-selection-davies-aguirre-1-00-00.mp3',   maxMs: 600 },
-    // Sheet UI
-    'click':       { src: 'sounds/click_2.wav',     rate: 1.1,  maxMs: 160 },
-    'add':         { src: 'sounds/misc_menu_2.wav', rate: 1.0,  maxMs: 380 },
-    'delete':      { src: 'sounds/negative_2.wav',  rate: 1.2,  maxMs: 260 },
-    'open':        { src: 'sounds/misc_menu.wav',   rate: 1.1,  maxMs: 340 },
-    'close':       { src: 'sounds/misc_menu_3.wav', rate: 1.2,  maxMs: 260 },
-    'save':        { src: 'sounds/save.wav',        rate: 1.0,  maxMs: 520 },
-    'panel-open':  { src: 'sounds/misc_menu_4.wav', rate: 1.0,  maxMs: 440 },
-    'panel-close': { src: 'sounds/misc_sound.wav',  rate: 1.3,  maxMs: 260 },
-    // Page transition whoosh
-    'page':        { src: 'sounds/misc_menu_4.wav', rate: 1.2,  maxMs: 380 },
+    // Stat changes — BetterSFX futuristic UI (play to natural end, no cutoff)
+    'stat-up':     { src: 'sounds/BetterSFX/futuristic-ui-positive-selection-davies-aguirre-2-2-00-00.mp3' },
+    'stat-down':   { src: 'sounds/BetterSFX/futuristic-ui-negative-selection-davies-aguirre-1-00-00.mp3' },
+    // Page nav — transition.mp3 pitched down slightly so it's a softer version of the hub wipe
+    'page':        { src: 'sounds/transition.mp3', rate: 0.82 },
+    // Sheet UI (wav pack — capped so they stay punchy)
+    'click':       { src: 'sounds/click_2.wav',     rate: 1.1, maxMs: 160 },
+    'add':         { src: 'sounds/misc_menu_2.wav',            maxMs: 380 },
+    'delete':      { src: 'sounds/negative_2.wav',  rate: 1.2, maxMs: 260 },
+    'open':        { src: 'sounds/misc_menu.wav',   rate: 1.1, maxMs: 340 },
+    'close':       { src: 'sounds/misc_menu_3.wav', rate: 1.2, maxMs: 260 },
+    'panel-open':  { src: 'sounds/misc_menu_4.wav',            maxMs: 440 },
+    'panel-close': { src: 'sounds/misc_sound.wav',  rate: 1.3, maxMs: 260 },
   };
 
-  // Preload via Audio elements used as templates — each play() clones from these
-  // so there are no state conflicts and rapid triggers never block each other
-  const templates = {};
+  // Pre-create 3 genuine Audio instances per clip — rotating through them
+  // on rapid triggers avoids the pause/reset race condition entirely.
+  // (cloneNode was discarded: clones don't share preloaded buffer data.)
+  const POOL = 3;
+  const pools = {};
+  const heads = {};
   Object.entries(CLIP_MAP).forEach(([name, conf]) => {
-    const a = new Audio(conf.src);
-    a.preload = 'auto';
-    templates[name] = a;
+    pools[name] = Array.from({ length: POOL }, () => {
+      const a = new Audio(conf.src);
+      a.preload = 'auto';
+      return a;
+    });
+    heads[name] = 0;
   });
 
   function play(name) {
     if (muted) return;
     const conf = CLIP_MAP[name];
-    const tmpl = templates[name];
-    if (!conf || !tmpl) return;
+    const pool = pools[name];
+    if (!conf || !pool) return;
 
-    const a = tmpl.cloneNode();
+    const i = heads[name];
+    heads[name] = (i + 1) % POOL;
+
+    const a = pool[i];
+    a.pause();
+    a.currentTime = 0;
     a.volume = SOUND_VOLUME;
     a.playbackRate = conf.rate ?? 1;
     a.play().catch(() => {});
@@ -70,26 +78,20 @@ const CTGSound = (() => {
 
   // ── Sheet-wide hooks ─────────────────────────────────────────
 
-  // Click delegation — counter buttons, add, delete
-  // hp-seg intentionally excluded: statPop already covers those via stat-up/down
+  // Button delegation — counter buttons, add, delete
   document.addEventListener('click', e => {
     if (e.target.closest('.counter-btn'))                            { play('click');  return; }
     if (e.target.closest('.add-btn'))                                { play('add');    return; }
     if (e.target.closest('.del-x, .inv-del, .card-del, .mini-del')) { play('delete'); return; }
   });
 
-  // Collapsible <details> — toggle event doesn't bubble so wire directly
+  // Collapsible <details> — toggle doesn't bubble, wire directly
   document.querySelectorAll('details').forEach(d => {
     d.addEventListener('toggle', () => play(d.open ? 'open' : 'close'));
   });
 
-  // Save flash — fires when #save-flash gains the 'show' class
-  const flashEl = document.getElementById('save-flash');
-  if (flashEl) {
-    new MutationObserver(() => {
-      if (flashEl.classList.contains('show')) play('save');
-    }).observe(flashEl, { attributes: true, attributeFilter: ['class'] });
-  }
+  // NOTE: save-flash observer removed — it fired on every stat change
+  // (saveVitals → flashSaved) and was the source of the constant chime.
 
   return { play, toggleMuteUI, isMuted: () => muted };
 })();
