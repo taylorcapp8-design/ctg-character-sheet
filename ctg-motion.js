@@ -28,6 +28,26 @@ const CTGMotion = {
   popIn(target, vars = {}) {
     return gsap.from(target, { scale: 0.88, opacity: 0, duration: this.duration.fast, ease: this.ease.enter, ...vars });
   },
+
+  // JRPG-style stat update: scale punch + color flash
+  // dir: 'up' (heal/gain) | 'down' (damage/loss) | 'neutral'
+  statPop(el, dir = 'neutral') {
+    gsap.killTweensOf(el); // cancel any in-progress pop
+    const flashColor = dir === 'up' ? '#22c451' : dir === 'down' ? '#d8143a' : null;
+    const origColor  = getComputedStyle(el).color;
+
+    // Scale: punch up to 1.15, settle back with overshoot (~0.32s total)
+    gsap.timeline()
+      .to(el, { scale: 1.15, duration: 0.1,  ease: 'power3.out' })
+      .to(el, { scale: 1,    duration: 0.22, ease: 'back.out(2.5)' });
+
+    // Color: snap to flash, hold briefly, fade back
+    if (flashColor) {
+      gsap.timeline()
+        .set(el, { color: flashColor })
+        .to(el, { color: origColor, duration: 0.3, ease: 'power2.out' }, '+=0.06');
+    }
+  },
 };
 
 // ─── Page nav transitions ─────────────────────────────────────

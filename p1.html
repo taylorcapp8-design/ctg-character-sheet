@@ -278,7 +278,17 @@ function buildTrack(curId,maxId,trackId,efClass){
   for(let i=0;i<max;i++){const s=document.createElement('div');s.className='hp-seg'+(efClass?' ef-seg':'')+(i<cur?' filled':'');s.onclick=()=>{document.getElementById(curId).value=i<cur?i:i+1;refreshTracks();saveVitals();};c.appendChild(s);}
 }
 function refreshTracks(){buildTrack('harth-cur','harth-max','harth-track',false);buildTrack('ef-val',null,'ef-track',true);buildTrack('hearth-cur','hearth-max','hearth-track',false);}
+let _vitalsSnap={};
 function saveVitals(){
+  const hc=parseInt(document.getElementById('harth-cur').value)||0;
+  const ht=parseInt(document.getElementById('harth-temp').value)||0;
+  const hec=parseInt(document.getElementById('hearth-cur').value)||0;
+  if(typeof CTGMotion!=='undefined'&&Object.keys(_vitalsSnap).length){
+    if(hc!==_vitalsSnap.hc)CTGMotion.statPop(document.getElementById('harth-cur'),hc>_vitalsSnap.hc?'up':'down');
+    if(ht!==_vitalsSnap.ht)CTGMotion.statPop(document.getElementById('harth-temp'),ht>_vitalsSnap.ht?'up':'down');
+    if(hec!==_vitalsSnap.hec)CTGMotion.statPop(document.getElementById('hearth-cur'),hec>_vitalsSnap.hec?'up':'down');
+  }
+  _vitalsSnap={hc,ht,hec};
   save('ctg-harth-cur',document.getElementById('harth-cur').value);
   save('ctg-harth-max',document.getElementById('harth-max').value);
   save('ctg-ef',document.getElementById('ef-val').value);

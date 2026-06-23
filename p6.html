@@ -370,6 +370,11 @@ function saveCS(){store('ctg-harth-cur',cstate.harth);store('ctg-harth-temp',cst
 
 // ── VITALS ──
 function refreshVitals(){
+  // Snapshot before update so we know what changed
+  const prevHarth =parseInt(document.getElementById('c-harth-cur').textContent)||0;
+  const prevTemp  =parseInt(document.getElementById('c-temp').textContent)||0;
+  const prevHearth=parseInt(document.getElementById('c-hearth-cur').textContent)||0;
+
   document.getElementById('c-harth-cur').textContent=cstate.harth;
   document.getElementById('c-harth-max').textContent=cstate.harthMax;
   document.getElementById('c-temp').textContent=cstate.temp;
@@ -389,6 +394,13 @@ function refreshVitals(){
     const s=document.createElement('div');s.className='hp-seg'+(i<cstate.hearth?' filled':'');
     s.onclick=()=>{cstate.hearth=i<cstate.hearth?i:i+1;refreshVitals();saveCS();};
     htrack.appendChild(s);
+  }
+
+  // Stat pop animations
+  if(typeof CTGMotion!=='undefined'){
+    if(cstate.harth !==prevHarth) CTGMotion.statPop(document.getElementById('c-harth-cur'), cstate.harth >prevHarth ?'up':'down');
+    if(cstate.temp  !==prevTemp)  CTGMotion.statPop(document.getElementById('c-temp'),       cstate.temp  >prevTemp  ?'up':'down');
+    if(cstate.hearth!==prevHearth)CTGMotion.statPop(document.getElementById('c-hearth-cur'),cstate.hearth>prevHearth?'up':'down');
   }
 }
 // Direct HP reduction — eats temp HP first, no EF involved
