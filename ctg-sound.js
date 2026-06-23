@@ -12,12 +12,12 @@ const CTGSound = (() => {
   const CLIP_MAP = {
     // Hub
     'hover':       { src: 'sounds/hover.mp3' },
-    'select':      { src: 'sounds/select.mp3' },
+    'select':      { src: 'sounds/BetterSFX/futuristic-ui-digital-click-davies-aguirre-1-00-00.mp3' },
     'transition':  { src: 'sounds/transition.mp3' },
     'back':        { src: 'sounds/back.mp3' },
-    // Stat changes — same pack files but distinct rates make them feel different
-    'stat-up':     { src: 'sounds/positive.wav',    rate: 1.35, maxMs: 380 },
-    'stat-down':   { src: 'sounds/negative.wav',    rate: 0.72, maxMs: 500 },
+    // Stat changes — BetterSFX futuristic UI pack
+    'stat-up':     { src: 'sounds/BetterSFX/futuristic-ui-positive-selection-davies-aguirre-2-2-00-00.mp3', maxMs: 600 },
+    'stat-down':   { src: 'sounds/BetterSFX/futuristic-ui-negative-selection-davies-aguirre-1-00-00.mp3',   maxMs: 600 },
     // Sheet UI
     'click':       { src: 'sounds/click_2.wav',     rate: 1.1,  maxMs: 160 },
     'add':         { src: 'sounds/misc_menu_2.wav', rate: 1.0,  maxMs: 380 },
@@ -27,8 +27,8 @@ const CTGSound = (() => {
     'save':        { src: 'sounds/save.wav',        rate: 1.0,  maxMs: 520 },
     'panel-open':  { src: 'sounds/misc_menu_4.wav', rate: 1.0,  maxMs: 440 },
     'panel-close': { src: 'sounds/misc_sound.wav',  rate: 1.3,  maxMs: 260 },
-    // Page transition: fast rate on sharp_echo turns it into a brief whoosh
-    'page':        { src: 'sounds/sharp_echo.wav',  rate: 1.9,  maxMs: 240 },
+    // Page transition whoosh
+    'page':        { src: 'sounds/misc_menu_4.wav', rate: 1.2,  maxMs: 380 },
   };
 
   // Preload via Audio elements used as templates — each play() clones from these

@@ -145,6 +145,8 @@ document.addEventListener('click', function(e) {
   const wrap = _navWrap();
   if (!wrap) { location.href = href; return; }
 
+  if (window.CTGSound) CTGSound.play('page');
+
   gsap.to(wrap, {
     x: exitX,
     opacity: 0,
@@ -152,7 +154,6 @@ document.addEventListener('click', function(e) {
     skewX: exitX < 0 ? 2 : -2,
     duration: CTGMotion.duration.fast,
     ease: CTGMotion.ease.exit,
-    onStart()    { if (window.CTGSound) CTGSound.play('page'); },
     onComplete() { location.href = href; },
   });
 }, true); // true = capture phase
