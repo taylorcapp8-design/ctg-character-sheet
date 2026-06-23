@@ -48,9 +48,10 @@ const CTGMotion = {
         .to(el, { color: origColor, duration: 0.3, ease: 'power2.out' }, '+=0.06');
     }
 
-    if (window.CTGSound) {
-      if (dir === 'up')   CTGSound.play('stat-up');
-      else if (dir === 'down') CTGSound.play('stat-down');
+    if (window.CTGSound && dir !== 'neutral') {
+      // 80ms delay so any click/pip delegation sound lands first, then the result plays
+      const _d = dir;
+      setTimeout(() => CTGSound.play(_d === 'up' ? 'stat-up' : 'stat-down'), 80);
     }
   },
 };
