@@ -115,6 +115,7 @@
     <a href="index.html" class="hub-logo">CTG</a>
     <div class="hub-cmd">CALL TO GALLAHAD · COMMAND SELECT <b>01</b></div>
     <button class="hub-theme-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark / light mode">&#9790; DARK</button>
+    <button class="hub-mute-btn" id="mute-toggle" onclick="CTGSound.toggleMuteUI()" title="Toggle sound effects">♪ SFX</button>
   </div>
 
   <!-- the word pile = the menu -->
@@ -420,6 +421,8 @@ const st=document.createElement('style');st.textContent='@keyframes pileOut{from
 </script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="ctg-motion.js"></script>
+<script src="ctg-sound.js"></script>
+<script src="ctg-hub.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="ctg-sync.js"></script>
 <script>

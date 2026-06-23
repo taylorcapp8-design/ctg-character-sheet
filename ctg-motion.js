@@ -70,7 +70,8 @@ function _cascadePanels(wrap) {
   const sheet = Array.from(wrap.children).find(el => el.classList.contains('sheet'));
   if (sheet) return Array.from(sheet.children);
   if (wrap.id === 'hub') {
-    return Array.from(wrap.querySelectorAll('.hub-top, .hub-char, #pile, .hub-hud, .hub-btns, .data-dots'));
+    // #pile excluded — ctg-hub.js runs its own entrance on individual words
+    return Array.from(wrap.querySelectorAll('.hub-top, .hub-char, .hub-hud, .hub-btns, .data-dots'));
   }
   return Array.from(wrap.children);
 }
@@ -120,6 +121,12 @@ document.addEventListener('click', function(e) {
 
   e.preventDefault();
   e.stopPropagation(); // kills the old handler — it never receives the click
+
+  // Hub page: delegate to Persona 5 wipe exit in ctg-hub.js
+  if (document.getElementById('hub') && window.CTGHub) {
+    window.CTGHub.wipeExit(href);
+    return;
+  }
 
   const fromIdx = _NAV_PAGES.indexOf(_currentPage());
   const toIdx   = _NAV_PAGES.indexOf(href);
