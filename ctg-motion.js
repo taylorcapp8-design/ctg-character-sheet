@@ -47,6 +47,11 @@ const CTGMotion = {
         .set(el, { color: flashColor })
         .to(el, { color: origColor, duration: 0.3, ease: 'power2.out' }, '+=0.06');
     }
+
+    if (window.CTGSound) {
+      if (dir === 'up')   CTGSound.play('stat-up');
+      else if (dir === 'down') CTGSound.play('stat-down');
+    }
   },
 };
 
@@ -146,6 +151,7 @@ document.addEventListener('click', function(e) {
     skewX: exitX < 0 ? 2 : -2,
     duration: CTGMotion.duration.fast,
     ease: CTGMotion.ease.exit,
+    onStart()    { if (window.CTGSound) CTGSound.play('page'); },
     onComplete() { location.href = href; },
   });
 }, true); // true = capture phase

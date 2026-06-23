@@ -322,8 +322,8 @@ function updateHUD(){
 updateHUD();
 
 // sync panel
-function openSync(){document.getElementById('slideup').classList.add('open');document.getElementById('scrim').classList.add('open');refreshCloudUI();}
-function closeSync(){document.getElementById('slideup').classList.remove('open');document.getElementById('scrim').classList.remove('open');}
+function openSync(){if(window.CTGSound)CTGSound.play('panel-open');document.getElementById('slideup').classList.add('open');document.getElementById('scrim').classList.add('open');refreshCloudUI();}
+function closeSync(){if(window.CTGSound)CTGSound.play('panel-close');document.getElementById('slideup').classList.remove('open');document.getElementById('scrim').classList.remove('open');}
 
 // cloud sync UI
 function refreshCloudUI(){
