@@ -2,3 +2,6 @@
 Thumbs.db
 *.DS_Store
 .claude/
+
+# Rulebook source doc — large binary, kept local only
+*.rtf
