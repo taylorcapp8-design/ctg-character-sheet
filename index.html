@@ -126,6 +126,7 @@
     <a class="word w4" href="p4.html" data-nav data-word="ARSENAL"><span class="num">IV</span></a>
     <a class="word w5" href="p5.html" data-nav data-word="SKILLS"><span class="num">V</span></a>
     <a class="word" href="p6.html" data-nav data-word="COMBAT" style="font-size:3rem;transform:rotate(1.5deg);margin-left:110px;margin-top:-4px;background:var(--red-deep,#a8102c);box-shadow:5px 5px 0 var(--ink);"><span class="num">VI</span></a>
+    <a class="word" href="p7.html" data-nav data-word="SPECIALS" style="font-size:2.3rem;transform:rotate(-1.5deg);margin-left:64px;background:var(--purple);box-shadow:5px 5px 0 var(--ink);"><span class="num">VII</span></a>
 </nav>
 
   <!-- HUD readouts -->
@@ -152,6 +153,7 @@
     <span class="dd" data-page="p1"></span><span class="dd" data-page="p2"></span>
     <span class="dd" data-page="p3"></span><span class="dd" data-page="p4"></span>
     <span class="dd" data-page="p5"></span><span class="dd" data-page="p6"></span>
+    <span class="dd" data-page="p7"></span>
     <span class="ddl">SAVED DATA</span>
   </div>
 
@@ -292,7 +294,7 @@ document.querySelectorAll('.word').forEach(w=>{
 });
 
 // char line + HUD + data dots + setup checklist
-const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p2:['ctg-inventory','ctg-mula','ctg-armour-list','ctg-charms'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-food'],p5:['ctg-skills'],p6:['ctg-combat-notes']};
+const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p2:['ctg-inventory','ctg-mula','ctg-armour-list','ctg-charms'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-food'],p5:['ctg-skills'],p6:['ctg-combat-notes'],p7:['ctg-specials','ctg-ability-workshop']};
 const checkMap={p1:['ctg-f-name'],p2:['ctg-armour-list','ctg-charms','ctg-inventory'],p3:['ctg-faculties'],p4:['ctg-weapons'],p5:['ctg-skills']};
 function updateHUD(){
   const n=lg('ctg-f-name'),c=lg('ctg-f-code');

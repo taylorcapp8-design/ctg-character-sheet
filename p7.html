@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<script>
+// ── THEME INIT (runs before paint to avoid flash) ──
+(function(){
+  const t=localStorage.getItem('ctg-theme')||'light';
+  document.documentElement.setAttribute('data-theme',t);
+})();
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a0d">
+<title>CTG — Specials & Ability Workshop</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ctg.css">
+<style>
+/* ── SPECIALS ───────────────────────────────────────────── */
+.spec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;}
+.spec-card{position:relative;background:var(--paper);border:2.5px solid var(--ink);overflow:hidden;transition:all .2s;clip-path:polygon(0 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%);filter:drop-shadow(4px 4px 0 rgba(0,0,0,0.85));animation:panelIn .42s ease both;}
+.spec-card:hover{transform:translateY(-3px);border-color:var(--purple);}
+.spec-card.wk{border-left:5px solid var(--gold,#cf9500);}
+.spec-card.ff{border-left:5px solid var(--purple);}
+.spec-head{display:flex;align-items:center;gap:10px;padding:11px 13px 8px;border-bottom:1.5px solid var(--border);}
+.spec-rank{font-family:'Anton',sans-serif;font-size:1.8rem;line-height:1;width:40px;height:52px;display:flex;align-items:center;justify-content:center;border:2.5px solid var(--ink);background:var(--paper2,rgba(0,0,0,0.05));color:var(--ink);flex-shrink:0;clip-path:polygon(0 0,100% 0,100% 88%,50% 100%,0 88%);}
+.spec-rank .rs{font-size:0.7rem;margin-left:1px;}
+.spec-name{flex:1;background:transparent;border:none;border-bottom:1.5px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-style:italic;font-size:1.15rem;letter-spacing:1px;padding:3px 2px;outline:none;min-width:60px;}
+.spec-name:focus{border-bottom-color:var(--purple);}
+.spec-mode{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;padding:4px 8px;border:1.5px solid var(--border2);background:transparent;color:var(--text-dim);cursor:pointer;white-space:nowrap;transition:all .14s;}
+.spec-mode.wk{background:var(--gold,#cf9500);border-color:var(--gold,#cf9500);color:#000;}
+.spec-mode.ff{background:var(--purple);border-color:var(--purple);color:#fff;}
+.spec-body{padding:11px 13px;}
+.spec-desc{width:100%;min-height:96px;resize:vertical;background:var(--paper2,rgba(0,0,0,0.04));border:1.5px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.9rem;line-height:1.45;padding:9px 11px;outline:none;}
+.spec-desc:focus{border-color:var(--purple);}
+.spec-build{margin-top:9px;padding:8px 10px;background:rgba(207,149,0,0.07);border:1px solid var(--gold,#cf9500);}
+.spec-build-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.spec-build-ap{font-family:'Anton',sans-serif;font-size:0.95rem;color:var(--gold,#cf9500);}
+.spec-chips{display:flex;flex-wrap:wrap;gap:4px;}
+.spec-foot{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px;}
+.mini-btn{font-family:'Bebas Neue',sans-serif;font-size:0.78rem;letter-spacing:1.5px;padding:5px 11px;border:1.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transform:skewX(-7deg);transition:all .13s;}
+.mini-btn:hover{border-color:var(--ink);color:var(--text);}
+.mini-btn.acc{border-color:var(--purple);color:var(--purple);}
+.mini-btn.acc:hover{background:var(--purple);color:#fff;}
+.mini-btn.gold{border-color:var(--gold,#cf9500);color:var(--gold,#cf9500);}
+.mini-btn.gold:hover{background:var(--gold,#cf9500);color:#000;}
+.spec-cap{display:flex;align-items:center;gap:6px;margin-left:auto;}
+.spec-cap input{width:44px;text-align:center;background:transparent;border:1.5px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:0.9rem;padding:2px;outline:none;}
+.spec-cap input:focus{border-color:var(--gold,#cf9500);}
+
+/* ── WORKSHOP ───────────────────────────────────────────── */
+.wk-budget{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:11px 15px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);margin-bottom:12px;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);}
+.wk-ap{font-family:'Anton',sans-serif;font-size:1.9rem;line-height:1;color:var(--purple);}
+.wk-ap.over{color:var(--red);}
+.wk-ap-lab{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);}
+.wk-cap{display:flex;align-items:center;gap:5px;}
+.wk-cap input{width:52px;text-align:center;background:transparent;border:2px solid var(--gold,#cf9500);color:var(--gold,#cf9500);font-family:'Anton',sans-serif;font-size:1.1rem;padding:3px;outline:none;}
+.wk-pips{display:flex;flex-wrap:wrap;gap:3px;flex:1;min-width:120px;align-content:center;}
+.wk-pip{width:9px;height:9px;border:1.5px solid var(--border2);transform:rotate(45deg);}
+.wk-pip.on{background:var(--purple);border-color:var(--purple);}
+.wk-pip.over{background:var(--red);border-color:var(--red);}
+.wk-layout{display:grid;grid-template-columns:190px 1fr;gap:14px;align-items:start;}
+@media(max-width:680px){.wk-layout{grid-template-columns:1fr;}}
+.wk-rail{display:flex;flex-direction:column;gap:2px;}
+.wk-rail .side-tab{--col:var(--purple);}
+.wk-rail .rail-pick{display:block;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.62rem;color:var(--text-dim);margin-top:1px;letter-spacing:0;text-transform:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px;}
+.side-tab.active .rail-pick{color:rgba(255,255,255,0.85);}
+.wk-main{min-width:0;}
+.wk-cat-note{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);margin-bottom:9px;}
+.wk-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.kw-chip{position:relative;display:flex;align-items:center;gap:6px;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.86rem;padding:5px 10px;border:1.5px solid var(--border2);background:var(--paper2,rgba(0,0,0,0.04));color:var(--text);cursor:pointer;transition:all .12s;user-select:none;}
+.kw-chip:hover{border-color:var(--ink);}
+.kw-chip.on{background:var(--purple);border-color:var(--purple);color:#fff;box-shadow:2px 2px 0 var(--ink);}
+.kw-chip.blocked{opacity:0.4;cursor:not-allowed;text-decoration:line-through;}
+.kw-chip.blocked:hover{border-color:var(--border2);}
+.kw-chip .kw-ap{font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:0;padding:1px 4px;border:1px solid currentColor;border-radius:2px;opacity:0.75;}
+.kw-chip.none-chip{font-style:italic;color:var(--text-dim);}
+.kw-effstrip{margin-top:14px;padding-top:11px;border-top:1px dashed var(--border);}
+.kw-effstrip .lab{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--red);margin-bottom:7px;}
+.kw-out{margin-top:12px;padding:12px 14px;background:var(--paper2,rgba(109,40,217,0.06));border:2px solid var(--purple);clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%);}
+.kw-out-name{width:100%;background:transparent;border:none;border-bottom:2px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-style:italic;font-size:1.3rem;letter-spacing:1px;padding:3px 2px 5px;outline:none;margin-bottom:8px;}
+.kw-out-name:focus{border-bottom-color:var(--purple);}
+.kw-out-text{width:100%;min-height:88px;resize:vertical;background:var(--paper);border:1.5px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.92rem;line-height:1.5;padding:10px 12px;outline:none;}
+.kw-out-text:focus{border-color:var(--purple);}
+.kw-out-foot{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:9px;}
+.kw-edited{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--gold,#cf9500);}
+.kw-send{position:relative;}
+.kw-send-menu{position:absolute;bottom:calc(100% + 4px);left:0;z-index:20;background:var(--paper);border:2px solid var(--ink);box-shadow:4px 4px 0 var(--purple);display:none;min-width:150px;}
+.kw-send-menu.open{display:block;}
+.kw-send-menu button{display:block;width:100%;text-align:left;font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1.5px;padding:7px 12px;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);cursor:pointer;}
+.kw-send-menu button:hover{background:var(--purple);color:#fff;}
+.kw-lib{margin-top:6px;}
+.kw-lib-row{display:flex;align-items:center;gap:9px;padding:7px 11px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);border-left:4px solid var(--gold,#cf9500);margin-bottom:5px;flex-wrap:wrap;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);}
+.kw-lib-name{font-family:'Anton',sans-serif;font-style:italic;font-size:1rem;color:var(--text);flex:1;min-width:90px;}
+.kw-lib-ap{font-family:'Share Tech Mono',monospace;font-size:0.56rem;color:var(--gold,#cf9500);white-space:nowrap;}
+.kw-picker-scrim{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;}
+.kw-picker-scrim.open{display:flex;}
+.kw-picker{background:var(--paper);border:3px solid var(--ink);box-shadow:8px 8px 0 var(--purple);max-width:480px;width:100%;max-height:76vh;overflow:auto;padding:18px 20px;}
+.kw-picker h3{font-family:'Anton',sans-serif;font-style:italic;font-size:1.3rem;letter-spacing:1px;color:var(--ink);margin-bottom:3px;}
+.kw-ref dl{margin:0;}
+.kw-ref dt{font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1px;color:var(--purple);margin-top:9px;}
+.kw-ref .ref-item{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.4;margin:2px 0 2px 4px;}
+.kw-ref .ref-item b{color:var(--text);font-weight:700;}
+.kw-ref .ref-ap{font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--gold,#cf9500);}
+</style>
+</head>
+<body>
+<nav class="ctg-nav" id="ctg-nav-bar">
+  <a class="ctg-nav-home" href="index.html" data-nav>CTG</a>
+  <div class="ctg-nav-links">
+    <a href="p1.html" data-nav>I·STATS</a>
+    <a href="p2.html" data-nav>II·GEAR</a>
+    <a href="p3.html" data-nav>III·FAC</a>
+    <a href="p4.html" data-nav>IV·ARMS</a>
+    <a href="p5.html" data-nav>V·SKILL</a>
+    <a href="p6.html" data-nav style="color:var(--red);">VI·COMBAT</a>
+    <a href="p7.html" class="active">VII·SPEC</a>
+  </div>
+  <div class="nav-char-name" id="nav-name"><span>OPERATIVE //</span> —</div>
+  <span class="save-flash" id="save-flash">SAVED ✓</span>
+  <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark / light mode">☀ LIGHT</button>
+</nav>
+
+<div class="page-wrap" id="page-wrap">
+<div class="sheet">
+  <div class="sheet-header">
+    <div class="head-tag">CALL TO GALLAHAD // OPERATIONAL RECORD</div>
+    <div class="sheet-title">SPECIAL <em>ABILITIES</em></div>
+    <div class="head-stamp">PAGE VII</div>
+  </div>
+
+  <div class="panel" style="padding:14px 16px;">
+    <div class="cat-tabs">
+      <button class="cat-tab active" data-tab="specials" onclick="showTab('specials')">🎴 SPECIALS</button>
+      <button class="cat-tab" data-tab="workshop" onclick="showTab('workshop')">🛠 WORKSHOP</button>
+    </div>
+
+    <!-- ══ TAB 1 · SPECIALS ══ -->
+    <div id="tab-specials">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:12px;">
+        Your four face cards hold your special abilities — Jack (weakest) through Ace (strongest). Write them freely, or build one in the Workshop and drop it in.
+      </div>
+      <div class="spec-grid" id="spec-grid"></div>
+    </div>
+
+    <!-- ══ TAB 2 · WORKSHOP ══ -->
+    <div id="tab-workshop" style="display:none;">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:12px;">
+        Mix keywords to invent an ability. Pick one from each category (leave any blank) and a written description assembles itself — then edit it for flavour and save it or send it to a card.
+      </div>
+
+      <div class="wk-budget">
+        <div style="text-align:center;">
+          <div class="wk-ap" id="wk-ap">0</div>
+          <div class="wk-ap-lab">AP TOTAL</div>
+        </div>
+        <div class="wk-cap">
+          <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);">CAP</span>
+          <input type="number" id="wk-cap-input" min="0" value="20" title="Max AP this ability may cost (0 = no cap)">
+        </div>
+        <div class="wk-pips" id="wk-pips"></div>
+      </div>
+
+      <div class="wk-layout">
+        <div class="wk-rail" id="wk-rail"></div>
+        <div class="wk-main">
+          <div class="wk-cat-note" id="wk-cat-note"></div>
+          <div class="wk-chips" id="wk-chips"></div>
+
+          <div class="kw-effstrip">
+            <div class="lab">☣ DEBUFFS / BUFFS <span style="color:var(--text-dim);">— always available</span></div>
+            <div class="wk-chips" id="wk-effects"></div>
+          </div>
+
+          <div class="kw-out">
+            <input class="kw-out-name" id="wk-name" placeholder="Ability name…">
+            <textarea class="kw-out-text" id="wk-text" placeholder="Pick some keywords and the description writes itself here…"></textarea>
+            <div class="kw-out-foot">
+              <button class="mini-btn acc" onclick="doRegen()">🎲 REGENERATE</button>
+              <span class="kw-edited" id="wk-edited" style="display:none;">✎ hand-edited</span>
+              <div class="kw-send" style="margin-left:auto;">
+                <button class="mini-btn gold" onclick="toggleSendMenu(event)">📤 SEND TO SLOT ▾</button>
+                <div class="kw-send-menu" id="wk-send-menu"></div>
+              </div>
+              <button class="mini-btn gold" onclick="saveToLibrary()">💾 SAVE TO LIBRARY</button>
+              <button class="mini-btn" onclick="clearBuild()">✕ CLEAR</button>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <div class="sec-label" style="margin-top:0;"><span class="mk">✦</span>LIBRARY <span class="note">— saved builds</span></div>
+            <div class="kw-lib" id="wk-lib"></div>
+          </div>
+
+          <details style="margin-top:14px;">
+            <summary style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:2px;color:var(--text-dim);cursor:pointer;user-select:none;padding:5px 0;">▸ KEYWORD REFERENCE</summary>
+            <div class="kw-ref" id="wk-ref" style="margin-top:8px;"></div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet-footer">
+    <div class="suits"><span class="s1">♠&#xFE0E;</span><span class="s2">♣&#xFE0E;</span><span class="s3">♥&#xFE0E;</span><span class="s4">♦&#xFE0E;</span></div>
+    CALL TO GALLAHAD · SPECIAL ABILITIES · PAGE VII
+  </div>
+</div>
+</div>
+
+<!-- library picker (paste into a slot) -->
+<div class="kw-picker-scrim" id="picker-scrim" onclick="if(event.target===this)closePicker()">
+  <div class="kw-picker">
+    <h3>PASTE FROM WORKSHOP</h3>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:12px;">Choose a saved ability to drop into <b id="picker-target">this card</b>. You can edit it afterward.</div>
+    <div id="picker-list"></div>
+    <button class="mini-btn" style="margin-top:12px;" onclick="closePicker()">✕ CANCEL</button>
+  </div>
+</div>
+
+<script src="ctg-keywords.js"></script>
+<script>
+const CTG=window.CTG_KEYWORDS;
+function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function store(k,v){try{localStorage.setItem(k,v);localStorage.setItem('ctg-last-edit',Date.now());flashSaved();}catch(e){}}
+let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
+const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const uid=()=>'x'+Math.random().toString(36).slice(2,8);
+const clone=o=>JSON.parse(JSON.stringify(o));
+const catByKey=k=>CTG.categories.find(c=>c.key===k);
+
+/* ── STATE ──────────────────────────────────────────────── */
+const RANKS=[{key:'jack',label:'Jack',glyph:'J',suit:'♠',cap:6},{key:'queen',label:'Queen',glyph:'Q',suit:'♣',cap:10},{key:'king',label:'King',glyph:'K',suit:'♦',cap:14},{key:'ace',label:'Ace',glyph:'A',suit:'♥',cap:20}];
+function emptySel(){return {action:null,target:[],operation:null,domain:null,condition:[],duration:null,modifier:null,effects:[]};}
+
+function loadSpecials(){
+  let s=null;try{s=JSON.parse(load('ctg-specials'));}catch(e){}
+  if(!s||typeof s!=='object')s={};
+  RANKS.forEach(r=>{if(!s[r.key])s[r.key]={name:'',desc:'',mode:'freeform',build:null,apCap:r.cap};
+    else{const c=s[r.key];if(c.mode!=='workshop')c.mode='freeform';if(c.apCap==null)c.apCap=r.cap;if(!('build'in c))c.build=null;}});
+  return s;
+}
+function saveSpecials(s){store('ctg-specials',JSON.stringify(s));}
+let SPEC=loadSpecials();
+
+function loadWorkshop(){
+  let w=null;try{w=JSON.parse(load('ctg-ability-workshop'));}catch(e){}
+  if(!w||typeof w!=='object')w={};
+  if(!w.draft||typeof w.draft!=='object')w.draft={name:'',sel:emptySel(),text:'',edited:false,apCap:20};
+  const d=w.draft;
+  d.sel=Object.assign(emptySel(),d.sel||{});
+  if(d.apCap==null)d.apCap=20;if(!('edited'in d))d.edited=false;if(d.name==null)d.name='';if(d.text==null)d.text='';
+  if(!Array.isArray(w.library))w.library=[];
+  return w;
+}
+function saveWorkshop(){store('ctg-ability-workshop',JSON.stringify(W));}
+let W=loadWorkshop();
+let sel=W.draft.sel;
+let activeCat=CTG.categories[0].key;
+
+/* ── TABS ───────────────────────────────────────────────── */
+function showTab(t){
+  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
+  document.getElementById('tab-specials').style.display=t==='specials'?'':'none';
+  document.getElementById('tab-workshop').style.display=t==='workshop'?'':'none';
+  if(t==='specials'){SPEC=loadSpecials();renderSpecials();}
+  else{renderWorkshop();}
+}
+
+/* ── SPECIALS TAB ───────────────────────────────────────── */
+function chipHtml(catKey,id){const it=CTG.item(catKey,id);if(!it)return '';return `<span class="tag dist-tag" style="font-size:0.62rem;">${esc(it.name)}</span>`;}
+function buildChipStrip(build){
+  if(!build||!build.sel)return '';
+  let out=[];
+  CTG.categories.forEach(cat=>{
+    const v=build.sel[cat.key];
+    if(cat.select==='single'){if(v)out.push(chipHtml(cat.key,v));}
+    else if(Array.isArray(v))v.forEach(id=>out.push(chipHtml(cat.key,id)));
+  });
+  return out.join('');
+}
+function renderSpecials(){
+  const grid=document.getElementById('spec-grid');grid.innerHTML='';
+  RANKS.forEach(r=>{
+    const c=SPEC[r.key];const wk=c.mode==='workshop';
+    const card=document.createElement('div');card.className='spec-card '+(wk?'wk':'ff');
+    card.innerHTML=`
+      <div class="spec-head">
+        <div class="spec-rank">${r.glyph}<span class="rs">${r.suit}</span></div>
+        <input class="spec-name" data-f="name" value="${esc(c.name)}" placeholder="${r.label} — name…">
+        <button class="spec-mode ${wk?'wk':'ff'}" data-mode title="Toggle ability-creator link">${wk?'🛠 WORKSHOP':'✎ FREEFORM'}</button>
+      </div>
+      <div class="spec-body">
+        <textarea class="spec-desc" data-f="desc" placeholder="Describe this special ability…">${esc(c.desc)}</textarea>
+        ${wk?`<div class="spec-build">
+          <div class="spec-build-top"><span class="spec-build-ap">${c.build?c.build.ap:0} AP</span>
+          <span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:var(--text-dim);">${c.build?'KEYWORDS':'no build yet — send one from the Workshop'}</span></div>
+          ${c.build?`<div class="spec-chips">${buildChipStrip(c.build)}</div>`:''}
+        </div>`:''}
+        <div class="spec-foot">
+          <button class="mini-btn acc" data-paste>📋 PASTE FROM WORKSHOP</button>
+          ${wk&&c.build?`<button class="mini-btn gold" data-edit>↺ EDIT IN WORKSHOP</button>`:''}
+          <div class="spec-cap"><span style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:var(--text-dim);">AP CAP</span><input type="number" min="0" data-f="apCap" value="${c.apCap}"></div>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+    card.querySelectorAll('[data-f]').forEach(inp=>{
+      const ev=inp.tagName==='TEXTAREA'||inp.type==='number'||inp.type==='text'?'input':'change';
+      inp.addEventListener('input',()=>{
+        const f=inp.dataset.f;c[f]=inp.type==='number'?(parseInt(inp.value)||0):inp.value;
+        // editing desc on a workshop card keeps its build but text diverges — that's intended (flavour)
+        saveSpecials(SPEC);
+      });
+    });
+    card.querySelector('[data-mode]').addEventListener('click',()=>{
+      c.mode=wk?'freeform':'workshop';saveSpecials(SPEC);renderSpecials();
+    });
+    card.querySelector('[data-paste]').addEventListener('click',()=>openPicker(r.key));
+    const editBtn=card.querySelector('[data-edit]');
+    if(editBtn)editBtn.addEventListener('click',()=>{
+      sel=Object.assign(emptySel(),clone(c.build.sel));W.draft.sel=sel;
+      W.draft.name=c.name||'';W.draft.text=c.desc||c.build.text||'';W.draft.edited=true;
+      W.draft.apCap=c.apCap||20;saveWorkshop();
+      showTab('workshop');
+    });
+  });
+}
+
+/* ── LIBRARY PICKER (paste into slot) ───────────────────── */
+let pickerTarget=null;
+function openPicker(rankKey){
+  pickerTarget=rankKey;
+  const r=RANKS.find(x=>x.key===rankKey);
+  document.getElementById('picker-target').textContent=r.label;
+  const list=document.getElementById('picker-list');list.innerHTML='';
+  if(!W.library.length){list.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.6rem;color:var(--text-dim);padding:10px 0;">Your Workshop library is empty. Build an ability in the Workshop tab and save it first.</div>';}
+  else W.library.forEach(entry=>{
+    const row=document.createElement('div');row.className='kw-lib-row';
+    row.innerHTML=`<span class="kw-lib-name">${esc(entry.name)}</span><span class="kw-lib-ap">${entry.ap} AP</span><button class="mini-btn acc" style="margin-left:auto;">→ PASTE</button>`;
+    row.querySelector('button').addEventListener('click',()=>{
+      const c=SPEC[rankKey];c.mode='workshop';c.build={sel:clone(entry.sel),text:entry.text,ap:entry.ap};c.desc=entry.text;
+      if(!c.name)c.name=entry.name;saveSpecials(SPEC);closePicker();renderSpecials();
+    });
+    list.appendChild(row);
+  });
+  document.getElementById('picker-scrim').classList.add('open');
+}
+function closePicker(){document.getElementById('picker-scrim').classList.remove('open');}
+
+/* ── WORKSHOP TAB ───────────────────────────────────────── */
+function overCapIfAdd(catKey,id){
+  const cap=W.draft.apCap;if(!cap||cap<=0)return false;
+  const trial=clone(sel);const cat=catByKey(catKey);
+  if(cat.select==='single')trial[catKey]=id;
+  else trial[catKey]=(trial[catKey]||[]).concat([id]);
+  return CTG.totalAP(trial)>cap;
+}
+function regen(force){if(force||!W.draft.edited){W.draft.text=CTG.generate(sel);W.draft.edited=false;}}
+function pick(catKey,id){
+  const cat=catByKey(catKey);const it=CTG.item(catKey,id);
+  if(cat.select==='single'){
+    if(sel[catKey]===id)sel[catKey]=null;
+    else{if(CTG.ruleReason(catKey,it,sel))return;if(overCapIfAdd(catKey,id))return;sel[catKey]=id;}
+  }else{
+    sel[catKey]=sel[catKey]||[];
+    const i=sel[catKey].indexOf(id);
+    if(i!==-1)sel[catKey].splice(i,1);
+    else{if(CTG.ruleReason(catKey,it,sel))return;if(cat.max&&sel[catKey].length>=cat.max)return;if(overCapIfAdd(catKey,id))return;sel[catKey].push(id);}
+  }
+  CTG.prune(sel);regen(false);saveWorkshop();renderWorkshop();
+}
+function clearCat(catKey){const cat=catByKey(catKey);sel[catKey]=cat.select==='single'?null:[];CTG.prune(sel);regen(false);saveWorkshop();renderWorkshop();}
+
+function renderBudget(){
+  const ap=CTG.totalAP(sel);const cap=W.draft.apCap;
+  const over=cap>0&&ap>cap;
+  const apEl=document.getElementById('wk-ap');apEl.textContent=ap;apEl.classList.toggle('over',over);
+  const pips=document.getElementById('wk-pips');pips.innerHTML='';
+  const shown=Math.max(cap>0?cap:ap,ap);
+  for(let i=0;i<shown;i++){const p=document.createElement('span');p.className='wk-pip'+(i<ap?(over?' over':' on'):'');pips.appendChild(p);}
+}
+function renderRail(){
+  const rail=document.getElementById('wk-rail');rail.innerHTML='';
+  CTG.categories.filter(c=>c.key!=='effects').forEach(cat=>{
+    const v=sel[cat.key];
+    let pickTxt='—';
+    if(cat.select==='single'&&v){const it=CTG.item(cat.key,v);pickTxt=it?it.name:'—';}
+    else if(Array.isArray(v)&&v.length)pickTxt=v.map(id=>{const it=CTG.item(cat.key,id);return it?it.name:'';}).filter(Boolean).join(', ');
+    const tab=document.createElement('div');tab.className='side-tab'+(cat.key===activeCat?' active':'');
+    tab.innerHTML=`<span class="ti">${cat.icon}</span><span style="display:flex;flex-direction:column;line-height:1.05;"><span>${cat.label}</span><span class="rail-pick">${esc(pickTxt)}</span></span>`;
+    tab.onclick=()=>{activeCat=cat.key;renderWorkshop();};
+    rail.appendChild(tab);
+  });
+}
+function chipEl(catKey,id){
+  const it=CTG.item(catKey,id);const cat=catByKey(catKey);
+  const on=cat.select==='single'?sel[catKey]===id:(sel[catKey]||[]).indexOf(id)!==-1;
+  const reason=on?null:CTG.ruleReason(catKey,it,sel);
+  const capBlock=on?false:overCapIfAdd(catKey,id);
+  const maxBlock=on?false:(cat.select!=='single'&&cat.max&&(sel[catKey]||[]).length>=cat.max);
+  const blocked=!!(reason||capBlock||maxBlock);
+  const el=document.createElement('span');
+  el.className='kw-chip'+(on?' on':'')+(blocked?' blocked':'');
+  el.innerHTML=`${esc(it.name)}<span class="kw-ap">${it.ap} AP</span>`;
+  if(reason)el.title=reason;else if(capBlock)el.title='Would exceed the AP cap.';else if(maxBlock)el.title='Max '+cat.max+' selected — remove one first.';else el.title=it.desc;
+  if(!blocked||on)el.onclick=()=>pick(catKey,id);
+  return el;
+}
+function renderChips(){
+  const cat=catByKey(activeCat);
+  document.getElementById('wk-cat-note').innerHTML=`<b style="color:var(--purple);font-family:'Bebas Neue',sans-serif;letter-spacing:1px;font-size:1rem;">${cat.icon} ${cat.label.toUpperCase()}</b> — ${esc(cat.note)}${cat.select!=='single'?` <span style="color:var(--text-dim);">(pick${cat.max?` up to ${cat.max}`:' any'})</span>`:''}`;
+  const box=document.getElementById('wk-chips');box.innerHTML='';
+  // "None" chip for single-selects without an explicit blank item
+  if(cat.select==='single'&&!cat.items.some(i=>i.blank)){
+    const none=document.createElement('span');
+    const isNone=!sel[activeCat];
+    none.className='kw-chip none-chip'+(isNone?' on':'');
+    none.textContent='— None —';none.title='Leave this category blank.';
+    none.onclick=()=>{if(sel[activeCat]){sel[activeCat]=null;CTG.prune(sel);regen(false);saveWorkshop();renderWorkshop();}};
+    box.appendChild(none);
+  }
+  cat.items.forEach(it=>box.appendChild(chipEl(activeCat,it.id)));
+}
+function renderEffects(){
+  const box=document.getElementById('wk-effects');box.innerHTML='';
+  catByKey('effects').items.forEach(it=>box.appendChild(chipEl('effects',it.id)));
+}
+function renderOutput(){
+  document.getElementById('wk-name').value=W.draft.name;
+  const tx=document.getElementById('wk-text');if(document.activeElement!==tx)tx.value=W.draft.text;
+  document.getElementById('wk-edited').style.display=W.draft.edited&&W.draft.text?'':'none';
+}
+function renderLibrary(){
+  const box=document.getElementById('wk-lib');box.innerHTML='';
+  if(!W.library.length){box.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.58rem;color:var(--text-dim);padding:4px 0;">No saved builds yet — hit “Save to Library” to keep one.</div>';return;}
+  W.library.forEach(entry=>{
+    const row=document.createElement('div');row.className='kw-lib-row';
+    row.innerHTML=`<span class="kw-lib-name">${esc(entry.name)}</span><span class="kw-lib-ap">${entry.ap} AP</span>
+      <button class="mini-btn acc" data-load>↥ LOAD</button>
+      <button class="mini-btn" data-dup>⧉</button>
+      <button class="mini-btn" data-del style="border-color:var(--red);color:var(--red);">✕</button>`;
+    row.querySelector('[data-load]').addEventListener('click',()=>{
+      sel=Object.assign(emptySel(),clone(entry.sel));W.draft.sel=sel;W.draft.name=entry.name;W.draft.text=entry.text;W.draft.edited=true;saveWorkshop();renderWorkshop();
+    });
+    row.querySelector('[data-dup]').addEventListener('click',()=>{W.library.unshift(Object.assign({},clone(entry),{id:uid(),name:entry.name+' (copy)'}));saveWorkshop();renderLibrary();});
+    row.querySelector('[data-del]').addEventListener('click',()=>{if(confirm('Delete "'+entry.name+'" from library?')){W.library=W.library.filter(x=>x.id!==entry.id);saveWorkshop();renderLibrary();}});
+    box.appendChild(row);
+  });
+}
+let refBuilt=false;
+function renderReference(){
+  if(refBuilt)return;refBuilt=true;
+  const box=document.getElementById('wk-ref');const dl=document.createElement('dl');
+  CTG.categories.forEach(cat=>{
+    const dt=document.createElement('dt');dt.textContent=cat.icon+' '+cat.label;dl.appendChild(dt);
+    cat.items.forEach(it=>{const d=document.createElement('div');d.className='ref-item';d.innerHTML=`<b>${esc(it.name)}</b> <span class="ref-ap">${it.ap} AP</span> — ${esc(it.desc)}`;dl.appendChild(d);});
+  });
+  box.appendChild(dl);
+}
+function renderSendMenu(){
+  const menu=document.getElementById('wk-send-menu');menu.innerHTML='';
+  RANKS.forEach(r=>{const b=document.createElement('button');b.textContent=r.glyph+' · '+r.label.toUpperCase();b.onclick=()=>{sendToSlot(r.key);menu.classList.remove('open');};menu.appendChild(b);});
+}
+function renderWorkshop(){
+  document.getElementById('wk-cap-input').value=W.draft.apCap;
+  renderBudget();renderRail();renderChips();renderEffects();renderOutput();renderLibrary();renderReference();renderSendMenu();
+}
+
+function doRegen(){
+  if(W.draft.edited&&W.draft.text&&!confirm('Regenerate will overwrite your hand-edited text. Continue?'))return;
+  regen(true);saveWorkshop();renderOutput();
+}
+function saveToLibrary(){
+  const name=W.draft.name||'Untitled Ability';
+  W.library.unshift({id:uid(),name:name,sel:clone(sel),text:W.draft.text,ap:CTG.totalAP(sel)});
+  saveWorkshop();renderLibrary();flashSaved();
+}
+function clearBuild(){
+  if(!confirm('Clear the current build?'))return;
+  sel=emptySel();W.draft.sel=sel;W.draft.name='';W.draft.text='';W.draft.edited=false;saveWorkshop();renderWorkshop();
+}
+function sendToSlot(rankKey){
+  const c=SPEC[rankKey];c.mode='workshop';
+  c.build={sel:clone(sel),text:W.draft.text,ap:CTG.totalAP(sel)};
+  c.desc=W.draft.text;if(!c.name&&W.draft.name)c.name=W.draft.name;
+  saveSpecials(SPEC);
+  const r=RANKS.find(x=>x.key===rankKey);
+  flashSaved();
+  alertSent(r.label);
+}
+let sentT;function alertSent(label){
+  let el=document.getElementById('sent-toast');
+  if(!el){el=document.createElement('div');el.id='sent-toast';el.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:400;background:var(--gold,#cf9500);color:#000;font-family:\'Bebas Neue\',sans-serif;letter-spacing:2px;font-size:0.95rem;padding:9px 20px;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);';document.body.appendChild(el);}
+  el.textContent='✓ SENT TO '+label.toUpperCase();el.style.display='';
+  clearTimeout(sentT);sentT=setTimeout(()=>el.style.display='none',1600);
+}
+function toggleSendMenu(e){e.stopPropagation();document.getElementById('wk-send-menu').classList.toggle('open');}
+document.addEventListener('click',e=>{if(!e.target.closest('.kw-send'))document.getElementById('wk-send-menu').classList.remove('open');});
+
+/* input wiring */
+document.getElementById('wk-cap-input').addEventListener('input',function(){W.draft.apCap=parseInt(this.value)||0;saveWorkshop();renderBudget();renderChips();renderEffects();});
+document.getElementById('wk-name').addEventListener('input',function(){W.draft.name=this.value;saveWorkshop();});
+document.getElementById('wk-text').addEventListener('input',function(){W.draft.text=this.value;W.draft.edited=true;saveWorkshop();document.getElementById('wk-edited').style.display=this.value?'':'none';});
+
+/* ── NAV + TRANSITIONS ──────────────────────────────────── */
+(function(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();
+document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
+
+renderSpecials();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="ctg-motion.js"></script>
+<script src="ctg-sound.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="ctg-sync.js"></script>
+<script src="ctg-theme.js"></script>
+</body>
+</html>

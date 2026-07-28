@@ -26,6 +26,7 @@
     <a href="p4.html" class="active">IV·ARMS</a>
     <a href="p5.html" data-nav>V·SKILL</a>
     <a href="p6.html" data-nav style="color:var(--red);">VI·COMBAT</a>
+    <a href="p7.html" data-nav>VII·SPEC</a>
   </div>
   <div class="nav-char-name" id="nav-name"><span>OPERATIVE //</span> —</div>
   <span class="save-flash" id="save-flash">SAVED ✓</span>
@@ -62,8 +63,7 @@
   <!-- KEYWORD GLOSSARY -->
   <div class="sec-label mt" id="glossary-toggle" style="cursor:pointer;user-select:none;" onclick="(function(){const p=document.getElementById('glossary-panel');const open=p.style.display!=='none';p.style.display=open?'none':'block';document.getElementById('glossary-arrow').textContent=open?'▸':'▾';})()"><span class="mk">◆</span>KEYWORD GLOSSARY <span class="note" id="glossary-arrow">▾</span></div>
   <div class="panel" id="glossary-panel">
-    <div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:4px;">Hover or click any keyword tag to see its definition.</div>
-    <div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.76rem;color:var(--gold);background:rgba(207,149,0,0.08);border-left:3px solid var(--gold);padding:5px 10px;margin-bottom:12px;">⚠&#xFE0E; These definitions are placeholders — review and update them to match your ruleset.</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:12px;">Hover or click any keyword tag to see its definition.</div>
     <div style="display:flex;flex-wrap:wrap;gap:8px;" id="glossary-list"></div>
   </div>
 
@@ -351,20 +351,26 @@ function addCustomCatalogItem(){
 
 /* ── KEYWORD GLOSSARY ───────────────────────────────────── */
 const KEYWORDS={
-  'Melee':'Attack must be in close range (adjacent). Uses ♣ Clubs cards.',
-  'Ranged':'Attack at a distance. Uses ♣ Clubs cards. Requires ammo.',
+  '♣ Clubs':'In combat, the suit for Force & Finesse actions — physical attacks and damage.',
+  '♦ Diamonds':'In combat, the suit for Logic, Sense & Velvet actions.',
+  '♠ Spades':'In combat, the suit for Endurance actions and blocking / defence.',
+  '♥ Hearts':'The wild suit — may be played for any action.',
+  'Melee':'Attack must be in close range (same zone). Physical attacks use ♣ Clubs cards.',
+  'Ranged':'Attack at a distance. Physical attacks use ♣ Clubs cards. Requires ammo.',
   'Brass':'Weapon is made of brass/metal. May interact with certain abilities.',
   'String':'Weapon has a string mechanism — fine for Lock-Smith abilities.',
-  'Flicker':'Weapon uses Flicker as its attack stat instead of Force.',
+  'Flicker':'Weapon rolls off Sense rather than Force for its attacks.',
   'Semi':'Semi-automatic. One shot per action, accurate.',
-  'Auto':'Automatic fire. Roll multiple D6s up to the Auto value. Hits on 5-6.',
+  'Auto':'Automatic fire. Roll D6s up to the Auto value — all 5s & 6s hit, the rest miss.',
   'Close':'Effective at close range only.',
   'Medium':'Effective up to medium range.',
   'Far':'Effective at long range. Requires Long Ranger or similar.',
-  'Melee (tag)':'This weapon can also make melee attacks.',
-  'Advance':'Roll twice, take the better result.',
-  'Advantage':'Add +1 to your roll.',
-  'Crit':'A natural 20 (or 19-20 with Cheater). Choose a hit location and deal max damage.',
+  'Advance':'Reroll the card-given dice and take the higher value of the two.',
+  'Advantage':'Reroll the D20 and take the higher value of the two.',
+  'Disengage':'Reroll the card-given dice and take the lower value of the two.',
+  'Disadvantage':'Reroll the D20 and take the lower value of the two.',
+  'Mods':'In combat, add the number underneath a stat to any roll that uses that stat.',
+  'Crit':'Roll a natural 20 on the d20 with no mods. Either target a limb to disable it and weaken your foe, or go for the head — roll a d6 for damage (1-6). If that roll is lower than your normal damage, you deal your standard damage instead.',
   'Reaction':'A free action in response to an opponent\u2019s action. Used once per round.',
   'Counter':'Respond to an attack with your own attack. Costs a Reaction.',
   'Shock':'Target must withdraw their current card and redraw. If unable, they skip their turn.',

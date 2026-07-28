@@ -21,6 +21,7 @@
     <a href="p4.html" data-nav>IV·ARMS</a>
     <a href="p5.html" data-nav>V·SKILL</a>
     <a href="p6.html" data-nav style="color:var(--red);">VI·COMBAT</a>
+    <a href="p7.html" data-nav>VII·SPEC</a>
   </div>
   <div class="nav-char-name" id="nav-name"><span>OPERATIVE //</span> —</div>
   <span class="save-flash" id="save-flash">SAVED ✓</span>
@@ -168,7 +169,7 @@
         <div class="panel">
           <div class="mula-block">
             <div class="mula-sym">₩</div>
-            <input class="mula-input" type="number" id="mula" value="0" min="0">
+            <input class="mula-input" type="number" id="mula" value="12" min="0">
             <div class="mula-note">Make it rain — but not too much. These are your life savings.</div>
           </div>
         </div>
@@ -493,7 +494,7 @@ function addItem(val='',notes=''){
 })();
 
 /* ── MULA ────────────────────────────────────────────────── */
-(function(){const el=document.getElementById('mula');const s=load('ctg-mula');if(s!==null)el.value=s;el.addEventListener('input',()=>save('ctg-mula',el.value));})();
+(function(){const el=document.getElementById('mula');const s=load('ctg-mula');if(s!==null)el.value=s;else save('ctg-mula',el.value);el.addEventListener('input',()=>save('ctg-mula',el.value));})();
 
 /* ── EF KIT ──────────────────────────────────────────────── */
 const EK_CATS=['PART','KIT','MOD','TOOL','CUSTOM'];
@@ -550,7 +551,7 @@ const DEF_ITEMS=[
   {id:'ic1',type:'consumable',name:'Large Stim',desc:'Heals 3 HP when used. Comes in a pressurised injector.'},
   {id:'ic2',type:'consumable',name:'Small Stim',desc:'Heals 1 HP. A quick fix for minor scrapes.'},
   {id:'ic3',type:'consumable',name:'Pressure Syringe',desc:'Removes 1 active condition (not Bleeding). Sharp and reliable.'},
-  {id:'ic4',type:'consumable',name:'Smelling Salts',desc:'Instantly removes the Stunned or Panicked condition.'},
+  {id:'ic4',type:'consumable',name:'Smelling Salts',desc:'Instantly removes the Stunned or Drunk condition.'},
   {id:'ic5',type:'consumable',name:'Alcohol Flask',desc:'Removes one negative condition but may inflict Drunk. Roll D6: 4+ you get Drunk too.'},
   {id:'ic6',type:'consumable',name:'Bandage Roll',desc:'Stabilises a Bleeding wound. Removes the Bleeding condition.'},
   {id:'ic7',type:'consumable',name:'Iron Rations',desc:'Sustenance for 1 day. Tastes like cardboard soaked in salt.'},
