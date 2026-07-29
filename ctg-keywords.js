@@ -331,19 +331,65 @@
   ─────────────────────────────────────────────────────────────────────── */
   function cap1(s) { s = (s || '').trim(); return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
 
+  // Each quiz question is a bank of options. Choice options carry a fragment
+  // the composer stitches in; any question can be skipped. {d} = the domain,
+  // optionally tinted by the chosen colour.
   var STYLE_OPTIONS = [
     { label: 'Raw & overwhelming', adj: 'overwhelming', phrase: 'a raw, overwhelming surge of {d}' },
-    { label: 'Precise & controlled', adj: 'precise', phrase: 'a precise, disciplined sliver of {d}' },
+    { label: 'Precise & controlled', adj: 'precise', phrase: 'a precise, disciplined lance of {d}' },
     { label: 'Wild & unpredictable', adj: 'volatile', phrase: 'a wild, crackling burst of {d}' },
     { label: 'Slow & creeping', adj: 'patient', phrase: 'a slow, creeping bloom of {d}' },
-    { label: 'Quiet & surgical', adj: 'cold', phrase: 'a quiet, surgical thread of {d}' }
+    { label: 'Quiet & surgical', adj: 'cold', phrase: 'a quiet, surgical thread of {d}' },
+    { label: 'Ancient & ritual', adj: 'arcane', phrase: 'an old, ritual weave of {d}' },
+    { label: 'Explosive & sudden', adj: 'violent', phrase: 'a sudden detonation of {d}' },
+    { label: 'Graceful & flowing', adj: 'fluid', phrase: 'a flowing ribbon of {d}' }
+  ];
+  var COLOUR_OPTIONS = [
+    { label: 'Crimson red', adj: 'crimson' },
+    { label: 'Cobalt blue', adj: 'cobalt' },
+    { label: 'Violet', adj: 'violet' },
+    { label: 'Emerald green', adj: 'emerald' },
+    { label: 'Golden', adj: 'golden' },
+    { label: 'Sickly green', adj: 'sickly green' },
+    { label: 'Bone white', adj: 'bone-white' },
+    { label: 'Pitch black', adj: 'pitch-black' },
+    { label: 'Prismatic', adj: 'prismatic' }
+  ];
+  var ORIGIN_OPTIONS = [
+    { label: 'Your open hands', sentence: 'It erupts from your open hands.' },
+    { label: 'Your eyes / gaze', sentence: 'It kindles behind your eyes and pours out with your gaze.' },
+    { label: 'Your breath', sentence: 'You breathe it out in a slow exhale.' },
+    { label: 'Your weapon', sentence: 'It races down the length of your weapon.' },
+    { label: 'Your shadow', sentence: 'It peels up out of your own shadow.' },
+    { label: 'A drawn sigil', sentence: 'It unspools from a sigil you trace in the air.' },
+    { label: 'Your voice', sentence: 'It rides out on the sound of your voice.' },
+    { label: 'The ground beneath', sentence: 'It tears its way up out of the ground beneath you.' }
+  ];
+  var SOUND_OPTIONS = [
+    { label: 'A low hum', sentence: 'A low hum builds in the air as it forms.' },
+    { label: 'A shrieking whine', sentence: 'It comes with a rising, shrieking whine.' },
+    { label: 'Dead silence', sentence: 'It moves in utter, unsettling silence.' },
+    { label: 'A thunderous crack', sentence: 'It lands with a thunderous crack.' },
+    { label: 'A soft chime', sentence: 'A soft chime rings out as it takes shape.' },
+    { label: 'A guttural roar', sentence: 'It announces itself with a guttural roar.' }
   ];
   var TONE_OPTIONS = [
     { label: 'Menacing', adj: 'menacing' },
     { label: 'Elegant', adj: 'elegant' },
     { label: 'Chaotic', adj: 'chaotic' },
     { label: 'Solemn', adj: 'solemn' },
-    { label: 'Playful', adj: 'mischievous' }
+    { label: 'Playful', adj: 'mischievous' },
+    { label: 'Regal', adj: 'regal' },
+    { label: 'Feral', adj: 'feral' },
+    { label: 'Mournful', adj: 'mournful' }
+  ];
+  var AFTERMATH_OPTIONS = [
+    { label: 'Scorched ruin', sentence: 'It leaves scorched, blackened ruin behind.' },
+    { label: 'Creeping frost', sentence: 'A rime of frost creeps out from where it struck.' },
+    { label: 'Crackling static', sentence: 'The air stays charged with crackling static afterward.' },
+    { label: 'An eerie hush', sentence: 'An eerie hush lingers once it fades.' },
+    { label: 'A strange scent', sentence: 'A strange scent hangs in the air afterward.' },
+    { label: 'Nothing at all', sentence: 'It vanishes without a trace, as if it were never there.' }
   ];
   function deliveryOptions(sel) {
     var t = (sel && sel.target) || [];
@@ -351,11 +397,13 @@
     if (has('medproj') || has('longproj') || has('trueproj')) return [
       { label: 'Hurled like a spear', phrase: 'hurled across the gap like a thrown spear' },
       { label: 'Loosed like an arrow', phrase: 'loosed in a flat, screaming arc' },
-      { label: 'Spat like a bullet', phrase: 'spat out faster than the eye can follow' }
+      { label: 'Spat like a bullet', phrase: 'spat out faster than the eye can follow' },
+      { label: 'A slow, guided drift', phrase: 'drifting toward its mark with eerie, guided patience' }
     ];
     if (has('touch')) return [
       { label: 'A single deliberate touch', phrase: 'delivered through one deliberate touch' },
-      { label: 'A crushing grip', phrase: 'forced through a crushing grip' }
+      { label: 'A crushing grip', phrase: 'forced through a crushing grip' },
+      { label: 'A glancing brush', phrase: 'passed on with the lightest brush of contact' }
     ];
     if (has('self')) return [
       { label: 'Wrapped around you', phrase: 'wrapping around your own body like a second skin' },
@@ -363,7 +411,8 @@
     ];
     if (has('area') || has('cone')) return [
       { label: 'Erupting outward', phrase: 'erupting outward to catch everything near you' },
-      { label: 'Sweeping the field', phrase: 'sweeping across the ground in a wave' }
+      { label: 'Sweeping the field', phrase: 'sweeping across the ground in a wave' },
+      { label: 'A slow-spreading tide', phrase: 'spreading out in a slow, inexorable tide' }
     ];
     if (has('object')) return [
       { label: 'Bound into an object', phrase: 'bound quietly into an object until its moment comes' }
@@ -382,23 +431,30 @@
     var dom = sel.domain ? item('domain', sel.domain) : null;
     var domName = dom ? dom.name : 'raw power';
     var name = (ans.name || '').trim();
+    var colour = ans.colour || null;
     var style = ans.style || null;
-    var tone = ans.tone || null;
+    var origin = ans.origin || null;
     var delivery = ans.delivery || null;
+    var sound = ans.sound || null;
+    var tone = ans.tone || null;
+    var aftermath = ans.aftermath || null;
     var detail = (ans.detail || '').trim();
 
-    var manifest = style ? style.phrase.replace('{d}', domName)
-      : (dom ? ('a working of ' + domName) : 'raw, unnamed power');
+    // colour tints the element inside the manifestation phrase
+    var dfill = colour ? (colour.adj + ' ' + domName) : domName;
+    var manifest = style ? style.phrase.replace('{d}', dfill)
+      : (dom ? ('a surge of ' + dfill) : 'raw, unnamed power');
 
-    var s = (name ? name + ' — ' : '') + cap1(manifest);
-    if (delivery) s += ', ' + delivery.phrase;
-    s += '.';
-    var vibe = [tone && tone.adj, style && style.adj].filter(Boolean);
-    if (vibe.length) s += ' ' + cap1(joinList(vibe)) + (vibe.length > 1 ? ' in equal measure.' : ' to the core.');
-    if (detail) s += ' ' + cap1(detail.replace(/[.!?]+$/, '')) + '.';
+    var parts = [];
+    parts.push((name ? name + ' — ' : '') + cap1(manifest) + (delivery ? ', ' + delivery.phrase : '') + '.');
+    if (origin) parts.push(origin.sentence);
+    if (sound) parts.push(sound.sentence);
+    if (tone) parts.push(cap1(tone.adj) + ' in character.');
+    if (aftermath) parts.push(aftermath.sentence);
+    if (detail) parts.push(cap1(detail.replace(/[.!?]+$/, '')) + '.');
 
     // flavour only — the mechanical "plain rules" are shown in their own section
-    return s;
+    return parts.join(' ');
   }
 
   /* Plain-language rules for the reference panel. */
@@ -421,7 +477,11 @@
     generate: generate,
     joinList: joinList,
     styleOptions: STYLE_OPTIONS,
+    colourOptions: COLOUR_OPTIONS,
+    originOptions: ORIGIN_OPTIONS,
+    soundOptions: SOUND_OPTIONS,
     toneOptions: TONE_OPTIONS,
+    aftermathOptions: AFTERMATH_OPTIONS,
     deliveryOptions: deliveryOptions,
     flavorText: flavorText,
     apNote: AP_NOTE,

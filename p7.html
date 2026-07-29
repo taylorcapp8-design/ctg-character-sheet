@@ -125,7 +125,7 @@
 /* flavor quiz modal */
 .quiz-scrim{position:fixed;inset:0;background:rgba(0,0,0,0.68);z-index:320;display:none;align-items:center;justify-content:center;padding:20px;}
 .quiz-scrim.open{display:flex;}
-.quiz-card{background:var(--paper);border:3px solid var(--ink);box-shadow:8px 8px 0 var(--purple);max-width:520px;width:100%;padding:22px 24px 20px;position:relative;clip-path:polygon(0 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%);}
+.quiz-card{background:var(--paper);border:3px solid var(--ink);box-shadow:8px 8px 0 var(--purple);max-width:520px;width:100%;max-height:88vh;overflow:auto;padding:22px 24px 20px;position:relative;clip-path:polygon(0 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%);}
 .quiz-eyebrow{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:3px;color:var(--purple);margin-bottom:4px;}
 .quiz-dots{display:flex;gap:5px;margin:2px 0 16px;}
 .quiz-dot{width:22px;height:5px;background:var(--border2);}
@@ -135,6 +135,8 @@
 .quiz-opts{display:flex;flex-direction:column;gap:8px;}
 .quiz-opt{text-align:left;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.98rem;padding:11px 14px;background:var(--paper2,rgba(0,0,0,0.04));border:2px solid var(--border2);color:var(--text);cursor:pointer;transition:all .12s;}
 .quiz-opt:hover{border-color:var(--purple);background:var(--purple);color:#fff;transform:translateX(3px);}
+.quiz-opt.skip{border-style:dashed;border-color:var(--border2);color:var(--text-dim);font-size:0.82rem;font-weight:500;margin-top:4px;}
+.quiz-opt.skip:hover{background:transparent;color:var(--text);border-color:var(--text-dim);transform:none;}
 .quiz-text-in{width:100%;background:var(--paper2,rgba(0,0,0,0.04));border:2px solid var(--border2);color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:1.05rem;padding:11px 13px;outline:none;}
 .quiz-text-in:focus{border-color:var(--purple);}
 .quiz-foot{display:flex;align-items:center;gap:8px;margin-top:18px;}
@@ -551,10 +553,14 @@ let quizStep=0,quizAns={},quizQs=[];
 function buildQuizQs(){
   quizQs=[
     {id:'name',kind:'text',prompt:'What is this ability called?',placeholder:'name it…',prefill:()=>W.draft.name||''},
+    {id:'colour',kind:'choice',prompt:'What colour or hue is it?',opts:CTG.colourOptions},
     {id:'style',kind:'choice',prompt:'How does the power manifest?',opts:CTG.styleOptions},
+    {id:'origin',kind:'choice',prompt:'Where does it come from?',opts:CTG.originOptions},
     {id:'delivery',kind:'choice',prompt:'How does it reach its mark?',opts:CTG.deliveryOptions(sel)},
+    {id:'sound',kind:'choice',prompt:'What does it sound like?',opts:CTG.soundOptions},
     {id:'tone',kind:'choice',prompt:'What is its character?',opts:CTG.toneOptions},
-    {id:'detail',kind:'text',prompt:'A signature sensory detail?',placeholder:'a smell, a sound, a colour… (optional)',prefill:()=>''}
+    {id:'aftermath',kind:'choice',prompt:'What does it leave behind?',opts:CTG.aftermathOptions},
+    {id:'detail',kind:'text',prompt:'A final signature detail?',placeholder:'a smell, a sound, a memory… (optional)',prefill:()=>''}
   ];
 }
 function openQuiz(){buildQuizQs();quizStep=0;quizAns={};renderQuiz();document.getElementById('quiz-scrim').classList.add('open');}
@@ -575,6 +581,9 @@ function renderQuiz(){
       b.onclick=()=>{quizAns[q.id]=opt;advanceQuiz();};
       body.appendChild(b);
     });
+    const skip=document.createElement('button');skip.className='quiz-opt skip';skip.textContent='— skip this —';
+    skip.onclick=()=>{quizAns[q.id]=null;advanceQuiz();};
+    body.appendChild(skip);
   }else{
     nextBtn.style.display='';nextBtn.textContent=quizStep===quizQs.length-1?'✨ WRITE IT':'NEXT ›';
     const inp=document.createElement('input');inp.className='quiz-text-in';inp.id='quiz-input';inp.placeholder=q.placeholder||'';
