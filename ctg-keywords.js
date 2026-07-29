@@ -342,7 +342,14 @@
     { label: 'Quiet & surgical', adj: 'cold', phrase: 'a quiet, surgical thread of {d}' },
     { label: 'Ancient & ritual', adj: 'arcane', phrase: 'an old, ritual weave of {d}' },
     { label: 'Explosive & sudden', adj: 'violent', phrase: 'a sudden detonation of {d}' },
-    { label: 'Graceful & flowing', adj: 'fluid', phrase: 'a flowing ribbon of {d}' }
+    { label: 'Graceful & flowing', adj: 'fluid', phrase: 'a flowing ribbon of {d}' },
+    { label: 'Relentless & grinding', adj: 'relentless', phrase: 'a relentless, grinding torrent of {d}' },
+    { label: 'Delicate & intricate', adj: 'intricate', phrase: 'a delicate, intricate lattice of {d}' },
+    { label: 'Feral & hungry', adj: 'ravenous', phrase: 'a feral, hungry swell of {d}' },
+    { label: 'Heavy & crushing', adj: 'crushing', phrase: 'a heavy, crushing weight of {d}' },
+    { label: 'Shimmering & unreal', adj: 'uncanny', phrase: 'a shimmering, half-real veil of {d}' },
+    { label: 'Coiled & waiting', adj: 'tense', phrase: 'a coiled, waiting knot of {d}' },
+    { label: 'Blinding & instant', adj: 'blinding', phrase: 'a blinding, instant flash of {d}' }
   ];
   var COLOUR_OPTIONS = [
     { label: 'Crimson red', adj: 'crimson' },
@@ -353,7 +360,16 @@
     { label: 'Sickly green', adj: 'sickly green' },
     { label: 'Bone white', adj: 'bone-white' },
     { label: 'Pitch black', adj: 'pitch-black' },
-    { label: 'Prismatic', adj: 'prismatic' }
+    { label: 'Prismatic', adj: 'prismatic' },
+    { label: 'Molten orange', adj: 'molten orange' },
+    { label: 'Silver', adj: 'silver' },
+    { label: 'Blood red', adj: 'blood-red' },
+    { label: 'Ashen grey', adj: 'ashen grey' },
+    { label: 'Neon pink', adj: 'neon pink' },
+    { label: 'Deep indigo', adj: 'deep indigo' },
+    { label: 'Sea green', adj: 'sea-green' },
+    { label: 'Rust brown', adj: 'rust-brown' },
+    { label: 'Unseen / ultraviolet', adj: 'unseen, ultraviolet' }
   ];
   var ORIGIN_OPTIONS = [
     { label: 'Your open hands', sentence: 'It erupts from your open hands.' },
@@ -363,7 +379,14 @@
     { label: 'Your shadow', sentence: 'It peels up out of your own shadow.' },
     { label: 'A drawn sigil', sentence: 'It unspools from a sigil you trace in the air.' },
     { label: 'Your voice', sentence: 'It rides out on the sound of your voice.' },
-    { label: 'The ground beneath', sentence: 'It tears its way up out of the ground beneath you.' }
+    { label: 'The ground beneath', sentence: 'It tears its way up out of the ground beneath you.' },
+    { label: 'Your heartbeat', sentence: 'It pulses out in time with your heartbeat.' },
+    { label: 'Your fingertips', sentence: 'It sparks to life at your fingertips.' },
+    { label: 'The air around you', sentence: 'It condenses straight out of the air around you.' },
+    { label: 'Your own blood', sentence: 'It wells up from your own blood.' },
+    { label: 'A held stillness', sentence: 'It gathers in a held, perfect stillness before release.' },
+    { label: 'Your footsteps', sentence: 'It trails up from where your feet strike the ground.' },
+    { label: 'Cracks in the world', sentence: 'It bleeds through hairline cracks in the world itself.' }
   ];
   var SOUND_OPTIONS = [
     { label: 'A low hum', sentence: 'A low hum builds in the air as it forms.' },
@@ -371,7 +394,13 @@
     { label: 'Dead silence', sentence: 'It moves in utter, unsettling silence.' },
     { label: 'A thunderous crack', sentence: 'It lands with a thunderous crack.' },
     { label: 'A soft chime', sentence: 'A soft chime rings out as it takes shape.' },
-    { label: 'A guttural roar', sentence: 'It announces itself with a guttural roar.' }
+    { label: 'A guttural roar', sentence: 'It announces itself with a guttural roar.' },
+    { label: 'A crackling snap', sentence: 'It crackles and snaps like a live wire.' },
+    { label: 'A deep bass throb', sentence: 'A deep bass throb rolls out ahead of it.' },
+    { label: 'Ringing bells', sentence: 'Distant bells seem to ring as it forms.' },
+    { label: 'A wet tearing sound', sentence: 'It comes with a wet, tearing sound.' },
+    { label: 'A whispering chorus', sentence: 'A whispering chorus rises around it.' },
+    { label: 'Howling wind', sentence: 'Howling wind kicks up as it gathers.' }
   ];
   var TONE_OPTIONS = [
     { label: 'Menacing', adj: 'menacing' },
@@ -381,7 +410,15 @@
     { label: 'Playful', adj: 'mischievous' },
     { label: 'Regal', adj: 'regal' },
     { label: 'Feral', adj: 'feral' },
-    { label: 'Mournful', adj: 'mournful' }
+    { label: 'Mournful', adj: 'mournful' },
+    { label: 'Serene', adj: 'serene' },
+    { label: 'Vicious', adj: 'vicious' },
+    { label: 'Triumphant', adj: 'triumphant' },
+    { label: 'Coldly detached', adj: 'coldly detached' },
+    { label: 'Reverent', adj: 'reverent' },
+    { label: 'Manic', adj: 'manic' },
+    { label: 'Weary', adj: 'weary' },
+    { label: 'Proud', adj: 'proud' }
   ];
   var AFTERMATH_OPTIONS = [
     { label: 'Scorched ruin', sentence: 'It leaves scorched, blackened ruin behind.' },
@@ -389,7 +426,14 @@
     { label: 'Crackling static', sentence: 'The air stays charged with crackling static afterward.' },
     { label: 'An eerie hush', sentence: 'An eerie hush lingers once it fades.' },
     { label: 'A strange scent', sentence: 'A strange scent hangs in the air afterward.' },
-    { label: 'Nothing at all', sentence: 'It vanishes without a trace, as if it were never there.' }
+    { label: 'Nothing at all', sentence: 'It vanishes without a trace, as if it were never there.' },
+    { label: 'A lingering glow', sentence: 'A faint glow lingers where it passed.' },
+    { label: 'Shattered ground', sentence: 'It leaves the ground cracked and shattered.' },
+    { label: 'Drifting motes', sentence: 'Drifting motes hang in the air long after.' },
+    { label: 'A sudden chill', sentence: 'A sudden chill settles over everything nearby.' },
+    { label: 'Wilted, dead growth', sentence: 'Plants wilt and blacken where it touched.' },
+    { label: 'A ringing in the ears', sentence: 'It leaves a ringing that takes minutes to fade.' },
+    { label: 'Burnt sigils', sentence: 'Faint burnt sigils are seared into the nearest surface.' }
   ];
   function deliveryOptions(sel) {
     var t = (sel && sel.target) || [];
@@ -398,31 +442,39 @@
       { label: 'Hurled like a spear', phrase: 'hurled across the gap like a thrown spear' },
       { label: 'Loosed like an arrow', phrase: 'loosed in a flat, screaming arc' },
       { label: 'Spat like a bullet', phrase: 'spat out faster than the eye can follow' },
-      { label: 'A slow, guided drift', phrase: 'drifting toward its mark with eerie, guided patience' }
+      { label: 'A slow, guided drift', phrase: 'drifting toward its mark with eerie, guided patience' },
+      { label: 'A curving, homing arc', phrase: 'curving through the air to chase its mark' },
+      { label: 'Raining from above', phrase: 'falling from directly above like a verdict' }
     ];
     if (has('touch')) return [
       { label: 'A single deliberate touch', phrase: 'delivered through one deliberate touch' },
       { label: 'A crushing grip', phrase: 'forced through a crushing grip' },
-      { label: 'A glancing brush', phrase: 'passed on with the lightest brush of contact' }
+      { label: 'A glancing brush', phrase: 'passed on with the lightest brush of contact' },
+      { label: 'A sudden seizing grab', phrase: 'delivered the instant your grip closes' }
     ];
     if (has('self')) return [
       { label: 'Wrapped around you', phrase: 'wrapping around your own body like a second skin' },
-      { label: 'Surging from within', phrase: 'surging up from somewhere deep inside you' }
+      { label: 'Surging from within', phrase: 'surging up from somewhere deep inside you' },
+      { label: 'Sinking into your skin', phrase: 'sinking quietly beneath your own skin' }
     ];
     if (has('area') || has('cone')) return [
       { label: 'Erupting outward', phrase: 'erupting outward to catch everything near you' },
       { label: 'Sweeping the field', phrase: 'sweeping across the ground in a wave' },
-      { label: 'A slow-spreading tide', phrase: 'spreading out in a slow, inexorable tide' }
+      { label: 'A slow-spreading tide', phrase: 'spreading out in a slow, inexorable tide' },
+      { label: 'A shockwave ring', phrase: 'blasting outward in a violent ring' }
     ];
     if (has('object')) return [
-      { label: 'Bound into an object', phrase: 'bound quietly into an object until its moment comes' }
+      { label: 'Bound into an object', phrase: 'bound quietly into an object until its moment comes' },
+      { label: 'Fused in seamlessly', phrase: 'fused seamlessly into the object, invisible until it triggers' }
     ];
     if (has('chain')) return [
-      { label: 'Leaping mark to mark', phrase: 'leaping from one mark to the next, hungry for more' }
+      { label: 'Leaping mark to mark', phrase: 'leaping from one mark to the next, hungry for more' },
+      { label: 'Arcing hungrily', phrase: 'arcing hungrily between everything within reach' }
     ];
     return [
       { label: 'Released into the world', phrase: 'released into the world to do its work' },
-      { label: 'Shaped in your hands', phrase: 'shaped patiently in your hands' }
+      { label: 'Shaped in your hands', phrase: 'shaped patiently in your hands' },
+      { label: 'Willed into being', phrase: 'called into being by will alone' }
     ];
   }
 
