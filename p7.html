@@ -373,6 +373,7 @@ function renderSpecials(){
         <div class="spec-foot">
           <button class="mini-btn acc" data-paste>📋 PASTE FROM WORKSHOP</button>
           ${wk&&c.build?`<button class="mini-btn gold" data-edit>↺ EDIT IN WORKSHOP</button>`:''}
+          <button class="mini-btn" data-clear title="Reset this card back to blank" style="border-color:var(--red);color:var(--red);">✕ CLEAR</button>
           <div class="spec-cap"><span style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:var(--text-dim);">AP CAP</span><input type="number" min="0" data-f="apCap" value="${c.apCap}"></div>
         </div>
       </div>`;
@@ -389,6 +390,11 @@ function renderSpecials(){
       c.mode=wk?'freeform':'workshop';saveSpecials(SPEC);renderSpecials();
     });
     card.querySelector('[data-paste]').addEventListener('click',()=>openPicker(r.key));
+    card.querySelector('[data-clear]').addEventListener('click',()=>{
+      if(!confirm('Clear the '+r.label+' card back to blank?'))return;
+      SPEC[r.key]={name:'',desc:'',mode:'freeform',build:null,apCap:r.cap};
+      saveSpecials(SPEC);renderSpecials();
+    });
     const editBtn=card.querySelector('[data-edit]');
     if(editBtn)editBtn.addEventListener('click',()=>{
       sel=Object.assign(emptySel(),clone(c.build.sel));W.draft.sel=sel;
