@@ -26,6 +26,7 @@ ctg-character-sheet/
 ├── p6.html             Page VI  — Combat: vitals, attack calculator, skills, buffs
 ├── p7.html             Page VII — Specials (4 face-card slots) + Keyword Ability Workshop
 ├── ctg-keywords.js     Keyword data, combination rules & ability-text generator (Page VII)
+├── supabase/functions/flavor/  Optional AI-flavour edge function (free LLM proxy) — see its README
 ├── ctg.css             Main stylesheet
 ├── ctg-themes.css      8 visual themes
 ├── ctg-theme.js        Theme switcher (injects dot picker into every nav bar)
@@ -54,6 +55,7 @@ ctg-character-sheet/
 | Temp buffs with multi-stat support and presets | P6 |
 | Specials — 4 face-card ability slots (J/Q/K/A) with freeform / workshop toggle | P7 |
 | Keyword Ability Workshop — combine keywords into an auto-written, editable ability | P7 |
+| Flavour Quiz (built-in) + optional **AI Flavour** via a free-LLM edge function | P7 |
 | Card → dice cheat sheet (collapsible) + live card-value lookup | P6 |
 | Initiative tracker — card value + Finesse, auto-sorted turn order | P6 |
 | Cross-tab localStorage sync | P1 ↔ P6 ↔ P7 |

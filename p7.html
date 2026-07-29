@@ -209,6 +209,7 @@
             <input class="kw-out-name" id="wk-name" placeholder="Ability name…">
             <textarea class="kw-out-text" id="wk-text" placeholder="Pick some keywords and the description writes itself here…"></textarea>
             <div class="kw-out-foot">
+              <button class="mini-btn gold" id="ai-flavour-btn" onclick="aiFlavour()" title="Write vivid flavour with a free AI (needs the Supabase edge function set up — see supabase/functions/flavor/README.md)">🤖 AI FLAVOUR</button>
               <button class="mini-btn acc" onclick="openQuiz()">✨ FLAVOUR QUIZ</button>
               <button class="mini-btn" onclick="doRegen()">🎲 PLAIN RULES</button>
               <span class="kw-edited" id="wk-edited" style="display:none;">✎ hand-edited</span>
@@ -277,6 +278,15 @@ const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&g
 const uid=()=>'x'+Math.random().toString(36).slice(2,8);
 const clone=o=>JSON.parse(JSON.stringify(o));
 const catByKey=k=>CTG.categories.find(c=>c.key===k);
+
+/* AI flavour endpoint — the Supabase edge function proxies to a free LLM and
+   holds the API key server-side. The anon key below is public by design (it is
+   the same one already shipped in ctg-sync.js). Until the function is deployed,
+   the AI button fails gracefully and the built-in quiz still works. */
+const CTG_AI={
+  endpoint:'https://lijzuwwhktgywytbmutf.supabase.co/functions/v1/flavor',
+  anonKey:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxpanp1d3doa3RneXd5dGJtdXRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4ODM4MDEsImV4cCI6MjA5NjQ1OTgwMX0.Q0yi6VcgZuhORU6MZbOD02Od5ZYE8tYfOodHBQ0MypI'
+};
 
 /* ── STATE ──────────────────────────────────────────────── */
 const RANKS=[{key:'jack',label:'Jack',glyph:'J',suit:'♠',sc:'spade',cap:6},{key:'queen',label:'Queen',glyph:'Q',suit:'♣',sc:'club',cap:10},{key:'king',label:'King',glyph:'K',suit:'♦',sc:'diamond',cap:14},{key:'ace',label:'Ace',glyph:'A',suit:'♥',sc:'heart',cap:20}];
@@ -594,11 +604,36 @@ function sendToSlot(rankKey){
   flashSaved();
   alertSent(r.label);
 }
-let sentT;function alertSent(label){
+let sentT;function toast(msg,ok){
   let el=document.getElementById('sent-toast');
-  if(!el){el=document.createElement('div');el.id='sent-toast';el.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:400;background:var(--gold,#cf9500);color:#000;font-family:\'Bebas Neue\',sans-serif;letter-spacing:2px;font-size:0.95rem;padding:9px 20px;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);';document.body.appendChild(el);}
-  el.textContent='✓ SENT TO '+label.toUpperCase();el.style.display='';
-  clearTimeout(sentT);sentT=setTimeout(()=>el.style.display='none',1600);
+  if(!el){el=document.createElement('div');el.id='sent-toast';el.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:400;font-family:\'Bebas Neue\',sans-serif;letter-spacing:2px;font-size:0.95rem;padding:9px 20px;border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink);max-width:90vw;text-align:center;';document.body.appendChild(el);}
+  el.style.background=ok===false?'var(--red)':'var(--gold,#cf9500)';el.style.color=ok===false?'#fff':'#000';
+  el.textContent=msg;el.style.display='';
+  clearTimeout(sentT);sentT=setTimeout(()=>el.style.display='none',ok===false?3200:1700);
+}
+function alertSent(label){toast('✓ SENT TO '+label.toUpperCase(),true);}
+
+/* ── AI FLAVOUR (edge function → free LLM) ─────────────── */
+async function aiFlavour(){
+  const btn=document.getElementById('ai-flavour-btn');
+  const kws=[];
+  CTG.categories.forEach(cat=>{const v=sel[cat.key];
+    if(cat.select==='single'){if(v){const it=CTG.item(cat.key,v);if(it)kws.push(it.name);}}
+    else if(Array.isArray(v))v.forEach(id=>{const it=CTG.item(cat.key,id);if(it)kws.push(it.name);});});
+  if(!kws.length){toast('Pick some keywords first.',false);return;}
+  const mechanical=CTG.generate(sel);
+  const label=btn.textContent;btn.disabled=true;btn.textContent='✦ WRITING…';
+  try{
+    const r=await fetch(CTG_AI.endpoint,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+CTG_AI.anonKey,'apikey':CTG_AI.anonKey},
+      body:JSON.stringify({mechanical,keywords:kws.join(', '),name:(W.draft.name||''),hints:(W.draft.edited?W.draft.text:'')})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok||!j.text)throw new Error(j.error||('server '+r.status));
+    W.draft.text=j.text.trim()+(mechanical?('\n\n'+mechanical):'');
+    W.draft.edited=true;saveWorkshop();renderOutput();
+    toast('✨ AI flavour written.',true);
+  }catch(e){
+    toast('AI flavour unavailable yet — try the Flavour Quiz.',false);
+  }finally{btn.disabled=false;btn.textContent=label;}
 }
 function toggleSendMenu(e){e.stopPropagation();document.getElementById('wk-send-menu').classList.toggle('open');}
 document.addEventListener('click',e=>{if(!e.target.closest('.kw-send'))document.getElementById('wk-send-menu').classList.remove('open');});
