@@ -17,20 +17,25 @@
 <link rel="stylesheet" href="ctg.css">
 <style>
 /* ── SPECIALS ───────────────────────────────────────────── */
-.spec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;}
-.spec-card{position:relative;background:var(--paper);border:2.5px solid var(--ink);overflow:hidden;transition:all .2s;clip-path:polygon(0 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%);filter:drop-shadow(4px 4px 0 rgba(0,0,0,0.85));animation:panelIn .42s ease both;}
-.spec-card:hover{transform:translateY(-3px);border-color:var(--purple);}
-.spec-card.wk{border-left:5px solid var(--gold,#cf9500);}
+.spec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;align-items:start;}
+@media(max-width:620px){.spec-grid{grid-template-columns:1fr;}}
+.spec-card{position:relative;background:var(--paper);border:2.5px solid var(--ink);overflow:hidden;transition:transform .18s ease;clip-path:polygon(0 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%);filter:drop-shadow(4px 4px 0 rgba(0,0,0,0.85));animation:panelIn .42s ease both;}
+.spec-card:hover{transform:translateY(-4px) rotate(-0.4deg);}
 .spec-card.ff{border-left:5px solid var(--purple);}
-.spec-head{display:flex;align-items:center;gap:10px;padding:11px 13px 8px;border-bottom:1.5px solid var(--border);}
-.spec-rank{font-family:'Anton',sans-serif;font-size:1.8rem;line-height:1;width:40px;height:52px;display:flex;align-items:center;justify-content:center;border:2.5px solid var(--ink);background:var(--paper2,rgba(0,0,0,0.05));color:var(--ink);flex-shrink:0;clip-path:polygon(0 0,100% 0,100% 88%,50% 100%,0 88%);}
-.spec-rank .rs{font-size:0.7rem;margin-left:1px;}
+.spec-card.wk{border-left:5px solid var(--gold,#cf9500);}
+.spec-wm{position:absolute;right:-6px;bottom:-22px;font-size:7rem;line-height:1;font-variant-emoji:text;opacity:0.06;pointer-events:none;z-index:0;color:var(--ink);}
+.spec-card.heart .spec-wm,.spec-card.diamond .spec-wm{color:var(--red);}
+.spec-head{position:relative;z-index:1;display:flex;align-items:center;gap:10px;padding:11px 13px 8px;border-bottom:1.5px solid var(--border);}
+.spec-rank{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:0.8;font-family:'Anton',sans-serif;color:var(--ink);flex-shrink:0;width:30px;}
+.spec-rank .rk{font-size:1.7rem;}
+.spec-rank .rs{font-size:0.9rem;margin-top:2px;font-variant-emoji:text;}
+.spec-card.heart .spec-rank,.spec-card.diamond .spec-rank{color:var(--red);}
 .spec-name{flex:1;background:transparent;border:none;border-bottom:1.5px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-style:italic;font-size:1.15rem;letter-spacing:1px;padding:3px 2px;outline:none;min-width:60px;}
 .spec-name:focus{border-bottom-color:var(--purple);}
 .spec-mode{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;padding:4px 8px;border:1.5px solid var(--border2);background:transparent;color:var(--text-dim);cursor:pointer;white-space:nowrap;transition:all .14s;}
 .spec-mode.wk{background:var(--gold,#cf9500);border-color:var(--gold,#cf9500);color:#000;}
 .spec-mode.ff{background:var(--purple);border-color:var(--purple);color:#fff;}
-.spec-body{padding:11px 13px;}
+.spec-body{position:relative;z-index:1;padding:11px 13px;}
 .spec-desc{width:100%;min-height:96px;resize:vertical;background:var(--paper2,rgba(0,0,0,0.04));border:1.5px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.9rem;line-height:1.45;padding:9px 11px;outline:none;}
 .spec-desc:focus{border-color:var(--purple);}
 .spec-build{margin-top:9px;padding:8px 10px;background:rgba(207,149,0,0.07);border:1px solid var(--gold,#cf9500);}
@@ -75,7 +80,7 @@
 .kw-chip.blocked:hover{border-color:var(--border2);}
 .kw-chip .kw-ap{font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:0;padding:1px 4px;border:1px solid currentColor;border-radius:2px;opacity:0.75;}
 .kw-chip.none-chip{font-style:italic;color:var(--text-dim);}
-.kw-effstrip{margin-top:14px;padding-top:11px;border-top:1px dashed var(--border);}
+.kw-effstrip{margin-top:16px;padding:11px 12px;border:1.5px solid var(--border);background:rgba(168,16,44,0.045);clip-path:polygon(0 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%);}
 .kw-effstrip .lab{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--red);margin-bottom:7px;}
 .kw-out{margin-top:12px;padding:12px 14px;background:var(--paper2,rgba(109,40,217,0.06));border:2px solid var(--purple);clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%);}
 .kw-out-name{width:100%;background:transparent;border:none;border-bottom:2px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-style:italic;font-size:1.3rem;letter-spacing:1px;padding:3px 2px 5px;outline:none;margin-bottom:8px;}
@@ -230,7 +235,7 @@ const clone=o=>JSON.parse(JSON.stringify(o));
 const catByKey=k=>CTG.categories.find(c=>c.key===k);
 
 /* ── STATE ──────────────────────────────────────────────── */
-const RANKS=[{key:'jack',label:'Jack',glyph:'J',suit:'♠',cap:6},{key:'queen',label:'Queen',glyph:'Q',suit:'♣',cap:10},{key:'king',label:'King',glyph:'K',suit:'♦',cap:14},{key:'ace',label:'Ace',glyph:'A',suit:'♥',cap:20}];
+const RANKS=[{key:'jack',label:'Jack',glyph:'J',suit:'♠',sc:'spade',cap:6},{key:'queen',label:'Queen',glyph:'Q',suit:'♣',sc:'club',cap:10},{key:'king',label:'King',glyph:'K',suit:'♦',sc:'diamond',cap:14},{key:'ace',label:'Ace',glyph:'A',suit:'♥',sc:'heart',cap:20}];
 function emptySel(){return {action:null,target:[],operation:null,domain:null,condition:[],duration:null,modifier:null,effects:[]};}
 
 function loadSpecials(){
@@ -283,18 +288,18 @@ function renderSpecials(){
   const grid=document.getElementById('spec-grid');grid.innerHTML='';
   RANKS.forEach(r=>{
     const c=SPEC[r.key];const wk=c.mode==='workshop';
-    const card=document.createElement('div');card.className='spec-card '+(wk?'wk':'ff');
+    const card=document.createElement('div');card.className='spec-card '+r.sc+' '+(wk?'wk':'ff');
     card.innerHTML=`
+      <div class="spec-wm">${r.suit}</div>
       <div class="spec-head">
-        <div class="spec-rank">${r.glyph}<span class="rs">${r.suit}</span></div>
+        <div class="spec-rank"><span class="rk">${r.glyph}</span><span class="rs">${r.suit}</span></div>
         <input class="spec-name" data-f="name" value="${esc(c.name)}" placeholder="${r.label} — name…">
         <button class="spec-mode ${wk?'wk':'ff'}" data-mode title="Toggle ability-creator link">${wk?'🛠 WORKSHOP':'✎ FREEFORM'}</button>
       </div>
       <div class="spec-body">
         <textarea class="spec-desc" data-f="desc" placeholder="Describe this special ability…">${esc(c.desc)}</textarea>
         ${wk?`<div class="spec-build">
-          <div class="spec-build-top"><span class="spec-build-ap">${c.build?c.build.ap:0} AP</span>
-          <span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:var(--text-dim);">${c.build?'KEYWORDS':'no build yet — send one from the Workshop'}</span></div>
+          <div class="spec-build-top">${c.build?`<span class="spec-build-ap">${c.build.ap} AP</span><span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:var(--text-dim);">KEYWORDS</span>`:`<span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);">🛠 No build yet — send one over from the Workshop.</span>`}</div>
           ${c.build?`<div class="spec-chips">${buildChipStrip(c.build)}</div>`:''}
         </div>`:''}
         <div class="spec-foot">
