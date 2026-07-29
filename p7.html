@@ -102,11 +102,39 @@
 .kw-picker-scrim.open{display:flex;}
 .kw-picker{background:var(--paper);border:3px solid var(--ink);box-shadow:8px 8px 0 var(--purple);max-width:480px;width:100%;max-height:76vh;overflow:auto;padding:18px 20px;}
 .kw-picker h3{font-family:'Anton',sans-serif;font-style:italic;font-size:1.3rem;letter-spacing:1px;color:var(--ink);margin-bottom:3px;}
-.kw-ref dl{margin:0;}
-.kw-ref dt{font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1px;color:var(--purple);margin-top:9px;}
-.kw-ref .ref-item{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.4;margin:2px 0 2px 4px;}
+.kw-ap-disc{color:var(--green3)!important;}
+.kw-chip.on .kw-ap-disc{color:#c9f5cf!important;}
+/* rules reference */
+.kw-ref .ref-block{margin-bottom:16px;}
+.kw-ref h4{font-family:'Anton',sans-serif;font-style:italic;font-size:1.05rem;letter-spacing:1px;color:var(--ink);margin:0 0 6px;padding-bottom:3px;border-bottom:2px solid var(--border);}
+.kw-ref .ap-note{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.86rem;line-height:1.5;color:var(--text2);background:var(--paper2,rgba(0,0,0,0.04));border-left:3px solid var(--purple);padding:8px 12px;}
+.kw-ref .rule-list{list-style:none;margin:0;padding:0;}
+.kw-ref .rule-list li{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.84rem;line-height:1.45;color:var(--text2);padding:5px 0 5px 22px;position:relative;border-bottom:1px dashed var(--border);}
+.kw-ref .rule-list li::before{content:'✗';position:absolute;left:2px;top:5px;color:var(--red);font-family:'Bebas Neue',sans-serif;}
+.kw-ref .rule-list li:last-child::before{content:'✓';color:var(--green3);}
+.kw-ref dt{font-family:'Bebas Neue',sans-serif;font-size:0.92rem;letter-spacing:1px;color:var(--purple);margin-top:12px;margin-bottom:3px;display:flex;align-items:center;gap:6px;}
+.kw-ref dt .dt-disc{font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--green3);border:1px solid var(--green3);padding:1px 5px;text-transform:uppercase;}
+.kw-ref .ref-item{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.4;margin:3px 0;padding-left:4px;}
 .kw-ref .ref-item b{color:var(--text);font-weight:700;}
 .kw-ref .ref-ap{font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--gold,#cf9500);}
+.kw-ref .ref-ap.disc{color:var(--green3);}
+/* flavor quiz modal */
+.quiz-scrim{position:fixed;inset:0;background:rgba(0,0,0,0.68);z-index:320;display:none;align-items:center;justify-content:center;padding:20px;}
+.quiz-scrim.open{display:flex;}
+.quiz-card{background:var(--paper);border:3px solid var(--ink);box-shadow:8px 8px 0 var(--purple);max-width:520px;width:100%;padding:22px 24px 20px;position:relative;clip-path:polygon(0 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%);}
+.quiz-eyebrow{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:3px;color:var(--purple);margin-bottom:4px;}
+.quiz-dots{display:flex;gap:5px;margin:2px 0 16px;}
+.quiz-dot{width:22px;height:5px;background:var(--border2);}
+.quiz-dot.on{background:var(--purple);}
+.quiz-dot.done{background:var(--green3);}
+.quiz-q{font-family:'Anton',sans-serif;font-style:italic;font-size:1.55rem;line-height:1.05;letter-spacing:0.5px;color:var(--ink);margin-bottom:16px;}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;}
+.quiz-opt{text-align:left;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.98rem;padding:11px 14px;background:var(--paper2,rgba(0,0,0,0.04));border:2px solid var(--border2);color:var(--text);cursor:pointer;transition:all .12s;}
+.quiz-opt:hover{border-color:var(--purple);background:var(--purple);color:#fff;transform:translateX(3px);}
+.quiz-text-in{width:100%;background:var(--paper2,rgba(0,0,0,0.04));border:2px solid var(--border2);color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:1.05rem;padding:11px 13px;outline:none;}
+.quiz-text-in:focus{border-color:var(--purple);}
+.quiz-foot{display:flex;align-items:center;gap:8px;margin-top:18px;}
+.quiz-skip{font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:1px;color:var(--text-dim);background:none;border:none;cursor:pointer;text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -181,7 +209,8 @@
             <input class="kw-out-name" id="wk-name" placeholder="Ability name…">
             <textarea class="kw-out-text" id="wk-text" placeholder="Pick some keywords and the description writes itself here…"></textarea>
             <div class="kw-out-foot">
-              <button class="mini-btn acc" onclick="doRegen()">🎲 REGENERATE</button>
+              <button class="mini-btn acc" onclick="openQuiz()">✨ FLAVOUR QUIZ</button>
+              <button class="mini-btn" onclick="doRegen()">🎲 PLAIN RULES</button>
               <span class="kw-edited" id="wk-edited" style="display:none;">✎ hand-edited</span>
               <div class="kw-send" style="margin-left:auto;">
                 <button class="mini-btn gold" onclick="toggleSendMenu(event)">📤 SEND TO SLOT ▾</button>
@@ -198,7 +227,7 @@
           </div>
 
           <details style="margin-top:14px;">
-            <summary style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:2px;color:var(--text-dim);cursor:pointer;user-select:none;padding:5px 0;">▸ KEYWORD REFERENCE</summary>
+            <summary style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:2px;color:var(--text-dim);cursor:pointer;user-select:none;padding:5px 0;">▸ RULES &amp; KEYWORD REFERENCE</summary>
             <div class="kw-ref" id="wk-ref" style="margin-top:8px;"></div>
           </details>
         </div>
@@ -220,6 +249,21 @@
     <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:12px;">Choose a saved ability to drop into <b id="picker-target">this card</b>. You can edit it afterward.</div>
     <div id="picker-list"></div>
     <button class="mini-btn" style="margin-top:12px;" onclick="closePicker()">✕ CANCEL</button>
+  </div>
+</div>
+
+<!-- flavour quiz -->
+<div class="quiz-scrim" id="quiz-scrim" onclick="if(event.target===this)closeQuiz()">
+  <div class="quiz-card">
+    <div class="quiz-eyebrow">// FLAVOUR WORKSHOP · ANSWER TO WRITE IT FOR YOU</div>
+    <div class="quiz-dots" id="quiz-dots"></div>
+    <div class="quiz-q" id="quiz-q">—</div>
+    <div id="quiz-body"></div>
+    <div class="quiz-foot">
+      <button class="mini-btn" id="quiz-back" onclick="quizBack()">‹ BACK</button>
+      <button class="mini-btn acc" id="quiz-next" onclick="quizNext()" style="display:none;">NEXT ›</button>
+      <button class="quiz-skip" onclick="closeQuiz()" style="margin-left:auto;">cancel</button>
+    </div>
   </div>
 </div>
 
@@ -406,8 +450,9 @@ function chipEl(catKey,id){
   const blocked=!!(reason||capBlock||maxBlock);
   const el=document.createElement('span');
   el.className='kw-chip'+(on?' on':'')+(blocked?' blocked':'');
-  el.innerHTML=`${esc(it.name)}<span class="kw-ap">${it.ap} AP</span>`;
-  if(reason)el.title=reason;else if(capBlock)el.title='Would exceed the AP cap.';else if(maxBlock)el.title='Max '+cat.max+' selected — remove one first.';else el.title=it.desc;
+  const apTxt=cat.discount?`−${it.ap} AP`:`${it.ap} AP`;
+  el.innerHTML=`${esc(it.name)}<span class="kw-ap${cat.discount?' kw-ap-disc':''}">${apTxt}</span>`;
+  if(reason)el.title=reason;else if(capBlock)el.title='Would exceed the AP cap.';else if(maxBlock)el.title='Max '+cat.max+' selected — remove one first.';else el.title=(cat.discount?'Gives back '+it.ap+' AP. ':'')+it.desc;
   if(!blocked||on)el.onclick=()=>pick(catKey,id);
   return el;
 }
@@ -455,12 +500,68 @@ function renderLibrary(){
 let refBuilt=false;
 function renderReference(){
   if(refBuilt)return;refBuilt=true;
-  const box=document.getElementById('wk-ref');const dl=document.createElement('dl');
+  let html='';
+  html+=`<div class="ref-block"><h4>How AP works</h4><div class="ap-note">${esc(CTG.apNote)}</div></div>`;
+  html+=`<div class="ref-block"><h4>Combination rules</h4><ul class="rule-list">${CTG.combinationRules.map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div>`;
+  html+=`<div class="ref-block"><h4>Every keyword</h4><dl>`;
   CTG.categories.forEach(cat=>{
-    const dt=document.createElement('dt');dt.textContent=cat.icon+' '+cat.label;dl.appendChild(dt);
-    cat.items.forEach(it=>{const d=document.createElement('div');d.className='ref-item';d.innerHTML=`<b>${esc(it.name)}</b> <span class="ref-ap">${it.ap} AP</span> — ${esc(it.desc)}`;dl.appendChild(d);});
+    html+=`<dt>${cat.icon} ${esc(cat.label)}${cat.discount?'<span class="dt-disc">gives AP back</span>':''}</dt>`;
+    cat.items.forEach(it=>{
+      const ap=cat.discount?`−${it.ap} AP`:`${it.ap} AP`;
+      html+=`<div class="ref-item"><b>${esc(it.name)}</b> <span class="ref-ap${cat.discount?' disc':''}">${ap}</span> — ${esc(it.desc)}</div>`;
+    });
   });
-  box.appendChild(dl);
+  html+=`</dl></div>`;
+  document.getElementById('wk-ref').innerHTML=html;
+}
+
+/* ── FLAVOUR QUIZ ─────────────────────────────────────── */
+let quizStep=0,quizAns={},quizQs=[];
+function buildQuizQs(){
+  quizQs=[
+    {id:'name',kind:'text',prompt:'What is this ability called?',placeholder:'name it…',prefill:()=>W.draft.name||''},
+    {id:'style',kind:'choice',prompt:'How does the power manifest?',opts:CTG.styleOptions},
+    {id:'delivery',kind:'choice',prompt:'How does it reach its mark?',opts:CTG.deliveryOptions(sel)},
+    {id:'tone',kind:'choice',prompt:'What is its character?',opts:CTG.toneOptions},
+    {id:'detail',kind:'text',prompt:'A signature sensory detail?',placeholder:'a smell, a sound, a colour… (optional)',prefill:()=>''}
+  ];
+}
+function openQuiz(){buildQuizQs();quizStep=0;quizAns={};renderQuiz();document.getElementById('quiz-scrim').classList.add('open');}
+function closeQuiz(){document.getElementById('quiz-scrim').classList.remove('open');}
+function renderQuiz(){
+  const q=quizQs[quizStep];
+  const dots=document.getElementById('quiz-dots');dots.innerHTML='';
+  quizQs.forEach((_,i)=>{const d=document.createElement('span');d.className='quiz-dot'+(i<quizStep?' done':i===quizStep?' on':'');dots.appendChild(d);});
+  document.getElementById('quiz-q').textContent=q.prompt;
+  const body=document.getElementById('quiz-body');body.innerHTML='';
+  const nextBtn=document.getElementById('quiz-next');
+  document.getElementById('quiz-back').style.visibility=quizStep>0?'visible':'hidden';
+  if(q.kind==='choice'){
+    nextBtn.style.display='none';
+    q.opts.forEach(opt=>{
+      const b=document.createElement('button');b.className='quiz-opt';b.textContent=opt.label;
+      if(quizAns[q.id]&&quizAns[q.id].label===opt.label){b.style.borderColor='var(--purple)';}
+      b.onclick=()=>{quizAns[q.id]=opt;advanceQuiz();};
+      body.appendChild(b);
+    });
+  }else{
+    nextBtn.style.display='';nextBtn.textContent=quizStep===quizQs.length-1?'✨ WRITE IT':'NEXT ›';
+    const inp=document.createElement('input');inp.className='quiz-text-in';inp.id='quiz-input';inp.placeholder=q.placeholder||'';
+    inp.value=(quizAns[q.id]!=null?quizAns[q.id]:(q.prefill?q.prefill():''));
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();quizNext();}});
+    body.appendChild(inp);
+    setTimeout(()=>inp.focus(),30);
+  }
+}
+function captureText(){const q=quizQs[quizStep];if(q&&q.kind==='text'){const inp=document.getElementById('quiz-input');if(inp)quizAns[q.id]=inp.value;}}
+function advanceQuiz(){if(quizStep<quizQs.length-1){quizStep++;renderQuiz();}else finishQuiz();}
+function quizNext(){captureText();advanceQuiz();}
+function quizBack(){captureText();if(quizStep>0){quizStep--;renderQuiz();}}
+function finishQuiz(){
+  captureText();
+  if(quizAns.name!=null&&quizAns.name.trim())W.draft.name=quizAns.name.trim();
+  W.draft.text=CTG.flavorText(sel,quizAns);W.draft.edited=true;
+  saveWorkshop();renderWorkshop();closeQuiz();
 }
 function renderSendMenu(){
   const menu=document.getElementById('wk-send-menu');menu.innerHTML='';

@@ -100,8 +100,8 @@
       ]
     },
     {
-      key: 'condition', label: 'Condition', icon: '⌖', select: 'multi',
-      note: 'Where strategy comes from — restrictions that lower the AP or add flavour.',
+      key: 'condition', label: 'Condition', icon: '⌖', select: 'multi', discount: true,
+      note: 'Where strategy comes from — accepting a drawback gives AP back.',
       items: [
         { id: 'onlymoving', name: 'Only While Moving', ap: 2, clause: 'It can only target a moving character.', desc: 'You can only target a moving character.' },
         { id: 'onlyinjured', name: 'Only While Injured', ap: 1, clause: 'It can only be used after you have taken damage.', desc: 'You can only activate the skill once you have taken damage.' },
@@ -239,11 +239,12 @@
     sel = sel || {};
     var t = 0;
     CATEGORIES.forEach(function (cat) {
+      var sign = cat.discount ? -1 : 1;   // conditions are drawbacks — they give AP back
       var v = sel[cat.key];
-      if (cat.select === 'single') { if (v) { var it = item(cat.key, v); if (it) t += it.ap; } }
-      else if (Array.isArray(v)) { v.forEach(function (id) { var it = item(cat.key, id); if (it) t += it.ap; }); }
+      if (cat.select === 'single') { if (v) { var it = item(cat.key, v); if (it) t += sign * it.ap; } }
+      else if (Array.isArray(v)) { v.forEach(function (id) { var it = item(cat.key, id); if (it) t += sign * it.ap; }); }
     });
-    return t;
+    return Math.max(0, t);
   }
 
   /* ── SENTENCE GENERATOR ─────────────────────────────────────────────── */
@@ -323,6 +324,93 @@
     return s.trim();
   }
 
+  /* ── FLAVOR QUIZ ────────────────────────────────────────────────────────
+     An Akinator-style question flow. The options here are deterministic
+     "flavour fragments" — no external AI, so it works on static hosting —
+     that a composer stitches into evocative prose the player can then edit.
+  ─────────────────────────────────────────────────────────────────────── */
+  function cap1(s) { s = (s || '').trim(); return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+
+  var STYLE_OPTIONS = [
+    { label: 'Raw & overwhelming', adj: 'overwhelming', phrase: 'a raw, overwhelming surge of {d}' },
+    { label: 'Precise & controlled', adj: 'precise', phrase: 'a precise, disciplined sliver of {d}' },
+    { label: 'Wild & unpredictable', adj: 'volatile', phrase: 'a wild, crackling burst of {d}' },
+    { label: 'Slow & creeping', adj: 'patient', phrase: 'a slow, creeping bloom of {d}' },
+    { label: 'Quiet & surgical', adj: 'cold', phrase: 'a quiet, surgical thread of {d}' }
+  ];
+  var TONE_OPTIONS = [
+    { label: 'Menacing', adj: 'menacing' },
+    { label: 'Elegant', adj: 'elegant' },
+    { label: 'Chaotic', adj: 'chaotic' },
+    { label: 'Solemn', adj: 'solemn' },
+    { label: 'Playful', adj: 'mischievous' }
+  ];
+  function deliveryOptions(sel) {
+    var t = (sel && sel.target) || [];
+    var has = function (id) { return t.indexOf(id) !== -1; };
+    if (has('medproj') || has('longproj') || has('trueproj')) return [
+      { label: 'Hurled like a spear', phrase: 'hurled across the gap like a thrown spear' },
+      { label: 'Loosed like an arrow', phrase: 'loosed in a flat, screaming arc' },
+      { label: 'Spat like a bullet', phrase: 'spat out faster than the eye can follow' }
+    ];
+    if (has('touch')) return [
+      { label: 'A single deliberate touch', phrase: 'delivered through one deliberate touch' },
+      { label: 'A crushing grip', phrase: 'forced through a crushing grip' }
+    ];
+    if (has('self')) return [
+      { label: 'Wrapped around you', phrase: 'wrapping around your own body like a second skin' },
+      { label: 'Surging from within', phrase: 'surging up from somewhere deep inside you' }
+    ];
+    if (has('area') || has('cone')) return [
+      { label: 'Erupting outward', phrase: 'erupting outward to catch everything near you' },
+      { label: 'Sweeping the field', phrase: 'sweeping across the ground in a wave' }
+    ];
+    if (has('object')) return [
+      { label: 'Bound into an object', phrase: 'bound quietly into an object until its moment comes' }
+    ];
+    if (has('chain')) return [
+      { label: 'Leaping mark to mark', phrase: 'leaping from one mark to the next, hungry for more' }
+    ];
+    return [
+      { label: 'Released into the world', phrase: 'released into the world to do its work' },
+      { label: 'Shaped in your hands', phrase: 'shaped patiently in your hands' }
+    ];
+  }
+
+  function flavorText(sel, ans) {
+    sel = sel || {}; ans = ans || {};
+    var dom = sel.domain ? item('domain', sel.domain) : null;
+    var domName = dom ? dom.name : 'raw power';
+    var name = (ans.name || '').trim();
+    var style = ans.style || null;
+    var tone = ans.tone || null;
+    var delivery = ans.delivery || null;
+    var detail = (ans.detail || '').trim();
+
+    var manifest = style ? style.phrase.replace('{d}', domName)
+      : (dom ? ('a working of ' + domName) : 'raw, unnamed power');
+
+    var s = (name ? name + ' — ' : '') + cap1(manifest);
+    if (delivery) s += ', ' + delivery.phrase;
+    s += '.';
+    var vibe = [tone && tone.adj, style && style.adj].filter(Boolean);
+    if (vibe.length) s += ' ' + cap1(joinList(vibe)) + (vibe.length > 1 ? ' in equal measure.' : ' to the core.');
+    if (detail) s += ' ' + cap1(detail.replace(/[.!?]+$/, '')) + '.';
+
+    var mech = generate(sel);
+    return s + (mech ? ('\n\n' + mech) : '');
+  }
+
+  /* Plain-language rules for the reference panel. */
+  var AP_NOTE = 'Every keyword adds AP — except Conditions, which give AP back, since a drawback earns you room. Keep the running total at or under your cap. A higher total means a bigger, costlier ability.';
+  var COMBINATION_RULES = [
+    'Elements can’t contradict — Ice can’t inflict Burning, and Fire or Light can’t inflict Freezing.',
+    'Size and shape need substance — Expand, Compress and Transform only work on a physical Domain, never an abstract one like Force, Logic or Memory.',
+    'A target is one place at a time — Self can’t pair with “Only While Moving”, and Touch can’t pair with any Projectile.',
+    'Riders need their source — Burning needs Fire or Light, Freezing needs Ice, Shocked needs Electricity, and Restrained needs the Bind operation.',
+    'Conditions pay you back — each Condition you accept lowers the ability’s AP rather than raising it.'
+  ];
+
   /* ── PUBLIC API ─────────────────────────────────────────────────────── */
   global.CTG_KEYWORDS = {
     categories: CATEGORIES,
@@ -331,6 +419,12 @@
     prune: prune,
     totalAP: totalAP,
     generate: generate,
-    joinList: joinList
+    joinList: joinList,
+    styleOptions: STYLE_OPTIONS,
+    toneOptions: TONE_OPTIONS,
+    deliveryOptions: deliveryOptions,
+    flavorText: flavorText,
+    apNote: AP_NOTE,
+    combinationRules: COMBINATION_RULES
   };
 })(window);
