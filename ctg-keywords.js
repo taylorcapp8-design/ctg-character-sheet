@@ -256,10 +256,10 @@
     merge: 'merge', mark: 'mark'
   };
   var TGT_PHRASE = {
-    self: 'yourself', touch: 'a target you touch', medproj: 'a target at medium range',
-    longproj: 'a target at long range', trueproj: 'a target at any range',
+    self: 'yourself', touch: 'a creature you touch', medproj: 'a creature at medium range',
+    longproj: 'a creature at long range', trueproj: 'a creature at any range',
     object: 'an object or item', area: 'every creature in close range',
-    cone: 'every creature in a cone before you', chain: 'a target, leaping to the next nearest each time'
+    cone: 'every creature in a cone before you', chain: 'a creature, leaping to the next nearest each time'
   };
 
   function joinList(arr) {
