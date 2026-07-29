@@ -25,6 +25,11 @@ Strict rules:
 
 interface Body { mechanical?: string; keywords?: string; name?: string; hints?: string }
 
+// Provider base URLs — overridable for proxies/self-hosting/testing.
+// Defaults are the real endpoints, so leaving these unset changes nothing.
+const GEMINI_BASE = Deno.env.get("AI_GEMINI_BASE") || "https://generativelanguage.googleapis.com";
+const GROQ_BASE = Deno.env.get("AI_GROQ_BASE") || "https://api.groq.com/openai/v1";
+
 function cors(origin: string): Record<string, string> {
   return {
     "Access-Control-Allow-Origin": origin || "*",
@@ -34,7 +39,7 @@ function cors(origin: string): Record<string, string> {
 }
 
 async function callGemini(prompt: string, key: string, model: string): Promise<string> {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+  const url = `${GEMINI_BASE}/v1beta/models/${model}:generateContent?key=${key}`;
   const res = await fetch(url, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -52,7 +57,7 @@ async function callGemini(prompt: string, key: string, model: string): Promise<s
 }
 
 async function callGroq(prompt: string, key: string, model: string): Promise<string> {
-  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+  const res = await fetch(`${GROQ_BASE}/chat/completions`, {
     method: "POST",
     headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
     body: JSON.stringify({
