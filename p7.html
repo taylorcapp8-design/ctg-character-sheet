@@ -88,6 +88,10 @@
 .kw-out-text{width:100%;min-height:88px;resize:vertical;background:var(--paper);border:1.5px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.92rem;line-height:1.5;padding:10px 12px;outline:none;}
 .kw-out-text:focus{border-color:var(--purple);}
 .kw-out-foot{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:9px;}
+.kw-rules{margin-top:12px;border:1.5px dashed var(--border2);background:var(--paper2,rgba(0,0,0,0.03));padding:9px 12px;clip-path:polygon(0 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%);}
+.kw-rules-head{display:flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:6px;}
+.kw-rules-text{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.9rem;line-height:1.5;color:var(--text2);}
+.kw-rules-text.empty{font-style:italic;color:var(--text-dim);}
 .kw-edited{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--gold,#cf9500);}
 .kw-send{position:relative;}
 .kw-send-menu{position:absolute;bottom:calc(100% + 4px);left:0;z-index:20;background:var(--paper);border:2px solid var(--ink);box-shadow:4px 4px 0 var(--purple);display:none;min-width:150px;}
@@ -179,7 +183,7 @@
     <!-- ══ TAB 2 · WORKSHOP ══ -->
     <div id="tab-workshop" style="display:none;">
       <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:12px;">
-        Mix keywords to invent an ability. Pick one from each category (leave any blank) and a written description assembles itself — then edit it for flavour and save it or send it to a card.
+        Mix keywords to invent an ability. The plain rules write themselves as you pick; add your own flavour above them (or let the Flavour Quiz / AI write it), then save it or send it to a card.
       </div>
 
       <div class="wk-budget">
@@ -207,11 +211,11 @@
 
           <div class="kw-out">
             <input class="kw-out-name" id="wk-name" placeholder="Ability name…">
-            <textarea class="kw-out-text" id="wk-text" placeholder="Pick some keywords and the description writes itself here…"></textarea>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:2px;color:var(--text-dim);margin:3px 0 4px;">FLAVOUR — WHAT IT LOOKS &amp; FEELS LIKE</div>
+            <textarea class="kw-out-text" id="wk-text" placeholder="Write the ability's flavour here — or let the Flavour Quiz / AI write it. The plain rules below never overwrite this."></textarea>
             <div class="kw-out-foot">
               <button class="mini-btn gold" id="ai-flavour-btn" onclick="aiFlavour()" title="Write vivid flavour with a free AI (needs the Supabase edge function set up — see supabase/functions/flavor/README.md)">🤖 AI FLAVOUR</button>
               <button class="mini-btn acc" onclick="openQuiz()">✨ FLAVOUR QUIZ</button>
-              <button class="mini-btn" onclick="doRegen()">🎲 PLAIN RULES</button>
               <span class="kw-edited" id="wk-edited" style="display:none;">✎ hand-edited</span>
               <div class="kw-send" style="margin-left:auto;">
                 <button class="mini-btn gold" onclick="toggleSendMenu(event)">📤 SEND TO SLOT ▾</button>
@@ -220,6 +224,14 @@
               <button class="mini-btn gold" onclick="saveToLibrary()">💾 SAVE TO LIBRARY</button>
               <button class="mini-btn" onclick="clearBuild()">✕ CLEAR</button>
             </div>
+          </div>
+
+          <div class="kw-rules">
+            <div class="kw-rules-head">
+              <span>🎲 PLAIN RULES — WHAT IT MECHANICALLY DOES</span>
+              <button class="mini-btn" style="margin-left:auto;" onclick="addRulesToDesc()" title="Append these rules onto your flavour above (optional)">＋ ADD TO FLAVOUR</button>
+            </div>
+            <div class="kw-rules-text empty" id="wk-rules"></div>
           </div>
 
           <div style="margin-top:16px;">
@@ -414,7 +426,6 @@ function overCapIfAdd(catKey,id){
   else trial[catKey]=(trial[catKey]||[]).concat([id]);
   return CTG.totalAP(trial)>cap;
 }
-function regen(force){if(force||!W.draft.edited){W.draft.text=CTG.generate(sel);W.draft.edited=false;}}
 function pick(catKey,id){
   const cat=catByKey(catKey);const it=CTG.item(catKey,id);
   if(cat.select==='single'){
@@ -426,9 +437,19 @@ function pick(catKey,id){
     if(i!==-1)sel[catKey].splice(i,1);
     else{if(CTG.ruleReason(catKey,it,sel))return;if(cat.max&&sel[catKey].length>=cat.max)return;if(overCapIfAdd(catKey,id))return;sel[catKey].push(id);}
   }
-  CTG.prune(sel);regen(false);saveWorkshop();renderWorkshop();
+  CTG.prune(sel);saveWorkshop();renderWorkshop();
 }
-function clearCat(catKey){const cat=catByKey(catKey);sel[catKey]=cat.select==='single'?null:[];CTG.prune(sel);regen(false);saveWorkshop();renderWorkshop();}
+function clearCat(catKey){const cat=catByKey(catKey);sel[catKey]=cat.select==='single'?null:[];CTG.prune(sel);saveWorkshop();renderWorkshop();}
+function renderRules(){
+  const el=document.getElementById('wk-rules');const t=CTG.generate(sel);
+  if(t){el.textContent=t;el.classList.remove('empty');}
+  else{el.textContent='Pick keywords and the mechanical breakdown appears here.';el.classList.add('empty');}
+}
+function addRulesToDesc(){
+  const t=CTG.generate(sel);if(!t){toast('Pick some keywords first.',false);return;}
+  const cur=(W.draft.text||'').trim();
+  W.draft.text=cur?(cur+'\n\n'+t):t;W.draft.edited=true;saveWorkshop();renderOutput();toast('Rules added to flavour.',true);
+}
 
 function renderBudget(){
   const ap=CTG.totalAP(sel);const cap=W.draft.apCap;
@@ -476,7 +497,7 @@ function renderChips(){
     const isNone=!sel[activeCat];
     none.className='kw-chip none-chip'+(isNone?' on':'');
     none.textContent='— None —';none.title='Leave this category blank.';
-    none.onclick=()=>{if(sel[activeCat]){sel[activeCat]=null;CTG.prune(sel);regen(false);saveWorkshop();renderWorkshop();}};
+    none.onclick=()=>{if(sel[activeCat]){sel[activeCat]=null;CTG.prune(sel);saveWorkshop();renderWorkshop();}};
     box.appendChild(none);
   }
   cat.items.forEach(it=>box.appendChild(chipEl(activeCat,it.id)));
@@ -579,13 +600,9 @@ function renderSendMenu(){
 }
 function renderWorkshop(){
   document.getElementById('wk-cap-input').value=W.draft.apCap;
-  renderBudget();renderRail();renderChips();renderEffects();renderOutput();renderLibrary();renderReference();renderSendMenu();
+  renderBudget();renderRail();renderChips();renderEffects();renderOutput();renderRules();renderLibrary();renderReference();renderSendMenu();
 }
 
-function doRegen(){
-  if(W.draft.edited&&W.draft.text&&!confirm('Regenerate will overwrite your hand-edited text. Continue?'))return;
-  regen(true);saveWorkshop();renderOutput();
-}
 function saveToLibrary(){
   const name=W.draft.name||'Untitled Ability';
   W.library.unshift({id:uid(),name:name,sel:clone(sel),text:W.draft.text,ap:CTG.totalAP(sel)});
@@ -628,7 +645,7 @@ async function aiFlavour(){
       body:JSON.stringify({mechanical,keywords:kws.join(', '),name:(W.draft.name||''),hints:(W.draft.edited?W.draft.text:'')})});
     const j=await r.json().catch(()=>({}));
     if(!r.ok||!j.text)throw new Error(j.error||('server '+r.status));
-    W.draft.text=j.text.trim()+(mechanical?('\n\n'+mechanical):'');
+    W.draft.text=j.text.trim();
     W.draft.edited=true;saveWorkshop();renderOutput();
     toast('✨ AI flavour written.',true);
   }catch(e){

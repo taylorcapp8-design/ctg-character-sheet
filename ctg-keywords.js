@@ -397,8 +397,8 @@
     if (vibe.length) s += ' ' + cap1(joinList(vibe)) + (vibe.length > 1 ? ' in equal measure.' : ' to the core.');
     if (detail) s += ' ' + cap1(detail.replace(/[.!?]+$/, '')) + '.';
 
-    var mech = generate(sel);
-    return s + (mech ? ('\n\n' + mech) : '');
+    // flavour only — the mechanical "plain rules" are shown in their own section
+    return s;
   }
 
   /* Plain-language rules for the reference panel. */
