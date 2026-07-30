@@ -16,41 +16,43 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ctg.css">
 <style>
-/* ── SPECIALS ───────────────────────────────────────────── */
-.spec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;align-items:start;}
-@media(max-width:620px){.spec-grid{grid-template-columns:1fr;}}
-.spec-card{position:relative;background:var(--paper);border:2.5px solid var(--ink);overflow:hidden;transition:transform .18s ease;clip-path:polygon(0 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%);filter:drop-shadow(4px 4px 0 rgba(0,0,0,0.85));animation:panelIn .42s ease both;}
-.spec-card:hover{transform:translateY(-4px) rotate(-0.4deg);}
-.spec-card.ff{border-left:5px solid var(--purple);}
-.spec-card.wk{border-left:5px solid var(--gold,#cf9500);}
-.spec-wm{position:absolute;right:-6px;bottom:-22px;font-size:7rem;line-height:1;font-variant-emoji:text;opacity:0.06;pointer-events:none;z-index:0;color:var(--ink);}
-.spec-card.heart .spec-wm,.spec-card.diamond .spec-wm{color:var(--red);}
-.spec-head{position:relative;z-index:1;display:flex;align-items:center;gap:10px;padding:11px 13px 8px;border-bottom:1.5px solid var(--border);}
-.spec-rank{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:0.8;font-family:'Anton',sans-serif;color:var(--ink);flex-shrink:0;width:30px;}
-.spec-rank .rk{font-size:1.7rem;}
-.spec-rank .rs{font-size:0.9rem;margin-top:2px;font-variant-emoji:text;}
-.spec-card.heart .spec-rank,.spec-card.diamond .spec-rank{color:var(--red);}
-.spec-name{flex:1;background:transparent;border:none;border-bottom:1.5px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-style:italic;font-size:1.15rem;letter-spacing:1px;padding:3px 2px;outline:none;min-width:60px;}
-.spec-name:focus{border-bottom-color:var(--purple);}
-.spec-mode{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;padding:4px 8px;border:1.5px solid var(--border2);background:transparent;color:var(--text-dim);cursor:pointer;white-space:nowrap;transition:all .14s;}
+/* ── SPECIALS — playing-card slots ─────────────────────── */
+.spec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;align-items:start;justify-items:center;}
+@media(max-width:640px){.spec-grid{grid-template-columns:1fr;}}
+.spec-card{position:relative;width:100%;max-width:360px;background:var(--paper);border:2.5px solid var(--ink);border-radius:16px;padding:50px 16px;min-height:340px;overflow:hidden;transition:transform .18s ease;filter:drop-shadow(5px 5px 0 rgba(0,0,0,0.7));animation:panelIn .42s ease both;--suit:var(--ink);}
+.spec-card.heart,.spec-card.diamond{--suit:var(--red);}
+.spec-card:hover{transform:translateY(-5px) rotate(-0.5deg);}
+.spec-card::before{content:'';position:absolute;inset:7px;border:1.5px solid var(--border2);border-radius:11px;pointer-events:none;z-index:0;}
+.spec-card.wk::before{border-color:var(--gold,#cf9500);}
+.spec-card.ff::before{border-color:var(--purple);}
+.spec-corner{position:absolute;z-index:2;display:flex;flex-direction:column;align-items:center;line-height:0.78;font-family:'Anton',sans-serif;color:var(--suit);}
+.spec-corner b{font-size:1.6rem;font-style:normal;}
+.spec-corner i{font-size:0.92rem;font-style:normal;font-variant-emoji:text;margin-top:1px;}
+.spec-corner.tl{top:13px;left:16px;}
+.spec-corner.br{bottom:13px;right:16px;transform:rotate(180deg);}
+.spec-pip{position:absolute;z-index:0;top:50%;left:50%;transform:translate(-50%,-50%);font-size:8.5rem;line-height:1;font-variant-emoji:text;color:var(--suit);opacity:0.07;pointer-events:none;}
+.spec-mode{position:absolute;top:14px;right:16px;z-index:2;font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;padding:4px 8px;border:1.5px solid var(--border2);background:var(--paper);color:var(--text-dim);cursor:pointer;white-space:nowrap;transition:all .14s;border-radius:4px;}
 .spec-mode.wk{background:var(--gold,#cf9500);border-color:var(--gold,#cf9500);color:#000;}
 .spec-mode.ff{background:var(--purple);border-color:var(--purple);color:#fff;}
-.spec-body{position:relative;z-index:1;padding:11px 13px;}
-.spec-desc{width:100%;min-height:96px;resize:vertical;background:var(--paper2,rgba(0,0,0,0.04));border:1.5px solid var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.9rem;line-height:1.45;padding:9px 11px;outline:none;}
-.spec-desc:focus{border-color:var(--purple);}
-.spec-build{margin-top:9px;padding:8px 10px;background:rgba(207,149,0,0.07);border:1px solid var(--gold,#cf9500);}
+.spec-inner{position:relative;z-index:1;padding:0 16px;}
+.spec-rankword{text-align:center;font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;}
+.spec-name{display:block;width:100%;text-align:center;background:transparent;border:none;border-bottom:2px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-style:italic;font-size:1.3rem;letter-spacing:1px;padding:2px 4px 6px;outline:none;margin-bottom:11px;}
+.spec-name:focus{border-bottom-color:var(--suit);}
+.spec-desc{width:100%;min-height:88px;resize:vertical;background:var(--paper2,rgba(0,0,0,0.04));border:1.5px solid var(--border);border-radius:7px;color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.9rem;line-height:1.45;padding:9px 11px;outline:none;}
+.spec-desc:focus{border-color:var(--suit);}
+.spec-build{margin-top:9px;padding:8px 10px;background:rgba(207,149,0,0.07);border:1px solid var(--gold,#cf9500);border-radius:6px;}
 .spec-build-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
 .spec-build-ap{font-family:'Anton',sans-serif;font-size:0.95rem;color:var(--gold,#cf9500);}
 .spec-chips{display:flex;flex-wrap:wrap;gap:4px;}
-.spec-foot{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px;}
+.spec-foot{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:11px;}
 .mini-btn{font-family:'Bebas Neue',sans-serif;font-size:0.78rem;letter-spacing:1.5px;padding:5px 11px;border:1.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transform:skewX(-7deg);transition:all .13s;}
 .mini-btn:hover{border-color:var(--ink);color:var(--text);}
 .mini-btn.acc{border-color:var(--purple);color:var(--purple);}
 .mini-btn.acc:hover{background:var(--purple);color:#fff;}
 .mini-btn.gold{border-color:var(--gold,#cf9500);color:var(--gold,#cf9500);}
 .mini-btn.gold:hover{background:var(--gold,#cf9500);color:#000;}
-.spec-cap{display:flex;align-items:center;gap:6px;margin-left:auto;}
-.spec-cap input{width:44px;text-align:center;background:transparent;border:1.5px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:0.9rem;padding:2px;outline:none;}
+.spec-cap{display:flex;align-items:center;gap:5px;margin-left:auto;}
+.spec-cap input{width:42px;text-align:center;background:transparent;border:1.5px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:0.9rem;padding:2px;outline:none;border-radius:4px;}
 .spec-cap input:focus{border-color:var(--gold,#cf9500);}
 
 /* ── WORKSHOP ───────────────────────────────────────────── */
@@ -358,23 +360,23 @@ function renderSpecials(){
     const c=SPEC[r.key];const wk=c.mode==='workshop';
     const card=document.createElement('div');card.className='spec-card '+r.sc+' '+(wk?'wk':'ff');
     card.innerHTML=`
-      <div class="spec-wm">${r.suit}</div>
-      <div class="spec-head">
-        <div class="spec-rank"><span class="rk">${r.glyph}</span><span class="rs">${r.suit}</span></div>
-        <input class="spec-name" data-f="name" value="${esc(c.name)}" placeholder="${r.label} — name…">
-        <button class="spec-mode ${wk?'wk':'ff'}" data-mode title="Toggle ability-creator link">${wk?'🛠 WORKSHOP':'✎ FREEFORM'}</button>
-      </div>
-      <div class="spec-body">
+      <span class="spec-corner tl"><b>${r.glyph}</b><i>${r.suit}</i></span>
+      <span class="spec-corner br"><b>${r.glyph}</b><i>${r.suit}</i></span>
+      <span class="spec-pip">${r.suit}</span>
+      <button class="spec-mode ${wk?'wk':'ff'}" data-mode title="Toggle ability-creator link">${wk?'🛠 WORKSHOP':'✎ FREEFORM'}</button>
+      <div class="spec-inner">
+        <div class="spec-rankword">${esc(r.label)}${r.key==='jack'?' · weakest':r.key==='ace'?' · strongest':''}</div>
+        <input class="spec-name" data-f="name" value="${esc(c.name)}" placeholder="Name this ${esc(r.label.toLowerCase())}…">
         <textarea class="spec-desc" data-f="desc" placeholder="Describe this special ability…">${esc(c.desc)}</textarea>
         ${wk?`<div class="spec-build">
           <div class="spec-build-top">${c.build?`<span class="spec-build-ap">${c.build.ap} AP</span><span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:var(--text-dim);">KEYWORDS</span>`:`<span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);">🛠 No build yet — send one over from the Workshop.</span>`}</div>
           ${c.build?`<div class="spec-chips">${buildChipStrip(c.build)}</div>`:''}
         </div>`:''}
         <div class="spec-foot">
-          <button class="mini-btn acc" data-paste>📋 PASTE FROM WORKSHOP</button>
-          ${wk&&c.build?`<button class="mini-btn gold" data-edit>↺ EDIT IN WORKSHOP</button>`:''}
+          <button class="mini-btn acc" data-paste title="Paste a saved Workshop ability">📋 PASTE</button>
+          ${wk&&c.build?`<button class="mini-btn gold" data-edit title="Edit this build in the Workshop">↺ EDIT</button>`:''}
           <button class="mini-btn" data-clear title="Reset this card back to blank" style="border-color:var(--red);color:var(--red);">✕ CLEAR</button>
-          <div class="spec-cap"><span style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:var(--text-dim);">AP CAP</span><input type="number" min="0" data-f="apCap" value="${c.apCap}"></div>
+          <div class="spec-cap"><span style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:var(--text-dim);">CAP</span><input type="number" min="0" data-f="apCap" value="${c.apCap}"></div>
         </div>
       </div>`;
     grid.appendChild(card);
