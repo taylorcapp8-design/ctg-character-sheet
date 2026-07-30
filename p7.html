@@ -262,8 +262,8 @@
 <!-- library picker (paste into a slot) -->
 <div class="kw-picker-scrim" id="picker-scrim" onclick="if(event.target===this)closePicker()">
   <div class="kw-picker">
-    <h3>PASTE FROM WORKSHOP</h3>
-    <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:12px;">Choose a saved ability to drop into <b id="picker-target">this card</b>. You can edit it afterward.</div>
+    <h3>DRAW A SPECIAL</h3>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:12px;">Draw a saved Workshop ability onto <b id="picker-target">this card</b>. Anything over the card's AP cap is flagged — you can still draw it, but you'll be warned. Edit it afterward for flavour.</div>
     <div id="picker-list"></div>
     <button class="mini-btn" style="margin-top:12px;" onclick="closePicker()">✕ CANCEL</button>
   </div>
@@ -373,10 +373,10 @@ function renderSpecials(){
           ${c.build?`<div class="spec-chips">${buildChipStrip(c.build)}</div>`:''}
         </div>`:''}
         <div class="spec-foot">
-          <button class="mini-btn acc" data-paste title="Paste a saved Workshop ability">📋 PASTE</button>
+          <button class="mini-btn acc" data-paste title="Draw a saved Workshop ability onto this card">📥 DRAW</button>
           ${wk&&c.build?`<button class="mini-btn gold" data-edit title="Edit this build in the Workshop">↺ EDIT</button>`:''}
           <button class="mini-btn" data-clear title="Reset this card back to blank" style="border-color:var(--red);color:var(--red);">✕ CLEAR</button>
-          <div class="spec-cap"><span style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:var(--text-dim);">CAP</span><input type="number" min="0" data-f="apCap" value="${c.apCap}"></div>
+          <div class="spec-cap" title="Max AP this card accepts — drawing a bigger ability warns you (0 = no cap)"><span style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:var(--text-dim);">CAP</span><input type="number" min="0" data-f="apCap" value="${c.apCap}"></div>
         </div>
       </div>`;
     grid.appendChild(card);
@@ -412,13 +412,18 @@ let pickerTarget=null;
 function openPicker(rankKey){
   pickerTarget=rankKey;
   const r=RANKS.find(x=>x.key===rankKey);
-  document.getElementById('picker-target').textContent=r.label;
+  const cap=SPEC[rankKey].apCap||0;
+  document.getElementById('picker-target').textContent=r.label+(cap>0?' (cap '+cap+' AP)':'');
   const list=document.getElementById('picker-list');list.innerHTML='';
   if(!W.library.length){list.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.6rem;color:var(--text-dim);padding:10px 0;">Your Workshop library is empty. Build an ability in the Workshop tab and save it first.</div>';}
   else W.library.forEach(entry=>{
+    const over=cap>0&&entry.ap>cap;
     const row=document.createElement('div');row.className='kw-lib-row';
-    row.innerHTML=`<span class="kw-lib-name">${esc(entry.name)}</span><span class="kw-lib-ap">${entry.ap} AP</span><button class="mini-btn acc" style="margin-left:auto;">→ PASTE</button>`;
+    row.innerHTML=`<span class="kw-lib-name">${esc(entry.name)}</span>`+
+      `<span class="kw-lib-ap"${over?' style="color:var(--red);"':''}>${entry.ap} AP${over?' · over cap':''}</span>`+
+      `<button class="mini-btn ${over?'':'acc'}" style="margin-left:auto;${over?'border-color:var(--red);color:var(--red);':''}">${over?'⚠ DRAW':'→ DRAW'}</button>`;
     row.querySelector('button').addEventListener('click',()=>{
+      if(over&&!confirm('"'+entry.name+'" costs '+entry.ap+' AP, but the '+r.label+' card is capped at '+cap+' AP.\n\nDraw it onto the card anyway?'))return;
       const c=SPEC[rankKey];c.mode='workshop';c.build={sel:clone(entry.sel),text:entry.text,ap:entry.ap};c.desc=entry.text;
       if(!c.name)c.name=entry.name;saveSpecials(SPEC);closePicker();renderSpecials();
     });
@@ -613,7 +618,16 @@ function finishQuiz(){
 }
 function renderSendMenu(){
   const menu=document.getElementById('wk-send-menu');menu.innerHTML='';
-  RANKS.forEach(r=>{const b=document.createElement('button');b.textContent=r.glyph+' · '+r.label.toUpperCase();b.onclick=()=>{sendToSlot(r.key);menu.classList.remove('open');};menu.appendChild(b);});
+  const ap=CTG.totalAP(sel);
+  RANKS.forEach(r=>{
+    const cap=(SPEC[r.key]&&SPEC[r.key].apCap)||0;
+    const over=cap>0&&ap>cap;
+    const b=document.createElement('button');
+    b.innerHTML=r.glyph+' · '+r.label.toUpperCase()+' <span style="opacity:.6;">cap '+cap+(over?' ⚠':'')+'</span>';
+    if(over)b.style.color='var(--red)';
+    b.onclick=()=>{sendToSlot(r.key);menu.classList.remove('open');};
+    menu.appendChild(b);
+  });
 }
 function renderWorkshop(){
   document.getElementById('wk-cap-input').value=W.draft.apCap;
@@ -630,13 +644,12 @@ function clearBuild(){
   sel=emptySel();W.draft.sel=sel;W.draft.name='';W.draft.text='';W.draft.edited=false;saveWorkshop();renderWorkshop();
 }
 function sendToSlot(rankKey){
-  const c=SPEC[rankKey];c.mode='workshop';
-  c.build={sel:clone(sel),text:W.draft.text,ap:CTG.totalAP(sel)};
+  const c=SPEC[rankKey];const r=RANKS.find(x=>x.key===rankKey);const ap=CTG.totalAP(sel);
+  if(c.apCap>0&&ap>c.apCap&&!confirm('This build is '+ap+' AP, but the '+r.label+' card is capped at '+c.apCap+' AP.\n\nSend it anyway?'))return;
+  c.mode='workshop';
+  c.build={sel:clone(sel),text:W.draft.text,ap:ap};
   c.desc=W.draft.text;if(!c.name&&W.draft.name)c.name=W.draft.name;
-  saveSpecials(SPEC);
-  const r=RANKS.find(x=>x.key===rankKey);
-  flashSaved();
-  alertSent(r.label);
+  saveSpecials(SPEC);flashSaved();alertSent(r.label);
 }
 let sentT;function toast(msg,ok){
   let el=document.getElementById('sent-toast');
