@@ -77,8 +77,20 @@
 .spec-rankword{text-align:center;font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;}
 .spec-name{display:block;width:100%;text-align:center;background:transparent;border:none;border-bottom:2px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-style:italic;font-size:1.3rem;letter-spacing:1px;padding:2px 4px 6px;outline:none;margin-bottom:11px;}
 .spec-name:focus{border-bottom-color:var(--suit);}
-.spec-desc{width:100%;min-height:88px;resize:vertical;background:var(--paper2,rgba(0,0,0,0.04));border:1.5px solid var(--border);border-radius:7px;color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.9rem;line-height:1.45;padding:9px 11px;outline:none;}
-.spec-desc:focus{border-color:var(--suit);}
+/* description reads as the card's own text; becomes a box only when editing */
+.spec-desc-view{cursor:text;padding:6px 8px;min-height:46px;max-height:180px;overflow:auto;text-align:center;border-radius:8px;transition:background .12s;}
+.spec-desc-view:hover{background:rgba(0,0,0,0.045);}
+.spec-desc-view:focus-visible{outline:2px solid var(--suit);outline-offset:2px;}
+.spec-desc-text{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.94rem;line-height:1.55;color:var(--text2);white-space:pre-wrap;word-break:break-word;}
+.spec-desc-view.empty .spec-desc-text{display:none;}
+.spec-desc-view:not(.empty) .spec-desc-ph{display:none;}
+.spec-desc-ph{font-family:'Rajdhani',sans-serif;font-weight:500;font-style:italic;font-size:0.86rem;color:var(--text-dim);}
+.spec-desc-ph span{display:block;margin-top:3px;font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;font-style:normal;opacity:0.75;}
+.spec-stage.fan .spec-card.focused .spec-desc-view{max-height:132px;}
+.spec-desc{width:100%;min-height:104px;max-height:210px;resize:vertical;background:var(--paper2,rgba(0,0,0,0.04));border:1.5px solid var(--suit);border-radius:7px;color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.92rem;line-height:1.5;padding:9px 11px;outline:none;}
+/* controls: one tidy bottom row, cap on the right */
+.spec-foot .mini-btn{padding:5px 9px;font-size:0.74rem;letter-spacing:1px;}
+.spec-cap input{width:38px;}
 .spec-build{margin-top:9px;padding:8px 10px;background:rgba(207,149,0,0.07);border:1px solid var(--gold,#cf9500);border-radius:6px;}
 .spec-build-top{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
 .spec-build-ap{font-family:'Anton',sans-serif;font-size:0.95rem;color:var(--gold,#cf9500);}
@@ -416,7 +428,11 @@ function renderSpecials(){
           <div class="ss-badge ${wk?'wk':'ff'}">${wk?(c.build?esc(c.build.ap+' AP · Workshop'):'Workshop'):'Freeform'}</div>
         </div>
         <div class="spec-edit">
-          <textarea class="spec-desc" data-f="desc" placeholder="Describe this special ability…">${esc(c.desc)}</textarea>
+          <div class="spec-desc-view${(c.desc||'').trim()?'':' empty'}" data-desc-display tabindex="0" title="Click to edit">
+            <div class="spec-desc-text">${esc(c.desc)}</div>
+            <div class="spec-desc-ph">Describe this ability… <span>click to write</span></div>
+          </div>
+          <textarea class="spec-desc" data-f="desc" maxlength="600" placeholder="Describe this special ability…" style="display:none;">${esc(c.desc)}</textarea>
           ${wk?`<div class="spec-build">
             <div class="spec-build-top">${c.build?`<span class="spec-build-ap">${c.build.ap} AP</span><span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:var(--text-dim);">KEYWORDS</span>`:`<span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);">🛠 No build yet — send one over from the Workshop.</span>`}</div>
             ${c.build?`<div class="spec-chips">${buildChipStrip(c.build)}</div>`:''}
@@ -455,6 +471,16 @@ function renderSpecials(){
       W.draft.apCap=c.apCap||20;saveWorkshop();
       showTab('workshop');
     });
+    // description: reads as card text, becomes an editable box on click
+    const descView=card.querySelector('[data-desc-display]');
+    const descTa=card.querySelector('.spec-desc');
+    if(descView&&descTa){
+      const openEdit=()=>{descView.style.display='none';descTa.style.display='block';descTa.value=c.desc||'';descTa.focus();try{descTa.setSelectionRange(descTa.value.length,descTa.value.length);}catch(e){}};
+      const closeEdit=()=>{descTa.style.display='none';descView.style.display='';const t=(c.desc||'').trim();descView.classList.toggle('empty',!t);descView.querySelector('.spec-desc-text').textContent=c.desc||'';};
+      descView.addEventListener('click',e=>{e.stopPropagation();openEdit();});
+      descView.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openEdit();}});
+      descTa.addEventListener('blur',closeEdit);
+    }
   });
   applySpecView();
 }
