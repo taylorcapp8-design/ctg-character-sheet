@@ -17,11 +17,50 @@
 <link rel="stylesheet" href="ctg.css">
 <style>
 /* ── SPECIALS — playing-card slots ─────────────────────── */
-.spec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;align-items:start;justify-items:center;}
-@media(max-width:640px){.spec-grid{grid-template-columns:1fr;}}
+/* view toggle + stage shell */
+.spec-topbar{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+.spec-intro{flex:1;font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);line-height:1.5;}
+#view-toggle{white-space:nowrap;flex-shrink:0;}
+.spec-stage{position:relative;}
+.spec-felt,.spec-back,.spec-status{display:none;}
+
+/* ── GRID MODE ── */
+.spec-stage.grid .spec-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;align-items:start;justify-items:center;}
+@media(max-width:640px){.spec-stage.grid .spec-cards{grid-template-columns:1fr;}}
+.spec-stage.grid .spec-edit{display:block;}
+.spec-stage.grid .spec-card:hover{transform:translateY(-5px) rotate(-0.5deg);}
+
+/* ── FAN MODE ── */
+.spec-stage.fan .spec-felt{display:block;position:absolute;inset:2px 6px;z-index:0;border-radius:16px;background:radial-gradient(ellipse 60% 74% at 50% 42%,rgba(52,150,104,0.34),transparent 70%),linear-gradient(160deg,rgba(22,92,64,0.40),rgba(10,48,34,0.46));box-shadow:inset 0 0 0 2px rgba(255,255,255,0.05),inset 0 0 90px rgba(0,0,0,0.42);pointer-events:none;}
+:root[data-theme="dark"] .spec-stage.fan .spec-felt{background:radial-gradient(ellipse 60% 74% at 50% 40%,rgba(40,128,90,0.30),transparent 72%),linear-gradient(160deg,rgba(16,74,52,0.48),rgba(6,34,24,0.58));}
+.spec-stage.fan .spec-cards{position:relative;height:372px;}
+.spec-stage.fan.has-focus .spec-cards{height:604px;}
+.spec-stage.fan:not(.has-focus) .spec-cards{animation:specSway 7s ease-in-out infinite;transform-origin:50% 118%;}
+@keyframes specSway{0%,100%{transform:rotate(-0.6deg);}50%{transform:rotate(0.6deg);}}
+.spec-stage.fan .spec-card{position:absolute;left:50%;bottom:24px;width:212px;min-height:280px;max-width:none;margin-left:-106px;padding:32px 12px;border-radius:15px;transform-origin:50% 96%;transform:translateX(var(--tx,0)) translateY(var(--ty,0)) rotate(var(--rot,0deg)) scale(1);transition:transform .42s cubic-bezier(.2,.9,.3,1.25),width .42s cubic-bezier(.2,.9,.3,1.25),margin-left .42s ease,filter .3s;z-index:var(--z,1);cursor:pointer;filter:drop-shadow(3px 6px 9px rgba(0,0,0,0.42));animation:none;}
+.spec-stage.fan .spec-card>*{pointer-events:none;}
+.spec-stage.fan .spec-card .spec-edit{display:none;}
+.spec-stage.fan .spec-card .spec-status{display:block;}
+.spec-stage.fan:not(.has-focus) .spec-card:hover{transform:translateX(var(--tx,0)) translateY(calc(var(--ty,0) - 46px)) rotate(0deg) scale(1.06);z-index:60;filter:drop-shadow(5px 12px 16px rgba(0,0,0,0.5));}
+.spec-stage.fan.has-focus .spec-card.focused{width:342px;margin-left:-171px;bottom:auto;top:0;transform:translateX(0) translateY(0) rotate(0deg) scale(1);z-index:100;cursor:default;filter:drop-shadow(6px 12px 20px rgba(0,0,0,0.5));}
+.spec-stage.fan .spec-card.focused{padding:44px 16px;}
+.spec-stage.fan .spec-card.focused>*{pointer-events:auto;}
+.spec-stage.fan .spec-card.focused .spec-edit{display:block;}
+.spec-stage.fan .spec-card.focused .spec-status{display:none;}
+.spec-stage.fan.has-focus .spec-card:not(.focused){bottom:6px;top:auto;transform:translateX(var(--mtx,0)) translateY(0) rotate(var(--mrot,0deg)) scale(0.62);opacity:0.92;cursor:pointer;transform-origin:50% 100%;}
+.spec-stage.fan.has-focus .spec-card:not(.focused):hover{transform:translateX(var(--mtx,0)) translateY(-20px) rotate(0deg) scale(0.68);opacity:1;z-index:60;}
+.spec-back{position:absolute;left:8px;top:8px;z-index:120;font-family:'Bebas Neue',sans-serif;font-size:0.92rem;letter-spacing:2px;padding:6px 14px;background:var(--paper);border:2px solid var(--ink);color:var(--text);cursor:pointer;transform:skewX(-7deg);box-shadow:3px 3px 0 rgba(0,0,0,0.4);}
+.spec-stage.fan.has-focus .spec-back{display:inline-block;}
+.spec-back:hover{background:var(--purple);border-color:var(--purple);color:#fff;}
+/* preview face (fan resting) */
+.spec-status{text-align:center;padding:2px 4px;}
+.spec-status .ss-line{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.4;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;}
+.spec-status .ss-empty{font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:1px;color:var(--text-dim);font-style:italic;}
+.spec-status .ss-badge{display:inline-block;margin-top:9px;font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;padding:2px 8px;border:1px solid var(--border2);color:var(--text-dim);border-radius:3px;}
+.spec-status .ss-badge.wk{border-color:var(--gold,#cf9500);color:var(--gold,#cf9500);}
+.spec-status .ss-badge.ff{border-color:var(--purple);color:var(--purple);}
 .spec-card{position:relative;width:100%;max-width:360px;background:var(--paper);border:2.5px solid var(--ink);border-radius:16px;padding:50px 16px;min-height:340px;overflow:hidden;transition:transform .18s ease;filter:drop-shadow(5px 5px 0 rgba(0,0,0,0.7));animation:panelIn .42s ease both;--suit:var(--ink);}
 .spec-card.heart,.spec-card.diamond{--suit:var(--red);}
-.spec-card:hover{transform:translateY(-5px) rotate(-0.5deg);}
 .spec-card::before{content:'';position:absolute;inset:7px;border:1.5px solid var(--border2);border-radius:11px;pointer-events:none;z-index:0;}
 .spec-card.wk::before{border-color:var(--gold,#cf9500);}
 .spec-card.ff::before{border-color:var(--purple);}
@@ -178,10 +217,15 @@
 
     <!-- ══ TAB 1 · SPECIALS ══ -->
     <div id="tab-specials">
-      <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:12px;">
-        Your four face cards hold your special abilities — Jack (weakest) through Ace (strongest). Write them freely, or build one in the Workshop and drop it in.
+      <div class="spec-topbar">
+        <div class="spec-intro" id="spec-intro">Your four face cards hold your special abilities — Jack (weakest) through Ace (strongest). Hover a card to peek, click to pull it out and edit.</div>
+        <button id="view-toggle" class="mini-btn" onclick="toggleSpecView()" title="Switch between the fanned hand and a flat grid">▦ GRID VIEW</button>
       </div>
-      <div class="spec-grid" id="spec-grid"></div>
+      <div class="spec-stage grid" id="spec-stage">
+        <div class="spec-felt" aria-hidden="true"></div>
+        <button class="spec-back" id="spec-back" onclick="unfocusCard()" style="display:none;">◂ back to hand</button>
+        <div class="spec-cards" id="spec-grid"></div>
+      </div>
     </div>
 
     <!-- ══ TAB 2 · WORKSHOP ══ -->
@@ -358,7 +402,7 @@ function renderSpecials(){
   const grid=document.getElementById('spec-grid');grid.innerHTML='';
   RANKS.forEach(r=>{
     const c=SPEC[r.key];const wk=c.mode==='workshop';
-    const card=document.createElement('div');card.className='spec-card '+r.sc+' '+(wk?'wk':'ff');
+    const card=document.createElement('div');card.className='spec-card '+r.sc+' '+(wk?'wk':'ff');card.dataset.rank=r.key;
     card.innerHTML=`
       <span class="spec-corner tl"><b>${r.glyph}</b><i>${r.suit}</i></span>
       <span class="spec-corner br"><b>${r.glyph}</b><i>${r.suit}</i></span>
@@ -367,19 +411,26 @@ function renderSpecials(){
       <div class="spec-inner">
         <div class="spec-rankword">${esc(r.label)}${r.key==='jack'?' · weakest':r.key==='ace'?' · strongest':''}</div>
         <input class="spec-name" data-f="name" value="${esc(c.name)}" placeholder="Name this ${esc(r.label.toLowerCase())}…">
-        <textarea class="spec-desc" data-f="desc" placeholder="Describe this special ability…">${esc(c.desc)}</textarea>
-        ${wk?`<div class="spec-build">
-          <div class="spec-build-top">${c.build?`<span class="spec-build-ap">${c.build.ap} AP</span><span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:var(--text-dim);">KEYWORDS</span>`:`<span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);">🛠 No build yet — send one over from the Workshop.</span>`}</div>
-          ${c.build?`<div class="spec-chips">${buildChipStrip(c.build)}</div>`:''}
-        </div>`:''}
-        <div class="spec-foot">
-          <button class="mini-btn acc" data-paste title="Draw a saved Workshop ability onto this card">📥 DRAW</button>
-          ${wk&&c.build?`<button class="mini-btn gold" data-edit title="Edit this build in the Workshop">↺ EDIT</button>`:''}
-          <button class="mini-btn" data-clear title="Reset this card back to blank" style="border-color:var(--red);color:var(--red);">✕ CLEAR</button>
-          <div class="spec-cap" title="Max AP this card accepts — drawing a bigger ability warns you (0 = no cap)"><span style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:var(--text-dim);">CAP</span><input type="number" min="0" data-f="apCap" value="${c.apCap}"></div>
+        <div class="spec-status">
+          ${(c.desc||'').trim()?`<div class="ss-line">${esc(c.desc)}</div>`:'<div class="ss-empty">— empty —</div>'}
+          <div class="ss-badge ${wk?'wk':'ff'}">${wk?(c.build?esc(c.build.ap+' AP · Workshop'):'Workshop'):'Freeform'}</div>
+        </div>
+        <div class="spec-edit">
+          <textarea class="spec-desc" data-f="desc" placeholder="Describe this special ability…">${esc(c.desc)}</textarea>
+          ${wk?`<div class="spec-build">
+            <div class="spec-build-top">${c.build?`<span class="spec-build-ap">${c.build.ap} AP</span><span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:var(--text-dim);">KEYWORDS</span>`:`<span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);">🛠 No build yet — send one over from the Workshop.</span>`}</div>
+            ${c.build?`<div class="spec-chips">${buildChipStrip(c.build)}</div>`:''}
+          </div>`:''}
+          <div class="spec-foot">
+            <button class="mini-btn acc" data-paste title="Draw a saved Workshop ability onto this card">📥 DRAW</button>
+            ${wk&&c.build?`<button class="mini-btn gold" data-edit title="Edit this build in the Workshop">↺ EDIT</button>`:''}
+            <button class="mini-btn" data-clear title="Reset this card back to blank" style="border-color:var(--red);color:var(--red);">✕ CLEAR</button>
+            <div class="spec-cap" title="Max AP this card accepts — drawing a bigger ability warns you (0 = no cap)"><span style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:var(--text-dim);">CAP</span><input type="number" min="0" data-f="apCap" value="${c.apCap}"></div>
+          </div>
         </div>
       </div>`;
     grid.appendChild(card);
+    card.addEventListener('click',()=>{ if(specViewMode==='fan'&&!card.classList.contains('focused'))focusCard(r.key); });
     card.querySelectorAll('[data-f]').forEach(inp=>{
       const ev=inp.tagName==='TEXTAREA'||inp.type==='number'||inp.type==='text'?'input':'change';
       inp.addEventListener('input',()=>{
@@ -405,7 +456,73 @@ function renderSpecials(){
       showTab('workshop');
     });
   });
+  applySpecView();
 }
+
+/* ── SPECIALS VIEW: fanned hand ↔ flat grid ─────────────── */
+let specViewMode='grid',focusedRank=null;
+const _rmQuery=window.matchMedia?window.matchMedia('(prefers-reduced-motion: reduce)'):{matches:false};
+function reducedMotion(){return _rmQuery.matches;}
+function effectiveView(){
+  const pref=load('ctg-specials-view');
+  if(pref==='fan'||pref==='grid')return pref;
+  return (reducedMotion()||window.innerWidth<720)?'grid':'fan';
+}
+function applySpecView(){
+  const stage=document.getElementById('spec-stage');if(!stage)return;
+  const v=effectiveView();specViewMode=v;
+  stage.classList.toggle('fan',v==='fan');stage.classList.toggle('grid',v!=='fan');
+  const tog=document.getElementById('view-toggle');if(tog)tog.textContent=v==='fan'?'▦ GRID VIEW':'🎴 FAN VIEW';
+  const intro=document.getElementById('spec-intro');
+  if(intro)intro.textContent=v==='fan'
+    ?'Your four face cards — hover a card to peek, click to pull it out and edit. Toggle to a flat grid any time.'
+    :'Your four face cards hold your special abilities — Jack (weakest) through Ace (strongest). Toggle to the fanned hand any time.';
+  if(v==='fan')layoutFan();else clearFocusState();
+}
+function toggleSpecView(){
+  const next=effectiveView()==='fan'?'grid':'fan';
+  try{localStorage.setItem('ctg-specials-view',next);}catch(e){}
+  focusedRank=null;renderSpecials();
+}
+function layoutFan(){
+  const cards=[...document.querySelectorAll('#spec-grid .spec-card')];const n=cards.length;
+  cards.forEach((card,i)=>{
+    const t=i-(n-1)/2; // -1.5 .. 1.5
+    card.style.setProperty('--tx',(t*128)+'px');
+    card.style.setProperty('--ty',(Math.abs(t)*9)+'px');
+    card.style.setProperty('--rot',(t*10)+'deg');
+    card.style.setProperty('--z',String(10-i)); // leftmost (Jack) on top
+  });
+}
+function clearFocusState(){
+  focusedRank=null;
+  const stage=document.getElementById('spec-stage');if(stage)stage.classList.remove('has-focus');
+  document.querySelectorAll('#spec-grid .spec-card').forEach(c=>{c.classList.remove('focused');c.style.removeProperty('--mtx');c.style.removeProperty('--mrot');});
+}
+function focusCard(rank){
+  if(specViewMode!=='fan')return;
+  const switching=focusedRank&&focusedRank!==rank;
+  focusedRank=rank;
+  document.getElementById('spec-stage').classList.add('has-focus');
+  const others=RANKS.filter(x=>x.key!==rank);
+  document.querySelectorAll('#spec-grid .spec-card').forEach(card=>{
+    const rk=card.dataset.rank;
+    if(rk===rank){card.classList.add('focused');card.style.removeProperty('--mtx');card.style.removeProperty('--mrot');}
+    else{card.classList.remove('focused');const j=others.findIndex(o=>o.key===rk);const t=j-(others.length-1)/2;
+      card.style.setProperty('--mtx',(t*86)+'px');card.style.setProperty('--mrot',(t*9)+'deg');}
+  });
+  if(window.CTGSound)CTGSound.play(switching?'click':'open');
+}
+function unfocusCard(){
+  if(!focusedRank)return;
+  clearFocusState();
+  if(window.CTGSound)CTGSound.play('close');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&focusedRank)unfocusCard();});
+document.addEventListener('click',e=>{ // click the felt/empty stage to return to the hand
+  if(specViewMode==='fan'&&focusedRank&&e.target.classList&&e.target.classList.contains('spec-felt'))unfocusCard();
+});
+let _specResizeT;window.addEventListener('resize',()=>{clearTimeout(_specResizeT);_specResizeT=setTimeout(()=>{if(document.getElementById('tab-specials').style.display!=='none')applySpecView();},200);});
 
 /* ── LIBRARY PICKER (paste into slot) ───────────────────── */
 let pickerTarget=null;
