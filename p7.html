@@ -378,7 +378,7 @@ function loadSpecials(){
     else{const c=s[r.key];if(c.mode!=='workshop')c.mode='freeform';if(c.apCap==null)c.apCap=r.cap;if(!('build'in c))c.build=null;if(!c.buff||typeof c.buff!=='object')c.buff={stat:'',value:0,active:false};}});
   return s;
 }
-function statNames(){try{const s=load('ctg-stats');if(s)return JSON.parse(s).map(x=>x.name).filter(Boolean);}catch(e){}return['Force','Finess','Endurance','Logic','Sense','Velvet','Shine'];}
+function statNames(){try{const s=load('ctg-stats');if(s)return JSON.parse(s).map(x=>x.name).filter(Boolean);}catch(e){}return['Force','Finesse','Endurance','Logic','Sense','Velvet','Shine'];}
 function saveSpecials(s){store('ctg-specials',JSON.stringify(s));}
 let SPEC=loadSpecials();
 

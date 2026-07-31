@@ -177,11 +177,12 @@ try{const s=load('ctg-weapons');weapons=s?JSON.parse(s):[];}catch(e){weapons=[];
 weapons.forEach(w=>{if(w.slot===undefined)w.slot=null;});
 (function(){
   const s=load('ctg-stats');const names=s?JSON.parse(s).map(x=>x.name):[];let c=false;
-  weapons.forEach(w=>{if(!w.rollStat)return;const m=names.find(n=>n.toLowerCase()===w.rollStat.toLowerCase());if(m&&m!==w.rollStat){w.rollStat=m;c=true;}});
+  const ALIAS={finess:'finesse',brass:'force',string:'finesse',fliker:'sense',flicker:'sense'};
+  weapons.forEach(w=>{if(!w.rollStat)return;const key=(ALIAS[w.rollStat.toLowerCase()]||w.rollStat).toLowerCase();const m=names.find(n=>n.toLowerCase()===key);if(m&&m!==w.rollStat){w.rollStat=m;c=true;}});
   if(c)try{store('ctg-weapons',JSON.stringify(weapons));}catch(e){}
 })();
 function saveWeapons(){store('ctg-weapons',JSON.stringify(weapons));}
-function getStatNames(){try{const s=load('ctg-stats');if(s)return JSON.parse(s).map(x=>x.name).filter(Boolean);}catch(e){}return['Force','Finess','Endurance','Logic','Sense','Velvet','Shine'];}
+function getStatNames(){try{const s=load('ctg-stats');if(s)return JSON.parse(s).map(x=>x.name).filter(Boolean);}catch(e){}return['Force','Finesse','Endurance','Logic','Sense','Velvet','Shine'];}
 function tagClass(t){const k=t.trim().toLowerCase();if(k==='melee')return'melee-tag';if(k==='ranged')return'ranged-tag';if(k==='brass')return'brass-tag';if(k==='string')return'string-tag';if(k==='flicker')return'flicker-tag';if(k==='semi')return'semi-tag';if(k.startsWith('auto'))return'auto-tag';return'dist-tag';}
 function renderTags(str){return (str||'').split(',').map(t=>t.trim()).filter(Boolean).map(t=>`<span class="tag ${tagClass(t)}">${esc(t)}</span>`).join('');}
 function buildWeaponCard(w,statNames){
@@ -258,7 +259,7 @@ const DEF_CAT_WEAPONS=[
   {id:'cw2',type:'ranged',name:'Dockwhistle Argument',dmg:1,tags:'Close, Medium, Ranged, String',desc:'A long-barrelled flintlock with three tiny brass whistles.',quirkName:'"State Your Case"',quirkText:'When you land a Crit and choose the head you cannot deal lower than 2 damage.',rollStat:'',rollBonus:0},
   {id:'cw3',type:'melee',name:"Hunter's Bloody Axe",dmg:1,tags:'Melee, Brass',desc:'A large wooden axe with a menacing bit of metal on top.',quirkName:'"Red Painted"',quirkText:'When you kill an enemy creature you may gain an additional action.',rollStat:'',rollBonus:0},
   {id:'cw4',type:'ranged',name:'The Newsletter',dmg:2,tags:'Far, Ranged, Flicker',desc:'A flat-barrelled sniper rifle with three levels of magnification.',quirkName:'"Letter Opener"',quirkText:'When you make an attack Out Of Combat with this weapon it deals double damage.',rollStat:'',rollBonus:0},
-  {id:'cw5',type:'ranged',name:'Gun-Brella',dmg:1,tags:'Medium, Ranged, Semi, Auto 4, String',desc:'A rifle barrel used as the handle — the umbrella folds out after a shot.',quirkName:'"Weather Forecast"',quirkText:'Switch modes with an Action + ♥ card. Heavy Rain (Auto): roll D6s up to 4, 5s & 6s hit. Spitting (Semi): a landed shot grants Advance to Defence.',rollStat:'',rollBonus:0},
+  {id:'cw5',type:'ranged',name:'Gun-Brella',dmg:1,tags:'Medium, Ranged, Semi, Auto 3, String',desc:'A rifle barrel used as the handle — the umbrella folds out after a shot.',quirkName:'"Weather Forecast"',quirkText:'Switch modes with an Action + ♥ card. Heavy Rain (Auto): roll D6s up to 3, 5s & 6s hit. Spitting (Semi): a landed shot grants Advance to Defence.',rollStat:'',rollBonus:0},
 ];
 let catalog={weapons:[]};
 try{const cs=load('ctg-catalog');const parsed=cs?JSON.parse(cs):null;catalog.weapons=(parsed&&parsed.weapons)?parsed.weapons:DEF_CAT_WEAPONS.map(x=>({...x}));}
@@ -475,28 +476,30 @@ const KEYWORDS={
   '♦ Diamonds':'In combat, the suit for Logic, Sense & Velvet actions.',
   '♠ Spades':'In combat, the suit for Endurance actions and blocking / defence.',
   '♥ Hearts':'The wild suit — may be played for any action.',
-  'Melee':'Attack must be in close range (same zone). Physical attacks use ♣ Clubs cards.',
-  'Ranged':'Attack at a distance. Physical attacks use ♣ Clubs cards. Requires ammo.',
-  'Brass':'Weapon is made of brass/metal. May interact with certain abilities.',
-  'String':'Weapon has a string mechanism — fine for Lock-Smith abilities.',
-  'Flicker':'Weapon rolls off Sense rather than Force for its attacks.',
-  'Semi':'Semi-automatic. One shot per action, accurate.',
+  'Melee':'Attack must be in close range — the same zone as your target. Move a zone by discarding a card.',
+  'Ranged':'Attack at a distance, within the weapon’s range band (Close / Medium / Far).',
+  'Brass':'A Force-governed weapon — its attacks roll off your Force.',
+  'String':'A Finesse-governed weapon — its attacks roll off your Finesse.',
+  'Flicker':'A Sense-governed weapon — its attacks roll off your Sense.',
+  'Semi':'Semi-automatic. One shot per action; landing a shot can grant Advance to your defence.',
   'Auto':'Automatic fire. Roll D6s up to the Auto value — all 5s & 6s hit, the rest miss.',
   'Close':'Effective at close range only.',
   'Medium':'Effective up to medium range.',
-  'Far':'Effective at long range. Requires Long Ranger or similar.',
+  'Far':'Effective at long range. Pairs with Long Ranger or similar.',
+  'Zone':'The battlefield is split into 5 zones. Melee needs the same zone; move one zone by discarding a card (no action).',
   'Advance':'Reroll the card-given dice and take the higher value of the two.',
   'Advantage':'Reroll the D20 and take the higher value of the two.',
   'Disengage':'Reroll the card-given dice and take the lower value of the two.',
   'Disadvantage':'Reroll the D20 and take the lower value of the two.',
   'Mods':'In combat, add the number underneath a stat to any roll that uses that stat.',
   'Crit':'Roll a natural 20 on the d20 with no mods. Either target a limb to disable it and weaken your foe, or go for the head — roll a d6 for damage (1-6). If that roll is lower than your normal damage, you deal your standard damage instead.',
-  'Reaction':'A free action in response to an opponent’s action. Used once per round.',
-  'Counter':'Respond to an attack with your own attack. Costs a Reaction.',
-  'EF':'Extra Flesh — your armour. Reduces incoming damage.',
-  'Out Of Combat':'No enemies are actively engaged. Counts as a surprise attack.',
+  'Reaction':'You get 1 reaction per round. Any unspent actions become reactions, but reactions never become actions.',
+  'Counter':'Respond to an attack with your own attack after a successful block. Costs a Reaction.',
+  'EF':'Extra Flesh — your armour. Reduces incoming damage. Starts at 0.',
+  'Hearth':'Your mana pool, spent to power oddities. Starts at 6. (Renamable per setting on the Stats page.)',
+  'Out Of Combat':'No enemies are actively engaged. Some quirks (e.g. surprise attacks) trigger here.',
   'Tick':'Lock-picking measure. Higher Tick range = faster picks.',
-  'Guess':'Logic-based problem solving attempts. Higher = more tries.',
+  'Guess':'Logic-based problem-solving attempts. Higher = more tries.',
 };
 function buildGlossary(){
   const list=document.getElementById('glossary-list');list.innerHTML='';const allPopups=[];

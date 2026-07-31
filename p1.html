@@ -177,7 +177,7 @@ const sp=s=>Math.floor((parseInt(s)||0)/2);
 
 /* ── ATTRIBUTES (editable + addable) ─────────────────────── */
 const DEF_STATS=[
-  {name:'Force',icon:'♣',score:0},{name:'Finess',icon:'≫',score:0},{name:'Endurance',icon:'♠',score:0},
+  {name:'Force',icon:'♣',score:0},{name:'Finesse',icon:'≫',score:0},{name:'Endurance',icon:'♠',score:0},
   {name:'Logic',icon:'◆',score:0},{name:'Sense',icon:'◉',score:0},{name:'Velvet',icon:'♥',score:0},{name:'Shine',icon:'✤',score:0},
 ];
 let stats=[];
@@ -186,7 +186,7 @@ let stats=[];
   if(s){try{stats=JSON.parse(s);}catch(e){stats=null;}}
   if(!stats||!stats.length){
     // migrate old per-key values if they exist
-    const keymap={Force:'force',Finess:'finess',Endurance:'endurance',Logic:'logic',Sense:'sense',Velvet:'velvet',Shine:'shine'};
+    const keymap={Force:'force',Finesse:'finess',Endurance:'endurance',Logic:'logic',Sense:'sense',Velvet:'velvet',Shine:'shine'};
     stats=DEF_STATS.map(d=>{const old=load('ctg-stat-'+keymap[d.name]);return{name:d.name,icon:d.icon,score:old!==null?parseInt(old):d.score};});
     // persist defaults immediately so p4/p6 can read stat names without a fallback
     try{localStorage.setItem('ctg-stats',JSON.stringify(stats));}catch(e){}
@@ -197,7 +197,7 @@ let stats=[];
   stats.forEach(st=>{if(_im[st.icon]){st.icon=_im[st.icon];_iconChanged=true;}});
   if(_iconChanged)saveStats();
   // migrate old attribute names to current names
-  const _nm={'Brass':'Force','String':'Finess','Fliker':'Sense'};
+  const _nm={'Brass':'Force','String':'Finesse','Fliker':'Sense','Finess':'Finesse'};
   let _nameChanged=false;
   stats.forEach(st=>{if(_nm[st.name]){st.name=_nm[st.name];_nameChanged=true;}});
   if(_nameChanged)saveStats();
