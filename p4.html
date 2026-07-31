@@ -2,31 +2,52 @@
 <html lang="en">
 <head>
 <script>
-// ── THEME INIT (runs before paint to avoid flash) ──
-(function(){
-  const t=localStorage.getItem('ctg-theme')||'light';
-  document.documentElement.setAttribute('data-theme',t);
-})();
+(function(){const t=localStorage.getItem('ctg-theme')||'light';document.documentElement.setAttribute('data-theme',t);})();
 </script>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#07060c">
-<title>CTG — Arsenal & Provisions</title>
+<title>CTG — Arsenal &amp; Gear</title>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Black+Han+Sans&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ctg.css">
+<style>
+.ag-tabs{margin-bottom:14px;}
+.ag-more{margin-top:14px;border-top:1.5px dashed var(--border);padding-top:6px;}
+.ag-more>summary{font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;color:var(--text-dim);cursor:pointer;user-select:none;padding:6px 0;list-style:none;}
+.ag-more>summary::-webkit-details-marker{display:none;}
+.ag-more>summary .cnt{color:var(--purple2);}
+.eq-empty{font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--text-dim);letter-spacing:1px;padding:10px 2px;}
+/* accessories */
+.acc-slots{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media(max-width:560px){.acc-slots{grid-template-columns:1fr;}}
+.acc-slot{border:2px solid var(--border);background:var(--paper2,rgba(0,0,0,0.04));padding:10px 12px;min-height:70px;clip-path:polygon(0 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%);}
+.acc-slot.filled{border-color:var(--purple);border-left:4px solid var(--purple);}
+.acc-slot.empty{border-style:dashed;display:flex;align-items:center;justify-content:center;}
+.acc-slot-name{font-family:'Anton',sans-serif;font-style:italic;font-size:1.05rem;color:var(--text);margin-bottom:3px;}
+.acc-slot-effect{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.4;}
+.acc-slot-empty{font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:1px;color:var(--text-dim);}
+.acc-unequip{margin-top:6px;font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;background:none;border:none;color:var(--red);cursor:pointer;padding:0;}
+.acc-card{position:relative;background:var(--paper);border:2px solid var(--ink);border-left:4px solid var(--gold,#cf9500);padding:10px 12px;margin-bottom:8px;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);}
+.acc-card.is-eq{border-left-color:var(--purple);}
+.acc-name{width:100%;background:transparent;border:none;border-bottom:1.5px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-style:italic;font-size:1.05rem;letter-spacing:1px;padding:2px 2px 4px;outline:none;margin-bottom:6px;}
+.acc-name:focus{border-bottom-color:var(--purple);}
+.acc-effect{width:100%;background:rgba(0,0,0,0.04);border:1.5px dashed var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.85rem;line-height:1.4;padding:5px 8px;resize:vertical;outline:none;}
+.acc-effect:focus{border-color:var(--purple);}
+.acc-eq-btn{margin-top:8px;font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:2px;padding:5px 14px;border:1.5px solid var(--purple);background:transparent;color:var(--purple);cursor:pointer;transform:skewX(-7deg);}
+.acc-eq-btn.on{background:var(--purple);color:#fff;}
+.acc-eq-btn:disabled{opacity:0.4;cursor:not-allowed;border-color:var(--border2);color:var(--text-dim);}
+</style>
 </head>
 <body>
 <nav class="ctg-nav" id="ctg-nav-bar">
   <a class="ctg-nav-home" href="index.html" data-nav>CTG</a>
   <div class="ctg-nav-links">
     <a href="p1.html" data-nav>I·STATS</a>
-    <a href="p2.html" data-nav>II·GEAR</a>
-    <a href="p3.html" data-nav>III·FAC</a>
-    <a href="p4.html" class="active">IV·ARMS</a>
-    <a href="p5.html" data-nav>V·SKILL</a>
-    <a href="p6.html" data-nav style="color:var(--red);">VI·COMBAT</a>
-    <a href="p7.html" data-nav>VII·SPEC</a>
+    <a href="p3.html" data-nav>II·FAC</a>
+    <a href="p4.html" class="active">III·ARMS</a>
+    <a href="p5.html" data-nav>IV·SKILL</a>
+    <a href="p6.html" data-nav style="color:var(--red);">V·COMBAT</a>
+    <a href="p7.html" data-nav>VI·SPEC</a>
   </div>
   <div class="nav-char-name" id="nav-name"><span>OPERATIVE //</span> —</div>
   <span class="save-flash" id="save-flash">SAVED ✓</span>
@@ -37,30 +58,175 @@
 <div class="sheet">
   <div class="sheet-header">
     <div class="head-tag">CALL TO GALLAHAD // OPERATIONAL RECORD</div>
-    <div class="sheet-title">ARSENAL &amp; <em>PROVISIONS</em></div>
-    <div class="head-stamp">PAGE IV</div>
+    <div class="sheet-title">ARSENAL &amp; <em>GEAR</em></div>
+    <div class="head-stamp">PAGE III</div>
   </div>
 
-  <div class="sec-label"><span class="mk">♣&#xFE0E;</span>WEAPONS</div>
-  <div id="weapons"></div>
-  <button class="add-btn add-row" onclick="addWeapon()">ADD WEAPON</button>
+  <!-- ══ MAIN TABS ══ -->
+  <div class="cat-tabs ag-tabs">
+    <button class="cat-tab active" data-agtab="weapons" onclick="showAG('weapons')">⚔ WEAPONS</button>
+    <button class="cat-tab" data-agtab="accessories" onclick="showAG('accessories')">✦ ACCESSORIES</button>
+    <button class="cat-tab" data-agtab="armour" onclick="showAG('armour')">♠&#xFE0E; ARMOUR</button>
+  </div>
 
-  <div class="sec-label mt"><span class="mk">✤</span>ODDITIES <span class="note">— equip 1 for combat</span></div>
-  <div class="food-grid scroll-box" id="food-grid"></div>
-  <button class="add-btn add-row" onclick="addFood()">ADD ODDITY</button>
+  <!-- ── WEAPONS ── -->
+  <div class="block" id="ag-weapons">
+    <div class="sec-label"><span class="mk">⚔</span>EQUIPPED <span class="note">— Main + Side (max 2)</span></div>
+    <div id="eq-weapons"></div>
+    <details class="ag-more">
+      <summary>▸ ALL WEAPONS &amp; CATALOG <span class="cnt" id="weap-count"></span></summary>
+      <div style="margin-top:10px;">
+        <div id="all-weapons"></div>
+        <button class="add-btn add-row" onclick="addWeapon()">ADD WEAPON</button>
+        <div class="sec-label mt"><span class="mk">◈</span>WEAPON CATALOG <span class="note">— browse &amp; add</span></div>
+        <div id="catalog-list" class="scroll-box"></div>
+        <button class="add-btn add-row" onclick="addCustomCatalogItem()" style="margin-top:8px;">+ ADD CUSTOM ENTRY</button>
+      </div>
+    </details>
+  </div>
 
-  <!-- CATALOG -->
-  <div class="sec-label mt"><span class="mk">◈</span>ITEM CATALOG <span class="note">— browse &amp; add to sheet</span></div>
-  <div class="panel" style="padding:14px 16px;">
-    <div class="cat-tabs">
-      <button class="cat-tab active" data-tab="weapons" onclick="showCatTab('weapons')">⚔ WEAPONS</button>
-      <button class="cat-tab" data-tab="oddities" onclick="showCatTab('oddities')">✤ ODDITIES</button>
+  <!-- ── ACCESSORIES ── -->
+  <div class="block" id="ag-accessories" style="display:none;">
+    <div class="sec-label"><span class="mk">✦</span>EQUIPPED ACCESSORIES <span class="note">— up to 4</span></div>
+    <div class="acc-slots" id="eq-accessories"></div>
+    <details class="ag-more">
+      <summary>▸ ALL ACCESSORIES <span class="cnt" id="acc-count"></span></summary>
+      <div style="margin-top:10px;">
+        <div id="all-accessories"></div>
+        <button class="add-btn add-row" onclick="addAccessory()">+ ADD ACCESSORY</button>
+      </div>
+    </details>
+  </div>
+
+  <!-- ── ARMOUR ── -->
+  <div id="ag-armour" style="display:none;">
+    <div class="block">
+      <div class="sec-label"><span class="mk">♠&#xFE0E;</span>EXTRA FLESH</div>
+      <div class="panel ef-panel">
+        <div class="ef-body-ui">
+          <div class="ef-silhouette-wrap">
+            <div class="ef-svg-hint">Click a zone to equip</div>
+            <svg class="ef-silhouette" viewBox="0 0 120 252" xmlns="http://www.w3.org/2000/svg">
+              <rect class="ef-neck" x="54" y="50" width="12" height="9"/>
+              <g class="ef-part-group" data-part="head">
+                <polygon class="ef-body-part" points="46,2 74,2 80,12 78,46 60,52 42,46 40,12"/>
+                <polygon class="ef-panel-detail" points="42,20 52,18 53,28 43,30"/>
+                <polygon class="ef-panel-detail" points="67,18 77,20 77,30 67,28"/>
+                <line class="ef-panel-detail" x1="52" y1="44" x2="68" y2="44"/>
+                <line class="ef-panel-detail" x1="60" y1="2" x2="60" y2="14"/>
+                <text class="ef-part-label" x="60" y="36">HEAD</text>
+                <text class="ef-badge" x="60" y="13" id="badge-head"></text>
+                <title>Head</title>
+              </g>
+              <g class="ef-part-group" data-part="torso">
+                <polygon class="ef-body-part" points="34,58 86,58 82,120 38,120"/>
+                <polyline class="ef-panel-detail" points="34,58 60,80 86,58"/>
+                <line class="ef-panel-detail" x1="38" y1="80" x2="82" y2="80"/>
+                <line class="ef-panel-detail" x1="40" y1="100" x2="80" y2="100"/>
+                <line class="ef-panel-detail" x1="60" y1="58" x2="60" y2="120"/>
+                <polygon class="ef-panel-detail" points="60,82 68,91 60,100 52,91"/>
+                <polygon class="ef-panel-detail" points="44,100 76,100 74,118 46,118"/>
+                <text class="ef-part-label" x="60" y="74">TORSO</text>
+                <text class="ef-badge" x="60" y="113" id="badge-torso"></text>
+                <title>Torso</title>
+              </g>
+              <g class="ef-part-group" data-part="l-arm">
+                <polygon class="ef-body-part" points="34,60 14,68 10,120 26,120 34,112"/>
+                <circle class="ef-panel-detail" cx="20" cy="73" r="5"/>
+                <polygon class="ef-panel-detail" points="11,92 27,90 27,102 11,104"/>
+                <line class="ef-panel-detail" x1="18" y1="68" x2="12" y2="120"/>
+                <text class="ef-badge" x="21" y="85" id="badge-l-arm"></text>
+                <title>Left Arm</title>
+              </g>
+              <g class="ef-part-group" data-part="r-arm">
+                <polygon class="ef-body-part" points="86,60 106,68 110,120 94,120 86,112"/>
+                <circle class="ef-panel-detail" cx="100" cy="73" r="5"/>
+                <polygon class="ef-panel-detail" points="93,90 109,92 109,104 93,102"/>
+                <line class="ef-panel-detail" x1="102" y1="68" x2="108" y2="120"/>
+                <text class="ef-badge" x="99" y="85" id="badge-r-arm"></text>
+                <title>Right Arm</title>
+              </g>
+              <g class="ef-part-group" data-part="l-leg">
+                <polygon class="ef-body-part" points="38,136 62,136 60,250 38,250"/>
+                <polygon class="ef-panel-detail" points="38,170 62,170 61,188 37,188"/>
+                <circle class="ef-panel-detail" cx="50" cy="179" r="7"/>
+                <line class="ef-panel-detail" x1="40" y1="156" x2="60" y2="156"/>
+                <line class="ef-panel-detail" x1="40" y1="212" x2="58" y2="212"/>
+                <text class="ef-badge" x="50" y="197" id="badge-l-leg"></text>
+                <title>Left Leg</title>
+              </g>
+              <g class="ef-part-group" data-part="r-leg">
+                <polygon class="ef-body-part" points="58,136 82,136 82,250 60,250"/>
+                <polygon class="ef-panel-detail" points="59,170 83,170 83,188 61,188"/>
+                <circle class="ef-panel-detail" cx="70" cy="179" r="7"/>
+                <line class="ef-panel-detail" x1="60" y1="156" x2="80" y2="156"/>
+                <line class="ef-panel-detail" x1="62" y1="212" x2="80" y2="212"/>
+                <text class="ef-badge" x="70" y="197" id="badge-r-leg"></text>
+                <title>Right Leg</title>
+              </g>
+            </svg>
+            <div class="ef-legend"><span class="ef-legend-ef">EF EQUIPPED</span></div>
+          </div>
+          <div class="ef-detail-panel" id="ef-detail-panel"></div>
+        </div>
+        <div class="ef-footer">
+          <div class="ef-custom-section">
+            <div class="ef-custom-header">CUSTOM EF TYPES</div>
+            <div id="ef-custom-types-list"></div>
+            <button class="add-btn add-row" onclick="addCustomType()">+ ADD CUSTOM TYPE</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div id="catalog-list" class="scroll-box"></div>
-    <button class="add-btn add-row" onclick="addCustomCatalogItem()" style="margin-top:8px;">+ ADD CUSTOM ENTRY</button>
+    <div class="block">
+      <div class="sec-label"><span class="mk">♠&#xFE0E;</span>EF KIT <span class="note">EQUIPMENT &amp; CUSTOM</span></div>
+      <div class="panel">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);letter-spacing:1px;margin-bottom:12px;">Spare parts, mods, tools, and custom equipment for your rig.</div>
+        <div id="ef-kit-list" style="display:flex;flex-direction:column;gap:7px;margin-bottom:10px;"></div>
+        <button class="add-btn add-row" onclick="addEFKitItem()">+ ADD ITEM</button>
+      </div>
+    </div>
   </div>
 
-  <!-- KEYWORD GLOSSARY -->
+  <!-- ══ SHARED: CARRY + MULA ══ -->
+  <div class="two-col">
+    <div><div class="block">
+      <div class="sec-label"><span class="mk">♣&#xFE0E;</span>CARRY</div>
+      <div class="panel">
+        <ul class="inv-list scroll-box" id="inv-list"></ul>
+        <button class="add-btn add-row" onclick="addItem()">ADD ITEM</button>
+      </div>
+    </div></div>
+    <div><div class="block">
+      <div class="sec-label"><span class="mk">◆</span>MULA</div>
+      <div class="panel">
+        <div class="mula-block">
+          <div class="mula-sym">₩</div>
+          <input class="mula-input" type="number" id="mula" value="12" min="0">
+          <div class="mula-note">Make it rain — but not too much. These are your life savings.</div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- ══ ITEM CATALOG ══ -->
+  <div class="block">
+    <div class="sec-label"><span class="mk">◆</span>ITEM CATALOG</div>
+    <div class="panel">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);letter-spacing:1px;margin-bottom:10px;">Browse available items — click ADD to put them in your carry list.</div>
+      <div class="cat-tabs">
+        <button class="cat-tab active" data-tab="all" onclick="showItemTab('all')">ALL</button>
+        <button class="cat-tab" data-tab="consumable" onclick="showItemTab('consumable')">CONSUMABLE</button>
+        <button class="cat-tab" data-tab="gear" onclick="showItemTab('gear')">GEAR</button>
+        <button class="cat-tab" data-tab="ammo" onclick="showItemTab('ammo')">AMMO</button>
+        <button class="cat-tab" data-tab="misc" onclick="showItemTab('misc')">MISC</button>
+      </div>
+      <div id="item-catalog-list" class="scroll-box"></div>
+      <button class="add-btn add-row" onclick="addCustomItemToCatalog()">+ ADD CUSTOM ENTRY</button>
+    </div>
+  </div>
+
+  <!-- ══ KEYWORD GLOSSARY ══ -->
   <div class="sec-label mt" id="glossary-toggle" style="cursor:pointer;user-select:none;" onclick="(function(){const p=document.getElementById('glossary-panel');const open=p.style.display!=='none';p.style.display=open?'none':'block';document.getElementById('glossary-arrow').textContent=open?'▸':'▾';})()"><span class="mk">◆</span>KEYWORD GLOSSARY <span class="note" id="glossary-arrow">▾</span></div>
   <div class="panel" id="glossary-panel">
     <div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:12px;">Hover or click any keyword tag to see its definition.</div>
@@ -69,7 +235,7 @@
 
   <div class="sheet-footer">
     <div class="suits"><span class="s1">♠&#xFE0E;</span><span class="s2">♣&#xFE0E;</span><span class="s3">♥&#xFE0E;</span><span class="s4">♦&#xFE0E;</span></div>
-    CALL TO GALLAHAD · ARSENAL &amp; PROVISIONS · PAGE IV
+    CALL TO GALLAHAD · ARSENAL &amp; GEAR · PAGE III
   </div>
 </div>
 </div>
@@ -77,252 +243,158 @@
 <script>
 function load(k){try{return localStorage.getItem(k);}catch(e){return null;}}
 function store(k,v){try{localStorage.setItem(k,v);localStorage.setItem('ctg-last-edit',Date.now());flashSaved();}catch(e){}}
+const save=store;
 let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
 const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const uid=()=>'x'+Math.random().toString(36).slice(2,8);
 
-/* ── WEAPONS ─────────────────────────────────────────────── */
-const DEF_WEAPONS=[
-  {id:'w1',type:'melee',name:'Toothpick',dmg:1,tags:'Melee, Brass, String',desc:'A needle-thin rapier with a small incense chamber in the guard. Smells faintly of burnt cinnamon and lost animal friends.',quirkName:'"Mind The Strings"',quirkText:'When you successfully counter an attack and strike back with this weapon it will not consume your Reaction.'},
-  {id:'w2',type:'ranged',name:'Dockwhistle Argument',dmg:1,tags:'Close, Medium, Ranged, String',desc:'A long-barrelled flintlock with three tiny brass whistles. It wheezes before firing — like it\'s clearing its throat.',quirkName:'"State Your Case"',quirkText:'When you land a Crit and choose the head you cannot deal lower than 2 damage. If you miss, the whistle lets out a disapproving toot.'},
-  {id:'w3',type:'melee',name:"Hunter's Bloody Axe",dmg:1,tags:'Melee, Brass',desc:'A large wooden axe with a menacing bit of metal on top. Big, Bloody, and ready for fun.',quirkName:'"Red Painted"',quirkText:'When you kill an enemy creature you may gain an additional action. The red paint seems to make it faster.'},
-  {id:'w4',type:'ranged',name:'The Newsletter',dmg:2,tags:'Far, Ranged, Flicker',desc:'A flat-barrelled sniper rifle with three levels of magnification. When the trigger\'s pulled, it delivers the message.',quirkName:'"Letter Opener"',quirkText:'When you make an attack Out Of Combat with this weapon it deals double damage. Like a message from an old friend you wished to forget.'},
-  {id:'w5',type:'ranged',name:'Gun-Brella',dmg:1,tags:'Medium, Ranged, Semi, Auto 4, String',desc:'A rifle barrel used as the handle — the umbrella folds out after a shot, ready to make it rain.',quirkName:'"Weather Forecast"',quirkText:'Use an Action and a ♥ Hearts Card to switch modes. ☔ HEAVY RAIN (Auto): roll D6s up to the Auto value (4) — all 5s & 6s hit. 🌂 SPITTING (Semi): landing a shot deploys the umbrella shield, granting Advance to Defence Checks.'},
-];
+/* ── MAIN TABS ─────────────────────────────────────────── */
+function showAG(t){
+  document.querySelectorAll('.ag-tabs .cat-tab').forEach(b=>b.classList.toggle('active',b.dataset.agtab===t));
+  ['weapons','accessories','armour'].forEach(k=>{const el=document.getElementById('ag-'+k);if(el)el.style.display=k===t?'':'none';});
+  try{localStorage.setItem('ctg-ag-tab',t);}catch(e){}
+}
+
+/* ── WEAPONS ───────────────────────────────────────────── */
 let weapons=[];
 try{const s=load('ctg-weapons');weapons=s?JSON.parse(s):[];}catch(e){weapons=[];}
 weapons.forEach(w=>{if(w.slot===undefined)w.slot=null;});
-// fix old free-text rollStat values that don't exactly match stored stat names
 (function(){
-  const s=load('ctg-stats');const names=s?JSON.parse(s).map(x=>x.name):[];
-  let c=false;
-  weapons.forEach(w=>{
-    if(!w.rollStat)return;
-    const match=names.find(n=>n.toLowerCase()===w.rollStat.toLowerCase());
-    if(match&&match!==w.rollStat){w.rollStat=match;c=true;}
-  });
+  const s=load('ctg-stats');const names=s?JSON.parse(s).map(x=>x.name):[];let c=false;
+  weapons.forEach(w=>{if(!w.rollStat)return;const m=names.find(n=>n.toLowerCase()===w.rollStat.toLowerCase());if(m&&m!==w.rollStat){w.rollStat=m;c=true;}});
   if(c)try{store('ctg-weapons',JSON.stringify(weapons));}catch(e){}
 })();
 function saveWeapons(){store('ctg-weapons',JSON.stringify(weapons));}
 function getStatNames(){try{const s=load('ctg-stats');if(s)return JSON.parse(s).map(x=>x.name).filter(Boolean);}catch(e){}return['Force','Finess','Endurance','Logic','Sense','Velvet','Shine'];}
 function tagClass(t){const k=t.trim().toLowerCase();if(k==='melee')return'melee-tag';if(k==='ranged')return'ranged-tag';if(k==='brass')return'brass-tag';if(k==='string')return'string-tag';if(k==='flicker')return'flicker-tag';if(k==='semi')return'semi-tag';if(k.startsWith('auto'))return'auto-tag';return'dist-tag';}
 function renderTags(str){return (str||'').split(',').map(t=>t.trim()).filter(Boolean).map(t=>`<span class="tag ${tagClass(t)}">${esc(t)}</span>`).join('');}
-function renderWeapons(){
-  const wrap=document.getElementById('weapons');wrap.innerHTML='';
-  const statNames=getStatNames();
-  weapons.forEach(w=>{
-    const card=document.createElement('div');card.className='weapon-card '+w.type;card.dataset.id=w.id;
-    card.innerHTML=`
-      <button class="card-del" title="Delete weapon" data-del="${w.id}">✕</button>
-      <div class="weapon-head">
-        <div class="weapon-name-block">
-          <input class="ed weapon-name" data-f="name" value="${esc(w.name)}" placeholder="Weapon name">
-          <textarea class="ed weapon-desc" data-f="desc" rows="2" placeholder="Description...">${esc(w.desc)}</textarea>
-        </div>
-        <div class="weapon-stats">
-          <button class="type-toggle ${w.type}" data-type="${w.id}">${w.type==='melee'?'⚔ MELEE':'🎯 RANGED'}</button>
-          <div class="wstat"><input class="ed wstat-val" data-f="dmg" type="number" min="0" value="${w.dmg}"><span class="wstat-label">DMG</span></div>
-          <div class="wstat"><select class="ed wstat-sel" data-f="rollStat"><option value="">—</option>${statNames.map(n=>`<option value="${esc(n)}"${w.rollStat===n?' selected':''}>${esc(n)}</option>`).join('')}</select><span class="wstat-label">STAT</span></div>
-          <div class="wstat"><input class="ed wstat-val" data-f="rollBonus" type="number" min="-9" max="9" value="${w.rollBonus||0}"><span class="wstat-label">BONUS</span></div>
-          <div class="wstat" style="display:flex;flex-direction:column;align-items:center;gap:2px;">
-            <div style="display:flex;align-items:center;gap:2px;">
-              <input class="ed wstat-val" data-f="diceCount" type="number" min="1" max="20" value="${w.diceCount||1}" style="width:28px;">
-              <select class="ed wstat-sel" data-f="diceSides">${[4,6,8,10,12,20].map(s=>`<option value="${s}"${(w.diceSides||6)==s?' selected':''}>d${s}</option>`).join('')}</select>
-            </div>
-            <span class="wstat-label">DICE</span>
+function buildWeaponCard(w,statNames){
+  const card=document.createElement('div');card.className='weapon-card '+w.type;card.dataset.id=w.id;
+  card.innerHTML=`
+    <button class="card-del" title="Delete weapon" data-del="${w.id}">✕</button>
+    <div class="weapon-head">
+      <div class="weapon-name-block">
+        <input class="ed weapon-name" data-f="name" value="${esc(w.name)}" placeholder="Weapon name">
+        <textarea class="ed weapon-desc" data-f="desc" rows="2" placeholder="Description...">${esc(w.desc)}</textarea>
+      </div>
+      <div class="weapon-stats">
+        <button class="type-toggle ${w.type}" data-type="${w.id}">${w.type==='melee'?'⚔ MELEE':'🎯 RANGED'}</button>
+        <div class="wstat"><input class="ed wstat-val" data-f="dmg" type="number" min="0" value="${w.dmg}"><span class="wstat-label">DMG</span></div>
+        <div class="wstat"><select class="ed wstat-sel" data-f="rollStat"><option value="">—</option>${statNames.map(n=>`<option value="${esc(n)}"${w.rollStat===n?' selected':''}>${esc(n)}</option>`).join('')}</select><span class="wstat-label">STAT</span></div>
+        <div class="wstat"><input class="ed wstat-val" data-f="rollBonus" type="number" min="-9" max="9" value="${w.rollBonus||0}"><span class="wstat-label">BONUS</span></div>
+        <div class="wstat" style="display:flex;flex-direction:column;align-items:center;gap:2px;">
+          <div style="display:flex;align-items:center;gap:2px;">
+            <input class="ed wstat-val" data-f="diceCount" type="number" min="1" max="20" value="${w.diceCount||1}" style="width:28px;">
+            <select class="ed wstat-sel" data-f="diceSides">${[4,6,8,10,12,20].map(s=>`<option value="${s}"${(w.diceSides||6)==s?' selected':''}>d${s}</option>`).join('')}</select>
           </div>
+          <span class="wstat-label">DICE</span>
         </div>
       </div>
-      <div style="display:flex;align-items:center;gap:6px;padding:8px 14px 4px;border-top:1.5px solid var(--border);flex-wrap:wrap;">
-        <span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:var(--text-dim);">EQUIP AS:</span>
-        <button class="equip-btn equip-main ${w.slot==='main'?'is-main':''}" data-equip="${w.id}" data-val="main">⚔ MAIN</button>
-        <button class="equip-btn equip-side ${w.slot==='side'?'is-side':''}" data-equip="${w.id}" data-val="side">◈ SIDE</button>
-        ${w.slot?`<button class="equip-btn" data-equip="${w.id}" data-val="" style="font-size:0.65rem;">✕ UNEQUIP</button><span style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:2px;color:${w.slot==='main'?'var(--red)':'var(--purple)'};">${w.slot.toUpperCase()} SLOT</span>`:''}
-      </div>
-      <div class="weapon-tags-edit">
-        <input class="ed tag-input" data-f="tags" value="${esc(w.tags)}" placeholder="Comma, separated, tags">
-        <div class="weapon-tags">${renderTags(w.tags)}</div>
-      </div>
-      <div class="weapon-quirk">
-        <div class="quirk-label">SPECIAL QUIRK</div>
-        <input class="ed quirk-name" data-f="quirkName" value="${esc(w.quirkName)}" placeholder="Quirk name">
-        <textarea class="ed quirk-text" data-f="quirkText" rows="3" placeholder="What it does...">${esc(w.quirkText)}</textarea>
-      </div>`;
-    wrap.appendChild(card);
-    // text edits: update model in place (no re-render, keep focus)
-    card.querySelectorAll('[data-f]').forEach(inp=>{
-      inp.addEventListener(inp.tagName==='SELECT'?'change':'input',()=>{
-        const f=inp.dataset.f;w[f]=inp.value;
-        if(f==='tags')card.querySelector('.weapon-tags').innerHTML=renderTags(inp.value);
-        saveWeapons();
-      });
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;padding:8px 14px 4px;border-top:1.5px solid var(--border);flex-wrap:wrap;">
+      <span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:var(--text-dim);">EQUIP AS:</span>
+      <button class="equip-btn equip-main ${w.slot==='main'?'is-main':''}" data-equip="${w.id}" data-val="main">⚔ MAIN</button>
+      <button class="equip-btn equip-side ${w.slot==='side'?'is-side':''}" data-equip="${w.id}" data-val="side">◈ SIDE</button>
+      ${w.slot?`<button class="equip-btn" data-equip="${w.id}" data-val="" style="font-size:0.65rem;">✕ UNEQUIP</button><span style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:2px;color:${w.slot==='main'?'var(--red)':'var(--purple)'};">${w.slot.toUpperCase()} SLOT</span>`:''}
+    </div>
+    <div class="weapon-tags-edit">
+      <input class="ed tag-input" data-f="tags" value="${esc(w.tags)}" placeholder="Comma, separated, tags">
+      <div class="weapon-tags">${renderTags(w.tags)}</div>
+    </div>
+    <div class="weapon-quirk">
+      <div class="quirk-label">SPECIAL QUIRK</div>
+      <input class="ed quirk-name" data-f="quirkName" value="${esc(w.quirkName)}" placeholder="Quirk name">
+      <textarea class="ed quirk-text" data-f="quirkText" rows="3" placeholder="What it does...">${esc(w.quirkText)}</textarea>
+    </div>`;
+  card.querySelectorAll('[data-f]').forEach(inp=>{
+    inp.addEventListener(inp.tagName==='SELECT'?'change':'input',()=>{
+      const f=inp.dataset.f;w[f]=inp.value;
+      if(f==='tags')card.querySelector('.weapon-tags').innerHTML=renderTags(inp.value);
+      saveWeapons();
     });
-    card.querySelector('[data-type]').addEventListener('click',()=>{w.type=w.type==='melee'?'ranged':'melee';saveWeapons();renderWeapons();});
-    card.querySelector('[data-del]').addEventListener('click',()=>{if(confirm('Delete "'+(w.name||'this weapon')+'"?')){weapons=weapons.filter(x=>x.id!==w.id);saveWeapons();renderWeapons();}});
-    card.querySelectorAll('[data-equip]').forEach(btn=>{btn.addEventListener('click',()=>{setEquip(w.id,btn.dataset.val||null);});});
   });
+  card.querySelector('[data-type]').addEventListener('click',()=>{w.type=w.type==='melee'?'ranged':'melee';saveWeapons();renderWeapons();});
+  card.querySelector('[data-del]').addEventListener('click',()=>{if(confirm('Delete "'+(w.name||'this weapon')+'"?')){weapons=weapons.filter(x=>x.id!==w.id);saveWeapons();renderWeapons();}});
+  card.querySelectorAll('[data-equip]').forEach(btn=>{btn.addEventListener('click',()=>{setEquip(w.id,btn.dataset.val||null);});});
+  return card;
 }
-function addWeapon(){weapons.push({id:uid(),type:'melee',name:'',dmg:1,tags:'Melee',desc:'',quirkName:'',quirkText:'',rollStat:'',rollBonus:0,diceCount:1,diceSides:6,slot:null});saveWeapons();renderWeapons();const cards=document.querySelectorAll('.weapon-card');cards[cards.length-1].querySelector('.weapon-name').focus();}
+function renderWeapons(){
+  const eqWrap=document.getElementById('eq-weapons');const allWrap=document.getElementById('all-weapons');
+  eqWrap.innerHTML='';allWrap.innerHTML='';
+  const statNames=getStatNames();
+  const equipped=weapons.filter(w=>w.slot);const rest=weapons.filter(w=>!w.slot);
+  if(!equipped.length)eqWrap.innerHTML='<div class="eq-empty">No weapon equipped — open “All weapons” below and equip a Main + Side.</div>';
+  else equipped.forEach(w=>eqWrap.appendChild(buildWeaponCard(w,statNames)));
+  if(!rest.length)allWrap.innerHTML='<div class="eq-empty">No unequipped weapons.</div>';
+  else rest.forEach(w=>allWrap.appendChild(buildWeaponCard(w,statNames)));
+  const cnt=document.getElementById('weap-count');if(cnt)cnt.textContent='· '+weapons.length+' total';
+}
+function addWeapon(){weapons.push({id:uid(),type:'melee',name:'',dmg:1,tags:'Melee',desc:'',quirkName:'',quirkText:'',rollStat:'',rollBonus:0,diceCount:1,diceSides:6,slot:null});saveWeapons();renderWeapons();const cards=document.querySelectorAll('#all-weapons .weapon-card');if(cards.length)cards[cards.length-1].querySelector('.weapon-name').focus();}
 function setEquip(wid,slotVal){
   if(slotVal)weapons.forEach(w=>{if(w.id!==wid&&w.slot===slotVal)w.slot=null;});
   const w=weapons.find(x=>x.id===wid);if(w)w.slot=slotVal||null;
   saveWeapons();renderWeapons();
 }
 
-/* ── ODDITIES ────────────────────────────────────────────── */
-const DEF_FOOD=[
-  {id:'f1',name:'Lemon-Static Eel Rinds',flavor:'Sour · Salty · Glassy-crunch · Slightly electric',quirk:'As a Free Reaction, shoot electricity from your fingertips — inflict Shock on an enemy in range. They withdraw their current card and redraw; if unable, they skip their turn.',quip:'"Zap your tongue. Respect the eel."',hearthCost:1,slot:null},
-  {id:'f2',name:'Ink-Dipped Calamari',flavor:'Savory-sweet · Ocean-deep · Licorice · Stains lips black',quirk:'Your blood turns viscous black. Discard up to 2 Cards from your Hand and Redraw them.',quip:'"Pop it. Ink it. Regret nothing."',hearthCost:1,slot:null},
-  {id:'f3',name:'Coal-Fire Tentacle Twist',flavor:'Burnt sugar · Ash · Peppered salt · Chewy',quirk:'Breathe flame from your fingertips — attack with ♦ Diamond Cards using your Flicker to inflict Burn. Roll D6: Evens = +1 damage, Odds = nothing.',quip:'"Chewy enough to fight back!"',hearthCost:1,slot:null},
+/* ── WEAPON CATALOG ────────────────────────────────────── */
+const DEF_CAT_WEAPONS=[
+  {id:'cw1',type:'melee',name:'Toothpick',dmg:1,tags:'Melee, Brass, String',desc:'A needle-thin rapier with a small incense chamber in the guard.',quirkName:'"Mind The Strings"',quirkText:'When you successfully counter an attack and strike back with this weapon it will not consume your Reaction.',rollStat:'',rollBonus:0},
+  {id:'cw2',type:'ranged',name:'Dockwhistle Argument',dmg:1,tags:'Close, Medium, Ranged, String',desc:'A long-barrelled flintlock with three tiny brass whistles.',quirkName:'"State Your Case"',quirkText:'When you land a Crit and choose the head you cannot deal lower than 2 damage.',rollStat:'',rollBonus:0},
+  {id:'cw3',type:'melee',name:"Hunter's Bloody Axe",dmg:1,tags:'Melee, Brass',desc:'A large wooden axe with a menacing bit of metal on top.',quirkName:'"Red Painted"',quirkText:'When you kill an enemy creature you may gain an additional action.',rollStat:'',rollBonus:0},
+  {id:'cw4',type:'ranged',name:'The Newsletter',dmg:2,tags:'Far, Ranged, Flicker',desc:'A flat-barrelled sniper rifle with three levels of magnification.',quirkName:'"Letter Opener"',quirkText:'When you make an attack Out Of Combat with this weapon it deals double damage.',rollStat:'',rollBonus:0},
+  {id:'cw5',type:'ranged',name:'Gun-Brella',dmg:1,tags:'Medium, Ranged, Semi, Auto 4, String',desc:'A rifle barrel used as the handle — the umbrella folds out after a shot.',quirkName:'"Weather Forecast"',quirkText:'Switch modes with an Action + ♥ card. Heavy Rain (Auto): roll D6s up to 4, 5s & 6s hit. Spitting (Semi): a landed shot grants Advance to Defence.',rollStat:'',rollBonus:0},
 ];
-let food=[];
-try{const s=load('ctg-food');food=s?JSON.parse(s):[];}catch(e){food=[];}
-// migrate: ensure every item has slot and hearthCost; strip stale charge fields
-food.forEach(f=>{
-  if(f.slot===undefined)f.slot=null;
-  delete f.harth;
-  if(f.hearthCost===undefined){f.hearthCost=f.maxCharges??1;}
-  delete f.charges;
-  delete f.maxCharges;
-  delete f.charged;
-});
-function saveFood(){store('ctg-food',JSON.stringify(food));}
-function setEquipOddity(fid){
-  food.forEach(f=>{if(f.id!==fid)f.slot=null;});
-  const f=food.find(x=>x.id===fid);if(f)f.slot=f.slot==='equipped'?null:'equipped';
-  saveFood();renderFood();
-}
-function renderFood(){
-  const grid=document.getElementById('food-grid');grid.innerHTML='';
-  food.forEach(fd=>{
-    const isEq=fd.slot==='equipped';
-    const card=document.createElement('div');card.className='food-card';card.dataset.id=fd.id;
-    card.innerHTML=`
-      <button class="card-del" title="Delete oddity" data-del="${fd.id}">✕</button>
-      <div class="food-head">
-        <input class="ed food-name" data-f="name" value="${esc(fd.name)}" placeholder="Oddity name">
-        <div class="food-type-row"><span class="food-type-tag" style="${isEq?'background:var(--gold);color:#000;border-color:var(--gold);':''}">${isEq?'✤ EQUIPPED':'Oddity'}</span></div>
-      </div>
-      <input class="ed food-flavor" data-f="flavor" value="${esc(fd.flavor)}" placeholder="Flavour notes...">
-      <div class="food-quirk">
-        <textarea class="ed food-quirk-text" data-f="quirk" rows="4" placeholder="What it does...">${esc(fd.quirk)}</textarea>
-        <input class="ed food-quip" data-f="quip" value="${esc(fd.quip)}" placeholder="Tagline...">
-      </div>
-      <div class="food-footer">
-        <div style="display:flex;align-items:center;gap:8px;">
-          <span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:#3b82f6;white-space:nowrap;">💙 HEARTH COST</span>
-          <button class="charge-max-btn" data-hcost-dec title="Decrease cost">−</button>
-          <input type="number" class="ed" data-f="hearthCost" value="${fd.hearthCost??1}" min="0" style="width:36px;text-align:center;font-family:'Anton',sans-serif;font-size:1rem;background:transparent;border:1.5px solid #3b82f6;color:#3b82f6;outline:none;padding:2px;">
-          <button class="charge-max-btn" data-hcost-inc title="Increase cost">+</button>
-        </div>
-        <button class="equip-btn ${isEq?'is-main':''}" data-equip-odd="${fd.id}" style="margin-left:auto;">${isEq?'✓ EQUIPPED':'EQUIP FOR COMBAT'}</button>
-      </div>`;
-    grid.appendChild(card);
-    card.querySelectorAll('[data-f]').forEach(inp=>{inp.addEventListener('input',()=>{fd[inp.dataset.f]=inp.value;saveFood();});});
-    const hcInput=card.querySelector('[data-f="hearthCost"]');
-    card.querySelector('[data-hcost-dec]').addEventListener('click',()=>{fd.hearthCost=Math.max(0,(parseInt(fd.hearthCost)||1)-1);hcInput.value=fd.hearthCost;saveFood();});
-    card.querySelector('[data-hcost-inc]').addEventListener('click',()=>{fd.hearthCost=(parseInt(fd.hearthCost)||0)+1;hcInput.value=fd.hearthCost;saveFood();});
-    card.querySelector('[data-del]').addEventListener('click',()=>{if(confirm('Delete "'+(fd.name||'this oddity')+'"?')){food=food.filter(x=>x.id!==fd.id);saveFood();renderFood();}});
-    card.querySelector('[data-equip-odd]').addEventListener('click',()=>{setEquipOddity(fd.id);});
-  });
-}
-function addFood(){food.push({id:uid(),name:'',flavor:'',quirk:'',quip:'',hearthCost:1,slot:null});saveFood();renderFood();const cards=document.querySelectorAll('.food-card');cards[cards.length-1].querySelector('.food-name').focus();}
-
-/* ── CATALOG ─────────────────────────────────────────────── */
-const DEF_CAT={
-  weapons:[
-    {id:'cw1',type:'melee',name:'Toothpick',dmg:1,tags:'Melee, Brass, String',desc:'A needle-thin rapier with a small incense chamber in the guard. Smells faintly of burnt cinnamon and lost animal friends.',quirkName:'"Mind The Strings"',quirkText:'When you successfully counter an attack and strike back with this weapon it will not consume your Reaction.',rollStat:'',rollBonus:0},
-    {id:'cw2',type:'ranged',name:'Dockwhistle Argument',dmg:1,tags:'Close, Medium, Ranged, String',desc:'A long-barrelled flintlock with three tiny brass whistles. It wheezes before firing — like it\'s clearing its throat.',quirkName:'"State Your Case"',quirkText:'When you land a Crit and choose the head you cannot deal lower than 2 damage. If you miss, the whistle lets out a disapproving toot.',rollStat:'',rollBonus:0},
-    {id:'cw3',type:'melee',name:"Hunter's Bloody Axe",dmg:1,tags:'Melee, Brass',desc:'A large wooden axe with a menacing bit of metal on top. Big, Bloody, and ready for fun.',quirkName:'"Red Painted"',quirkText:'When you kill an enemy creature you may gain an additional action.',rollStat:'',rollBonus:0},
-    {id:'cw4',type:'ranged',name:'The Newsletter',dmg:2,tags:'Far, Ranged, Flicker',desc:'A flat-barrelled sniper rifle with three levels of magnification.',quirkName:'"Letter Opener"',quirkText:'When you make an attack Out Of Combat with this weapon it deals double damage.',rollStat:'',rollBonus:0},
-    {id:'cw5',type:'ranged',name:'Gun-Brella',dmg:1,tags:'Medium, Ranged, Semi, Auto 4, String',desc:'A rifle barrel used as the handle — the umbrella folds out after a shot, ready to make it rain.',quirkName:'"Weather Forecast"',quirkText:'Use an Action and a ♥ Hearts Card to switch modes. ☔ HEAVY RAIN (Auto): roll D6s up to the Auto value (4) — all 5s & 6s hit. 🌂 SPITTING (Semi): landing a shot grants Advance to Defence Checks.',rollStat:'',rollBonus:0},
-  ],
-  oddities:[
-    {id:'co1',name:'Lemon-Static Eel Rinds',flavor:'Sour · Salty · Glassy-crunch · Slightly electric',quirk:'As a Free Reaction, shoot electricity from your fingertips — inflict Shock on an enemy in range. They withdraw their current card and redraw; if unable, they skip their turn.',quip:'"Zap your tongue. Respect the eel."'},
-    {id:'co2',name:'Ink-Dipped Calamari',flavor:'Savory-sweet · Ocean-deep · Licorice · Stains lips black',quirk:'Your blood turns viscous black. Discard up to 2 Cards from your Hand and Redraw them.',quip:'"Pop it. Ink it. Regret nothing."'},
-    {id:'co3',name:'Coal-Fire Tentacle Twist',flavor:'Burnt sugar · Ash · Peppered salt · Chewy',quirk:'Breathe flame from your fingertips — attack with ♦ Diamond Cards using your Flicker to inflict Burn. Roll D6: Evens = +1 damage, Odds = nothing.',quip:'"Chewy enough to fight back!"'},
-  ]
-};
-let catalog={weapons:[],oddities:[]};
-try{const cs=load('ctg-catalog');catalog=cs?JSON.parse(cs):{weapons:JSON.parse(JSON.stringify(DEF_CAT.weapons)),oddities:JSON.parse(JSON.stringify(DEF_CAT.oddities))};}
-catch(e){catalog={weapons:JSON.parse(JSON.stringify(DEF_CAT.weapons)),oddities:JSON.parse(JSON.stringify(DEF_CAT.oddities))};}
+let catalog={weapons:[]};
+try{const cs=load('ctg-catalog');const parsed=cs?JSON.parse(cs):null;catalog.weapons=(parsed&&parsed.weapons)?parsed.weapons:DEF_CAT_WEAPONS.map(x=>({...x}));}
+catch(e){catalog.weapons=DEF_CAT_WEAPONS.map(x=>({...x}));}
 function saveCatalog(){store('ctg-catalog',JSON.stringify(catalog));}
-let catTab='weapons';let catEditId=null;
-function showCatTab(t){
-  catTab=t;catEditId=null;
-  document.querySelectorAll('.cat-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
-  renderCatalog();
-}
+let catEditId=null;
 function renderCatalog(){
   const list=document.getElementById('catalog-list');list.innerHTML='';
-  const items=catalog[catTab]||[];
-  if(!items.length){list.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.6rem;color:var(--text-dim);padding:8px 0;">Catalog empty — use the button below to add a custom entry.</div>';return;}
-  const isW=catTab==='weapons';const statNames=getStatNames();
+  const items=catalog.weapons||[];const statNames=getStatNames();
+  if(!items.length){list.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.6rem;color:var(--text-dim);padding:8px 0;">Catalog empty — add a custom entry below.</div>';return;}
   items.forEach(item=>{
-    const ac=isW?(item.type==='melee'?'var(--red)':'var(--purple)'):'var(--gold)';
-    const icon=isW?(item.type==='melee'?'⚔':'🎯'):'✤';
+    const ac=item.type==='melee'?'var(--red)':'var(--purple)';const icon=item.type==='melee'?'⚔':'🎯';
     const entry=document.createElement('div');entry.className='cat-entry';
     if(catEditId===item.id){
-      if(isW){
-        const statOpts=statNames.map(n=>`<option value="${esc(n)}"${item.rollStat===n?' selected':''}>${esc(n)}</option>`).join('');
-        entry.innerHTML=`<div style="padding:12px 14px;border-left:5px solid ${ac};">
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;">
-            <input class="ed weapon-name" data-cf="name" value="${esc(item.name)}" placeholder="Weapon name" style="flex:1;min-width:120px;">
-            <button class="type-toggle ${item.type}" data-cat-toggle>${item.type==='melee'?'⚔ MELEE':'🎯 RANGED'}</button>
-          </div>
-          <textarea class="ed weapon-desc" data-cf="desc" rows="2" placeholder="Description...">${esc(item.desc||'')}</textarea>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;">
-            <div class="wstat"><input class="ed wstat-val" data-cf="dmg" type="number" min="0" value="${item.dmg||1}"><span class="wstat-label">DMG</span></div>
-            <div class="wstat"><select class="ed wstat-sel" data-cf="rollStat"><option value="">—</option>${statOpts}</select><span class="wstat-label">STAT</span></div>
-            <div class="wstat"><input class="ed wstat-val" data-cf="rollBonus" type="number" min="-9" max="9" value="${item.rollBonus||0}"><span class="wstat-label">BONUS</span></div>
-          </div>
-          <input class="ed tag-input" data-cf="tags" value="${esc(item.tags||'')}" placeholder="Comma, separated, tags" style="margin-bottom:8px;">
-          <div class="quirk-label">QUIRK</div>
-          <input class="ed quirk-name" data-cf="quirkName" value="${esc(item.quirkName||'')}" placeholder="Quirk name">
-          <textarea class="ed quirk-text" data-cf="quirkText" rows="3" placeholder="What it does...">${esc(item.quirkText||'')}</textarea>
-          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-            <button class="cat-btn cat-done" style="background:var(--purple);border-color:var(--purple);color:#fff;">✓ DONE</button>
-            <button class="cat-btn cat-del" style="color:var(--red);border-color:var(--red);">✕ REMOVE</button>
-            <button class="cat-btn add cat-sheet" style="margin-left:auto;">+ ADD TO SHEET</button>
-          </div>
-        </div>`;
-      }else{
-        entry.innerHTML=`<div style="padding:12px 14px;border-left:5px solid ${ac};">
-          <input class="ed weapon-name" data-cf="name" value="${esc(item.name)}" placeholder="Oddity name" style="display:block;width:100%;margin-bottom:8px;">
-          <input class="ed food-flavor" data-cf="flavor" value="${esc(item.flavor||'')}" placeholder="Flavour / description...">
-          <div class="quirk-label" style="margin-top:8px;">EFFECT</div>
-          <textarea class="ed food-quirk-text" data-cf="quirk" rows="4" placeholder="What it does...">${esc(item.quirk||'')}</textarea>
-          <input class="ed food-quip" data-cf="quip" value="${esc(item.quip||'')}" placeholder="Tagline...">
-          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
-            <span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:#3b82f6;white-space:nowrap;">💙 HEARTH COST</span>
-            <input type="number" class="ed" data-cf="hearthCost" value="${item.hearthCost??1}" min="0" style="width:48px;text-align:center;font-family:'Anton',sans-serif;font-size:0.9rem;background:transparent;border:1.5px solid #3b82f6;color:#3b82f6;outline:none;padding:2px 4px;">
-          </div>
-          <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-            <button class="cat-btn cat-done" style="background:var(--purple);border-color:var(--purple);color:#fff;">✓ DONE</button>
-            <button class="cat-btn cat-del" style="color:var(--red);border-color:var(--red);">✕ REMOVE</button>
-            <button class="cat-btn add cat-sheet" style="margin-left:auto;">+ ADD TO SHEET</button>
-          </div>
-        </div>`;
-      }
+      const statOpts=statNames.map(n=>`<option value="${esc(n)}"${item.rollStat===n?' selected':''}>${esc(n)}</option>`).join('');
+      entry.innerHTML=`<div style="padding:12px 14px;border-left:5px solid ${ac};">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;">
+          <input class="ed weapon-name" data-cf="name" value="${esc(item.name)}" placeholder="Weapon name" style="flex:1;min-width:120px;">
+          <button class="type-toggle ${item.type}" data-cat-toggle>${item.type==='melee'?'⚔ MELEE':'🎯 RANGED'}</button>
+        </div>
+        <textarea class="ed weapon-desc" data-cf="desc" rows="2" placeholder="Description...">${esc(item.desc||'')}</textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;">
+          <div class="wstat"><input class="ed wstat-val" data-cf="dmg" type="number" min="0" value="${item.dmg||1}"><span class="wstat-label">DMG</span></div>
+          <div class="wstat"><select class="ed wstat-sel" data-cf="rollStat"><option value="">—</option>${statOpts}</select><span class="wstat-label">STAT</span></div>
+          <div class="wstat"><input class="ed wstat-val" data-cf="rollBonus" type="number" min="-9" max="9" value="${item.rollBonus||0}"><span class="wstat-label">BONUS</span></div>
+        </div>
+        <input class="ed tag-input" data-cf="tags" value="${esc(item.tags||'')}" placeholder="Comma, separated, tags" style="margin-bottom:8px;">
+        <div class="quirk-label">QUIRK</div>
+        <input class="ed quirk-name" data-cf="quirkName" value="${esc(item.quirkName||'')}" placeholder="Quirk name">
+        <textarea class="ed quirk-text" data-cf="quirkText" rows="3" placeholder="What it does...">${esc(item.quirkText||'')}</textarea>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+          <button class="cat-btn cat-done" style="background:var(--purple);border-color:var(--purple);color:#fff;">✓ DONE</button>
+          <button class="cat-btn cat-del" style="color:var(--red);border-color:var(--red);">✕ REMOVE</button>
+          <button class="cat-btn add cat-sheet" style="margin-left:auto;">+ ADD TO SHEET</button>
+        </div></div>`;
       entry.querySelectorAll('[data-cf]').forEach(inp=>{inp.addEventListener(inp.tagName==='SELECT'?'change':'input',()=>{item[inp.dataset.cf]=inp.value;saveCatalog();});});
       entry.querySelector('[data-cat-toggle]')?.addEventListener('click',()=>{item.type=item.type==='melee'?'ranged':'melee';saveCatalog();renderCatalog();});
       entry.querySelector('.cat-done').addEventListener('click',()=>{catEditId=null;renderCatalog();});
-      entry.querySelector('.cat-del').addEventListener('click',()=>{if(confirm('Remove "'+(item.name||'item')+'" from catalog?')){catalog[catTab]=catalog[catTab].filter(x=>x.id!==item.id);catEditId=null;saveCatalog();renderCatalog();}});
+      entry.querySelector('.cat-del').addEventListener('click',()=>{if(confirm('Remove "'+(item.name||'item')+'" from catalog?')){catalog.weapons=catalog.weapons.filter(x=>x.id!==item.id);catEditId=null;saveCatalog();renderCatalog();}});
       entry.querySelector('.cat-sheet').addEventListener('click',()=>addToSheet(item));
     }else{
-      const tagsHtml=isW?renderTags(item.tags||''):'';
-      const meta=isW?`<span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);white-space:nowrap;">DMG ${item.dmg||1}${item.rollStat?' · '+item.rollStat+(item.rollBonus?'+'+item.rollBonus:''):''}</span>`:'';
+      const meta=`<span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);white-space:nowrap;">DMG ${item.dmg||1}${item.rollStat?' · '+item.rollStat+(item.rollBonus?'+'+item.rollBonus:''):''}</span>`;
       entry.innerHTML=`<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;border-left:5px solid ${ac};flex-wrap:wrap;">
         <span style="color:${ac};font-size:0.9rem;flex-shrink:0;">${icon}</span>
-        <span style="font-family:'Anton',sans-serif;font-style:italic;font-size:1rem;color:var(--text);flex:1;min-width:100px;">${item.name||'Unnamed'}</span>
+        <span style="font-family:'Anton',sans-serif;font-style:italic;font-size:1rem;color:var(--text);flex:1;min-width:100px;">${esc(item.name||'Unnamed')}</span>
         ${meta}
-        <div style="display:flex;flex-wrap:wrap;gap:3px;">${tagsHtml}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:3px;">${renderTags(item.tags||'')}</div>
         <div style="display:flex;gap:6px;flex-shrink:0;margin-left:auto;">
           <button class="cat-btn cat-edit" title="Edit">✎ EDIT</button>
           <button class="cat-btn add cat-sheet">+ SHEET</button>
-        </div>
-      </div>
-      ${(item.quirkText||item.quirk)?`<div style="padding:2px 28px 8px;font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.78rem;color:var(--text2);line-height:1.4;">${item.quirkName?`<span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;color:var(--purple2);display:block;">${item.quirkName}</span>`:''}${item.quirkText||item.quirk||''}</div>`:''}`;
+        </div></div>
+        ${item.quirkText?`<div style="padding:2px 28px 8px;font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.78rem;color:var(--text2);line-height:1.4;">${item.quirkName?`<span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;color:var(--purple2);display:block;">${esc(item.quirkName)}</span>`:''}${esc(item.quirkText)}</div>`:''}`;
       entry.querySelector('.cat-edit').addEventListener('click',()=>{catEditId=item.id;renderCatalog();entry.scrollIntoView({behavior:'smooth',block:'nearest'});});
       entry.querySelector('.cat-sheet').addEventListener('click',()=>addToSheet(item));
     }
@@ -330,26 +402,257 @@ function renderCatalog(){
   });
 }
 function addToSheet(item){
-  const isW=catTab==='weapons';
-  const copy=isW
-    ?Object.assign({},item,{id:uid(),slot:null})
-    :Object.assign({},item,{id:uid(),slot:null,hearthCost:item.hearthCost??1});
-  if(isW){weapons.push(copy);saveWeapons();renderWeapons();}
-  else{food.push(copy);saveFood();renderFood();}
-  flashSaved();
-  document.getElementById(isW?'weapons':'food-grid')?.scrollIntoView({behavior:'smooth'});
+  weapons.push(Object.assign({},item,{id:uid(),slot:null}));saveWeapons();renderWeapons();
+  document.getElementById('eq-weapons')?.scrollIntoView({behavior:'smooth'});
 }
 function addCustomCatalogItem(){
-  const isW=catTab==='weapons';
-  const item=isW
-    ?{id:uid(),type:'melee',name:'',dmg:1,tags:'',desc:'',quirkName:'',quirkText:'',rollStat:'',rollBonus:0}
-    :{id:uid(),name:'',flavor:'',quirk:'',quip:''};
-  catalog[catTab].push(item);catEditId=item.id;
-  saveCatalog();renderCatalog();
+  const item={id:uid(),type:'melee',name:'',dmg:1,tags:'',desc:'',quirkName:'',quirkText:'',rollStat:'',rollBonus:0};
+  catalog.weapons.push(item);catEditId=item.id;saveCatalog();renderCatalog();
   document.getElementById('catalog-list').lastElementChild?.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-/* ── KEYWORD GLOSSARY ───────────────────────────────────── */
+/* ── ACCESSORIES (charm-style, equip up to 4) ──────────── */
+let accessories=[];
+(function(){
+  const s=load('ctg-accessories');
+  if(s){try{accessories=JSON.parse(s);}catch(e){accessories=[];}}
+  if(!accessories.length){ // migrate old belt charms → accessories
+    const cs=load('ctg-charms');
+    if(cs){try{JSON.parse(cs).forEach((c,i)=>{const o=typeof c==='string'?{name:c,quirk:''}:c;accessories.push({id:uid(),name:o.name||'',effect:o.quirk||o.effect||'',eq:i<4});});}catch(e){}}
+  }
+})();
+function saveAccessories(){store('ctg-accessories',JSON.stringify(accessories));}
+function eqCount(){return accessories.filter(a=>a.eq).length;}
+function renderAccessories(){
+  const eq=document.getElementById('eq-accessories');const all=document.getElementById('all-accessories');
+  const equipped=accessories.filter(a=>a.eq).slice(0,4);
+  eq.innerHTML='';
+  for(let i=0;i<4;i++){
+    const a=equipped[i];const slot=document.createElement('div');slot.className='acc-slot '+(a?'filled':'empty');
+    if(a)slot.innerHTML=`<div class="acc-slot-name">${esc(a.name)||'Unnamed'}</div>${a.effect?`<div class="acc-slot-effect">${esc(a.effect)}</div>`:''}<button class="acc-unequip" data-un="${a.id}">✕ unequip</button>`;
+    else slot.innerHTML=`<div class="acc-slot-empty">— empty slot ${i+1} —</div>`;
+    eq.appendChild(slot);
+  }
+  eq.querySelectorAll('[data-un]').forEach(b=>b.addEventListener('click',()=>{const a=accessories.find(x=>x.id===b.dataset.un);if(a){a.eq=false;saveAccessories();renderAccessories();}}));
+  all.innerHTML='';const n=eqCount();
+  if(!accessories.length)all.innerHTML='<div class="eq-empty">No accessories yet — add one below.</div>';
+  accessories.forEach(a=>{
+    const card=document.createElement('div');card.className='acc-card'+(a.eq?' is-eq':'');
+    const full=!a.eq&&n>=4;
+    card.innerHTML=`<button class="card-del" data-del="${a.id}">✕</button>
+      <input class="ed acc-name" data-f="name" value="${esc(a.name)}" placeholder="Accessory name">
+      <textarea class="ed acc-effect" data-f="effect" rows="2" placeholder="What it does...">${esc(a.effect)}</textarea>
+      <button class="acc-eq-btn ${a.eq?'on':''}" data-eq="${a.id}"${full?' disabled':''}>${a.eq?'✓ EQUIPPED':(full?'SLOTS FULL (4)':'EQUIP')}</button>`;
+    card.querySelectorAll('[data-f]').forEach(inp=>inp.addEventListener('input',()=>{a[inp.dataset.f]=inp.value;saveAccessories();if(a.eq)renderEquippedOnly();}));
+    card.querySelector('[data-eq]').addEventListener('click',()=>{if(!a.eq&&eqCount()>=4)return;a.eq=!a.eq;saveAccessories();renderAccessories();});
+    card.querySelector('[data-del]').addEventListener('click',()=>{if(confirm('Delete "'+(a.name||'this accessory')+'"?')){accessories=accessories.filter(x=>x.id!==a.id);saveAccessories();renderAccessories();}});
+    all.appendChild(card);
+  });
+  document.getElementById('acc-count').textContent='· '+accessories.length+' total · '+n+'/4 equipped';
+}
+function renderEquippedOnly(){ // light refresh of the top slots while typing
+  const eq=document.getElementById('eq-accessories');const equipped=accessories.filter(a=>a.eq).slice(0,4);
+  [...eq.children].forEach((slot,i)=>{const a=equipped[i];if(a&&slot.classList.contains('filled')){const nm=slot.querySelector('.acc-slot-name');const ef=slot.querySelector('.acc-slot-effect');if(nm)nm.textContent=a.name||'Unnamed';if(ef)ef.textContent=a.effect||'';}});
+}
+function addAccessory(){accessories.push({id:uid(),name:'',effect:'',eq:false});saveAccessories();renderAccessories();const cards=document.querySelectorAll('#all-accessories .acc-card');if(cards.length)cards[cards.length-1].querySelector('.acc-name').focus();}
+
+/* ── EXTRA FLESH (armour) ──────────────────────────────── */
+const PRESET_EF_TYPES=[
+  {id:'sp',name:'Subdermal Plate',ef:2,desc:'Thin titanium mesh woven beneath skin. Rigid and completely invisible.'},
+  {id:'rf',name:'Reactive Foam',ef:1,desc:'Impact-expanding polymer layer. Excellent against blunt force.'},
+  {id:'cw',name:'Carbon Weave',ef:3,desc:'Dense carbon-fibre lattice. Heavy but highly effective.'},
+  {id:'bg',name:'Bio-Gel Layer',ef:1,desc:'Self-sealing organic gel pocket. Flexible and near-invisible.'},
+  {id:'nm',name:'Nano-Scale Mail',ef:2,desc:'Microscopic chain rings. Silk-soft to the touch, stops a blade cold.'},
+  {id:'bl',name:'Bone Lattice',ef:4,desc:'Reinforced skeletal structure grafted to bone. Major surgery required.'},
+  {id:'sd',name:'Shock Dampener',ef:2,desc:'Piezoelectric muscle fibres that absorb and dissipate kinetic energy.'},
+  {id:'cs',name:'Ceramic Shards',ef:3,desc:'Anti-ballistic ceramic embedded beneath skin. Cracks on heavy impact — one-use.'},
+];
+const EF_PART_IDS=['head','torso','l-arm','r-arm','l-leg','r-leg'];
+const PART_LABELS={head:'HEAD',torso:'TORSO','l-arm':'L·ARM','r-arm':'R·ARM','l-leg':'L·LEG','r-leg':'R·LEG'};
+let efParts={},customEfTypes=[],selectedPart=null;
+(function(){
+  const s=load('ctg-ef-parts');if(s){try{efParts=JSON.parse(s);}catch(e){efParts={};}}
+  EF_PART_IDS.forEach(id=>{if(!(id in efParts))efParts[id]=null;});
+  const ct=load('ctg-ef-custom-types');if(ct){try{customEfTypes=JSON.parse(ct);}catch(e){customEfTypes=[];}}
+})();
+function saveEFParts(){store('ctg-ef-parts',JSON.stringify(efParts));syncEFTotal();}
+function saveCustomTypes(){store('ctg-ef-custom-types',JSON.stringify(customEfTypes));}
+function syncEFTotal(){const t=EF_PART_IDS.reduce((s,id)=>s+(efParts[id]?parseInt(efParts[id].ef)||0:0),0);try{localStorage.setItem('ctg-ef',t);}catch(e){}}
+function closeZone(){selectedPart=null;updateSVGStates();renderEFDetail();}
+function allEFTypes(){return[...PRESET_EF_TYPES,...customEfTypes];}
+function selectPart(partId){selectedPart=partId;updateSVGStates();renderEFDetail();}
+function updateSVGStates(){
+  document.querySelectorAll('.ef-part-group').forEach(g=>{const id=g.dataset.part;g.classList.toggle('selected',id===selectedPart);g.classList.toggle('has-ef',!!efParts[id]);});
+  EF_PART_IDS.forEach(id=>{const b=document.getElementById('badge-'+id);if(b)b.textContent=efParts[id]?'+'+efParts[id].ef:'';});
+}
+function renderEFDetail(){const panel=document.getElementById('ef-detail-panel');if(!panel)return;if(!selectedPart){renderEFOverview(panel);return;}renderEFPartPanel(panel);}
+function renderEFOverview(panel){
+  const totalEF=EF_PART_IDS.reduce((s,id)=>s+(efParts[id]?parseInt(efParts[id].ef)||0:0),0);
+  const rows=EF_PART_IDS.map(id=>{const ef=efParts[id];const label=PART_LABELS[id];
+    if(ef)return `<div class="ef-ov-row ef-ov-equipped" onclick="selectPart('${id}')"><span class="ef-ov-zone">${label}</span><div class="ef-ov-info"><div class="ef-ov-name">${esc(ef.name||'Unknown')}<span class="ef-ov-val">+${ef.ef||0}</span></div>${ef.ability?`<div class="ef-ov-ability">${esc(ef.ability)}</div>`:''}</div></div>`;
+    return `<div class="ef-ov-row ef-ov-bare" onclick="selectPart('${id}')"><span class="ef-ov-zone">${label}</span><span class="ef-ov-unarmoured">unarmoured — click to equip</span></div>`;
+  }).join('');
+  panel.innerHTML=`<div class="ef-ov-header"><span class="ef-ov-title">EF LOADOUT</span><span class="ef-ov-total-ef">+${totalEF}</span></div><div class="ef-ov-list">${rows}</div>`;
+}
+function renderEFPartPanel(panel){
+  const label=PART_LABELS[selectedPart]||selectedPart.toUpperCase();const current=efParts[selectedPart];const types=allEFTypes();
+  const selId=current?current.typeId:(types[0]?.id||'');const selType=types.find(t=>t.id===selId)||types[0];
+  panel.innerHTML=`
+    <button class="ef-back-btn" onclick="closeZone()">← LOADOUT</button>
+    <div class="ef-detail-part-name">${label}</div>
+    ${current?`<div class="ef-applied-badge">EF+${current.ef} · ${esc(current.name)}</div>`:`<div class="ef-no-flesh">NO EXTRA FLESH</div>`}
+    <div class="ef-form">
+      <div class="ef-form-row"><div class="ef-form-label">TYPE</div>
+        <select class="ef-type-select" id="ef-type-sel">${types.map(t=>`<option value="${esc(t.id)}"${t.id===selId?' selected':''}>${esc(t.name)} · EF+${t.ef}</option>`).join('')}</select>
+      </div>
+      <div class="ef-type-desc" id="ef-type-desc">${selType?esc(selType.desc):''}</div>
+      <div class="ef-form-row" style="flex-direction:row;align-items:center;gap:10px;"><div class="ef-form-label" style="white-space:nowrap;">EF VALUE</div>
+        <input class="ef-ef-input" type="number" id="ef-ef-val" min="0" value="${current?current.ef:(selType?selType.ef:0)}"></div>
+      <div class="ef-form-row"><div class="ef-form-label">ABILITY / PASSIVE</div>
+        <textarea class="ef-ability-input" id="ef-ability-val" rows="2" placeholder="Special effect or passive...">${current?esc(current.ability||''):''}</textarea></div>
+      <div class="ef-form-actions">
+        ${current?`<button class="ef-btn ef-btn-remove" onclick="removeEF('${selectedPart}')">✕ REMOVE</button><button class="ef-btn ef-btn-apply" onclick="applyEF('${selectedPart}')">↻ CHANGE</button>`:`<button class="ef-btn ef-btn-apply" onclick="applyEF('${selectedPart}')">✓ APPLY</button>`}
+      </div>
+    </div>`;
+  const sel=document.getElementById('ef-type-sel');
+  sel.addEventListener('change',()=>{const t=allEFTypes().find(x=>x.id===sel.value);const desc=document.getElementById('ef-type-desc');if(desc&&t)desc.textContent=t.desc;const efInp=document.getElementById('ef-ef-val');if(efInp&&t)efInp.value=t.ef;});
+}
+function applyEF(partId){const sel=document.getElementById('ef-type-sel');const efInp=document.getElementById('ef-ef-val');const abilInp=document.getElementById('ef-ability-val');if(!sel||!efInp)return;const t=allEFTypes().find(x=>x.id===sel.value);efParts[partId]={typeId:sel.value,name:t?t.name:sel.value,ef:parseInt(efInp.value)||0,ability:abilInp?abilInp.value:''};saveEFParts();updateSVGStates();renderEFDetail();}
+function removeEF(partId){efParts[partId]=null;saveEFParts();updateSVGStates();renderEFDetail();}
+function renderCustomTypes(){
+  const list=document.getElementById('ef-custom-types-list');if(!list)return;list.innerHTML='';
+  if(!customEfTypes.length){list.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.5rem;color:var(--text-dim);padding:8px 0;letter-spacing:1px;">No custom types yet — add one below.</div>';return;}
+  customEfTypes.forEach((t,i)=>{const d=document.createElement('div');d.className='ef-custom-type-row';
+    d.innerHTML=`<input class="ef-ct-name" value="${esc(t.name)}" placeholder="Type name..."><div class="ef-ct-ef-wrap"><span class="ef-ct-ef-label">EF+</span><input class="ef-ct-ef" type="number" value="${t.ef}" min="0"></div><input class="ef-ct-desc" value="${esc(t.desc||'')}" placeholder="Description..."><button class="mini-del" onclick="deleteCustomType(${i})">✕</button>`;
+    d.querySelector('.ef-ct-name').addEventListener('input',e=>{t.name=e.target.value;saveCustomTypes();if(selectedPart)renderEFDetail();});
+    d.querySelector('.ef-ct-ef').addEventListener('input',e=>{t.ef=parseInt(e.target.value)||0;saveCustomTypes();});
+    d.querySelector('.ef-ct-desc').addEventListener('input',e=>{t.desc=e.target.value;saveCustomTypes();});
+    list.appendChild(d);});
+}
+function addCustomType(){customEfTypes.push({id:uid(),name:'Custom Type',ef:1,desc:''});saveCustomTypes();renderCustomTypes();}
+function deleteCustomType(i){customEfTypes.splice(i,1);saveCustomTypes();renderCustomTypes();if(selectedPart)renderEFDetail();}
+
+/* ── EF KIT ────────────────────────────────────────────── */
+const EK_CATS=['PART','KIT','MOD','TOOL','CUSTOM'];
+const EK_COL={PART:'var(--purple)',KIT:'var(--green3)',MOD:'#cf9500',TOOL:'var(--text-dim)',CUSTOM:'var(--red)'};
+let efKit=[];
+(function(){const s=load('ctg-ef-kit');if(s){try{efKit=JSON.parse(s);}catch(e){efKit=[];}}})();
+function saveEFKit(){store('ctg-ef-kit',JSON.stringify(efKit));}
+function renderEFKit(){
+  const el=document.getElementById('ef-kit-list');
+  if(!efKit.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.5rem;color:var(--text-dim);letter-spacing:1px;padding:8px 0;">No items yet — add parts, mods, or custom equipment.</div>';return;}
+  el.innerHTML='';
+  efKit.forEach((item,i)=>{
+    const col=EK_COL[item.cat]||'var(--purple)';const card=document.createElement('div');
+    card.style.cssText=`padding:10px 14px;background:var(--paper2,rgba(0,0,0,0.04));border:1.5px solid var(--border);border-left:4px solid ${col};clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);`;
+    const catPills=EK_CATS.map(c=>{const active=c===item.cat;const cc=EK_COL[c]||'var(--text-dim)';return `<button class="ek-cat" data-cat="${c}" style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;padding:2px 7px;cursor:pointer;border:1.5px solid ${active?cc:'var(--border2)'};background:${active?cc+'25':'transparent'};color:${active?cc:'var(--text-dim)'};transition:all .1s;">${c}</button>`;}).join('');
+    card.innerHTML=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;flex-wrap:wrap;"><div style="display:flex;gap:3px;flex-wrap:wrap;">${catPills}</div><button class="ek-del" style="margin-left:auto;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.8rem;padding:0 2px;flex-shrink:0;">✕</button></div>
+      <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-bottom:6px;">
+        <input class="ek-name ed" value="${esc(item.name)}" placeholder="Item name..." style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;background:transparent;border:none;border-bottom:1.5px solid var(--border2);color:var(--text);outline:none;padding:2px 0;width:100%;">
+        <div style="display:flex;align-items:center;gap:3px;flex-shrink:0;"><button class="ek-qd" style="font-family:'Anton',sans-serif;font-size:0.85rem;width:22px;height:22px;background:transparent;border:1px solid var(--border2);color:var(--text);cursor:pointer;padding:0;line-height:1;">−</button><span class="ek-qty" style="font-family:'Anton',sans-serif;font-size:1.1rem;color:var(--text);min-width:20px;text-align:center;">${item.qty||1}</span><button class="ek-qu" style="font-family:'Anton',sans-serif;font-size:0.85rem;width:22px;height:22px;background:transparent;border:1px solid var(--border2);color:var(--text);cursor:pointer;padding:0;line-height:1;">+</button></div>
+      </div>
+      <textarea class="ek-notes" rows="2" placeholder="Condition, notes, what it does..." style="width:100%;background:rgba(0,0,0,0.04);border:1.5px dashed var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:0.85rem;padding:5px 8px;resize:vertical;outline:none;line-height:1.4;box-sizing:border-box;">${esc(item.notes||'')}</textarea>`;
+    card.querySelectorAll('.ek-cat').forEach(btn=>btn.addEventListener('click',()=>{item.cat=btn.dataset.cat;saveEFKit();renderEFKit();}));
+    card.querySelector('.ek-name').addEventListener('input',e=>{item.name=e.target.value;saveEFKit();});
+    card.querySelector('.ek-notes').addEventListener('input',e=>{item.notes=e.target.value;saveEFKit();});
+    const qtyEl=card.querySelector('.ek-qty');
+    card.querySelector('.ek-qd').addEventListener('click',()=>{item.qty=Math.max(1,(item.qty||1)-1);qtyEl.textContent=item.qty;saveEFKit();});
+    card.querySelector('.ek-qu').addEventListener('click',()=>{item.qty=(item.qty||1)+1;qtyEl.textContent=item.qty;saveEFKit();});
+    card.querySelector('.ek-del').addEventListener('click',()=>{efKit.splice(i,1);saveEFKit();renderEFKit();});
+    el.appendChild(card);
+  });
+}
+function addEFKitItem(){efKit.push({id:uid(),name:'',cat:'KIT',notes:'',qty:1});saveEFKit();renderEFKit();const inputs=document.querySelectorAll('.ek-name');if(inputs.length)inputs[inputs.length-1].focus();}
+
+/* ── CARRY ─────────────────────────────────────────────── */
+function saveInv(){const items=[...document.querySelectorAll('.inv-item')].map(li=>({name:li.querySelector('.inv-input')?.value||'',notes:li.querySelector('.inv-notes')?.value||''}));store('ctg-inventory',JSON.stringify(items));}
+function addItem(val='',notes=''){
+  const li=document.createElement('li');li.className='inv-item';li.style.display='block';li.style.borderBottom='2px solid var(--border)';li.style.padding='6px 4px';
+  li.innerHTML=`<div style="display:grid;grid-template-columns:20px 1fr auto auto;gap:8px;align-items:center;">
+      <span class="inv-bullet">◆</span>
+      <input class="inv-input" value="${esc(val)}" placeholder="Item name...">
+      <button class="inv-expand" title="Add notes" style="background:none;border:1px solid var(--border);color:var(--purple2,#8b3df5);font-family:'Share Tech Mono',monospace;font-size:0.6rem;padding:1px 6px;cursor:pointer;" onclick="const r=this.closest('li').querySelector('.inv-notes-row');r.style.display=r.style.display==='none'?'block':'none';this.textContent=this.textContent==='▼ NOTES'?'▲ NOTES':'▼ NOTES';">▼ NOTES</button>
+      <button class="inv-del" onclick="this.closest('li').remove();saveInv();" style="opacity:0.5;">✕</button>
+    </div>
+    <div class="inv-notes-row" style="display:none;margin-top:5px;padding-left:28px;">
+      <textarea class="inv-notes" rows="2" placeholder="What does it do? Weight? Value? Notes..." style="width:100%;background:rgba(0,0,0,0.04);border:1.5px dashed var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:0.85rem;padding:5px 8px;resize:vertical;outline:none;line-height:1.4;">${esc(notes)}</textarea>
+    </div>`;
+  document.getElementById('inv-list').appendChild(li);
+  li.querySelector('.inv-input').addEventListener('input',saveInv);
+  li.querySelector('.inv-notes').addEventListener('input',saveInv);
+}
+(function(){const s=load('ctg-inventory');if(s){try{JSON.parse(s).forEach(item=>{if(typeof item==='string')addItem(item,'');else addItem(item.name||'',item.notes||'');});}catch(e){}}})();
+
+/* ── MULA ──────────────────────────────────────────────── */
+(function(){const el=document.getElementById('mula');const s=load('ctg-mula');if(s!==null)el.value=s;else store('ctg-mula',el.value);el.addEventListener('input',()=>store('ctg-mula',el.value));})();
+
+/* ── ITEM CATALOG ──────────────────────────────────────── */
+const DEF_ITEMS=[
+  {id:'ic1',type:'consumable',name:'Large Stim',desc:'Heals 3 HP when used. Comes in a pressurised injector.'},
+  {id:'ic2',type:'consumable',name:'Small Stim',desc:'Heals 1 HP. A quick fix for minor scrapes.'},
+  {id:'ic3',type:'consumable',name:'Pressure Syringe',desc:'Removes 1 active condition (not Bleeding). Sharp and reliable.'},
+  {id:'ic4',type:'consumable',name:'Smelling Salts',desc:'Instantly removes the Stunned or Drunk condition.'},
+  {id:'ic5',type:'consumable',name:'Alcohol Flask',desc:'Removes one negative condition but may inflict Drunk. Roll D6: 4+ you get Drunk too.'},
+  {id:'ic6',type:'consumable',name:'Bandage Roll',desc:'Stabilises a Bleeding wound. Removes the Bleeding condition.'},
+  {id:'ic7',type:'consumable',name:'Iron Rations',desc:'Sustenance for 1 day. Tastes like cardboard soaked in salt.'},
+  {id:'ig1',type:'gear',name:'Lockpicks',desc:'Open locked containers or doors. Requires a Logic check.'},
+  {id:'ig2',type:'gear',name:'Torchlight',desc:'Handheld illumination. Removes Blinded caused by darkness.'},
+  {id:'ig3',type:'gear',name:'Rope & Hook',desc:'15m of rope with a grappling hook. Useful for climbing and restraining.'},
+  {id:'ig4',type:'gear',name:'Binoculars',desc:'Scout distant areas. Grants Advance on Sense checks for far targets.'},
+  {id:'ig5',type:'gear',name:'Crowbar',desc:'Force open doors or use as improvised weapon (Dmg 1, Melee). Heavy.'},
+  {id:'ig6',type:'gear',name:'Toolkit',desc:'Repair mechanical devices and disable traps. Requires a Logic check.'},
+  {id:'ig7',type:'gear',name:'Smoke Canister',desc:'Deploy a smoke cloud. All Ranged attacks through smoke have Disadvantage.'},
+  {id:'ig8',type:'gear',name:'Canteen',desc:'Holds 1L of liquid. Keep hydrated — the wasteland is dry.'},
+  {id:'ia1',type:'ammo',name:'Pistol Ammo ×6',desc:'Standard pistol rounds. Fits most semi-automatic sidearms.'},
+  {id:'ia2',type:'ammo',name:'Shotgun Shells ×2',desc:'Wide-spread shells. High damage at close range.'},
+  {id:'ia3',type:'ammo',name:'Rifle Rounds ×4',desc:'Long-range precision rounds for bolt-action and semi-auto rifles.'},
+  {id:'ia4',type:'ammo',name:'Auto Rounds ×10',desc:'High-volume rounds for automatic weapons. Burns through fast.'},
+  {id:'ia5',type:'ammo',name:'Junk Rounds ×6',desc:'Improvised ammunition. Neutral on hit (no bonus, no penalty).'},
+  {id:'im1',type:'misc',name:'Notebook & Pen',desc:'Record clues, maps, and plans. Always useful.'},
+  {id:'im2',type:'misc',name:'Fake Credentials',desc:'Forged ID and papers. Useful for bluffing past checkpoints.'},
+  {id:'im3',type:'misc',name:'Whetstone',desc:'Sharpen bladed weapons. Grants +1 Dmg on your next melee attack after use.'},
+  {id:'im4',type:'misc',name:'Tarp & Cord',desc:'Improvised shelter or concealment. Set up in 10 minutes.'},
+];
+let itemCatalog=[];
+(function(){const s=load('ctg-item-catalog');if(s){try{itemCatalog=JSON.parse(s);}catch(e){itemCatalog=[];}}if(!itemCatalog.length)itemCatalog=DEF_ITEMS.map(x=>({...x}));})();
+function saveItemCatalog(){store('ctg-item-catalog',JSON.stringify(itemCatalog));}
+let itemTab='all';
+function showItemTab(tab){itemTab=tab;document.querySelectorAll('.cat-tab[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));renderItemCatalog();}
+let editingItem=null;
+function renderItemCatalog(){
+  const el=document.getElementById('item-catalog-list');el.innerHTML='';
+  const typeColor={consumable:'var(--green3)',gear:'var(--purple2)',ammo:'var(--red)',misc:'var(--gold)'};
+  const filtered=itemTab==='all'?itemCatalog:itemCatalog.filter(x=>x.type===itemTab);
+  if(!filtered.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.58rem;color:var(--text-dim);padding:10px 0;">No items in this category.</div>';return;}
+  filtered.forEach(item=>{
+    const isEditing=editingItem===item.id;const div=document.createElement('div');div.className='cat-entry';
+    if(isEditing){
+      div.innerHTML=`<div style="display:flex;flex-direction:column;gap:6px;padding:10px;background:var(--paper2,rgba(0,0,0,0.06));border:1.5px solid var(--purple);margin-bottom:6px;">
+        <div style="display:grid;grid-template-columns:1fr 120px;gap:8px;">
+          <input id="ei-name-${item.id}" value="${esc(item.name)}" placeholder="Item name" style="background:transparent;border:2px solid var(--ink);color:var(--text);font-family:'Bebas Neue',sans-serif;font-size:0.9rem;letter-spacing:1px;padding:4px 8px;outline:none;">
+          <select id="ei-type-${item.id}" style="background:var(--paper);border:2px solid var(--ink);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:0.58rem;padding:4px;outline:none;">
+            <option value="consumable"${item.type==='consumable'?' selected':''}>Consumable</option><option value="gear"${item.type==='gear'?' selected':''}>Gear</option><option value="ammo"${item.type==='ammo'?' selected':''}>Ammo</option><option value="misc"${item.type==='misc'?' selected':''}>Misc</option>
+          </select>
+        </div>
+        <textarea id="ei-desc-${item.id}" rows="2" placeholder="Description / effect..." style="background:transparent;border:1.5px dashed var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:0.85rem;padding:5px 8px;resize:vertical;outline:none;line-height:1.4;">${esc(item.desc||'')}</textarea>
+        <div style="display:flex;gap:8px;"><button class="cat-btn add" onclick="saveItemEdit('${item.id}')">✓ SAVE</button><button class="cat-btn" onclick="editingItem=null;renderItemCatalog();">CANCEL</button><button class="cat-btn" style="margin-left:auto;color:var(--red);border-color:var(--red);" onclick="deleteItemFromCatalog('${item.id}')">✕ DELETE</button></div>
+      </div>`;
+    }else{
+      const tc=typeColor[item.type]||'var(--text-dim)';
+      div.innerHTML=`<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 10px;border:1.5px solid var(--border);margin-bottom:5px;background:var(--paper2,rgba(0,0,0,0.03));">
+        <div style="flex:1;min-width:0;"><div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;"><span style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:1px;color:var(--text);">${esc(item.name)}</span><span style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;padding:1px 6px;border:1px solid ${tc};color:${tc};letter-spacing:1px;text-transform:uppercase;">${item.type}</span></div>${item.desc?`<div style="font-family:'Rajdhani',sans-serif;font-size:0.8rem;color:var(--text2);line-height:1.4;">${esc(item.desc)}</div>`:''}</div>
+        <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0;"><button class="cat-btn add" onclick="addItemToCarry('${item.id}')">+ ADD</button><button class="cat-btn" onclick="editingItem='${item.id}';renderItemCatalog();">EDIT</button></div>
+      </div>`;
+    }
+    el.appendChild(div);
+  });
+}
+function addItemToCarry(id){const item=itemCatalog.find(x=>x.id===id);if(!item)return;addItem(item.name,item.desc||'');saveInv();const btn=document.querySelector(`[onclick="addItemToCarry('${id}')"]`);if(btn){btn.textContent='✓ ADDED';btn.style.background='var(--green3)';setTimeout(()=>{btn.textContent='+ ADD';btn.style.background='';},1400);}}
+function saveItemEdit(id){const item=itemCatalog.find(x=>x.id===id);if(!item)return;item.name=document.getElementById('ei-name-'+id).value.trim()||item.name;item.type=document.getElementById('ei-type-'+id).value;item.desc=document.getElementById('ei-desc-'+id).value.trim();editingItem=null;saveItemCatalog();renderItemCatalog();}
+function deleteItemFromCatalog(id){if(!confirm('Remove this item from the catalog?'))return;itemCatalog=itemCatalog.filter(x=>x.id!==id);editingItem=null;saveItemCatalog();renderItemCatalog();}
+function addCustomItemToCatalog(){const item={id:uid(),type:'misc',name:'New Item',desc:''};itemCatalog.push(item);saveItemCatalog();editingItem=item.id;renderItemCatalog();document.getElementById('item-catalog-list').lastElementChild?.scrollIntoView({behavior:'smooth',block:'nearest'});}
+
+/* ── KEYWORD GLOSSARY ──────────────────────────────────── */
 const KEYWORDS={
   '♣ Clubs':'In combat, the suit for Force & Finesse actions — physical attacks and damage.',
   '♦ Diamonds':'In combat, the suit for Logic, Sense & Velvet actions.',
@@ -371,58 +674,40 @@ const KEYWORDS={
   'Disadvantage':'Reroll the D20 and take the lower value of the two.',
   'Mods':'In combat, add the number underneath a stat to any roll that uses that stat.',
   'Crit':'Roll a natural 20 on the d20 with no mods. Either target a limb to disable it and weaken your foe, or go for the head — roll a d6 for damage (1-6). If that roll is lower than your normal damage, you deal your standard damage instead.',
-  'Reaction':'A free action in response to an opponent\u2019s action. Used once per round.',
+  'Reaction':'A free action in response to an opponent’s action. Used once per round.',
   'Counter':'Respond to an attack with your own attack. Costs a Reaction.',
-  'Shock':'Target must withdraw their current card and redraw. If unable, they skip their turn.',
-  'Burn':'Target takes fire damage at start of their next turn.',
+  'EF':'Extra Flesh — your armour. Reduces incoming damage.',
   'Out Of Combat':'No enemies are actively engaged. Counts as a surprise attack.',
   'Tick':'Lock-picking measure. Higher Tick range = faster picks.',
   'Guess':'Logic-based problem solving attempts. Higher = more tries.',
 };
 function buildGlossary(){
-  const list=document.getElementById('glossary-list');list.innerHTML='';
-  // Popups are appended to body so panel clip-path never clips them
-  const allPopups=[];
+  const list=document.getElementById('glossary-list');list.innerHTML='';const allPopups=[];
   function hideAll(){allPopups.forEach(p=>{p.style.display='none';});}
   document.addEventListener('click',hideAll);
   Object.entries(KEYWORDS).forEach(([kw,def])=>{
-    const chip=document.createElement('div');
-    chip.style.cssText='cursor:pointer;display:inline-block;';
+    const chip=document.createElement('div');chip.style.cssText='cursor:pointer;display:inline-block;';
     chip.innerHTML=`<span class="tag dist-tag" style="cursor:pointer;user-select:none;">${kw}</span>`;
     const popup=document.createElement('div');
     popup.style.cssText='display:none;position:fixed;z-index:9999;background:var(--paper,#fff);border:2.5px solid var(--ink,#15131a);padding:10px 14px;width:260px;font-family:Rajdhani,sans-serif;font-weight:500;font-size:0.88rem;line-height:1.5;color:var(--text,#15131a);box-shadow:4px 4px 0 var(--purple,#6d28d9);pointer-events:none;';
     popup.innerHTML=`<strong style="font-family:'Bebas Neue',sans-serif;letter-spacing:1px;color:var(--purple,#6d28d9);display:block;margin-bottom:4px;">${kw}</strong>${def}`;
-    document.body.appendChild(popup);
-    allPopups.push(popup);
-    function showPopup(){
-      hideAll();
-      const r=chip.getBoundingClientRect();
-      let left=r.left;
-      if(left+270>window.innerWidth)left=window.innerWidth-274;
-      if(left<4)left=4;
-      popup.style.left=left+'px';
-      // Show above if chip is in lower half of screen, below if upper half
-      if(r.top>window.innerHeight/2){
-        popup.style.bottom=(window.innerHeight-r.top+6)+'px';
-        popup.style.top='';
-      }else{
-        popup.style.top=(r.bottom+6)+'px';
-        popup.style.bottom='';
-      }
-      popup.style.display='block';
-    }
-    chip.addEventListener('mouseenter',showPopup);
-    chip.addEventListener('mouseleave',hideAll);
+    document.body.appendChild(popup);allPopups.push(popup);
+    function showPopup(){hideAll();const r=chip.getBoundingClientRect();let left=r.left;if(left+270>window.innerWidth)left=window.innerWidth-274;if(left<4)left=4;popup.style.left=left+'px';if(r.top>window.innerHeight/2){popup.style.bottom=(window.innerHeight-r.top+6)+'px';popup.style.top='';}else{popup.style.top=(r.bottom+6)+'px';popup.style.bottom='';}popup.style.display='block';}
+    chip.addEventListener('mouseenter',showPopup);chip.addEventListener('mouseleave',hideAll);
     chip.querySelector('.tag').addEventListener('click',e=>{e.stopPropagation();popup.style.display==='none'?showPopup():hideAll();});
     list.appendChild(chip);
   });
 }
-buildGlossary();
 
-/* ── nav + transitions ───────────────────────────────────── */
+/* ── NAV + TRANSITIONS ─────────────────────────────────── */
 (function(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
-renderWeapons();renderFood();renderCatalog();
+
+/* ── INIT ──────────────────────────────────────────────── */
+document.querySelectorAll('.ef-part-group').forEach(g=>{g.addEventListener('click',e=>{e.stopPropagation();selectPart(g.dataset.part);});});
+document.querySelector('.ef-silhouette').addEventListener('click',()=>{selectedPart=null;updateSVGStates();renderEFDetail();});
+renderWeapons();renderCatalog();renderAccessories();updateSVGStates();syncEFTotal();renderCustomTypes();renderEFKit();renderItemCatalog();renderEFDetail();buildGlossary();
+(function(){const t=load('ctg-ag-tab');if(t==='accessories'||t==='armour')showAG(t);})();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="ctg-motion.js"></script>

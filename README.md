@@ -19,12 +19,11 @@ Browser-based, no build step, no server required. Cloud sync via Supabase.
 ctg-character-sheet/
 ├── index.html          Hub — login, character overview, session management
 ├── p1.html             Page I   — Identity, Stats, HP, Hearth, Carry
-├── p2.html             Page II  — Gear, Extra Flesh (armour), EF Kit, Carry, Mula
-├── p3.html             Page III — Core Faculties & Tunings
-├── p4.html             Page IV  — Arsenal (weapons), Oddities, Item Catalog
-├── p5.html             Page V   — Skill Tree
-├── p6.html             Page VI  — Combat: vitals, attack calculator, skills, buffs
-├── p7.html             Page VII — Specials (4 face-card slots) + Keyword Ability Workshop
+├── p3.html             Page II  — Core Faculties & Tunings
+├── p4.html             Page III — Arsenal & Gear: Weapons / Accessories / Armour tabs, Carry, Mula, Catalog, Glossary
+├── p5.html             Page IV  — Skill Tree
+├── p6.html             Page V   — Combat: vitals, attack calculator, skills, buffs
+├── p7.html             Page VI  — Specials (4 face-card slots) + Keyword Ability Workshop
 ├── ctg-keywords.js     Keyword data, combination rules & ability-text generator (Page VII)
 ├── supabase/functions/flavor/  Optional AI-flavour edge function (free LLM proxy) — see its README
 ├── ctg.css             Main stylesheet
@@ -109,11 +108,10 @@ Oddities no longer have charges. Each Oddity has a configurable **Hearth Cost** 
 | `ctg-ef` | Total EF (armour) value |
 | `ctg-ef-parts` | JSON — per-body-part EF equipment |
 | `ctg-ef-kit` | JSON — EF Kit items |
-| `ctg-charms` | JSON — belt charm list |
+| `ctg-accessories` | JSON — accessories list (name/effect/equipped, max 4 equipped; migrated from old charms) |
 | `ctg-inventory` | JSON — carry list |
 | `ctg-mula` | Currency amount |
 | `ctg-weapons` | JSON — weapon list with slot/stat/dice/quirk |
-| `ctg-food` | JSON — oddity list with hearthCost and slot |
 | `ctg-catalog` | JSON — weapon & oddity catalog |
 | `ctg-item-catalog` | JSON — gear/consumable item catalog |
 | `ctg-faculties` | JSON — active faculties + tuning selections |

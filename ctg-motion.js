@@ -58,7 +58,7 @@ const CTGMotion = {
 
 // ─── Page nav transitions ─────────────────────────────────────
 // Page order determines left/right direction for the slide.
-const _NAV_PAGES = ['index.html','p1.html','p2.html','p3.html','p4.html','p5.html','p6.html'];
+const _NAV_PAGES = ['index.html','p1.html','p3.html','p4.html','p5.html','p6.html','p7.html'];
 
 function _navWrap() {
   return document.getElementById('page-wrap') || document.getElementById('hub');
