@@ -50,11 +50,12 @@ details>summary::marker{display:none;}
     <div class="head-stamp">PAGE V</div>
   </div>
 
-  <!-- CONDITIONS — compact strip at top -->
+  <!-- CONDITIONS — checker with effects + per-condition round countdown -->
   <div class="block" style="margin-bottom:10px;">
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 14px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
-      <span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--text-dim);white-space:nowrap;">CONDITIONS</span>
-      <div id="c-conditions" style="display:flex;flex-wrap:wrap;gap:5px;flex:1;"></div>
+    <div class="sec-label"><span class="mk">☣</span>CONDITIONS <span class="note">— tap to toggle · shows what it does &amp; rounds left</span></div>
+    <div class="panel" style="padding:12px 14px;">
+      <div id="c-cond-toggles" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
+      <div id="c-cond-active" style="margin-top:11px;"></div>
     </div>
   </div>
 
@@ -130,13 +131,27 @@ details>summary::marker{display:none;}
         </div>
       </div>
 
-      <!-- Damage calculator — collapsed by default -->
-      <details id="dmg-calc-details" style="margin-top:10px;">
+      <!-- EF Passives -->
+      <div id="ef-passives-wrap" style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px;">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--text-dim);margin-bottom:7px;">EF PASSIVES &amp; ABILITIES</div>
+        <div id="ef-passives-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: ATTACK CALCULATOR -->
+  <div class="block">
+    <div class="sec-label"><span class="mk">⚔</span>ATTACK CALCULATOR</div>
+    <div class="panel">
+      <div class="two-col" id="c-loadout"></div>
+      <div id="c-oddity" style="margin-top:10px;"></div>
+      <!-- Damage calculator -->
+      <details id="dmg-calc-details" style="margin-top:12px;border-top:1px solid var(--border);padding-top:8px;">
         <summary style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:2px;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;gap:6px;padding:4px 0;user-select:none;">
-          <span id="dmg-arrow">▸</span> DAMAGE CALC
+          <span id="dmg-arrow">▸</span> DAMAGE CALC <span style="color:var(--text-dim);opacity:0.7;">— subtract EF from a hit</span>
         </summary>
         <div style="margin-top:8px;background:var(--paper2,rgba(0,0,0,0.06));border:1.5px solid var(--border);padding:10px 14px;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
-          <div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:8px;">EF is subtracted here. The −1 / −2 HP buttons above are raw HP — no EF applied.</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:8px;">EF is subtracted here. The −1 / −2 HP buttons in Vitals are raw HP — no EF applied.</div>
           <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
             <div style="display:flex;flex-direction:column;gap:2px;">
               <label style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;color:var(--text-dim);">INCOMING DMG</label>
@@ -156,20 +171,14 @@ details>summary::marker{display:none;}
           </div>
         </div>
       </details>
-      <!-- EF Passives -->
-      <div id="ef-passives-wrap" style="margin-top:12px;border-top:1px solid var(--border);padding-top:10px;">
-        <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--text-dim);margin-bottom:7px;">EF PASSIVES &amp; ABILITIES</div>
-        <div id="ef-passives-list"></div>
-      </div>
     </div>
   </div>
 
-  <!-- ROW 2: ATTACK CALCULATOR -->
+  <!-- ROW 3a: SPECIALS (face-card abilities from Page VI) -->
   <div class="block">
-    <div class="sec-label"><span class="mk">⚔</span>ATTACK CALCULATOR</div>
+    <div class="sec-label"><span class="mk">✦</span>SPECIALS <span class="note">— your face-card abilities · set on Page VI</span></div>
     <div class="panel">
-      <div class="two-col" id="c-loadout"></div>
-      <div id="c-oddity" style="margin-top:10px;"></div>
+      <div id="c-specials" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;"></div>
     </div>
   </div>
 
@@ -189,14 +198,6 @@ details>summary::marker{display:none;}
           <div id="c-faculties"></div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- ROW 4a: SPECIALS (face-card abilities from Page VI) -->
-  <div class="block">
-    <div class="sec-label"><span class="mk">✦</span>SPECIALS <span class="note">— your face-card abilities · set on Page VI</span></div>
-    <div class="panel">
-      <div id="c-specials" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;"></div>
     </div>
   </div>
 
@@ -380,7 +381,7 @@ function store(k,v){try{localStorage.setItem(k,v);localStorage.setItem('ctg-last
 let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
 
 // ── COMBAT STATE ──
-const cstate={harth:6,harthMax:6,temp:0,ef:0,round:1,conditions:new Set(),hearth:6,hearthMax:6};
+const cstate={harth:6,harthMax:6,temp:0,ef:0,round:1,conditions:new Set(),condRounds:{},hearth:6,hearthMax:6};
 
 // ── PULL DATA FROM OTHER PAGES ──
 function pullData(){
@@ -389,7 +390,7 @@ function pullData(){
   cstate.temp=parseInt(load('ctg-harth-temp'))||0;
   cstate.ef=parseInt(load('ctg-ef'))||0;
   cstate.hearthMax=parseInt(load('ctg-hearth-max'))||6;
-  cstate.hearth=parseInt(load('ctg-hearth-cur'))??cstate.hearthMax;
+  {const hc=parseInt(load('ctg-hearth-cur'));cstate.hearth=isNaN(hc)?cstate.hearthMax:hc;}
   refreshVitals();
   buildStats();buildLoadout();buildSkills();buildFaculties();buildEFPassives();buildCustomAbilities();buildSpecials();buildTempBuffs();buildBuffPresets();
 }
@@ -569,7 +570,20 @@ function combatDmg(n){
 }
 function combatHeal(n){cstate.harth=Math.min(cstate.harthMax,cstate.harth+n);refreshVitals();saveCS();}
 function adjTemp(d){cstate.temp=Math.max(0,cstate.temp+d);refreshVitals();saveCS();}
-function adjRound(d){cstate.round=Math.max(1,cstate.round+d);document.getElementById('c-round').textContent=cstate.round;}
+function adjRound(d){
+  cstate.round=Math.max(1,cstate.round+d);
+  document.getElementById('c-round').textContent=cstate.round;
+  if(d>0){
+    // Advancing a round ticks down every active condition; drop those that hit 0.
+    let changed=false;
+    [...cstate.conditions].forEach(c=>{
+      const left=(cstate.condRounds[c]??COND_ROUNDS)-1;
+      if(left<=0){cstate.conditions.delete(c);delete cstate.condRounds[c];changed=true;}
+      else{cstate.condRounds[c]=left;changed=true;}
+    });
+    if(changed){renderConditions();updateConditionFX();}
+  }
+}
 function resetRound(){cstate.round=1;document.getElementById('c-round').textContent=1;}
 function calcDmg(){
   const inc=parseInt(document.getElementById('dmg-in').value)||0;
@@ -822,12 +836,19 @@ function buildCustomAbilities(){
   let arr=[];
   try{const s=load('ctg-custom-abilities');if(s)arr=JSON.parse(s);}catch(e){}
   if(!arr.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.56rem;color:var(--text-dim);grid-column:1/-1;">No custom abilities — add them on Page I</div>';return;}
+  const escA=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   arr.forEach(ab=>{
-    const card=document.createElement('div');
-    card.style.cssText='padding:8px 12px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);border-left:4px solid var(--gold,#cf9500);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);';
-    card.innerHTML=`<div style="font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:1px;color:var(--text);margin-bottom:${ab.desc?'3px':'0'};">${ab.name||'—'}</div>
-      ${ab.desc?`<div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.35;">${ab.desc}</div>`:''}`;
-    el.appendChild(card);
+    const det=document.createElement('details');
+    det.style.cssText='background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);border-left:4px solid var(--gold,#cf9500);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);';
+    const hasDesc=!!(ab.desc&&ab.desc.trim());
+    det.innerHTML=`<summary style="font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:1px;color:var(--text);padding:8px 12px;cursor:pointer;list-style:none;display:flex;align-items:center;gap:7px;user-select:none;">
+        <span class="ca-caret" style="font-size:0.6rem;color:var(--text-dim);transition:transform .15s;">▸</span>
+        <span style="flex:1;">${escA(ab.name)||'—'}</span>
+        ${hasDesc?'':'<span style="font-family:\'Share Tech Mono\',monospace;font-size:0.46rem;color:var(--text-dim);letter-spacing:1px;">NO DESC</span>'}
+      </summary>
+      ${hasDesc?`<div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.35;padding:0 12px 10px 26px;">${escA(ab.desc)}</div>`:''}`;
+    det.addEventListener('toggle',()=>{const car=det.querySelector('.ca-caret');if(car)car.style.transform=det.open?'rotate(90deg)':'none';});
+    el.appendChild(det);
   });
 }
 
@@ -893,6 +914,24 @@ const COND_FX={
   'Drunk':      {color:'#d97706', anim:'slow'},
   'Bleeding':   {color:'#dc2626', anim:'heartbeat'},
 };
+// What each condition does to you on your turn (GM-applied hand-restriction set).
+const COND_INFO={
+  'Poisoned':   'No Hearts (♥) may be played on your turn.',
+  'Burning':    'You may only play Odd cards.',
+  'Freezing':   'You may only play Even cards.',
+  'Shocked':    'You may only play the left- or right-most card in your hand.',
+  'Blinded':    'You must play your lowest card.',
+  'Stunned':    'Discard your whole hand and redraw before acting.',
+  'Prone':      'You may only play from the bottom of the discard pile.',
+  'Restrained': 'You must discard your highest card each turn.',
+  'Drunk':      'You must play your lowest card.',
+  'Bleeding':   'Discard a card at the start of each turn.',
+};
+const COND_ICON={
+  'Poisoned':'☠','Burning':'🔥','Freezing':'❄','Shocked':'⚡','Blinded':'⊘',
+  'Stunned':'✷','Prone':'▽','Restrained':'⛓','Drunk':'🍺','Bleeding':'🩸',
+};
+const COND_ROUNDS=4; // wears off after 4 rounds (endurance check to resist)
 function updateConditionFX(){
   const box=document.querySelector('.vital-box.harth');
   if(!box)return;
@@ -912,25 +951,75 @@ function updateConditionFX(){
   else if(anims.includes('fast'))box.classList.add('cond-fast');
   else if(anims.includes('slow'))box.classList.add('cond-slow');
 }
-function buildConditions(){
-  const el=document.getElementById('c-conditions');
-  CONDITIONS.forEach(c=>{
-    const btn=document.createElement('button');
-    btn.textContent=c;btn.dataset.cond=c;
-    const col=COND_FX[c]?.color||'#a8102c';
-    btn.style.cssText='font-family:\'Bebas Neue\',sans-serif;font-size:0.75rem;letter-spacing:1px;padding:3px 10px;cursor:pointer;border:1.5px solid var(--border2);background:transparent;color:var(--text2);transform:skewX(-8deg);transition:all .15s;';
-    btn.addEventListener('click',()=>{
-      if(cstate.conditions.has(c)){
-        cstate.conditions.delete(c);
-        btn.style.background='transparent';btn.style.color='var(--text2)';btn.style.borderColor='var(--border2)';btn.style.boxShadow='';
-      } else {
-        cstate.conditions.add(c);
-        btn.style.background=col;btn.style.color='#fff';btn.style.borderColor=col;btn.style.boxShadow=`0 0 8px ${col}90`;
-      }
-      updateConditionFX();
+function toggleCondition(c){
+  if(cstate.conditions.has(c)){
+    cstate.conditions.delete(c);
+    delete cstate.condRounds[c];
+    if(window.CTGSound)CTGSound.play('stat-down');
+  } else {
+    cstate.conditions.add(c);
+    cstate.condRounds[c]=COND_ROUNDS;
+    if(window.CTGSound)CTGSound.play('stat-up');
+  }
+  renderConditions();
+  updateConditionFX();
+}
+function setCondRounds(c,v){
+  if(!cstate.conditions.has(c))return;
+  v=Math.max(1,Math.min(9,v));
+  cstate.condRounds[c]=v;
+  renderConditions();
+}
+function renderConditions(){
+  // Row of toggle chips
+  const tog=document.getElementById('c-cond-toggles');
+  if(tog){
+    tog.innerHTML='';
+    CONDITIONS.forEach(c=>{
+      const on=cstate.conditions.has(c);
+      const col=COND_FX[c]?.color||'#a8102c';
+      const btn=document.createElement('button');
+      btn.textContent=c;btn.title=COND_INFO[c]||'';
+      btn.style.cssText='font-family:\'Bebas Neue\',sans-serif;font-size:0.75rem;letter-spacing:1px;padding:3px 10px;cursor:pointer;border:1.5px solid '+(on?col:'var(--border2)')+';background:'+(on?col:'transparent')+';color:'+(on?'#fff':'var(--text2)')+';transform:skewX(-8deg);transition:all .15s;'+(on?'box-shadow:0 0 8px '+col+'90;':'');
+      btn.addEventListener('click',()=>toggleCondition(c));
+      tog.appendChild(btn);
     });
-    el.appendChild(btn);
+  }
+  // Active-condition detail cards: what it does + rounds left
+  const act=document.getElementById('c-cond-active');
+  if(!act)return;
+  const active=[...cstate.conditions];
+  if(!active.length){
+    act.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.56rem;color:var(--text-dim);letter-spacing:1px;">No conditions active — you play freely.</div>';
+    return;
+  }
+  act.innerHTML='';
+  const grid=document.createElement('div');
+  grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;';
+  active.forEach(c=>{
+    const col=COND_FX[c]?.color||'#a8102c';
+    const left=cstate.condRounds[c]??COND_ROUNDS;
+    const card=document.createElement('div');
+    card.style.cssText='background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);border-left:4px solid '+col+';padding:8px 11px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);';
+    card.innerHTML=
+      '<div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;">'
+        +'<span style="font-size:0.9rem;">'+(COND_ICON[c]||'●')+'</span>'
+        +'<span style="font-family:\'Bebas Neue\',sans-serif;font-size:1rem;letter-spacing:1px;color:'+col+';flex:1;">'+c+'</span>'
+        +'<button data-x="'+c+'" title="Clear" style="background:transparent;border:none;color:var(--text-dim);font-size:0.9rem;cursor:pointer;line-height:1;padding:0 2px;">✕</button>'
+      +'</div>'
+      +'<div style="font-family:\'Rajdhani\',sans-serif;font-weight:500;font-size:0.8rem;color:var(--text2);line-height:1.32;margin-bottom:7px;">'+(COND_INFO[c]||'')+'</div>'
+      +'<div style="display:flex;align-items:center;gap:6px;">'
+        +'<span style="font-family:\'Share Tech Mono\',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);">ROUNDS LEFT</span>'
+        +'<button data-m="'+c+'" style="width:20px;height:20px;line-height:1;border:1.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-size:0.8rem;">−</button>'
+        +'<span style="font-family:\'Anton\',sans-serif;font-size:1.15rem;color:'+col+';min-width:16px;text-align:center;">'+left+'</span>'
+        +'<button data-p="'+c+'" style="width:20px;height:20px;line-height:1;border:1.5px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-size:0.8rem;">+</button>'
+      +'</div>';
+    grid.appendChild(card);
   });
+  act.appendChild(grid);
+  act.querySelectorAll('[data-x]').forEach(b=>b.addEventListener('click',()=>toggleCondition(b.dataset.x)));
+  act.querySelectorAll('[data-m]').forEach(b=>b.addEventListener('click',()=>setCondRounds(b.dataset.m,(cstate.condRounds[b.dataset.m]??COND_ROUNDS)-1)));
+  act.querySelectorAll('[data-p]').forEach(b=>b.addEventListener('click',()=>setCondRounds(b.dataset.p,(cstate.condRounds[b.dataset.p]??COND_ROUNDS)+1)));
 }
 
 // ── CARD → DICE LOOKUP ──
@@ -1070,7 +1159,7 @@ function applyHearthName(){
   const lbl=document.getElementById('c-hearth-label');if(lbl)lbl.textContent=nm.toUpperCase();
   const rl=document.getElementById('restore-hearth-lbl');if(rl)rl.textContent=nm;
 }
-pullData();buildConditions();renderInit();applyHearthName();
+pullData();renderConditions();renderInit();applyHearthName();
 
 // Cross-tab sync — pick up HP/temp changes made on the stats page
 window.addEventListener('storage',e=>{
