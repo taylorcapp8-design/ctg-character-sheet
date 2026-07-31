@@ -151,19 +151,8 @@
 .kw-out-foot{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:9px;}
 .kw-rules{margin-top:12px;border:1.5px dashed var(--border2);background:var(--paper2,rgba(0,0,0,0.03));padding:9px 12px;clip-path:polygon(0 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%);}
 .kw-rules-head{display:flex;align-items:center;gap:8px;font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:6px;}
-.kw-rules-text{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.9rem;line-height:1.5;color:var(--text2);}
+.kw-rules-text{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.92rem;line-height:1.55;color:var(--text2);}
 .kw-rules-text.empty{font-style:italic;color:var(--text-dim);}
-.kw-rule-row{padding:6px 0 7px;border-bottom:1px solid var(--border);}
-.kw-rule-row:last-of-type{border-bottom:none;}
-.kw-rule-line{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;}
-.kw-rule-cat{font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1.5px;color:var(--purple);text-transform:uppercase;min-width:74px;flex-shrink:0;}
-.kw-rule-name{font-family:'Bebas Neue',sans-serif;font-size:0.92rem;letter-spacing:1px;color:var(--text);flex:1;}
-.kw-rule-ap{font-family:'Anton',sans-serif;font-size:0.72rem;color:var(--gold,#cf9500);white-space:nowrap;}
-.kw-rule-ap.disc{color:var(--green3);}
-.kw-rule-desc{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;line-height:1.4;color:var(--text2);padding-left:82px;margin-top:1px;}
-.kw-rule-total{display:flex;justify-content:space-between;align-items:center;margin-top:9px;padding-top:8px;border-top:2px solid var(--ink);font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--text-dim);}
-.kw-rule-total-ap{font-family:'Anton',sans-serif;font-size:1.05rem;letter-spacing:0;color:var(--gold,#cf9500);}
-@media(max-width:520px){.kw-rule-desc{padding-left:0;}}
 .kw-edited{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--gold,#cf9500);}
 .kw-send{position:relative;}
 .kw-send-menu{position:absolute;bottom:calc(100% + 4px);left:0;z-index:20;background:var(--paper);border:2px solid var(--ink);box-shadow:4px 4px 0 var(--purple);display:none;min-width:150px;}
@@ -633,23 +622,12 @@ function pick(catKey,id){
 }
 function clearCat(catKey){const cat=catByKey(catKey);sel[catKey]=cat.select==='single'?null:[];CTG.prune(sel);saveWorkshop();renderWorkshop();}
 function renderRules(){
-  const el=document.getElementById('wk-rules');
-  const rows=CTG.breakdown(sel);
-  if(!rows.length){el.innerHTML='';el.textContent='Pick keywords and the mechanical breakdown appears here.';el.classList.add('empty');return;}
-  el.classList.remove('empty');
-  const ap=CTG.totalAP(sel);
-  el.innerHTML=rows.map(r=>`<div class="kw-rule-row">
-      <div class="kw-rule-line">
-        <span class="kw-rule-cat">${r.icon} ${esc(r.catLabel)}</span>
-        <span class="kw-rule-name">${esc(r.name)}</span>
-        <span class="kw-rule-ap${r.discount?' disc':''}">${r.discount?'−':''}${r.ap} AP</span>
-      </div>
-      <div class="kw-rule-desc">${esc(r.desc)}</div>
-    </div>`).join('')
-    +`<div class="kw-rule-total"><span>TOTAL</span><span class="kw-rule-total-ap">${ap} AP</span></div>`;
+  const el=document.getElementById('wk-rules');const t=CTG.generate(sel);
+  if(t){el.textContent=t;el.classList.remove('empty');}
+  else{el.textContent='Pick keywords and the rule text writes itself here.';el.classList.add('empty');}
 }
 function addRulesToDesc(){
-  const t=CTG.breakdownText(sel);if(!t){toast('Pick some keywords first.',false);return;}
+  const t=CTG.generate(sel);if(!t){toast('Pick some keywords first.',false);return;}
   const cur=(W.draft.text||'').trim();
   W.draft.text=cur?(cur+'\n\n'+t):t;W.draft.edited=true;saveWorkshop();renderOutput();toast('Rules added to flavour.',true);
 }

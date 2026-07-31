@@ -265,25 +265,52 @@
     return Math.max(0, t);
   }
 
-  /* ── SENTENCE GENERATOR ─────────────────────────────────────────────── */
-  var OP_VERB = {
-    damaging: 'strike and harm', move: 'move', push: 'push back', pull: 'pull in',
-    increase: 'bolster', decrease: 'weaken', transform: 'reshape', bind: 'bind',
-    release: 'release', store: 'store power within', transfer: 'transfer power to',
-    compress: 'compress', expand: 'expand', convert: 'convert', divide: 'split apart',
-    mark: 'mark'
-  };
-  var TGT_PHRASE = {
-    self: 'yourself', touch: 'a creature or object you touch', medproj: 'a creature or object at medium range',
-    longproj: 'a creature or object at long range', trueproj: 'a creature or object at any range',
-    object: 'an object or item', area: 'every creature in close range',
-    cone: 'every creature in a cone before you', chain: 'a creature or object, leaping to the next nearest each time'
-  };
-
+  /* ── RULE-TEXT GENERATOR ────────────────────────────────────────────────
+     Composes the picked keywords into one flowing "rulebook" sentence, e.g.
+     "As an Action, You may Bind any Target Creature or Object in Close range
+      with Blood. It costs 4 HP to use. On Success it inflicts Restrained,
+      which lasts until the start of the target's next turn."
+  ─────────────────────────────────────────────────────────────────────── */
   function joinList(arr) {
     if (!arr.length) return '';
     if (arr.length === 1) return arr[0];
     return arr.slice(0, -1).join(', ') + ' and ' + arr[arr.length - 1];
+  }
+
+  var ACTION_OPENER = { action: 'As an Action, ', reaction: 'As a Reaction, ', twin: 'Spending both your actions, ' };
+  // the operation verb, capitalised to read like the rulebook examples
+  var OP_RULE = {
+    damaging: 'Attack', move: 'Move', push: 'Push', pull: 'Pull', increase: 'Boost',
+    decrease: 'Weaken', transform: 'Transform', bind: 'Bind', release: 'Release',
+    store: 'Store power in', transfer: 'Transfer power to', compress: 'Compress',
+    expand: 'Expand', convert: 'Convert', divide: 'Split', mark: 'Mark'
+  };
+  var RANGE_WORD = { touch: 'Close', medproj: 'Medium', longproj: 'Long', trueproj: 'Any' };
+  var DUR_RULE = {
+    immediate: '', endturn: 'until the end of your turn', endround: 'until the end of the round',
+    startnext: "until the start of the target's next turn"
+  };
+  function conditionRule(c, ap) {
+    switch (c.id) {
+      case 'reqhp': return 'It costs ' + Math.max(1, Math.round(ap / 4)) + ' HP to use.';
+      case 'onlymoving': return 'You may only use it against a moving creature.';
+      case 'onlyinjured': return 'You may only use it after you have taken damage.';
+      case 'reqsight': return 'You must be able to see your target.';
+      case 'reqspoken': return 'You must call out the ability aloud to use it.';
+      case 'clutch': return 'You must take your time to use it.';
+      case 'remainstill': return 'You cannot move while using it.';
+      case 'reqmark': return 'You must have a mark already placed to use it there.';
+      case 'percent': return 'Its success is decided by a percentile roll, the odds scaling with its AP.';
+      default: return c.desc;
+    }
+  }
+  function buffRule(b) {
+    switch (b.id) {
+      case 'breakthrough': return 'Its damage ignores EF (armour).';
+      case 'split': return 'You may split its d10 modifier into two d10.';
+      case 'explode': return 'You may reroll its d10 modifier on a natural 10.';
+      default: return b.desc;
+    }
   }
 
   function generate(sel) {
@@ -292,87 +319,66 @@
     var ops = asList(sel.operation).map(function (id) { return item('operation', id); }).filter(Boolean);
     var doms = asList(sel.domain).map(function (id) { return item('domain', id); }).filter(Boolean);
     var targets = asList(sel.target).map(function (id) { return item('target', id); }).filter(Boolean);
-    var conds = asList(sel.condition).map(function (id) { return item('condition', id); }).filter(Boolean);
+    var cond = asList(sel.condition).map(function (id) { return item('condition', id); }).filter(Boolean)[0] || null;
     var dur = sel.duration ? item('duration', sel.duration) : null;
     var mod = sel.modifier ? item('modifier', sel.modifier) : null;
     var effs = asList(sel.effects).map(function (id) { return item('effects', id); }).filter(Boolean);
 
-    if (!action && !ops.length && !doms.length && !targets.length && !conds.length && !dur && !mod && !effs.length) {
-      return '';
+    if (!action && !ops.length && !doms.length && !targets.length && !cond && !dur && !mod && !effs.length) return '';
+
+    var tids = targets.map(function (t) { return t.id; });
+    function hasT(id) { return tids.indexOf(id) !== -1; }
+
+    // opener + operation verb
+    var s = (action ? ACTION_OPENER[action.id] : '');
+    var verb = ops.length ? ops.map(function (o) { return OP_RULE[o.id] || o.name; }).join(' and ') : 'affect';
+    s += 'You may ' + verb;
+
+    // target subject
+    var subject = '';
+    if (targets.length) {
+      if (hasT('self')) subject = 'yourself';
+      else if (hasT('area')) subject = 'every creature and ally in Close range';
+      else if (hasT('cone')) subject = 'every creature and ally in a Cone at Medium range';
+      else if (hasT('object') && !hasT('touch') && !hasT('medproj') && !hasT('longproj') && !hasT('trueproj') && !hasT('chain')) subject = 'a Target Object or Item';
+      else subject = (hasT('touch') ? 'any Target Creature or Object' : 'a Target Creature or Object');
+    }
+    var rangeId = ['trueproj', 'longproj', 'medproj', 'touch'].filter(hasT)[0];
+    var rangeWord = rangeId ? RANGE_WORD[rangeId] : null;
+    var chain = hasT('chain');
+    if (subject) {
+      s += ' ' + subject;
+      if (rangeWord && !chain && !hasT('self') && !hasT('area') && !hasT('cone')) {
+        s += (rangeId === 'touch' ? ' in ' : ' at ') + rangeWord + ' range';
+      }
     }
 
-    var s = '';
-    // opener + subject
-    if (action) {
-      s += (action.id === 'reaction' ? 'As a Reaction' :
-            action.id === 'twin' ? 'Spending both your actions' : 'As an Action') + ', you ';
-    } else {
-      s += 'You ';
-    }
-    // verb (operation, up to two — chained so two verbs read in sequence)
-    s += ops.length ? ops.map(function (o) { return OP_VERB[o.id] || o.name.toLowerCase(); }).join(', then ') : 'channel';
-    // domain material (up to two)
+    // domain
     if (doms.length) s += ' with ' + joinList(doms.map(function (d) { return d.name; }));
-    // target(s)
-    if (targets.length) {
-      s += ', targeting ' + joinList(targets.map(function (t) { return TGT_PHRASE[t.id] || t.name.toLowerCase(); }));
-    }
+    // chain rider
+    if (chain) s += ', on Success it jumps to the nearest creature' + (rangeWord ? ' at ' + rangeWord + ' range' : '');
+    // modifier / dice
+    if (mod && !mod.blank) s += ', dealing ' + mod.name + ' Additional Damage on Success';
     s += '.';
 
-    // modifier / dice
-    if (mod && !mod.blank) s += ' It rolls ' + mod.name + ' for its effect.';
+    // condition (single drawback)
+    if (cond) s += ' ' + conditionRule(cond, totalAP(sel));
 
-    // conditions
-    if (conds.length) s += ' ' + conds.map(function (c) { return c.clause || c.desc; }).join(' ');
-
-    // duration
-    if (dur) {
-      if (dur.id === 'immediate') s += ' The effect is immediate.';
-      else s += ' The effect lasts ' + dur.name.toLowerCase().replace(/^until /, 'until ') + '.';
+    // debuffs + duration
+    var debuffs = effs.filter(function (e) { return e.kind === 'debuff'; });
+    var buffs = effs.filter(function (e) { return e.kind === 'buff'; });
+    if (debuffs.length) {
+      s += ' On Success it inflicts ' + joinList(debuffs.map(function (e) { return e.name; }));
+      var durP = dur ? DUR_RULE[dur.id] : '';
+      if (durP) s += ', which lasts ' + durP;
+      s += '.';
+    } else if (dur && DUR_RULE[dur.id]) {
+      s += ' The effect lasts ' + DUR_RULE[dur.id] + '.';
     }
-
-    // debuffs / buffs
-    if (effs.length) {
-      var debuffs = effs.filter(function (e) { return e.kind === 'debuff'; }).map(function (e) { return e.name; });
-      var buffs = effs.filter(function (e) { return e.kind === 'buff'; }).map(function (e) { return e.name; });
-      if (debuffs.length) s += ' On a hit it inflicts ' + joinList(debuffs) + '.';
-      if (buffs.length) s += ' It carries ' + joinList(buffs) + '.';
-    }
+    // buffs
+    buffs.forEach(function (b) { s += ' ' + buffRule(b); });
 
     return s.trim();
-  }
-
-  /* ── STRUCTURED BREAKDOWN ───────────────────────────────────────────────
-     A per-keyword breakdown in the rulebook's own layout: one row per picked
-     keyword, in build order (Action → … → Debuffs/Buffs), each carrying its
-     category, name, AP cost and verbatim rulebook description. The UI renders
-     this as a labelled list; a plain-text version is available for exporting.
-  ─────────────────────────────────────────────────────────────────────── */
-  function breakdown(sel) {
-    sel = sel || {};
-    var rows = [];
-    CATEGORIES.forEach(function (cat) {
-      asList(sel[cat.key]).forEach(function (id) {
-        var it = item(cat.key, id);
-        if (it) rows.push({
-          cat: cat.key, catLabel: cat.label, icon: cat.icon,
-          discount: !!cat.discount, name: it.name, ap: it.ap, desc: it.desc
-        });
-      });
-    });
-    return rows;
-  }
-
-  /* Plain-text version of the breakdown, one keyword per line. */
-  function breakdownText(sel) {
-    var rows = breakdown(sel);
-    if (!rows.length) return '';
-    var lines = rows.map(function (r) {
-      return r.catLabel.toUpperCase() + ' · ' + r.name +
-        ' (' + (r.discount ? '−' : '') + r.ap + ' AP) — ' + r.desc;
-    });
-    lines.push('TOTAL — ' + totalAP(sel) + ' AP');
-    return lines.join('\n');
   }
 
   /* ── FLAVOR QUIZ ────────────────────────────────────────────────────────
@@ -580,8 +586,6 @@
     normalizeSel: normalizeSel,
     totalAP: totalAP,
     generate: generate,
-    breakdown: breakdown,
-    breakdownText: breakdownText,
     joinList: joinList,
     styleOptions: STYLE_OPTIONS,
     colourOptions: COLOUR_OPTIONS,
