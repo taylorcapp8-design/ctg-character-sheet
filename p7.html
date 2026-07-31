@@ -496,6 +496,7 @@ function effectiveView(){
 }
 function applySpecView(){
   const stage=document.getElementById('spec-stage');if(!stage)return;
+  clearFocusState(); // a rebuild deselects — never leave a stale focus that stacks the hand
   const v=effectiveView();specViewMode=v;
   stage.classList.toggle('fan',v==='fan');stage.classList.toggle('grid',v!=='fan');
   const tog=document.getElementById('view-toggle');if(tog)tog.textContent=v==='fan'?'▦ GRID VIEW':'🎴 FAN VIEW';
