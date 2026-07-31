@@ -527,7 +527,8 @@ function effectiveView(){
 }
 function applySpecView(){
   const stage=document.getElementById('spec-stage');if(!stage)return;
-  clearFocusState(); // a rebuild deselects — never leave a stale focus that stacks the hand
+  const keepFocus=focusedRank; // a rebuild replaces the DOM — remember which card was pulled out
+  clearFocusState();
   const v=effectiveView();specViewMode=v;
   stage.classList.toggle('fan',v==='fan');stage.classList.toggle('grid',v!=='fan');
   const tog=document.getElementById('view-toggle');if(tog)tog.textContent=v==='fan'?'▦ GRID VIEW':'🎴 FAN VIEW';
@@ -535,7 +536,8 @@ function applySpecView(){
   if(intro)intro.textContent=v==='fan'
     ?'Your four face cards — hover a card to peek, click to pull it out and edit. Toggle to a flat grid any time.'
     :'Your four face cards hold your special abilities — Jack (weakest) through Ace (strongest). Toggle to the fanned hand any time.';
-  if(v==='fan')layoutFan();else clearFocusState();
+  if(v==='fan'){layoutFan();if(keepFocus)focusCard(keepFocus,true);} // re-pull the same card so edits don't collapse it
+  else clearFocusState();
 }
 function toggleSpecView(){
   const next=effectiveView()==='fan'?'grid':'fan';
@@ -557,7 +559,7 @@ function clearFocusState(){
   const stage=document.getElementById('spec-stage');if(stage)stage.classList.remove('has-focus');
   document.querySelectorAll('#spec-grid .spec-card').forEach(c=>{c.classList.remove('focused');c.style.removeProperty('--mtx');c.style.removeProperty('--mrot');});
 }
-function focusCard(rank){
+function focusCard(rank,silent){
   if(specViewMode!=='fan')return;
   const switching=focusedRank&&focusedRank!==rank;
   focusedRank=rank;
@@ -569,7 +571,7 @@ function focusCard(rank){
     else{card.classList.remove('focused');const j=others.findIndex(o=>o.key===rk);const t=j-(others.length-1)/2;
       card.style.setProperty('--mtx',(t*86)+'px');card.style.setProperty('--mrot',(t*9)+'deg');}
   });
-  if(window.CTGSound)CTGSound.play(switching?'click':'open');
+  if(!silent&&window.CTGSound)CTGSound.play(switching?'click':'open');
 }
 function unfocusCard(){
   if(!focusedRank)return;
