@@ -192,9 +192,9 @@ details>summary::marker{display:none;}
     </div>
   </div>
 
-  <!-- ROW 4a: SPECIALS (face-card abilities from Page VII) -->
+  <!-- ROW 4a: SPECIALS (face-card abilities from Page VI) -->
   <div class="block">
-    <div class="sec-label"><span class="mk">✦</span>SPECIALS <span class="note">— your face-card abilities · set on Page VII</span></div>
+    <div class="sec-label"><span class="mk">✦</span>SPECIALS <span class="note">— your face-card abilities · set on Page VI</span></div>
     <div class="panel">
       <div id="c-specials" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;"></div>
     </div>
@@ -805,7 +805,7 @@ function buildSkills(){
   const el=document.getElementById('c-skills');el.innerHTML='';
   let selected=[];
   const s=load('ctg-skills');if(s){try{selected=JSON.parse(s);}catch(e){}}
-  if(!selected.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.62rem;color:var(--text-dim);">No skills purchased yet — unlock them on Page V</div>';return;}
+  if(!selected.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.62rem;color:var(--text-dim);">No skills purchased yet — unlock them on Page IV</div>';return;}
   selected.forEach(id=>{
     const desc=SKILL_DATA[id]||id;
     const row=document.createElement('div');
@@ -831,14 +831,14 @@ function buildCustomAbilities(){
   });
 }
 
-// ── SPECIALS (read-only, from Page VII) ──
+// ── SPECIALS (read-only, from Page VI) ──
 function buildSpecials(){
   const el=document.getElementById('c-specials');if(!el)return;el.innerHTML='';
   const escS=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   let spec=null;try{const s=load('ctg-specials');if(s)spec=JSON.parse(s);}catch(e){}
   const RANKS=[['jack','J','♠'],['queen','Q','♣'],['king','K','♦'],['ace','A','♥']];
   const filled=RANKS.filter(r=>spec&&spec[r[0]]&&((spec[r[0]].name||'').trim()||(spec[r[0]].desc||'').trim()));
-  if(!filled.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.56rem;color:var(--text-dim);grid-column:1/-1;">No specials yet — create them on Page VII</div>';return;}
+  if(!filled.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.56rem;color:var(--text-dim);grid-column:1/-1;">No specials yet — create them on Page VI</div>';return;}
   filled.forEach(r=>{
     const c=spec[r[0]];const ap=(c.mode==='workshop'&&c.build)?c.build.ap:null;
     const card=document.createElement('div');
@@ -856,7 +856,7 @@ function buildSpecials(){
 function buildFaculties(){
   const el=document.getElementById('c-faculties');el.innerHTML='';
   const facData=load('ctg-faculties');
-  if(!facData){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.62rem;color:var(--text-dim);">No faculties selected — choose on Page III</div>';return;}
+  if(!facData){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.62rem;color:var(--text-dim);">No faculties selected — choose on Page II</div>';return;}
   let state;try{state=JSON.parse(facData);}catch(e){return;}
   const FACULTIES_MAP={
     force:{name:'Force',icon:'♣',tuning:[{name:'Large Handed',sub:'Amplifies raw impact',actions:'Smash doors, throw barrels, grapple massive Marionettes, break objects to create environmental advantages.'},{name:'Rusty Anchor',sub:'Rooted power',actions:'Hold your ground against tides, resist pushes, brace for heavy attacks.'},{name:'Bull Wit Da Horn',sub:'Dynamic motion',actions:'Sprint into action, slam through obstacles, chase fleeing threats.'}]},
@@ -867,7 +867,7 @@ function buildFaculties(){
     endure:{name:'Endure',icon:'♠',tuning:[{name:'Steel Jaw, Low Brim',sub:'Calm under duress',actions:'Resist panic, ignore distractions, remain composed during chaos.'},{name:'Cutting Board',sub:'Toughness & recovery',actions:'Shake off damage, survive hazardous conditions, resist toxins.'},{name:'Tongue-less',sub:'Extreme tolerance',actions:'Consume the worst of the worst, perform impossible feats of endurance. Drink seawater.'}]},
   };
   const active=(state.active||[]).filter(Boolean);
-  if(!active.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.62rem;color:var(--text-dim);">No active faculties — select on Page III</div>';return;}
+  if(!active.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.62rem;color:var(--text-dim);">No active faculties — select on Page II</div>';return;}
   active.forEach(fid=>{
     const f=FACULTIES_MAP[fid];if(!f)return;
     const ti=state.selected?.[fid];
