@@ -105,6 +105,7 @@ Oddities no longer have charges. Each Oddity has a configurable **Hearth Cost** 
 | `ctg-harth-temp` | Temp HP |
 | `ctg-hearth-cur` | Current Hearth (mana) |
 | `ctg-hearth-max` | Max Hearth |
+| `ctg-hearth-name` | Custom display name for the Hearth resource (e.g. Haki, Chakra) |
 | `ctg-ef` | Total EF (armour) value |
 | `ctg-ef-parts` | JSON — per-body-part EF equipment |
 | `ctg-ef-kit` | JSON — EF Kit items |

@@ -102,9 +102,9 @@
           <div class="hp-track" id="ef-track"></div>
           <div style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;color:var(--text-dim);text-align:center;margin-top:3px;">from armour page</div>
         </div>
-        <!-- HEARTH (mana) -->
+        <!-- HEARTH (mana) — renamable per setting (e.g. Haki, Chakra, Mana) -->
         <div class="vital-box" style="border-color:#3b82f6;">
-          <span class="vital-label" style="color:#3b82f6;">HEARTH</span>
+          <input class="vital-label" id="hearth-name" value="Hearth" spellcheck="false" maxlength="16" style="color:#3b82f6;text-transform:uppercase;text-align:center;background:transparent;border:none;border-bottom:1px dashed transparent;width:100%;outline:none;cursor:text;" title="Click to rename this resource for your setting (e.g. Haki, Chakra, Mana)" onfocus="this.style.borderBottomColor='#3b82f6'" onblur="this.style.borderBottomColor='transparent'">
           <div style="display:flex;align-items:baseline;justify-content:center;gap:4px;">
             <input type="number" class="vital-input" id="hearth-cur" value="6" min="0" style="font-size:2rem;width:54px;color:#3b82f6;">
             <span style="color:var(--text-dim);font-family:'Anton',sans-serif;font-size:1rem;">/</span>
@@ -316,6 +316,12 @@ function adjustHearth(d){
   el.value=Math.max(0,Math.min(maxVal,(parseInt(el.value)||0)+d));
   refreshTracks();saveVitals();
 }
+/* Hearth is renamable per setting (e.g. Haki, Chakra, Mana) */
+(function(){
+  const el=document.getElementById('hearth-name');if(!el)return;
+  el.value=load('ctg-hearth-name')||'Hearth';
+  el.addEventListener('input',()=>save('ctg-hearth-name',(el.value||'').trim()||'Hearth'));
+})();
 
 /* ── PORTRAIT ────────────────────────────────────────────── */
 document.getElementById('portrait-upload').addEventListener('change',function(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{const img=document.getElementById('portrait-img');img.src=ev.target.result;img.style.display='block';document.getElementById('portrait-placeholder').style.display='none';try{localStorage.setItem('ctg-portrait',ev.target.result);}catch(e){}};r.readAsDataURL(f);});
