@@ -5,3 +5,7 @@ Thumbs.db
 
 # Rulebook source doc — large binary, kept local only
 *.rtf
+
+# Supabase CLI local state
+supabase/.temp/
+.branches/
