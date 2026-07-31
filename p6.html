@@ -419,7 +419,7 @@ function normBuff(b){if(b.bonuses)return b;return{label:b.label||b.stat,bonuses:
 function gearBonusFor(statName){
   const key=(statName||'').toLowerCase();let sum=0;
   try{const raw=load('ctg-accessories');if(raw)JSON.parse(raw).forEach(a=>{if(a.eq&&a.modStat&&a.modStat.toLowerCase()===key)sum+=parseInt(a.modVal)||0;});}catch(e){}
-  try{const raw=load('ctg-specials');if(raw){const sp=JSON.parse(raw);Object.keys(sp||{}).forEach(k=>{const b=sp[k]&&sp[k].buff;if(b&&b.active&&b.stat&&b.stat.toLowerCase()===key)sum+=parseInt(b.value)||0;});}}catch(e){}
+  try{const raw=load('ctg-specials');if(raw){const sp=JSON.parse(raw);Object.keys(sp||{}).forEach(k=>{const c=sp[k];const b=c&&c.buff;if(c&&c.active&&b&&b.stat&&b.stat.toLowerCase()===key)sum+=parseInt(b.value)||0;});}}catch(e){}
   return sum;
 }
 function buffBonusFor(statName){return tempBuffs.reduce((sum,b)=>{const n=normBuff(b);return sum+n.bonuses.filter(x=>x.stat&&x.stat.toLowerCase()===statName.toLowerCase()).reduce((s,x)=>s+(parseInt(x.value)||0),0);},0)+gearBonusFor(statName);}
@@ -827,11 +827,15 @@ function buildSpecials(){
   if(!filled.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.56rem;color:var(--text-dim);grid-column:1/-1;">No specials yet — create them on Page VI</div>';return;}
   filled.forEach(r=>{
     const c=spec[r[0]];const ap=(c.mode==='workshop'&&c.build)?c.build.ap:null;
+    const inUse=!!c.active;
+    const buff=(c.buff&&c.buff.stat&&(parseInt(c.buff.value)||0))?c.buff:null;
     const card=document.createElement('div');
-    card.style.cssText='padding:8px 12px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);border-left:4px solid var(--purple);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);';
+    card.style.cssText='padding:8px 12px;background:'+(inUse?'rgba(46,160,67,0.1)':'var(--paper2,rgba(0,0,0,0.05))')+';border:1.5px solid '+(inUse?'var(--green3)':'var(--border)')+';border-left:4px solid '+(inUse?'var(--green3)':'var(--purple)')+';clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);';
     card.innerHTML=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:${c.desc?'3px':'0'};">
-        <span style="font-family:'Anton',sans-serif;font-size:1rem;color:var(--purple2);width:16px;">${r[1]}</span>
+        <span style="font-family:'Anton',sans-serif;font-size:1rem;color:${inUse?'var(--green3)':'var(--purple2)'};width:16px;">${r[1]}</span>
         <span style="font-family:'Bebas Neue',sans-serif;font-size:0.95rem;letter-spacing:1px;color:var(--text);flex:1;">${escS(c.name)||'—'}</span>
+        ${inUse?`<span style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:#062a10;background:var(--green3);padding:1px 5px;white-space:nowrap;">◉ IN USE</span>`:''}
+        ${buff?`<span style="font-family:'Anton',sans-serif;font-size:0.6rem;color:var(--gold,#cf9500);white-space:nowrap;">⚡${parseInt(buff.value)>=0?'+':''}${parseInt(buff.value)} ${escS(buff.stat)}</span>`:''}
         ${ap!=null?`<span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--gold,#cf9500);">${ap} AP</span>`:''}</div>
       ${c.desc?`<div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.35;">${escS(c.desc)}</div>`:''}`;
     el.appendChild(card);

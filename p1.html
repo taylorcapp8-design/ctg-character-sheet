@@ -230,7 +230,7 @@ function getStatSources(statName){
     if(raw){const spec=JSON.parse(raw);
       Object.keys(spec||{}).forEach(rk=>{const c=spec[rk];const b=c&&c.buff;
         const v=b?parseInt(b.value)||0:0;
-        if(b&&b.active&&b.stat&&b.stat.toLowerCase()===key&&v)out.push({label:c.name||(rk.charAt(0).toUpperCase()+rk.slice(1)),value:v,kind:'spec'});
+        if(c&&c.active&&b&&b.stat&&b.stat.toLowerCase()===key&&v)out.push({label:c.name||(rk.charAt(0).toUpperCase()+rk.slice(1)),value:v,kind:'spec'});
       });
     }
   }catch(e){}
