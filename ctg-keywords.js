@@ -30,7 +30,7 @@
       items: [
         { id: 'action', name: 'Action', ap: 1, desc: 'One of your two actions given to you per turn / round.' },
         { id: 'reaction', name: 'Reaction', ap: 2, desc: 'Your reaction given at the start of the round, or an unused action converted into a reaction.' },
-        { id: 'twin', name: 'Twin Action', ap: 1, desc: 'Both of your two actions given to you per turn / round.' }
+        { id: 'twin', name: 'Twin Action', ap: 0, desc: 'Both of your two actions given to you per turn / round.' }
       ]
     },
     {
@@ -49,8 +49,8 @@
       ]
     },
     {
-      key: 'operation', label: 'Operation', icon: '⚙', select: 'single',
-      note: 'What the ability actually does — arguably the most important part.',
+      key: 'operation', label: 'Operation', icon: '⚙', select: 'multi', max: 2,
+      note: 'What the ability actually does — arguably the most important part. Stack up to two.',
       items: [
         { id: 'damaging', name: 'Damaging', ap: 1, desc: 'An effect or attack made purely to harm or hurt the target.' },
         { id: 'move', name: 'Move', ap: 1, desc: 'Transfer or shift something to another location. Not within something else.' },
@@ -72,8 +72,8 @@
       ]
     },
     {
-      key: 'domain', label: 'Domain', icon: '✦', select: 'single',
-      note: 'What you are manipulating. Abstract domains have no physical form.',
+      key: 'domain', label: 'Domain', icon: '✦', select: 'multi', max: 2,
+      note: 'What you are manipulating. Abstract domains have no physical form. Blend up to two.',
       items: [
         { id: 'force', name: 'Force', ap: 5, physical: false, desc: 'Pure strength and power.' },
         { id: 'finesse', name: 'Finesse', ap: 5, physical: false, desc: 'Pure agility and reaction.' },
@@ -100,8 +100,8 @@
       ]
     },
     {
-      key: 'condition', label: 'Condition', icon: '⌖', select: 'multi', discount: true,
-      note: 'Where strategy comes from — accepting a drawback gives AP back.',
+      key: 'condition', label: 'Condition', icon: '⌖', select: 'single', discount: true,
+      note: 'Where strategy comes from — accepting one drawback gives AP back.',
       items: [
         { id: 'onlymoving', name: 'Only While Moving', ap: 2, clause: 'It can only target a moving character.', desc: 'You can only target a moving character.' },
         { id: 'onlyinjured', name: 'Only While Injured', ap: 1, clause: 'It can only be used after you have taken damage.', desc: 'You can only activate the skill once you have taken damage.' },
@@ -119,7 +119,6 @@
       note: 'How long the ability or its conditions last.',
       items: [
         { id: 'immediate', name: 'Immediate', ap: 0, desc: 'Happens instantaneously.' },
-        { id: 'endaction', name: 'Until End of Action', ap: 1, desc: 'Ends after you finish an action.' },
         { id: 'endturn', name: 'Until End of Turn', ap: 2, desc: 'Ends after you exhaust all your actions in the round.' },
         { id: 'endround', name: 'Until End of Round', ap: 3, desc: 'Ends after every player and enemy has exhausted their actions and reactions.' },
         { id: 'startnext', name: 'Until Start of Next Turn', ap: 5, desc: 'Lasts until your turn starts again on the next round.' }
@@ -172,16 +171,20 @@
        { action:id, target:[ids], operation:id, domain:id,
          condition:[ids], duration:id, modifier:id, effects:[ids] }
   ─────────────────────────────────────────────────────────────────────── */
+  function asList(v) { return Array.isArray(v) ? v : (v ? [v] : []); }
+
   function ruleReason(catKey, it, sel) {
     sel = sel || {};
-    var dom = sel.domain ? item('domain', sel.domain) : null;
-    var targets = sel.target || [];
-    var conds = sel.condition || [];
+    var doms = asList(sel.domain).map(function (id) { return item('domain', id); }).filter(Boolean);
+    var domIds = doms.map(function (d) { return d.id; });
+    var ops = asList(sel.operation);
+    var targets = asList(sel.target);
+    var conds = asList(sel.condition);
 
-    // 1 · physical-plausibility gate — size/shape ops need a physical domain
+    // 1 · physical-plausibility gate — size/shape ops need at least one physical domain
     if (catKey === 'operation' && (it.id === 'expand' || it.id === 'compress' || it.id === 'transform')) {
-      if (dom && dom.physical === false) {
-        return dom.name + ' has no physical form to ' + it.name.toLowerCase() + '.';
+      if (doms.length && !doms.some(function (d) { return d.physical === true; })) {
+        return (doms.length === 1 ? doms[0].name + ' has' : 'Your domains have') + ' no physical form to ' + it.name.toLowerCase() + '.';
       }
     }
 
@@ -203,17 +206,17 @@
 
     // 3 · required-pair gating for Debuffs / Buffs (+ elemental exclusions)
     if (catKey === 'effects') {
-      var domId = dom ? dom.id : null;
       if (it.id === 'burning') {
-        if (domId === 'ice') return 'Ice can’t induce Burning.';
-        if (domId !== 'fire' && domId !== 'light') return 'Requires a Fire or Light domain.';
+        if (domIds.indexOf('ice') !== -1) return 'Ice can’t induce Burning.';
+        if (domIds.indexOf('fire') === -1 && domIds.indexOf('light') === -1) return 'Requires a Fire or Light domain.';
       }
       if (it.id === 'freezing') {
-        if (domId === 'fire' || domId === 'light') return domId === 'fire' ? 'Fire can’t induce Freezing.' : 'Light can’t induce Freezing.';
-        if (domId !== 'ice') return 'Requires an Ice domain.';
+        if (domIds.indexOf('fire') !== -1) return 'Fire can’t induce Freezing.';
+        if (domIds.indexOf('light') !== -1) return 'Light can’t induce Freezing.';
+        if (domIds.indexOf('ice') === -1) return 'Requires an Ice domain.';
       }
-      if (it.id === 'shocked' && domId !== 'electricity') return 'Requires an Electricity domain.';
-      if (it.id === 'restrained' && sel.operation !== 'bind') return 'Requires the Bind operation.';
+      if (it.id === 'shocked' && domIds.indexOf('electricity') === -1) return 'Requires an Electricity domain.';
+      if (it.id === 'restrained' && ops.indexOf('bind') === -1) return 'Requires the Bind operation.';
     }
     return null;
   }
@@ -221,17 +224,35 @@
   /* Remove selections that a later change has made invalid (mutates sel). */
   function prune(sel) {
     if (!sel) return sel;
-    // single-selects
-    ['operation'].forEach(function (k) {
-      if (sel[k] && ruleReason(k, item(k, sel[k]), sel)) sel[k] = null;
-    });
-    // multi-selects
-    ['target', 'condition', 'effects'].forEach(function (k) {
-      if (Array.isArray(sel[k])) {
+    CATEGORIES.forEach(function (cat) {
+      var k = cat.key;
+      if (cat.select === 'single') {
+        if (sel[k] && ruleReason(k, item(k, sel[k]), sel)) sel[k] = null;
+      } else if (Array.isArray(sel[k])) {
         sel[k] = sel[k].filter(function (id) { return !ruleReason(k, item(k, id), sel); });
       }
     });
     return sel;
+  }
+
+  /* Coerce a stored selection to each category's current select type, so a
+     draft saved when (say) Condition was multi still loads cleanly now that
+     it is single. Returns a fresh, correctly-shaped selection object. */
+  function normalizeSel(raw) {
+    raw = raw || {};
+    var out = {};
+    CATEGORIES.forEach(function (cat) {
+      var k = cat.key, v = raw[k];
+      if (cat.select === 'single') {
+        if (Array.isArray(v)) v = v.length ? v[0] : null;
+        out[k] = (v === undefined || v === '') ? null : v;
+      } else {
+        var arr = Array.isArray(v) ? v.slice() : (v ? [v] : []);
+        if (cat.max) arr = arr.slice(0, cat.max);
+        out[k] = arr;
+      }
+    });
+    return out;
   }
 
   /* ── AP TALLY ───────────────────────────────────────────────────────── */
@@ -240,9 +261,7 @@
     var t = 0;
     CATEGORIES.forEach(function (cat) {
       var sign = cat.discount ? -1 : 1;   // conditions are drawbacks — they give AP back
-      var v = sel[cat.key];
-      if (cat.select === 'single') { if (v) { var it = item(cat.key, v); if (it) t += sign * it.ap; } }
-      else if (Array.isArray(v)) { v.forEach(function (id) { var it = item(cat.key, id); if (it) t += sign * it.ap; }); }
+      asList(sel[cat.key]).forEach(function (id) { var it = item(cat.key, id); if (it) t += sign * it.ap; });
     });
     return Math.max(0, t);
   }
@@ -271,15 +290,15 @@
   function generate(sel) {
     sel = sel || {};
     var action = sel.action ? item('action', sel.action) : null;
-    var op = sel.operation ? item('operation', sel.operation) : null;
-    var dom = sel.domain ? item('domain', sel.domain) : null;
-    var targets = (sel.target || []).map(function (id) { return item('target', id); }).filter(Boolean);
-    var conds = (sel.condition || []).map(function (id) { return item('condition', id); }).filter(Boolean);
+    var ops = asList(sel.operation).map(function (id) { return item('operation', id); }).filter(Boolean);
+    var doms = asList(sel.domain).map(function (id) { return item('domain', id); }).filter(Boolean);
+    var targets = asList(sel.target).map(function (id) { return item('target', id); }).filter(Boolean);
+    var conds = asList(sel.condition).map(function (id) { return item('condition', id); }).filter(Boolean);
     var dur = sel.duration ? item('duration', sel.duration) : null;
     var mod = sel.modifier ? item('modifier', sel.modifier) : null;
-    var effs = (sel.effects || []).map(function (id) { return item('effects', id); }).filter(Boolean);
+    var effs = asList(sel.effects).map(function (id) { return item('effects', id); }).filter(Boolean);
 
-    if (!action && !op && !dom && !targets.length && !conds.length && !dur && !mod && !effs.length) {
+    if (!action && !ops.length && !doms.length && !targets.length && !conds.length && !dur && !mod && !effs.length) {
       return '';
     }
 
@@ -291,10 +310,10 @@
     } else {
       s += 'You ';
     }
-    // verb (operation)
-    s += op ? (OP_VERB[op.id] || op.name.toLowerCase()) : 'channel';
-    // domain material
-    if (dom) s += ' with ' + dom.name;
+    // verb (operation, up to two — chained so two verbs read in sequence)
+    s += ops.length ? ops.map(function (o) { return OP_VERB[o.id] || o.name.toLowerCase(); }).join(', then ') : 'channel';
+    // domain material (up to two)
+    if (doms.length) s += ' with ' + joinList(doms.map(function (d) { return d.name; }));
     // target(s)
     if (targets.length) {
       s += ', targeting ' + joinList(targets.map(function (t) { return TGT_PHRASE[t.id] || t.name.toLowerCase(); }));
@@ -480,8 +499,9 @@
 
   function flavorText(sel, ans) {
     sel = sel || {}; ans = ans || {};
-    var dom = sel.domain ? item('domain', sel.domain) : null;
-    var domName = dom ? dom.name : 'raw power';
+    var doms = asList(sel.domain).map(function (id) { return item('domain', id); }).filter(Boolean);
+    var dom = doms[0] || null;
+    var domName = doms.length ? joinList(doms.map(function (d) { return d.name; })) : 'raw power';
     var name = (ans.name || '').trim();
     var colour = ans.colour || null;
     var style = ans.style || null;
@@ -513,7 +533,7 @@
   var AP_NOTE = 'Every keyword adds AP — except Conditions, which give AP back, since a drawback earns you room. Keep the running total at or under your cap. A higher total means a bigger, costlier ability.';
   var COMBINATION_RULES = [
     'Elements can’t contradict — Ice can’t inflict Burning, and Fire or Light can’t inflict Freezing.',
-    'Size and shape need substance — Expand, Compress and Transform only work on a physical Domain, never an abstract one like Force, Logic or Memory.',
+    'Size and shape need substance — Expand, Compress and Transform need at least one physical Domain, never only an abstract one like Force, Logic or Memory.',
     'A target is one place at a time — Self can’t pair with “Only While Moving”, and Touch can’t pair with any Projectile.',
     'Riders need their source — Burning needs Fire or Light, Freezing needs Ice, Shocked needs Electricity, and Restrained needs the Bind operation.',
     'Conditions pay you back — each Condition you accept lowers the ability’s AP rather than raising it.'
@@ -525,6 +545,7 @@
     item: item,
     ruleReason: ruleReason,
     prune: prune,
+    normalizeSel: normalizeSel,
     totalAP: totalAP,
     generate: generate,
     joinList: joinList,

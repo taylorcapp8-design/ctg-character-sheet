@@ -361,7 +361,7 @@ const CTG_AI={
 
 /* ── STATE ──────────────────────────────────────────────── */
 const RANKS=[{key:'jack',label:'Jack',glyph:'J',suit:'♠',sc:'spade',cap:6},{key:'queen',label:'Queen',glyph:'Q',suit:'♣',sc:'club',cap:10},{key:'king',label:'King',glyph:'K',suit:'♦',sc:'diamond',cap:14},{key:'ace',label:'Ace',glyph:'A',suit:'♥',sc:'heart',cap:20}];
-function emptySel(){return {action:null,target:[],operation:null,domain:null,condition:[],duration:null,modifier:null,effects:[]};}
+function emptySel(){return {action:null,target:[],operation:[],domain:[],condition:null,duration:null,modifier:null,effects:[]};}
 
 function loadSpecials(){
   let s=null;try{s=JSON.parse(load('ctg-specials'));}catch(e){}
@@ -378,7 +378,7 @@ function loadWorkshop(){
   if(!w||typeof w!=='object')w={};
   if(!w.draft||typeof w.draft!=='object')w.draft={name:'',sel:emptySel(),text:'',edited:false,apCap:20};
   const d=w.draft;
-  d.sel=Object.assign(emptySel(),d.sel||{});
+  d.sel=CTG.normalizeSel(Object.assign(emptySel(),d.sel||{}));
   if(d.apCap==null)d.apCap=20;if(!('edited'in d))d.edited=false;if(d.name==null)d.name='';if(d.text==null)d.text='';
   if(!Array.isArray(w.library))w.library=[];
   return w;
@@ -465,7 +465,7 @@ function renderSpecials(){
     });
     const editBtn=card.querySelector('[data-edit]');
     if(editBtn)editBtn.addEventListener('click',()=>{
-      sel=Object.assign(emptySel(),clone(c.build.sel));W.draft.sel=sel;
+      sel=CTG.normalizeSel(Object.assign(emptySel(),clone(c.build.sel)));W.draft.sel=sel;
       W.draft.name=c.name||'';W.draft.text=c.desc||c.build.text||'';W.draft.edited=true;
       W.draft.apCap=c.apCap||20;saveWorkshop();
       showTab('workshop');
