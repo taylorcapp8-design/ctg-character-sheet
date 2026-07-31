@@ -291,26 +291,11 @@ details>summary::marker{display:none;}
     </div>
   </div>
 
-  <!-- ROW: INITIATIVE ORDER -->
-  <div class="block">
-    <div class="sec-label"><span class="mk">⚑</span>INITIATIVE <span class="note">— reveal a card, add Finesse, highest goes first</span></div>
-    <div class="panel" style="padding:12px 14px;">
-      <div style="display:grid;grid-template-columns:24px 1fr 66px 60px 52px 28px;gap:7px;align-items:center;font-family:'Share Tech Mono',monospace;font-size:0.42rem;letter-spacing:1px;color:var(--text-dim);margin-bottom:6px;padding:0 2px;">
-        <span>#</span><span>COMBATANT</span><span style="text-align:center;">CARD</span><span style="text-align:center;">FINESSE</span><span style="text-align:center;">TOTAL</span><span></span>
-      </div>
-      <div id="init-list"></div>
-      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
-        <button onclick="addInitRow()" style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:2px;padding:6px 14px;background:transparent;border:2px solid var(--purple);color:var(--purple);cursor:pointer;transform:skewX(-8deg);">+ ADD COMBATANT</button>
-        <button onclick="newInitRound()" style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:2px;padding:6px 14px;background:transparent;border:2px solid var(--gold,#cf9500);color:var(--gold,#cf9500);cursor:pointer;transform:skewX(-8deg);">🔄 NEW ROUND</button>
-      </div>
-    </div>
-  </div>
-
   <!-- ROW 5: COMBAT NOTES -->
   <div class="block">
     <div class="sec-label"><span class="mk">◆</span>COMBAT NOTES</div>
     <div class="panel">
-      <textarea id="c-notes" class="notes-area" placeholder="Initiative order, enemy HP, terrain notes, anything mid-combat..."></textarea>
+      <textarea id="c-notes" class="notes-area" placeholder="Turn order, enemy HP, terrain notes, anything mid-combat..."></textarea>
     </div>
   </div>
 
@@ -457,7 +442,13 @@ let tempBuffs=[];
 let _selBuffStats=new Set();
 // normalize old {label,stat,value} → new {label,bonuses:[{stat,value}]}
 function normBuff(b){if(b.bonuses)return b;return{label:b.label||b.stat,bonuses:[{stat:b.stat,value:parseInt(b.value)||0}]};}
-function buffBonusFor(statName){return tempBuffs.reduce((sum,b)=>{const n=normBuff(b);return sum+n.bonuses.filter(x=>x.stat&&x.stat.toLowerCase()===statName.toLowerCase()).reduce((s,x)=>s+(parseInt(x.value)||0),0);},0);}
+function gearBonusFor(statName){
+  const key=(statName||'').toLowerCase();let sum=0;
+  try{const raw=load('ctg-accessories');if(raw)JSON.parse(raw).forEach(a=>{if(a.eq&&a.modStat&&a.modStat.toLowerCase()===key)sum+=parseInt(a.modVal)||0;});}catch(e){}
+  try{const raw=load('ctg-specials');if(raw){const sp=JSON.parse(raw);Object.keys(sp||{}).forEach(k=>{const b=sp[k]&&sp[k].buff;if(b&&b.active&&b.stat&&b.stat.toLowerCase()===key)sum+=parseInt(b.value)||0;});}}catch(e){}
+  return sum;
+}
+function buffBonusFor(statName){return tempBuffs.reduce((sum,b)=>{const n=normBuff(b);return sum+n.bonuses.filter(x=>x.stat&&x.stat.toLowerCase()===statName.toLowerCase()).reduce((s,x)=>s+(parseInt(x.value)||0),0);},0)+gearBonusFor(statName);}
 (function(){try{const s=load('ctg-temp-buffs');if(s)tempBuffs=JSON.parse(s);}catch(e){tempBuffs=[];}})();
 function saveTempBuffs(){store('ctg-temp-buffs',JSON.stringify(tempBuffs));}
 function buildTempBuffs(){
@@ -1043,58 +1034,6 @@ function cardToDie(raw){
   if(det)det.addEventListener('toggle',function(){const a=document.getElementById('c2d-arrow');if(a)a.textContent=this.open?'▾':'▸';});
 })();
 
-// ── INITIATIVE ──
-const initUid=()=>'i'+Math.random().toString(36).slice(2,7);
-let initList=[];
-(function(){try{const s=load('ctg-initiative');if(s)initList=JSON.parse(s);}catch(e){initList=[];}})();
-function saveInit(){store('ctg-initiative',JSON.stringify(initList));}
-function initCardVal(raw){
-  raw=(''+raw).trim().toUpperCase();
-  if(raw==='A'||raw==='ACE')return 12;
-  if(raw==='J'||raw==='Q'||raw==='K')return 10;
-  const n=parseInt(raw,10);
-  if(isNaN(n))return 0;
-  return Math.max(0,Math.min(13,n));
-}
-function finesseScore(){
-  try{const s=load('ctg-stats');if(s){const arr=JSON.parse(s);const f=arr.find(x=>/^fines/i.test(x.name||''));if(f)return parseInt(f.score)||0;}}catch(e){}
-  return 0;
-}
-function ensureYouRow(){
-  if(!initList.some(r=>r.you)){initList.unshift({id:initUid(),name:(load('ctg-f-name')||'You'),you:true,card:'',fin:finesseScore()});}
-}
-function initTotal(r){return initCardVal(r.card)+(parseInt(r.fin)||0);}
-function renderInit(){
-  ensureYouRow();
-  const list=document.getElementById('init-list');if(!list)return;list.innerHTML='';
-  const sorted=initList.slice().sort((a,b)=>initTotal(b)-initTotal(a));
-  sorted.forEach((r,i)=>{
-    const row=document.createElement('div');
-    row.style.cssText='display:grid;grid-template-columns:24px 1fr 66px 60px 52px 28px;gap:7px;align-items:center;padding:4px 2px;'+(r.you?'background:rgba(109,40,217,0.08);':'')+'border-bottom:1px solid var(--border);';
-    row.innerHTML=`
-      <span style="font-family:'Anton',sans-serif;font-size:1rem;color:${i===0?'var(--gold,#cf9500)':'var(--text-dim)'};text-align:center;">${i+1}</span>
-      <div style="display:flex;align-items:center;gap:5px;min-width:0;">
-        ${r.you?'<span style="font-family:\'Share Tech Mono\',monospace;font-size:0.4rem;letter-spacing:1px;color:var(--purple2);border:1px solid var(--purple2);padding:1px 3px;white-space:nowrap;">YOU</span>':''}
-        <input data-f="name" value="${(r.name||'').replace(/"/g,'&quot;')}" placeholder="Name" style="flex:1;min-width:40px;background:transparent;border:none;border-bottom:1px solid var(--border2);color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.86rem;padding:2px;outline:none;">
-      </div>
-      <input data-f="card" value="${(r.card||'').replace(/"/g,'&quot;')}" placeholder="card" title="1–10, J, Q, K, A" style="text-align:center;background:transparent;border:1.5px solid var(--border2);color:var(--text);font-family:'Share Tech Mono',monospace;font-size:0.66rem;padding:3px;outline:none;text-transform:uppercase;">
-      <input data-f="fin" type="number" value="${parseInt(r.fin)||0}" style="text-align:center;background:transparent;border:1.5px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:0.9rem;padding:2px;outline:none;">
-      <span data-total style="font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--purple);text-align:center;">${initTotal(r)}</span>
-      <button data-del title="Remove" style="background:var(--red-deep,#a8102c);border:1.5px solid var(--ink);color:#fff;font-family:'Bebas Neue',sans-serif;font-size:0.7rem;width:24px;height:24px;cursor:pointer;${r.you?'opacity:0.35;':''}">✕</button>`;
-    row.querySelectorAll('[data-f]').forEach(inp=>{
-      inp.addEventListener('input',()=>{r[inp.dataset.f]=inp.value;row.querySelector('[data-total]').textContent=initTotal(r);saveInit();});
-      inp.addEventListener('change',()=>{saveInit();renderInit();});
-    });
-    row.querySelector('[data-del]').addEventListener('click',()=>{
-      if(r.you){alert('The YOU row stays — edit or clear it instead.');return;}
-      initList=initList.filter(x=>x.id!==r.id);saveInit();renderInit();
-    });
-    list.appendChild(row);
-  });
-}
-function addInitRow(){initList.push({id:initUid(),name:'',you:false,card:'',fin:0});saveInit();renderInit();}
-function newInitRound(){initList=initList.filter(r=>r.you);initList.forEach(r=>r.card='');ensureYouRow();saveInit();renderInit();}
-
 // ── CALCULATOR ──
 (function(){
   let _expr='';let _val='0';let _justEvaled=false;
@@ -1159,7 +1098,7 @@ function applyHearthName(){
   const lbl=document.getElementById('c-hearth-label');if(lbl)lbl.textContent=nm.toUpperCase();
   const rl=document.getElementById('restore-hearth-lbl');if(rl)rl.textContent=nm;
 }
-pullData();renderConditions();renderInit();applyHearthName();
+pullData();renderConditions();applyHearthName();
 
 // Cross-tab sync — pick up HP/temp changes made on the stats page
 window.addEventListener('storage',e=>{
@@ -1167,7 +1106,8 @@ window.addEventListener('storage',e=>{
   if(e.key==='ctg-harth-temp'){cstate.temp=parseInt(e.newValue)||0;refreshVitals();}
   if(e.key==='ctg-harth-max'){cstate.harthMax=parseInt(e.newValue)||6;refreshVitals();}
   if(e.key==='ctg-custom-abilities'){buildCustomAbilities();}
-  if(e.key==='ctg-specials'){buildSpecials();}
+  if(e.key==='ctg-specials'){buildSpecials();buildStats();buildLoadout();}
+  if(e.key==='ctg-accessories'){buildLoadout();buildStats();}
   if(e.key==='ctg-hearth-name'){applyHearthName();}
 });
 </script>

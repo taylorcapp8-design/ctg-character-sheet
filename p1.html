@@ -98,9 +98,9 @@
         <!-- EF — pulled from armour page total -->
         <div class="vital-box ef">
           <span class="vital-label">EF (ARMOUR)</span>
-          <input type="number" class="vital-input" id="ef-val" value="0" min="0" title="Auto-totalled from Armour page. Can override here.">
+          <input type="number" class="vital-input" id="ef-val" value="0" min="0" title="Your Extra Flesh armour value — reduces incoming damage.">
           <div class="hp-track" id="ef-track"></div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;color:var(--text-dim);text-align:center;margin-top:3px;">from armour page</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;color:var(--text-dim);text-align:center;margin-top:3px;">armour · cuts damage</div>
         </div>
         <!-- HEARTH (mana) — renamable per setting (e.g. Haki, Chakra, Mana) -->
         <div class="vital-box" style="border-color:#3b82f6;">
@@ -203,22 +203,49 @@ let stats=[];
   if(_nameChanged)saveStats();
 })();
 function saveStats(){save('ctg-stats',JSON.stringify(stats));}
-function getBuffBonusFor(statName){
+// Collect every modifier hitting a stat, tagged with where it comes from, so
+// the sheet can show the running total AND its sources (like the buff panel).
+function getStatSources(statName){
+  const key=(statName||'').toLowerCase();const out=[];
+  // 1 · temp buffs (from the Combat page)
   try{
-    const raw=load('ctg-temp-buffs');if(!raw)return 0;
-    const buffs=JSON.parse(raw);
-    return buffs.reduce((sum,b)=>{
+    const raw=load('ctg-temp-buffs');
+    if(raw)JSON.parse(raw).forEach(b=>{
       const bonuses=b.bonuses||[{stat:b.stat,value:parseInt(b.value)||0}];
-      return sum+bonuses.filter(x=>x.stat&&x.stat.toLowerCase()===statName.toLowerCase()).reduce((s,x)=>s+(parseInt(x.value)||0),0);
-    },0);
-  }catch(e){return 0;}
+      const v=bonuses.filter(x=>x.stat&&x.stat.toLowerCase()===key).reduce((s,x)=>s+(parseInt(x.value)||0),0);
+      if(v)out.push({label:b.label||'Buff',value:v,kind:'buff'});
+    });
+  }catch(e){}
+  // 2 · equipped accessories (from the Arsenal & Gear page)
+  try{
+    const raw=load('ctg-accessories');
+    if(raw)JSON.parse(raw).forEach(a=>{
+      const v=parseInt(a.modVal)||0;
+      if(a.eq&&a.modStat&&a.modStat.toLowerCase()===key&&v)out.push({label:a.name||'Accessory',value:v,kind:'acc'});
+    });
+  }catch(e){}
+  // 3 · active specials (from the Specials page)
+  try{
+    const raw=load('ctg-specials');
+    if(raw){const spec=JSON.parse(raw);
+      Object.keys(spec||{}).forEach(rk=>{const c=spec[rk];const b=c&&c.buff;
+        const v=b?parseInt(b.value)||0:0;
+        if(b&&b.active&&b.stat&&b.stat.toLowerCase()===key&&v)out.push({label:c.name||(rk.charAt(0).toUpperCase()+rk.slice(1)),value:v,kind:'spec'});
+      });
+    }
+  }catch(e){}
+  return out;
 }
+function getBuffBonusFor(statName){return getStatSources(statName).reduce((s,x)=>s+x.value,0);}
 function renderStats(){
   const w=document.getElementById('stat-bars');w.innerHTML='';
+  const kindCol={buff:'var(--gold,#cf9500)',acc:'var(--purple)',spec:'var(--purple)'};
   stats.forEach((st,i)=>{
     const score=parseInt(st.score)||0;
-    const buff=getBuffBonusFor(st.name);
+    const srcs=getStatSources(st.name);
+    const buff=srcs.reduce((s,x)=>s+x.value,0);
     const buffBadge=buff?`<span style="font-family:'Anton',sans-serif;font-size:0.65rem;color:var(--gold,#cf9500);background:rgba(207,149,0,0.12);border:1px solid var(--gold,#cf9500);padding:1px 5px;white-space:nowrap;">⚡${buff>=0?'+':''}${buff} = ${score+buff}</span>`:'';
+    const srcLine=srcs.length?`<div class="stat-src-line">${srcs.map(s=>`<span class="stat-src" style="border-color:${kindCol[s.kind]||'var(--gold,#cf9500)'};color:${kindCol[s.kind]||'var(--gold,#cf9500)'};">${esc(s.label)} ${s.value>=0?'+':''}${s.value}</span>`).join('')}</div>`:'';
     const row=document.createElement('div');row.className='stat-bar';
     if(buff){row.style.borderColor='var(--gold,#cf9500)';row.style.background='rgba(207,149,0,0.07)';}
     row.innerHTML=`
@@ -233,7 +260,7 @@ function renderStats(){
         ${buffBadge}
         <span class="stat-sp">${sp(score)}<span>SP</span></span>
         <button class="mini-del" title="Remove" data-del="${i}">✕</button>
-      </div>`;
+      </div>${srcLine}`;
     w.appendChild(row);
     const scoreInput=row.querySelector('.stat-score-input');
     const spEl=row.querySelector('.stat-sp');
@@ -373,7 +400,7 @@ window.addEventListener('storage',e=>{
   if(e.key==='ctg-hearth-cur'){document.getElementById('hearth-cur').value=parseInt(e.newValue)||0;refreshTracks();}
   if(e.key==='ctg-hearth-max'){document.getElementById('hearth-max').value=parseInt(e.newValue)||6;refreshTracks();}
   if(e.key==='ctg-inventory'){renderCarryMirror();}
-  if(e.key==='ctg-temp-buffs'){renderStats();}
+  if(e.key==='ctg-temp-buffs'||e.key==='ctg-accessories'||e.key==='ctg-specials'){renderStats();}
 });
 
 /* init */

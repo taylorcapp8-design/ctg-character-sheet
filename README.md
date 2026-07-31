@@ -20,7 +20,7 @@ ctg-character-sheet/
 ├── index.html          Hub — login, character overview, session management
 ├── p1.html             Page I   — Identity, Stats, HP, Hearth, Carry
 ├── p3.html             Page II  — Core Faculties & Tunings
-├── p4.html             Page III — Arsenal & Gear: Weapons / Accessories / Armour tabs, Carry, Mula, Catalog, Glossary
+├── p4.html             Page III — Arsenal & Gear: Weapons / Accessories tabs, Carry, Mula, Catalog, Glossary
 ├── p5.html             Page IV  — Skill Tree
 ├── p6.html             Page V   — Combat: vitals, attack calculator, skills, buffs
 ├── p7.html             Page VI  — Specials (4 face-card slots) + Keyword Ability Workshop
@@ -43,21 +43,19 @@ ctg-character-sheet/
 | Cloud sync (Supabase) with session collision guard | All pages |
 | 8 switchable colour themes | All pages |
 | Character name synced across all pages | All pages |
-| HP & Hearth (mana) trackers with pip display | P1, P6 |
-| Extra Flesh armour system with body-part SVG | P2 |
-| EF Kit inventory | P2 |
+| HP, Hearth (mana) & EF (armour) trackers with pip display | P1, P6 |
 | Core Faculties + Tuning selection (max 2 active) | P3 |
 | Weapon catalog with stat/dice/quirk editor | P4 |
-| Oddity system — Hearth Cost activation | P4, P6 |
+| Accessories — equip up to 4, each can grant a stat bonus | P4 |
 | Skill Tree with point budget | P5 |
-| Combat page — conditions, damage calc, attack rolls, buffs | P6 |
+| Combat page — conditions (with round countdown), damage calc, attack rolls, buffs | P6 |
+| Stat modifiers with source breakdown (buffs + accessories + specials) | P1, P6 |
 | Temp buffs with multi-stat support and presets | P6 |
-| Specials — 4 face-card ability slots (J/Q/K/A) with freeform / workshop toggle | P7 |
+| Specials — 4 face-card ability slots (J/Q/K/A) with freeform / workshop toggle + optional stat buff | P7 |
 | Keyword Ability Workshop — combine keywords into an auto-written, editable ability | P7 |
 | Flavour Quiz (built-in) + optional **AI Flavour** via a free-LLM edge function | P7 |
 | Card → dice cheat sheet (collapsible) + live card-value lookup | P6 |
-| Initiative tracker — card value + Finesse, auto-sorted turn order | P6 |
-| Cross-tab localStorage sync | P1 ↔ P6 ↔ P7 |
+| Cross-tab localStorage sync | P1 ↔ P4 ↔ P6 ↔ P7 |
 
 ---
 
@@ -106,10 +104,8 @@ Oddities no longer have charges. Each Oddity has a configurable **Hearth Cost** 
 | `ctg-hearth-cur` | Current Hearth (mana) |
 | `ctg-hearth-max` | Max Hearth |
 | `ctg-hearth-name` | Custom display name for the Hearth resource (e.g. Haki, Chakra) |
-| `ctg-ef` | Total EF (armour) value |
-| `ctg-ef-parts` | JSON — per-body-part EF equipment |
-| `ctg-ef-kit` | JSON — EF Kit items |
-| `ctg-accessories` | JSON — accessories list (name/effect/equipped, max 4 equipped; migrated from old charms) |
+| `ctg-ef` | EF (armour) value — edited on the Stats page |
+| `ctg-accessories` | JSON — accessories list (name/effect/equipped + optional stat mod, max 4 equipped) |
 | `ctg-inventory` | JSON — carry list |
 | `ctg-mula` | Currency amount |
 | `ctg-weapons` | JSON — weapon list with slot/stat/dice/quirk |
@@ -118,12 +114,11 @@ Oddities no longer have charges. Each Oddity has a configurable **Hearth Cost** 
 | `ctg-faculties` | JSON — active faculties + tuning selections |
 | `ctg-skills` | JSON array — purchased skill IDs |
 | `ctg-custom-abilities` | JSON — custom ability entries |
-| `ctg-specials` | JSON — 4 face-card special ability slots (J/Q/K/A) |
+| `ctg-specials` | JSON — 4 face-card special ability slots (J/Q/K/A), each with an optional stat buff |
 | `ctg-ability-workshop` | JSON — workshop draft + saved ability library |
 | `ctg-temp-buffs` | JSON — active temp stat buffs |
 | `ctg-buff-presets` | JSON — saved buff presets |
 | `ctg-combat-notes` | Combat notes textarea |
-| `ctg-initiative` | JSON — initiative tracker combatant rows |
 | `ctg-theme` | Active theme name |
 | `ctg-portrait` | Base64 portrait image |
 | `ctg-last-edit` | Timestamp of last local save |

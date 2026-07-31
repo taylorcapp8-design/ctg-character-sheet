@@ -36,6 +36,13 @@
 .acc-eq-btn{margin-top:8px;font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:2px;padding:5px 14px;border:1.5px solid var(--purple);background:transparent;color:var(--purple);cursor:pointer;transform:skewX(-7deg);}
 .acc-eq-btn.on{background:var(--purple);color:#fff;}
 .acc-eq-btn:disabled{opacity:0.4;cursor:not-allowed;border-color:var(--border2);color:var(--text-dim);}
+.acc-mod-row{display:flex;align-items:center;gap:6px;margin-top:7px;}
+.acc-mod-lbl{font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:var(--gold,#cf9500);white-space:nowrap;}
+.acc-mod-stat{flex:1;min-width:0;background:transparent;border:1.5px solid var(--border2);color:var(--text);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.78rem;padding:3px 4px;outline:none;}
+.acc-mod-stat:focus{border-color:var(--gold,#cf9500);}
+.acc-mod-val{width:48px;text-align:center;background:transparent;border:1.5px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-size:1rem;padding:2px;outline:none;}
+.acc-mod-val:focus{border-color:var(--gold,#cf9500);}
+.acc-slot-mod{margin-top:5px;display:inline-block;font-family:'Anton',sans-serif;font-size:0.68rem;color:var(--gold,#cf9500);background:rgba(207,149,0,0.12);border:1px solid var(--gold,#cf9500);padding:1px 6px;letter-spacing:0.5px;}
 </style>
 </head>
 <body>
@@ -66,7 +73,6 @@
   <div class="cat-tabs ag-tabs">
     <button class="cat-tab active" data-agtab="weapons" onclick="showAG('weapons')">⚔ WEAPONS</button>
     <button class="cat-tab" data-agtab="accessories" onclick="showAG('accessories')">✦ ACCESSORIES</button>
-    <button class="cat-tab" data-agtab="armour" onclick="showAG('armour')">♠&#xFE0E; ARMOUR</button>
   </div>
 
   <!-- ── WEAPONS ── -->
@@ -96,96 +102,6 @@
         <button class="add-btn add-row" onclick="addAccessory()">+ ADD ACCESSORY</button>
       </div>
     </details>
-  </div>
-
-  <!-- ── ARMOUR ── -->
-  <div id="ag-armour" style="display:none;">
-    <div class="block">
-      <div class="sec-label"><span class="mk">♠&#xFE0E;</span>EXTRA FLESH</div>
-      <div class="panel ef-panel">
-        <div class="ef-body-ui">
-          <div class="ef-silhouette-wrap">
-            <div class="ef-svg-hint">Click a zone to equip</div>
-            <svg class="ef-silhouette" viewBox="0 0 120 252" xmlns="http://www.w3.org/2000/svg">
-              <rect class="ef-neck" x="54" y="50" width="12" height="9"/>
-              <g class="ef-part-group" data-part="head">
-                <polygon class="ef-body-part" points="46,2 74,2 80,12 78,46 60,52 42,46 40,12"/>
-                <polygon class="ef-panel-detail" points="42,20 52,18 53,28 43,30"/>
-                <polygon class="ef-panel-detail" points="67,18 77,20 77,30 67,28"/>
-                <line class="ef-panel-detail" x1="52" y1="44" x2="68" y2="44"/>
-                <line class="ef-panel-detail" x1="60" y1="2" x2="60" y2="14"/>
-                <text class="ef-part-label" x="60" y="36">HEAD</text>
-                <text class="ef-badge" x="60" y="13" id="badge-head"></text>
-                <title>Head</title>
-              </g>
-              <g class="ef-part-group" data-part="torso">
-                <polygon class="ef-body-part" points="34,58 86,58 82,120 38,120"/>
-                <polyline class="ef-panel-detail" points="34,58 60,80 86,58"/>
-                <line class="ef-panel-detail" x1="38" y1="80" x2="82" y2="80"/>
-                <line class="ef-panel-detail" x1="40" y1="100" x2="80" y2="100"/>
-                <line class="ef-panel-detail" x1="60" y1="58" x2="60" y2="120"/>
-                <polygon class="ef-panel-detail" points="60,82 68,91 60,100 52,91"/>
-                <polygon class="ef-panel-detail" points="44,100 76,100 74,118 46,118"/>
-                <text class="ef-part-label" x="60" y="74">TORSO</text>
-                <text class="ef-badge" x="60" y="113" id="badge-torso"></text>
-                <title>Torso</title>
-              </g>
-              <g class="ef-part-group" data-part="l-arm">
-                <polygon class="ef-body-part" points="34,60 14,68 10,120 26,120 34,112"/>
-                <circle class="ef-panel-detail" cx="20" cy="73" r="5"/>
-                <polygon class="ef-panel-detail" points="11,92 27,90 27,102 11,104"/>
-                <line class="ef-panel-detail" x1="18" y1="68" x2="12" y2="120"/>
-                <text class="ef-badge" x="21" y="85" id="badge-l-arm"></text>
-                <title>Left Arm</title>
-              </g>
-              <g class="ef-part-group" data-part="r-arm">
-                <polygon class="ef-body-part" points="86,60 106,68 110,120 94,120 86,112"/>
-                <circle class="ef-panel-detail" cx="100" cy="73" r="5"/>
-                <polygon class="ef-panel-detail" points="93,90 109,92 109,104 93,102"/>
-                <line class="ef-panel-detail" x1="102" y1="68" x2="108" y2="120"/>
-                <text class="ef-badge" x="99" y="85" id="badge-r-arm"></text>
-                <title>Right Arm</title>
-              </g>
-              <g class="ef-part-group" data-part="l-leg">
-                <polygon class="ef-body-part" points="38,136 62,136 60,250 38,250"/>
-                <polygon class="ef-panel-detail" points="38,170 62,170 61,188 37,188"/>
-                <circle class="ef-panel-detail" cx="50" cy="179" r="7"/>
-                <line class="ef-panel-detail" x1="40" y1="156" x2="60" y2="156"/>
-                <line class="ef-panel-detail" x1="40" y1="212" x2="58" y2="212"/>
-                <text class="ef-badge" x="50" y="197" id="badge-l-leg"></text>
-                <title>Left Leg</title>
-              </g>
-              <g class="ef-part-group" data-part="r-leg">
-                <polygon class="ef-body-part" points="58,136 82,136 82,250 60,250"/>
-                <polygon class="ef-panel-detail" points="59,170 83,170 83,188 61,188"/>
-                <circle class="ef-panel-detail" cx="70" cy="179" r="7"/>
-                <line class="ef-panel-detail" x1="60" y1="156" x2="80" y2="156"/>
-                <line class="ef-panel-detail" x1="62" y1="212" x2="80" y2="212"/>
-                <text class="ef-badge" x="70" y="197" id="badge-r-leg"></text>
-                <title>Right Leg</title>
-              </g>
-            </svg>
-            <div class="ef-legend"><span class="ef-legend-ef">EF EQUIPPED</span></div>
-          </div>
-          <div class="ef-detail-panel" id="ef-detail-panel"></div>
-        </div>
-        <div class="ef-footer">
-          <div class="ef-custom-section">
-            <div class="ef-custom-header">CUSTOM EF TYPES</div>
-            <div id="ef-custom-types-list"></div>
-            <button class="add-btn add-row" onclick="addCustomType()">+ ADD CUSTOM TYPE</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="block">
-      <div class="sec-label"><span class="mk">♠&#xFE0E;</span>EF KIT <span class="note">EQUIPMENT &amp; CUSTOM</span></div>
-      <div class="panel">
-        <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);letter-spacing:1px;margin-bottom:12px;">Spare parts, mods, tools, and custom equipment for your rig.</div>
-        <div id="ef-kit-list" style="display:flex;flex-direction:column;gap:7px;margin-bottom:10px;"></div>
-        <button class="add-btn add-row" onclick="addEFKitItem()">+ ADD ITEM</button>
-      </div>
-    </div>
   </div>
 
   <!-- ══ SHARED: CARRY + MULA ══ -->
@@ -251,7 +167,7 @@ const uid=()=>'x'+Math.random().toString(36).slice(2,8);
 /* ── MAIN TABS ─────────────────────────────────────────── */
 function showAG(t){
   document.querySelectorAll('.ag-tabs .cat-tab').forEach(b=>b.classList.toggle('active',b.dataset.agtab===t));
-  ['weapons','accessories','armour'].forEach(k=>{const el=document.getElementById('ag-'+k);if(el)el.style.display=k===t?'':'none';});
+  ['weapons','accessories'].forEach(k=>{const el=document.getElementById('ag-'+k);if(el)el.style.display=k===t?'':'none';});
   try{localStorage.setItem('ctg-ag-tab',t);}catch(e){}
 }
 
@@ -423,13 +339,15 @@ let accessories=[];
 })();
 function saveAccessories(){store('ctg-accessories',JSON.stringify(accessories));}
 function eqCount(){return accessories.filter(a=>a.eq).length;}
+function accModBadge(a){const v=parseInt(a.modVal)||0;if(!a.modStat||!v)return '';return `<div class="acc-slot-mod">⚡ ${v>0?'+':''}${v} ${esc(a.modStat)}</div>`;}
 function renderAccessories(){
   const eq=document.getElementById('eq-accessories');const all=document.getElementById('all-accessories');
   const equipped=accessories.filter(a=>a.eq).slice(0,4);
   eq.innerHTML='';
+  const statNames=getStatNames();
   for(let i=0;i<4;i++){
     const a=equipped[i];const slot=document.createElement('div');slot.className='acc-slot '+(a?'filled':'empty');
-    if(a)slot.innerHTML=`<div class="acc-slot-name">${esc(a.name)||'Unnamed'}</div>${a.effect?`<div class="acc-slot-effect">${esc(a.effect)}</div>`:''}<button class="acc-unequip" data-un="${a.id}">✕ unequip</button>`;
+    if(a)slot.innerHTML=`<div class="acc-slot-name">${esc(a.name)||'Unnamed'}</div>${a.effect?`<div class="acc-slot-effect">${esc(a.effect)}</div>`:''}${accModBadge(a)}<button class="acc-unequip" data-un="${a.id}">✕ unequip</button>`;
     else slot.innerHTML=`<div class="acc-slot-empty">— empty slot ${i+1} —</div>`;
     eq.appendChild(slot);
   }
@@ -439,11 +357,18 @@ function renderAccessories(){
   accessories.forEach(a=>{
     const card=document.createElement('div');card.className='acc-card'+(a.eq?' is-eq':'');
     const full=!a.eq&&n>=4;
+    const statOpts='<option value="">— no stat boost —</option>'+statNames.map(nm=>`<option value="${esc(nm)}"${a.modStat===nm?' selected':''}>${esc(nm)}</option>`).join('');
     card.innerHTML=`<button class="card-del" data-del="${a.id}">✕</button>
       <input class="ed acc-name" data-f="name" value="${esc(a.name)}" placeholder="Accessory name">
       <textarea class="ed acc-effect" data-f="effect" rows="2" placeholder="What it does...">${esc(a.effect)}</textarea>
+      <div class="acc-mod-row">
+        <span class="acc-mod-lbl">⚡ STAT</span>
+        <select class="ed acc-mod-stat" data-f="modStat">${statOpts}</select>
+        <input class="ed acc-mod-val" data-f="modVal" type="number" value="${parseInt(a.modVal)||0}" title="Bonus applied to that stat while equipped">
+      </div>
       <button class="acc-eq-btn ${a.eq?'on':''}" data-eq="${a.id}"${full?' disabled':''}>${a.eq?'✓ EQUIPPED':(full?'SLOTS FULL (4)':'EQUIP')}</button>`;
-    card.querySelectorAll('[data-f]').forEach(inp=>inp.addEventListener('input',()=>{a[inp.dataset.f]=inp.value;saveAccessories();if(a.eq)renderEquippedOnly();}));
+    card.querySelectorAll('.acc-name,.acc-effect').forEach(inp=>inp.addEventListener('input',()=>{a[inp.dataset.f]=inp.value;saveAccessories();if(a.eq)renderEquippedOnly();}));
+    card.querySelectorAll('.acc-mod-stat,.acc-mod-val').forEach(inp=>inp.addEventListener('change',()=>{a[inp.dataset.f]=inp.dataset.f==='modVal'?(parseInt(inp.value)||0):inp.value;saveAccessories();renderAccessories();}));
     card.querySelector('[data-eq]').addEventListener('click',()=>{if(!a.eq&&eqCount()>=4)return;a.eq=!a.eq;saveAccessories();renderAccessories();});
     card.querySelector('[data-del]').addEventListener('click',()=>{if(confirm('Delete "'+(a.name||'this accessory')+'"?')){accessories=accessories.filter(x=>x.id!==a.id);saveAccessories();renderAccessories();}});
     all.appendChild(card);
@@ -454,115 +379,7 @@ function renderEquippedOnly(){ // light refresh of the top slots while typing
   const eq=document.getElementById('eq-accessories');const equipped=accessories.filter(a=>a.eq).slice(0,4);
   [...eq.children].forEach((slot,i)=>{const a=equipped[i];if(a&&slot.classList.contains('filled')){const nm=slot.querySelector('.acc-slot-name');const ef=slot.querySelector('.acc-slot-effect');if(nm)nm.textContent=a.name||'Unnamed';if(ef)ef.textContent=a.effect||'';}});
 }
-function addAccessory(){accessories.push({id:uid(),name:'',effect:'',eq:false});saveAccessories();renderAccessories();const cards=document.querySelectorAll('#all-accessories .acc-card');if(cards.length)cards[cards.length-1].querySelector('.acc-name').focus();}
-
-/* ── EXTRA FLESH (armour) ──────────────────────────────── */
-const PRESET_EF_TYPES=[
-  {id:'sp',name:'Subdermal Plate',ef:2,desc:'Thin titanium mesh woven beneath skin. Rigid and completely invisible.'},
-  {id:'rf',name:'Reactive Foam',ef:1,desc:'Impact-expanding polymer layer. Excellent against blunt force.'},
-  {id:'cw',name:'Carbon Weave',ef:3,desc:'Dense carbon-fibre lattice. Heavy but highly effective.'},
-  {id:'bg',name:'Bio-Gel Layer',ef:1,desc:'Self-sealing organic gel pocket. Flexible and near-invisible.'},
-  {id:'nm',name:'Nano-Scale Mail',ef:2,desc:'Microscopic chain rings. Silk-soft to the touch, stops a blade cold.'},
-  {id:'bl',name:'Bone Lattice',ef:4,desc:'Reinforced skeletal structure grafted to bone. Major surgery required.'},
-  {id:'sd',name:'Shock Dampener',ef:2,desc:'Piezoelectric muscle fibres that absorb and dissipate kinetic energy.'},
-  {id:'cs',name:'Ceramic Shards',ef:3,desc:'Anti-ballistic ceramic embedded beneath skin. Cracks on heavy impact — one-use.'},
-];
-const EF_PART_IDS=['head','torso','l-arm','r-arm','l-leg','r-leg'];
-const PART_LABELS={head:'HEAD',torso:'TORSO','l-arm':'L·ARM','r-arm':'R·ARM','l-leg':'L·LEG','r-leg':'R·LEG'};
-let efParts={},customEfTypes=[],selectedPart=null;
-(function(){
-  const s=load('ctg-ef-parts');if(s){try{efParts=JSON.parse(s);}catch(e){efParts={};}}
-  EF_PART_IDS.forEach(id=>{if(!(id in efParts))efParts[id]=null;});
-  const ct=load('ctg-ef-custom-types');if(ct){try{customEfTypes=JSON.parse(ct);}catch(e){customEfTypes=[];}}
-})();
-function saveEFParts(){store('ctg-ef-parts',JSON.stringify(efParts));syncEFTotal();}
-function saveCustomTypes(){store('ctg-ef-custom-types',JSON.stringify(customEfTypes));}
-function syncEFTotal(){const t=EF_PART_IDS.reduce((s,id)=>s+(efParts[id]?parseInt(efParts[id].ef)||0:0),0);try{localStorage.setItem('ctg-ef',t);}catch(e){}}
-function closeZone(){selectedPart=null;updateSVGStates();renderEFDetail();}
-function allEFTypes(){return[...PRESET_EF_TYPES,...customEfTypes];}
-function selectPart(partId){selectedPart=partId;updateSVGStates();renderEFDetail();}
-function updateSVGStates(){
-  document.querySelectorAll('.ef-part-group').forEach(g=>{const id=g.dataset.part;g.classList.toggle('selected',id===selectedPart);g.classList.toggle('has-ef',!!efParts[id]);});
-  EF_PART_IDS.forEach(id=>{const b=document.getElementById('badge-'+id);if(b)b.textContent=efParts[id]?'+'+efParts[id].ef:'';});
-}
-function renderEFDetail(){const panel=document.getElementById('ef-detail-panel');if(!panel)return;if(!selectedPart){renderEFOverview(panel);return;}renderEFPartPanel(panel);}
-function renderEFOverview(panel){
-  const totalEF=EF_PART_IDS.reduce((s,id)=>s+(efParts[id]?parseInt(efParts[id].ef)||0:0),0);
-  const rows=EF_PART_IDS.map(id=>{const ef=efParts[id];const label=PART_LABELS[id];
-    if(ef)return `<div class="ef-ov-row ef-ov-equipped" onclick="selectPart('${id}')"><span class="ef-ov-zone">${label}</span><div class="ef-ov-info"><div class="ef-ov-name">${esc(ef.name||'Unknown')}<span class="ef-ov-val">+${ef.ef||0}</span></div>${ef.ability?`<div class="ef-ov-ability">${esc(ef.ability)}</div>`:''}</div></div>`;
-    return `<div class="ef-ov-row ef-ov-bare" onclick="selectPart('${id}')"><span class="ef-ov-zone">${label}</span><span class="ef-ov-unarmoured">unarmoured — click to equip</span></div>`;
-  }).join('');
-  panel.innerHTML=`<div class="ef-ov-header"><span class="ef-ov-title">EF LOADOUT</span><span class="ef-ov-total-ef">+${totalEF}</span></div><div class="ef-ov-list">${rows}</div>`;
-}
-function renderEFPartPanel(panel){
-  const label=PART_LABELS[selectedPart]||selectedPart.toUpperCase();const current=efParts[selectedPart];const types=allEFTypes();
-  const selId=current?current.typeId:(types[0]?.id||'');const selType=types.find(t=>t.id===selId)||types[0];
-  panel.innerHTML=`
-    <button class="ef-back-btn" onclick="closeZone()">← LOADOUT</button>
-    <div class="ef-detail-part-name">${label}</div>
-    ${current?`<div class="ef-applied-badge">EF+${current.ef} · ${esc(current.name)}</div>`:`<div class="ef-no-flesh">NO EXTRA FLESH</div>`}
-    <div class="ef-form">
-      <div class="ef-form-row"><div class="ef-form-label">TYPE</div>
-        <select class="ef-type-select" id="ef-type-sel">${types.map(t=>`<option value="${esc(t.id)}"${t.id===selId?' selected':''}>${esc(t.name)} · EF+${t.ef}</option>`).join('')}</select>
-      </div>
-      <div class="ef-type-desc" id="ef-type-desc">${selType?esc(selType.desc):''}</div>
-      <div class="ef-form-row" style="flex-direction:row;align-items:center;gap:10px;"><div class="ef-form-label" style="white-space:nowrap;">EF VALUE</div>
-        <input class="ef-ef-input" type="number" id="ef-ef-val" min="0" value="${current?current.ef:(selType?selType.ef:0)}"></div>
-      <div class="ef-form-row"><div class="ef-form-label">ABILITY / PASSIVE</div>
-        <textarea class="ef-ability-input" id="ef-ability-val" rows="2" placeholder="Special effect or passive...">${current?esc(current.ability||''):''}</textarea></div>
-      <div class="ef-form-actions">
-        ${current?`<button class="ef-btn ef-btn-remove" onclick="removeEF('${selectedPart}')">✕ REMOVE</button><button class="ef-btn ef-btn-apply" onclick="applyEF('${selectedPart}')">↻ CHANGE</button>`:`<button class="ef-btn ef-btn-apply" onclick="applyEF('${selectedPart}')">✓ APPLY</button>`}
-      </div>
-    </div>`;
-  const sel=document.getElementById('ef-type-sel');
-  sel.addEventListener('change',()=>{const t=allEFTypes().find(x=>x.id===sel.value);const desc=document.getElementById('ef-type-desc');if(desc&&t)desc.textContent=t.desc;const efInp=document.getElementById('ef-ef-val');if(efInp&&t)efInp.value=t.ef;});
-}
-function applyEF(partId){const sel=document.getElementById('ef-type-sel');const efInp=document.getElementById('ef-ef-val');const abilInp=document.getElementById('ef-ability-val');if(!sel||!efInp)return;const t=allEFTypes().find(x=>x.id===sel.value);efParts[partId]={typeId:sel.value,name:t?t.name:sel.value,ef:parseInt(efInp.value)||0,ability:abilInp?abilInp.value:''};saveEFParts();updateSVGStates();renderEFDetail();}
-function removeEF(partId){efParts[partId]=null;saveEFParts();updateSVGStates();renderEFDetail();}
-function renderCustomTypes(){
-  const list=document.getElementById('ef-custom-types-list');if(!list)return;list.innerHTML='';
-  if(!customEfTypes.length){list.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.5rem;color:var(--text-dim);padding:8px 0;letter-spacing:1px;">No custom types yet — add one below.</div>';return;}
-  customEfTypes.forEach((t,i)=>{const d=document.createElement('div');d.className='ef-custom-type-row';
-    d.innerHTML=`<input class="ef-ct-name" value="${esc(t.name)}" placeholder="Type name..."><div class="ef-ct-ef-wrap"><span class="ef-ct-ef-label">EF+</span><input class="ef-ct-ef" type="number" value="${t.ef}" min="0"></div><input class="ef-ct-desc" value="${esc(t.desc||'')}" placeholder="Description..."><button class="mini-del" onclick="deleteCustomType(${i})">✕</button>`;
-    d.querySelector('.ef-ct-name').addEventListener('input',e=>{t.name=e.target.value;saveCustomTypes();if(selectedPart)renderEFDetail();});
-    d.querySelector('.ef-ct-ef').addEventListener('input',e=>{t.ef=parseInt(e.target.value)||0;saveCustomTypes();});
-    d.querySelector('.ef-ct-desc').addEventListener('input',e=>{t.desc=e.target.value;saveCustomTypes();});
-    list.appendChild(d);});
-}
-function addCustomType(){customEfTypes.push({id:uid(),name:'Custom Type',ef:1,desc:''});saveCustomTypes();renderCustomTypes();}
-function deleteCustomType(i){customEfTypes.splice(i,1);saveCustomTypes();renderCustomTypes();if(selectedPart)renderEFDetail();}
-
-/* ── EF KIT ────────────────────────────────────────────── */
-const EK_CATS=['PART','KIT','MOD','TOOL','CUSTOM'];
-const EK_COL={PART:'var(--purple)',KIT:'var(--green3)',MOD:'#cf9500',TOOL:'var(--text-dim)',CUSTOM:'var(--red)'};
-let efKit=[];
-(function(){const s=load('ctg-ef-kit');if(s){try{efKit=JSON.parse(s);}catch(e){efKit=[];}}})();
-function saveEFKit(){store('ctg-ef-kit',JSON.stringify(efKit));}
-function renderEFKit(){
-  const el=document.getElementById('ef-kit-list');
-  if(!efKit.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.5rem;color:var(--text-dim);letter-spacing:1px;padding:8px 0;">No items yet — add parts, mods, or custom equipment.</div>';return;}
-  el.innerHTML='';
-  efKit.forEach((item,i)=>{
-    const col=EK_COL[item.cat]||'var(--purple)';const card=document.createElement('div');
-    card.style.cssText=`padding:10px 14px;background:var(--paper2,rgba(0,0,0,0.04));border:1.5px solid var(--border);border-left:4px solid ${col};clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);`;
-    const catPills=EK_CATS.map(c=>{const active=c===item.cat;const cc=EK_COL[c]||'var(--text-dim)';return `<button class="ek-cat" data-cat="${c}" style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;padding:2px 7px;cursor:pointer;border:1.5px solid ${active?cc:'var(--border2)'};background:${active?cc+'25':'transparent'};color:${active?cc:'var(--text-dim)'};transition:all .1s;">${c}</button>`;}).join('');
-    card.innerHTML=`<div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;flex-wrap:wrap;"><div style="display:flex;gap:3px;flex-wrap:wrap;">${catPills}</div><button class="ek-del" style="margin-left:auto;background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.8rem;padding:0 2px;flex-shrink:0;">✕</button></div>
-      <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-bottom:6px;">
-        <input class="ek-name ed" value="${esc(item.name)}" placeholder="Item name..." style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:1px;background:transparent;border:none;border-bottom:1.5px solid var(--border2);color:var(--text);outline:none;padding:2px 0;width:100%;">
-        <div style="display:flex;align-items:center;gap:3px;flex-shrink:0;"><button class="ek-qd" style="font-family:'Anton',sans-serif;font-size:0.85rem;width:22px;height:22px;background:transparent;border:1px solid var(--border2);color:var(--text);cursor:pointer;padding:0;line-height:1;">−</button><span class="ek-qty" style="font-family:'Anton',sans-serif;font-size:1.1rem;color:var(--text);min-width:20px;text-align:center;">${item.qty||1}</span><button class="ek-qu" style="font-family:'Anton',sans-serif;font-size:0.85rem;width:22px;height:22px;background:transparent;border:1px solid var(--border2);color:var(--text);cursor:pointer;padding:0;line-height:1;">+</button></div>
-      </div>
-      <textarea class="ek-notes" rows="2" placeholder="Condition, notes, what it does..." style="width:100%;background:rgba(0,0,0,0.04);border:1.5px dashed var(--border);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:0.85rem;padding:5px 8px;resize:vertical;outline:none;line-height:1.4;box-sizing:border-box;">${esc(item.notes||'')}</textarea>`;
-    card.querySelectorAll('.ek-cat').forEach(btn=>btn.addEventListener('click',()=>{item.cat=btn.dataset.cat;saveEFKit();renderEFKit();}));
-    card.querySelector('.ek-name').addEventListener('input',e=>{item.name=e.target.value;saveEFKit();});
-    card.querySelector('.ek-notes').addEventListener('input',e=>{item.notes=e.target.value;saveEFKit();});
-    const qtyEl=card.querySelector('.ek-qty');
-    card.querySelector('.ek-qd').addEventListener('click',()=>{item.qty=Math.max(1,(item.qty||1)-1);qtyEl.textContent=item.qty;saveEFKit();});
-    card.querySelector('.ek-qu').addEventListener('click',()=>{item.qty=(item.qty||1)+1;qtyEl.textContent=item.qty;saveEFKit();});
-    card.querySelector('.ek-del').addEventListener('click',()=>{efKit.splice(i,1);saveEFKit();renderEFKit();});
-    el.appendChild(card);
-  });
-}
-function addEFKitItem(){efKit.push({id:uid(),name:'',cat:'KIT',notes:'',qty:1});saveEFKit();renderEFKit();const inputs=document.querySelectorAll('.ek-name');if(inputs.length)inputs[inputs.length-1].focus();}
+function addAccessory(){accessories.push({id:uid(),name:'',effect:'',eq:false,modStat:'',modVal:0});saveAccessories();renderAccessories();const cards=document.querySelectorAll('#all-accessories .acc-card');if(cards.length)cards[cards.length-1].querySelector('.acc-name').focus();}
 
 /* ── CARRY ─────────────────────────────────────────────── */
 function saveInv(){const items=[...document.querySelectorAll('.inv-item')].map(li=>({name:li.querySelector('.inv-input')?.value||'',notes:li.querySelector('.inv-notes')?.value||''}));store('ctg-inventory',JSON.stringify(items));}
@@ -704,10 +521,8 @@ function buildGlossary(){
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
 
 /* ── INIT ──────────────────────────────────────────────── */
-document.querySelectorAll('.ef-part-group').forEach(g=>{g.addEventListener('click',e=>{e.stopPropagation();selectPart(g.dataset.part);});});
-document.querySelector('.ef-silhouette').addEventListener('click',()=>{selectedPart=null;updateSVGStates();renderEFDetail();});
-renderWeapons();renderCatalog();renderAccessories();updateSVGStates();syncEFTotal();renderCustomTypes();renderEFKit();renderItemCatalog();renderEFDetail();buildGlossary();
-(function(){const t=load('ctg-ag-tab');if(t==='accessories'||t==='armour')showAG(t);})();
+renderWeapons();renderCatalog();renderAccessories();renderItemCatalog();buildGlossary();
+(function(){const t=load('ctg-ag-tab');if(t==='accessories')showAG(t);})();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="ctg-motion.js"></script>
