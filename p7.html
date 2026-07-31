@@ -32,6 +32,7 @@
 
 /* ── FAN MODE ── */
 .spec-stage.fan .spec-felt{display:block;position:absolute;inset:2px 6px;z-index:0;border-radius:16px;background:radial-gradient(ellipse 60% 74% at 50% 42%,rgba(52,150,104,0.34),transparent 70%),linear-gradient(160deg,rgba(22,92,64,0.40),rgba(10,48,34,0.46));box-shadow:inset 0 0 0 2px rgba(255,255,255,0.05),inset 0 0 90px rgba(0,0,0,0.42);pointer-events:none;}
+.spec-stage.fan.has-focus .spec-felt{pointer-events:auto;cursor:pointer;}
 :root[data-theme="dark"] .spec-stage.fan .spec-felt{background:radial-gradient(ellipse 60% 74% at 50% 40%,rgba(40,128,90,0.30),transparent 72%),linear-gradient(160deg,rgba(16,74,52,0.48),rgba(6,34,24,0.58));}
 .spec-stage.fan .spec-cards{position:relative;height:372px;}
 .spec-stage.fan.has-focus .spec-cards{height:604px;}
@@ -587,8 +588,12 @@ function unfocusCard(){
   if(window.CTGSound)CTGSound.play('close');
 }
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&focusedRank)unfocusCard();});
-document.addEventListener('click',e=>{ // click the felt/empty stage to return to the hand
-  if(specViewMode==='fan'&&focusedRank&&e.target.classList&&e.target.classList.contains('spec-felt'))unfocusCard();
+document.addEventListener('click',e=>{ // click the empty play-mat to return to the fanned hand
+  if(specViewMode!=='fan'||!focusedRank)return;
+  const stage=document.getElementById('spec-stage');
+  if(!stage||!stage.contains(e.target))return;                     // click was outside the specials area
+  if(e.target.closest('.spec-card')||e.target.closest('.spec-back'))return; // a card or the back button — leave those to their own handlers
+  unfocusCard();                                                    // clicked the mat itself
 });
 let _specResizeT;window.addEventListener('resize',()=>{clearTimeout(_specResizeT);_specResizeT=setTimeout(()=>{if(document.getElementById('tab-specials').style.display!=='none')applySpecView();},200);});
 
