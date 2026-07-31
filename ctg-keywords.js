@@ -67,7 +67,6 @@
         { id: 'expand', name: 'Expand', ap: 2, desc: 'Amplify size or magnitude. Makes something physically bigger.' },
         { id: 'convert', name: 'Convert', ap: 1, desc: 'Change one thing into another.' },
         { id: 'divide', name: 'Divide', ap: 3, desc: 'Split something in half — doubling the physical effect into two, but not the damage or stat effect.' },
-        { id: 'merge', name: 'Merge', ap: 2, desc: 'Combine two things into a single whole.' },
         { id: 'mark', name: 'Mark', ap: 1, desc: 'Place a mark on the target item or person it hits.' }
       ]
     },
@@ -272,7 +271,7 @@
     increase: 'bolster', decrease: 'weaken', transform: 'reshape', bind: 'bind',
     release: 'release', store: 'store power within', transfer: 'transfer power to',
     compress: 'compress', expand: 'expand', convert: 'convert', divide: 'split apart',
-    merge: 'merge', mark: 'mark'
+    mark: 'mark'
   };
   var TGT_PHRASE = {
     self: 'yourself', touch: 'a creature or object you touch', medproj: 'a creature or object at medium range',
@@ -341,6 +340,39 @@
     }
 
     return s.trim();
+  }
+
+  /* ── STRUCTURED BREAKDOWN ───────────────────────────────────────────────
+     A per-keyword breakdown in the rulebook's own layout: one row per picked
+     keyword, in build order (Action → … → Debuffs/Buffs), each carrying its
+     category, name, AP cost and verbatim rulebook description. The UI renders
+     this as a labelled list; a plain-text version is available for exporting.
+  ─────────────────────────────────────────────────────────────────────── */
+  function breakdown(sel) {
+    sel = sel || {};
+    var rows = [];
+    CATEGORIES.forEach(function (cat) {
+      asList(sel[cat.key]).forEach(function (id) {
+        var it = item(cat.key, id);
+        if (it) rows.push({
+          cat: cat.key, catLabel: cat.label, icon: cat.icon,
+          discount: !!cat.discount, name: it.name, ap: it.ap, desc: it.desc
+        });
+      });
+    });
+    return rows;
+  }
+
+  /* Plain-text version of the breakdown, one keyword per line. */
+  function breakdownText(sel) {
+    var rows = breakdown(sel);
+    if (!rows.length) return '';
+    var lines = rows.map(function (r) {
+      return r.catLabel.toUpperCase() + ' · ' + r.name +
+        ' (' + (r.discount ? '−' : '') + r.ap + ' AP) — ' + r.desc;
+    });
+    lines.push('TOTAL — ' + totalAP(sel) + ' AP');
+    return lines.join('\n');
   }
 
   /* ── FLAVOR QUIZ ────────────────────────────────────────────────────────
@@ -548,6 +580,8 @@
     normalizeSel: normalizeSel,
     totalAP: totalAP,
     generate: generate,
+    breakdown: breakdown,
+    breakdownText: breakdownText,
     joinList: joinList,
     styleOptions: STYLE_OPTIONS,
     colourOptions: COLOUR_OPTIONS,
