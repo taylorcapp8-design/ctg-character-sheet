@@ -47,7 +47,7 @@ details>summary::marker{display:none;}
   <div class="sheet-header">
     <div class="head-tag">CALL TO GALLAHAD // OPERATIONAL RECORD</div>
     <div class="sheet-title">COMBAT <em>READY</em></div>
-    <div class="head-stamp">PAGE VI</div>
+    <div class="head-stamp">PAGE V</div>
   </div>
 
   <!-- CONDITIONS — compact strip at top -->
@@ -368,7 +368,7 @@ details>summary::marker{display:none;}
 
   <div class="sheet-footer">
     <div class="suits"><span class="s1">♠&#xFE0E;</span><span class="s2">♣&#xFE0E;</span><span class="s3">♥&#xFE0E;</span><span class="s4">♦&#xFE0E;</span></div>
-    CALL TO GALLAHAD · COMBAT READY · PAGE VI
+    CALL TO GALLAHAD · COMBAT READY · PAGE V
   </div>
 </div>
 </div>
@@ -397,10 +397,10 @@ function buildEFPassives(){
   const el=document.getElementById('ef-passives-list');el.innerHTML='';
   const raw=load('ctg-ef-parts');
   const LABELS={head:'HEAD',torso:'TORSO','l-arm':'L·ARM','r-arm':'R·ARM','l-leg':'L·LEG','r-leg':'R·LEG'};
-  if(!raw){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.56rem;color:var(--text-dim);">No EF equipped — add on Page II</div>';return;}
+  if(!raw){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.56rem;color:var(--text-dim);">No EF equipped — add on the Arsenal &amp; Gear page (Armour)</div>';return;}
   let parts;try{parts=JSON.parse(raw);}catch(e){return;}
   const equipped=Object.entries(parts).filter(([,v])=>v&&(v.name||v.typeId||v.type));
-  if(!equipped.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.56rem;color:var(--text-dim);">No EF equipped — add on Page II</div>';return;}
+  if(!equipped.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.56rem;color:var(--text-dim);">No EF equipped — add on the Arsenal &amp; Gear page (Armour)</div>';return;}
   equipped.forEach(([zone,ef])=>{
     const label=ef.name||ef.type||ef.typeId||'Unknown';
     const row=document.createElement('div');
@@ -654,7 +654,7 @@ function buildLoadout(){
   }
 
   function slotHtml(w,label,accentCss,slotKey){
-    if(!w)return`<div class="loadout-empty" style="padding:18px 16px;"><div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;color:var(--text-dim);margin-bottom:8px;">${label} — EMPTY</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.82rem;color:var(--text-dim);margin-bottom:12px;">Add a weapon from the Item Catalog on Page IV, then use the Equip buttons to assign it here.</div><a href="p4.html" style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:2px;padding:6px 16px;border:2px solid var(--purple);color:var(--purple);text-decoration:none;transform:skewX(-8deg);display:inline-block;transition:all .14s;" onmouseover="this.style.background='var(--purple)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='var(--purple)'">GO TO PAGE IV →</a></div>`;
+    if(!w)return`<div class="loadout-empty" style="padding:18px 16px;"><div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;color:var(--text-dim);margin-bottom:8px;">${label} — EMPTY</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.82rem;color:var(--text-dim);margin-bottom:12px;">Add a weapon from the catalog on the Arsenal &amp; Gear page, then use the Equip buttons to assign it here.</div><a href="p4.html" style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:2px;padding:6px 16px;border:2px solid var(--purple);color:var(--purple);text-decoration:none;transform:skewX(-8deg);display:inline-block;transition:all .14s;" onmouseover="this.style.background='var(--purple)';this.style.color='#fff'" onmouseout="this.style.background='';this.style.color='var(--purple)'">GO TO ARSENAL &amp; GEAR →</a></div>`;
     const ac=w.type==='melee'?'var(--red)':'var(--purple)';
     const tagHtml=(w.tags||'').split(',').map(t=>`<span class="tag dist-tag" style="font-size:0.5rem;padding:1px 5px;">${t.trim()}</span>`).join('');
     const mod=getMod(w);
@@ -681,7 +681,7 @@ function buildLoadout(){
     }else if(mod&&mod.notFound){
       rollBreak=`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--red);margin:6px 0;letter-spacing:1px;">Stat "${mod.statName}" not found — add it on Page I</div>`;
     }else{
-      rollBreak=`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);margin:6px 0;letter-spacing:1px;">No roll stat set — pick one on Page IV (weapon STAT dropdown)</div>`;
+      rollBreak=`<div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--text-dim);margin:6px 0;letter-spacing:1px;">No roll stat set — pick one on the Arsenal &amp; Gear page (weapon STAT dropdown)</div>`;
     }
 
     const diceLabel=`${w.diceCount||1}d${w.diceSides||6}`;
