@@ -445,14 +445,15 @@ function renderSpecials(){
     const c=SPEC[r.key];const wk=c.mode==='workshop';
     const hasBuff=!!(c.buff&&c.buff.stat&&(parseInt(c.buff.value)||0));
     const card=document.createElement('div');card.className='spec-card '+r.sc+' '+(wk?'wk':'ff')+(c.active?' active':'');card.dataset.rank=r.key;
+    card.tabIndex=0;card.setAttribute('role','group');card.setAttribute('aria-label',r.label+' special card'+(c.name?': '+c.name:', empty')+(c.active?' (in use)':''));
     card.innerHTML=`
       <span class="spec-corner tl"><b>${r.glyph}</b><i>${r.suit}</i></span>
       <span class="spec-corner br"><b>${r.glyph}</b><i>${r.suit}</i></span>
       <span class="spec-pip">${r.suit}</span>
-      <button class="spec-mode ${wk?'wk':'ff'}" data-mode title="Toggle ability-creator link">${wk?'🛠 WORKSHOP':'✎ FREEFORM'}</button>
+      <button class="spec-mode ${wk?'wk':'ff'}" data-mode aria-label="${esc(r.label)}: switch freeform / workshop mode" title="Toggle ability-creator link">${wk?'🛠 WORKSHOP':'✎ FREEFORM'}</button>
       <div class="spec-inner">
         <div class="spec-rankword">${esc(r.label)}${r.key==='jack'?' · weakest':r.key==='ace'?' · strongest':''}</div>
-        <input class="spec-name" data-f="name" value="${esc(c.name)}" placeholder="Name this ${esc(r.label.toLowerCase())}…">
+        <input class="spec-name" data-f="name" aria-label="${esc(r.label)} ability name" value="${esc(c.name)}" placeholder="Name this ${esc(r.label.toLowerCase())}…">
         <div class="spec-status">
           ${(c.desc||'').trim()?`<div class="ss-line">${esc(c.desc)}</div>`:'<div class="ss-empty">— empty —</div>'}
           <div class="ss-badges">
@@ -462,32 +463,33 @@ function renderSpecials(){
           </div>
         </div>
         <div class="spec-edit">
-          <button class="spec-use${c.active?' on':''}" data-use title="${c.active?'This special is in use — its buff is applied to your sheet. Click to stop.':'Activate this special while you’re using it — its buff is applied to your sheet.'}">${c.active?'◉ IN USE — tap to stop':'▶ ACTIVATE — use this special'}</button>
-          <div class="spec-desc-view${(c.desc||'').trim()?'':' empty'}" data-desc-display tabindex="0" title="Click to edit">
+          <button class="spec-use${c.active?' on':''}" data-use aria-pressed="${c.active?'true':'false'}" aria-label="${esc(r.label)}: ${c.active?'stop using this special':'activate this special'}" title="${c.active?'This special is in use — its buff is applied to your sheet. Click to stop.':'Activate this special while you’re using it — its buff is applied to your sheet.'}">${c.active?'◉ IN USE — tap to stop':'▶ ACTIVATE — use this special'}</button>
+          <div class="spec-desc-view${(c.desc||'').trim()?'':' empty'}" data-desc-display tabindex="0" role="button" aria-label="${esc(r.label)} description — activate to edit" title="Click to edit">
             <div class="spec-desc-text">${esc(c.desc)}</div>
             <div class="spec-desc-ph">Describe this ability… <span>click to write</span></div>
           </div>
-          <textarea class="spec-desc" data-f="desc" maxlength="600" placeholder="Describe this special ability…" style="display:none;">${esc(c.desc)}</textarea>
+          <textarea class="spec-desc" data-f="desc" aria-label="${esc(r.label)} description" maxlength="600" placeholder="Describe this special ability…" style="display:none;">${esc(c.desc)}</textarea>
           ${wk?`<div class="spec-build">
             <div class="spec-build-top">${c.build?`<span class="spec-build-ap">${c.build.ap} AP</span><span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:var(--text-dim);">KEYWORDS</span>`:`<span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);">🛠 No build yet — send one over from the Workshop.</span>`}</div>
             ${c.build?`<div class="spec-chips">${buildChipStrip(c.build)}</div>`:''}
           </div>`:''}
           <div class="spec-buff-row">
             <span class="spec-buff-lbl" title="This buff is added to the stat on your sheet only while the card is In Use">⚡ GRANTS</span>
-            <select class="spec-buff-stat" data-buff-stat title="Which stat this special boosts while in use"><option value="">— no stat —</option>${statNames().map(nm=>`<option value="${esc(nm)}"${c.buff&&c.buff.stat===nm?' selected':''}>${esc(nm)}</option>`).join('')}</select>
-            <input class="spec-buff-val" type="number" data-buff-val value="${c.buff?parseInt(c.buff.value)||0:0}" title="Amount added while in use">
+            <select class="spec-buff-stat" data-buff-stat aria-label="${esc(r.label)}: stat this special boosts while in use" title="Which stat this special boosts while in use"><option value="">— no stat —</option>${statNames().map(nm=>`<option value="${esc(nm)}"${c.buff&&c.buff.stat===nm?' selected':''}>${esc(nm)}</option>`).join('')}</select>
+            <input class="spec-buff-val" type="number" data-buff-val aria-label="${esc(r.label)}: buff amount" value="${c.buff?parseInt(c.buff.value)||0:0}" title="Amount added while in use">
             <span class="spec-buff-hint">while in use</span>
           </div>
           <div class="spec-foot">
-            <button class="mini-btn acc" data-paste title="Draw a saved Workshop ability onto this card">📥 DRAW</button>
-            ${wk&&c.build?`<button class="mini-btn gold" data-edit title="Edit this build in the Workshop">↺ EDIT</button>`:''}
-            <button class="mini-btn" data-clear title="Reset this card back to blank" style="border-color:var(--red);color:var(--red);">✕ CLEAR</button>
-            <div class="spec-cap" title="Max AP this card accepts — drawing a bigger ability warns you (0 = no cap)"><span style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:var(--text-dim);">CAP</span><input type="number" min="0" data-f="apCap" value="${c.apCap}"></div>
+            <button class="mini-btn acc" data-paste aria-label="${esc(r.label)}: draw a saved ability from the library" title="Draw a saved Workshop ability onto this card">📥 DRAW</button>
+            ${wk&&c.build?`<button class="mini-btn gold" data-edit aria-label="${esc(r.label)}: edit build in the Workshop" title="Edit this build in the Workshop">↺ EDIT</button>`:''}
+            <button class="mini-btn" data-clear aria-label="${esc(r.label)}: clear card back to blank" title="Reset this card back to blank" style="border-color:var(--red);color:var(--red);">✕ CLEAR</button>
+            <div class="spec-cap" title="Max AP this card accepts — drawing a bigger ability warns you (0 = no cap)"><span style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:var(--text-dim);">CAP</span><input type="number" min="0" data-f="apCap" aria-label="${esc(r.label)}: AP cap" value="${c.apCap}"></div>
           </div>
         </div>
       </div>`;
     grid.appendChild(card);
     card.addEventListener('click',()=>{ if(specViewMode==='fan'&&!card.classList.contains('focused'))focusCard(r.key); });
+    card.addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&e.target===card&&specViewMode==='fan'&&!card.classList.contains('focused')){e.preventDefault();focusCard(r.key);} });
     card.querySelectorAll('[data-f]').forEach(inp=>{
       const ev=inp.tagName==='TEXTAREA'||inp.type==='number'||inp.type==='text'?'input':'change';
       inp.addEventListener('input',()=>{
@@ -603,6 +605,10 @@ document.addEventListener('click',e=>{ // click the empty play-mat to return to 
   unfocusCard();                                                    // clicked the mat itself
 });
 let _specResizeT;window.addEventListener('resize',()=>{clearTimeout(_specResizeT);_specResizeT=setTimeout(()=>{if(document.getElementById('tab-specials').style.display!=='none')applySpecView();},200);});
+// keep in sync if specials change in another tab (e.g. Combat deactivating them on a new round)
+window.addEventListener('storage',e=>{
+  if(e.key==='ctg-specials'){SPEC=loadSpecials();if(document.getElementById('tab-specials').style.display!=='none')renderSpecials();}
+});
 
 /* ── LIBRARY PICKER (paste into slot) ───────────────────── */
 let pickerTarget=null;

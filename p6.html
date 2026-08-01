@@ -138,7 +138,7 @@ details>summary::marker{display:none;}
     <div class="sec-label"><span class="mk">⚔</span>ATTACK CALCULATOR</div>
     <div class="panel">
       <div class="two-col" id="c-loadout"></div>
-      <div id="c-oddity" style="margin-top:10px;"></div>
+      <div id="c-accessories" style="margin-top:10px;"></div>
       <!-- Damage calculator -->
       <details id="dmg-calc-details" style="margin-top:12px;border-top:1px solid var(--border);padding-top:8px;">
         <summary style="font-family:'Share Tech Mono',monospace;font-size:0.52rem;letter-spacing:2px;color:var(--text-dim);cursor:pointer;display:flex;align-items:center;gap:6px;padding:4px 0;user-select:none;">
@@ -547,9 +547,18 @@ function adjRound(d){
       else{cstate.condRounds[c]=left;changed=true;}
     });
     if(changed){renderConditions();updateConditionFX();}
+    deactivateSpecialsOnRound(); // a special is "in use" for the round you activate it — advancing drops it
   }
 }
-function resetRound(){cstate.round=1;document.getElementById('c-round').textContent=1;}
+// Turn off any specials left In Use when the round moves on.
+function deactivateSpecialsOnRound(){
+  let spec=null;try{const s=load('ctg-specials');if(s)spec=JSON.parse(s);}catch(e){}
+  if(!spec)return;
+  let changed=false;
+  Object.keys(spec).forEach(k=>{if(spec[k]&&spec[k].active){spec[k].active=false;changed=true;}});
+  if(changed){store('ctg-specials',JSON.stringify(spec));buildSpecials();buildStats();buildLoadout();}
+}
+function resetRound(){cstate.round=1;document.getElementById('c-round').textContent=1;deactivateSpecialsOnRound();}
 function calcDmg(){
   const inc=parseInt(document.getElementById('dmg-in').value)||0;
   const actual=Math.max(0,inc-cstate.ef);
@@ -726,15 +735,15 @@ function buildLoadout(){
   // Equipped accessories (read-only, from the Arsenal & Gear page)
   let accs=[];try{const os=load('ctg-accessories');if(os)accs=JSON.parse(os);}catch(e){}
   const eqAccs=accs.filter(a=>a.eq).slice(0,4);
-  const oddEl=document.getElementById('c-oddity');
+  const accEl=document.getElementById('c-accessories');
   const escA=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   if(eqAccs.length){
-    oddEl.innerHTML=`<div style="padding:10px 14px;border:2px solid var(--purple);border-left:5px solid var(--purple);background:rgba(109,40,217,0.06);clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
+    accEl.innerHTML=`<div style="padding:10px 14px;border:2px solid var(--purple);border-left:5px solid var(--purple);background:rgba(109,40,217,0.06);clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
       <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--purple2);margin-bottom:8px;">✦ ACCESSORIES · ${eqAccs.length}/4 EQUIPPED</div>
       ${eqAccs.map(a=>{const mv=parseInt(a.modVal)||0;const mod=(a.modStat&&mv)?`<span style="font-family:'Anton',sans-serif;font-size:0.62rem;color:var(--gold,#cf9500);margin-left:6px;white-space:nowrap;">⚡${mv>=0?'+':''}${mv} ${escA(a.modStat)}</span>`:'';return `<div style="margin-bottom:7px;"><span style="font-family:'Anton',sans-serif;font-style:italic;font-size:0.98rem;color:var(--text);">${escA(a.name)||'Unnamed'}</span>${mod}${a.effect?`<div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.8rem;color:var(--text2);line-height:1.35;">${escA(a.effect)}</div>`:''}</div>`;}).join('')}
     </div>`;
   }else{
-    oddEl.innerHTML=`<div class="loadout-empty"><div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;color:var(--text-dim);">✦ ACCESSORIES — NONE</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);margin-top:5px;">Equip up to 4 on the Arsenal &amp; Gear page</div></div>`;
+    accEl.innerHTML=`<div class="loadout-empty"><div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;color:var(--text-dim);">✦ ACCESSORIES — NONE</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);margin-top:5px;">Equip up to 4 on the Arsenal &amp; Gear page</div></div>`;
   }
 }
 
