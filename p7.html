@@ -468,7 +468,7 @@ function renderSpecials(){
             <div class="spec-desc-text">${esc(c.desc)}</div>
             <div class="spec-desc-ph">Describe this ability… <span>click to write</span></div>
           </div>
-          <textarea class="spec-desc" data-f="desc" aria-label="${esc(r.label)} description" maxlength="600" placeholder="Describe this special ability…" style="display:none;">${esc(c.desc)}</textarea>
+          <textarea class="spec-desc" data-f="desc" aria-label="${esc(r.label)} description" placeholder="Describe this special ability…" style="display:none;">${esc(c.desc)}</textarea>
           ${wk?`<div class="spec-build">
             <div class="spec-build-top">${c.build?`<span class="spec-build-ap">${c.build.ap} AP</span><span style="font-family:'Share Tech Mono',monospace;font-size:0.48rem;letter-spacing:1px;color:var(--text-dim);">KEYWORDS</span>`:`<span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);">🛠 No build yet — send one over from the Workshop.</span>`}</div>
             ${c.build?`<div class="spec-chips">${buildChipStrip(c.build)}</div>`:''}

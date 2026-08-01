@@ -292,7 +292,7 @@
   };
   function conditionRule(c, ap) {
     switch (c.id) {
-      case 'reqhp': return 'It costs ' + Math.max(1, Math.floor(ap / 4)) + ' HP to use.';
+      case 'reqhp': return 'It costs ' + Math.max(1, Math.ceil(ap / 4)) + ' HP to use.';
       case 'onlymoving': return 'You may only use it against a moving creature.';
       case 'onlyinjured': return 'You may only use it after you have taken damage.';
       case 'reqsight': return 'You must be able to see your target.';
