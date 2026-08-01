@@ -13,6 +13,9 @@
   --border:rgba(0,0,0,0.2); --border2:rgba(0,0,0,0.55);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
+/* never let the page scroll sideways; overflow:clip (not hidden) keeps the sticky nav working.
+   Wide content — the nav links, tables — scrolls inside its own container. */
+html{overflow-x:clip;}
 body{
   background:var(--bg);
   background-image:
@@ -464,7 +467,7 @@ body.hub-body{padding:0;overflow-x:hidden;}
   .two-col{grid-template-columns:1fr;}
   .identity-grid{grid-template-columns:100px 1fr;}
   .identity-fields:last-child{grid-column:1/-1;}
-  .vitals-strip{grid-template-columns:1fr 1fr;}
+  .vitals-strip{grid-template-columns:1fr 1fr!important;}
   .sheet-title{font-size:2.3rem;}
   .budget-strip{flex-wrap:wrap;}.budget-cell{flex:1 1 33%;}
   .tree-layout{grid-template-columns:1fr;}
@@ -473,12 +476,17 @@ body.hub-body{padding:0;overflow-x:hidden;}
   .side-tab.active{border-left:none;border-bottom-color:var(--col);transform:none;}
   .side-tab.active::after{display:none;}.side-tab .tspent{display:none;}
   .ctg-nav{font-size:0.78rem;}.ctg-nav a{padding:4px 9px;}
+  /* let the page links scroll inside the bar instead of overflowing the page */
+  .ctg-nav-links{flex:1 1 auto;min-width:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;}
+  .ctg-nav-links::-webkit-scrollbar{display:none;}
+  .ctg-nav a{flex:0 0 auto;}
   .hub-char{opacity:0.4;width:70%;}
   .hub-hud{position:static;align-items:flex-start;margin:0 28px 14px;}
   .hub-btns{flex-direction:row;flex-wrap:wrap;justify-content:flex-end;right:14px;}
   .hub-action{min-width:unset;}
   .hub-action-label{display:none;}
 }
+@media(max-width:560px){.nav-char-name{display:none;}}
 @media(max-width:480px){.faculty-grid{grid-template-columns:1fr;}}
 @media(prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;}}
 @media print{
