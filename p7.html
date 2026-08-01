@@ -67,8 +67,6 @@
 .spec-use{display:block;width:100%;margin-top:9px;font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:2px;padding:6px 10px;border:2px solid var(--green3);background:transparent;color:var(--green3);cursor:pointer;transform:skewX(-6deg);transition:all .13s;}
 .spec-use:hover{background:rgba(46,160,67,0.12);}
 .spec-use.on{background:var(--green3);color:#062a10;border-color:var(--green3);box-shadow:0 0 10px rgba(46,160,67,0.5);}
-.spec-card.active{filter:drop-shadow(0 0 0 rgba(0,0,0,0)) drop-shadow(3px 5px 10px rgba(46,160,67,0.35));}
-.spec-card.active .spec-inner{box-shadow:inset 0 0 0 2px var(--green3);}
 /* buff config row (edit area) */
 .spec-buff-row{display:flex;align-items:center;gap:6px;margin-top:9px;padding-top:9px;border-top:1px dashed var(--border);}
 .spec-buff-lbl{font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:1px;color:var(--gold,#cf9500);white-space:nowrap;}
@@ -92,6 +90,15 @@
 .spec-mode.wk{background:var(--gold,#cf9500);border-color:var(--gold,#cf9500);color:#000;}
 .spec-mode.ff{background:var(--purple);border-color:var(--purple);color:#fff;}
 .spec-inner{position:relative;z-index:1;padding:0 16px;}
+/* ── "IN USE" active-card accent: green frame + glow (works in fan & grid) ── */
+.spec-card.active{border-color:var(--green3);box-shadow:0 0 0 2px var(--green3),0 0 22px 4px rgba(46,160,67,0.5);}
+.spec-card.active::before{border-color:var(--green3);box-shadow:inset 0 0 16px rgba(46,160,67,0.3);}
+.spec-card.active .spec-pip{color:var(--green3);opacity:0.12;}
+.spec-card.active .spec-mode{box-shadow:0 0 0 1px rgba(46,160,67,0.4);}
+@media(prefers-reduced-motion:no-preference){
+  .spec-card.active,.spec-stage.fan .spec-card.active{animation:specGlow 2.6s ease-in-out infinite;}
+  @keyframes specGlow{0%,100%{box-shadow:0 0 0 2px var(--green3),0 0 14px 2px rgba(46,160,67,0.4);}50%{box-shadow:0 0 0 2px var(--green3),0 0 28px 7px rgba(46,160,67,0.64);}}
+}
 .spec-rankword{text-align:center;font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:3px;color:var(--text-dim);text-transform:uppercase;margin-bottom:4px;}
 .spec-name{display:block;width:100%;text-align:center;background:transparent;border:none;border-bottom:2px solid var(--border2);color:var(--text);font-family:'Anton',sans-serif;font-style:italic;font-size:1.3rem;letter-spacing:1px;padding:2px 4px 6px;outline:none;margin-bottom:11px;}
 .spec-name:focus{border-bottom-color:var(--suit);}
