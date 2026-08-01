@@ -594,26 +594,6 @@ function buildStats(){
 }
 
 // ── ATTACK CALCULATOR ──
-function useOddity(id){
-  let odds=[];try{const s=load('ctg-food');if(s)odds=JSON.parse(s);}catch(e){}
-  const o=odds.find(x=>x.id===id);
-  if(!o)return;
-  const cost=parseInt(o.hearthCost)||1;
-  if(cstate.hearth<cost){
-    // Flash the Hearth display red — not enough Hearth to activate
-    const hearthEl=document.getElementById('c-hearth-cur');
-    if(hearthEl){
-      hearthEl.style.transition='color .1s,transform .1s';
-      hearthEl.style.color='var(--red)';hearthEl.style.transform='scale(1.25)';
-      setTimeout(()=>{hearthEl.style.color='#3b82f6';hearthEl.style.transform='';},700);
-    }
-    return;
-  }
-  cstate.hearth=Math.max(0,cstate.hearth-cost);
-  store('ctg-hearth-cur',cstate.hearth);
-  refreshVitals();
-  buildLoadout();
-}
 function buildLoadout(){
   let weapons=[];try{const s=load('ctg-weapons');if(s)weapons=JSON.parse(s);}catch(e){}
   let stats=[];try{const sd=load('ctg-stats');if(sd)stats=JSON.parse(sd);}catch(e){}
@@ -751,7 +731,7 @@ function buildLoadout(){
   if(eqAccs.length){
     oddEl.innerHTML=`<div style="padding:10px 14px;border:2px solid var(--purple);border-left:5px solid var(--purple);background:rgba(109,40,217,0.06);clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
       <div style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--purple2);margin-bottom:8px;">✦ ACCESSORIES · ${eqAccs.length}/4 EQUIPPED</div>
-      ${eqAccs.map(a=>`<div style="margin-bottom:7px;"><span style="font-family:'Anton',sans-serif;font-style:italic;font-size:0.98rem;color:var(--text);">${escA(a.name)||'Unnamed'}</span>${a.effect?`<div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.8rem;color:var(--text2);line-height:1.35;">${escA(a.effect)}</div>`:''}</div>`).join('')}
+      ${eqAccs.map(a=>{const mv=parseInt(a.modVal)||0;const mod=(a.modStat&&mv)?`<span style="font-family:'Anton',sans-serif;font-size:0.62rem;color:var(--gold,#cf9500);margin-left:6px;white-space:nowrap;">⚡${mv>=0?'+':''}${mv} ${escA(a.modStat)}</span>`:'';return `<div style="margin-bottom:7px;"><span style="font-family:'Anton',sans-serif;font-style:italic;font-size:0.98rem;color:var(--text);">${escA(a.name)||'Unnamed'}</span>${mod}${a.effect?`<div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.8rem;color:var(--text2);line-height:1.35;">${escA(a.effect)}</div>`:''}</div>`;}).join('')}
     </div>`;
   }else{
     oddEl.innerHTML=`<div class="loadout-empty"><div style="font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:2px;color:var(--text-dim);">✦ ACCESSORIES — NONE</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);margin-top:5px;">Equip up to 4 on the Arsenal &amp; Gear page</div></div>`;

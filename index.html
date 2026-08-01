@@ -238,7 +238,7 @@
       </a>
       <a href="p4.html" style="display:flex;align-items:center;gap:12px;padding:9px 14px;border:2px solid var(--border);background:var(--paper2,rgba(0,0,0,0.05));text-decoration:none;color:inherit;transition:border-color .15s;" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'">
         <span style="font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--purple);min-width:28px;">III</span>
-        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;color:var(--ink);">ARSENAL &amp; GEAR</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);">Weapons, accessories, armour, carry &amp; mula — all your gear in one place</div></div>
+        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;color:var(--ink);">ARSENAL &amp; GEAR</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);">Weapons, accessories, carry &amp; mula — all your gear in one place</div></div>
         <span style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;color:var(--purple);margin-left:auto;">→</span>
       </a>
       <a href="p5.html" style="display:flex;align-items:center;gap:12px;padding:9px 14px;border:2px solid var(--border);background:var(--paper2,rgba(0,0,0,0.05));text-decoration:none;color:inherit;transition:border-color .15s;" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'">
@@ -286,7 +286,7 @@ document.querySelectorAll('.word').forEach(w=>{
 });
 
 // char line + HUD + data dots + setup checklist
-const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-accessories','ctg-inventory','ctg-mula','ctg-ef-parts','ctg-ef-kit'],p5:['ctg-skills'],p6:['ctg-combat-notes'],p7:['ctg-specials','ctg-ability-workshop']};
+const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-accessories','ctg-inventory','ctg-mula'],p5:['ctg-skills'],p6:['ctg-combat-notes'],p7:['ctg-specials','ctg-ability-workshop']};
 const checkMap={p1:['ctg-f-name'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-inventory'],p5:['ctg-skills']};
 function updateHUD(){
   const n=lg('ctg-f-name'),c=lg('ctg-f-code');

@@ -67,9 +67,9 @@ Handled by `ctg-sync.js`. Each user logs in with a **username + PIN**. Data is s
 
 ---
 
-## Oddity System (Hearth Cost)
+## Specials — Activation
 
-Oddities no longer have charges. Each Oddity has a configurable **Hearth Cost** (set on Page IV). When activated on Page VI, that cost is subtracted directly from the character's Hearth pool. Activation is blocked if current Hearth is below the cost.
+Each of the four face-card specials (Page VI) can be toggled **In Use**. While a special is active, any stat buff it grants is applied to the character's stats (Page I) and combat rolls (Page V), and removed when deactivated.
 
 ---
 
@@ -109,7 +109,7 @@ Oddities no longer have charges. Each Oddity has a configurable **Hearth Cost** 
 | `ctg-inventory` | JSON — carry list |
 | `ctg-mula` | Currency amount |
 | `ctg-weapons` | JSON — weapon list with slot/stat/dice/quirk |
-| `ctg-catalog` | JSON — weapon & oddity catalog |
+| `ctg-catalog` | JSON — weapon catalog |
 | `ctg-item-catalog` | JSON — gear/consumable item catalog |
 | `ctg-faculties` | JSON — active faculties + tuning selections |
 | `ctg-skills` | JSON array — purchased skill IDs |
