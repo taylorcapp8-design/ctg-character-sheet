@@ -627,7 +627,7 @@ function openPicker(rankKey){
       `<button class="mini-btn ${over?'':'acc'}" style="margin-left:auto;${over?'border-color:var(--red);color:var(--red);':''}">${over?'⚠ DRAW':'→ DRAW'}</button>`;
     row.querySelector('button').addEventListener('click',()=>{
       if(over&&!confirm('"'+entry.name+'" costs '+entry.ap+' AP, but the '+r.label+' card is capped at '+cap+' AP.\n\nDraw it onto the card anyway?'))return;
-      const c=SPEC[rankKey];c.mode='workshop';c.build={sel:clone(entry.sel),text:entry.text,ap:entry.ap};c.desc=entry.text;
+      const c=SPEC[rankKey];c.mode='workshop';const rules=CTG.generate(CTG.normalizeSel(entry.sel||{}));c.build={sel:clone(entry.sel),text:entry.text||rules,ap:entry.ap};c.desc=entry.text||rules;
       if(!c.name)c.name=entry.name;saveSpecials(SPEC);closePicker();renderSpecials();
     });
     list.appendChild(row);
@@ -850,9 +850,11 @@ function sendToSlot(rankKey){
   const c=SPEC[rankKey];const r=RANKS.find(x=>x.key===rankKey);const ap=CTG.totalAP(sel);
   if(c.apCap>0&&ap>c.apCap&&!confirm('This build is '+ap+' AP, but the '+r.label+' card is capped at '+c.apCap+' AP.\n\nSend it anyway?'))return;
   c.mode='workshop';
-  c.build={sel:clone(sel),text:W.draft.text,ap:ap};
-  c.desc=W.draft.text;if(!c.name&&W.draft.name)c.name=W.draft.name;
-  saveSpecials(SPEC);flashSaved();alertSent(r.label);
+  const rules=CTG.generate(sel);
+  c.build={sel:clone(sel),text:W.draft.text||rules,ap:ap};
+  c.desc=W.draft.text||rules;                       // fall back to the plain rules so the card isn't blank
+  if(!c.name&&W.draft.name)c.name=W.draft.name;
+  saveSpecials(SPEC);renderSpecials();flashSaved();alertSent(r.label);
 }
 let sentT;function toast(msg,ok){
   let el=document.getElementById('sent-toast');
