@@ -131,6 +131,7 @@
           <div class="stat-bars" id="stat-bars"></div>
           <button class="add-btn add-row" onclick="addStat()">ADD ATTRIBUTE</button>
           <div class="standard-array">STANDARD ARRAY: <span>5,4,3,3,2,1,0</span></div>
+          <div class="milestone-box" id="milestone-box"></div>
         </div>
       </div>
       <div style="display:flex;flex-direction:column;gap:18px;">
@@ -264,16 +265,103 @@ function renderStats(){
     w.appendChild(row);
     const scoreInput=row.querySelector('.stat-score-input');
     const spEl=row.querySelector('.stat-sp');
-    function applyScore(v){st.score=Math.max(0,v);scoreInput.value=st.score;spEl.innerHTML=sp(st.score)+'<span>SP</span>';saveStats();}
+    function applyScore(v){st.score=Math.max(0,v);scoreInput.value=st.score;spEl.innerHTML=sp(st.score)+'<span>SP</span>';saveStats();renderMilestones();}
     scoreInput.addEventListener('input',()=>applyScore(parseInt(scoreInput.value)||0));
     row.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>applyScore((parseInt(scoreInput.value)||0)+parseInt(b.dataset.d))));
     row.querySelector('[data-del]').addEventListener('click',()=>{stats.splice(i,1);saveStats();renderStats();});
   });
+  renderMilestones();
 }
 function addStat(){
   const name=(window.prompt('Attribute name:','')||'').trim();
   if(!name)return;
   stats.push({name,icon:'◆',score:0});saveStats();renderStats();
+}
+
+/* ── MILESTONE BONUSES ───────────────────────────────────
+   The standard array (5,4,3,3,2,1,0) totals 18 points. Every 3 attribute
+   points bought past that earns +1 to spend on attack damage, range damage
+   or health. Health is banked straight into Max HP so every page sees it;
+   the damage picks are read by the attack calculator on the Combat page. */
+const ARRAY_TOTAL=[5,4,3,3,2,1,0].reduce((a,b)=>a+b,0);
+const MS_TRACKS=[
+  {key:'atk',icon:'⚔',label:'Attack Damage',hint:'melee weapon damage'},
+  {key:'rng',icon:'🎯',label:'Range Damage',hint:'ranged weapon damage'},
+  {key:'hp',icon:'♥',label:'Health',hint:'max HP'},
+];
+function loadMilestones(){
+  let m=null;try{m=JSON.parse(load('ctg-milestones'));}catch(e){}
+  if(!m||typeof m!=='object')m={};
+  const out={};MS_TRACKS.forEach(t=>{out[t.key]=Math.max(0,parseInt(m[t.key])||0);});
+  return out;
+}
+let MS=loadMilestones();
+function saveMilestones(){save('ctg-milestones',JSON.stringify(MS));}
+function statPointTotal(){return stats.reduce((s,x)=>s+(parseInt(x.score)||0),0);}
+function msEarned(){return Math.floor(Math.max(0,statPointTotal()-ARRAY_TOTAL)/3);}
+function msSpent(){return MS_TRACKS.reduce((s,t)=>s+MS[t.key],0);}
+// Health points are banked into the Max HP field itself, so a spend/refund
+// moves the max (and current, so a fresh point is immediately usable).
+function bumpMaxHP(d){
+  if(!d)return;
+  const maxEl=document.getElementById('harth-max'),curEl=document.getElementById('harth-cur');
+  const max=Math.max(1,(parseInt(maxEl.value)||6)+d);
+  maxEl.value=max;
+  curEl.value=Math.max(0,Math.min(max,(parseInt(curEl.value)||0)+d));
+  refreshTracks();saveVitals();
+}
+// Lowering an attribute can strip a milestone you'd already spent — hand the
+// over-spend back, biggest pile first, so nothing is left dangling.
+function reconcileMilestones(){
+  let over=msSpent()-msEarned();
+  if(over<=0)return false;
+  while(over>0){
+    const t=MS_TRACKS.slice().sort((a,b)=>MS[b.key]-MS[a.key])[0];
+    if(!t||MS[t.key]<=0)break;
+    MS[t.key]--;over--;
+    if(t.key==='hp')bumpMaxHP(-1);
+  }
+  saveMilestones();
+  return true;
+}
+function adjustMilestone(key,d){
+  const left=msEarned()-msSpent();
+  if(d>0&&left<=0)return;
+  if(d<0&&MS[key]<=0)return;
+  MS[key]+=d;
+  if(key==='hp')bumpMaxHP(d);
+  saveMilestones();renderMilestones();
+  if(window.CTGSound)CTGSound.play(d>0?'stat-up':'stat-down');
+}
+function renderMilestones(){
+  const box=document.getElementById('milestone-box');if(!box)return;
+  reconcileMilestones();
+  const total=statPointTotal(),past=Math.max(0,total-ARRAY_TOTAL);
+  const earned=msEarned(),spent=msSpent(),left=earned-spent;
+  const toNext=3-(past%3);
+  box.innerHTML=`
+    <div class="ms-head">
+      <span class="ms-title">⬢ MILESTONE BONUSES</span>
+      <span class="ms-sub">every 3 points past the array (${ARRAY_TOTAL}) = +1</span>
+    </div>
+    <div class="ms-pool${left>0?'':' empty'}">
+      <span class="ms-pool-num">${left}</span>
+      <span class="ms-pool-lab">UNSPENT</span>
+      <span class="ms-pool-note">${total} pts spent · ${past} past the array<br>${earned} earned · ${spent} assigned · ${toNext} more pt${toNext===1?'':'s'} for the next</span>
+    </div>
+    <div class="ms-tracks">
+      ${MS_TRACKS.map(t=>{const v=MS[t.key];return `
+      <div class="ms-track${v?' on':''}">
+        <span class="ms-ico">${t.icon}</span>
+        <span class="ms-lab">${t.label}<em>${t.hint}</em></span>
+        <div class="ms-counter">
+          <button class="counter-btn" data-ms="${t.key}" data-d="-1" ${v<=0?'disabled':''} aria-label="Remove a milestone point from ${t.label}">−</button>
+          <span class="ms-val${v?'':' zero'}">${v>0?'+':''}${v}</span>
+          <button class="counter-btn" data-ms="${t.key}" data-d="1" ${left<=0?'disabled':''} aria-label="Put a milestone point into ${t.label}">+</button>
+        </div>
+      </div>`;}).join('')}
+    </div>`;
+  box.querySelectorAll('[data-ms]').forEach(b=>b.addEventListener('click',()=>adjustMilestone(b.dataset.ms,parseInt(b.dataset.d))));
 }
 
 /* ── CARRY MIRROR (read-only, synced from Gear page) ─────── */

@@ -50,8 +50,10 @@ ctg-character-sheet/
 | Skill Tree with point budget | P5 |
 | Combat page — conditions (with round countdown), damage calc, attack rolls, buffs | P6 |
 | Stat modifiers with source breakdown (buffs + accessories + specials) | P1, P6 |
+| Milestone bonuses — every 3 attribute points past the standard array = +1 attack dmg / range dmg / health | P1, P6 |
 | Temp buffs with multi-stat support and presets | P6 |
 | Specials — 4 face-card ability slots (J/Q/K/A) with freeform / workshop toggle + optional stat buff | P7 |
+| Specials loadouts — save the whole four-card hand as a preset, swap all cards at once | P7 |
 | Keyword Ability Workshop — combine keywords into an auto-written, editable ability | P7 |
 | Flavour Quiz (built-in) + optional **AI Flavour** via a free-LLM edge function | P7 |
 | Card → dice cheat sheet (collapsible) + live card-value lookup | P6 |
@@ -98,6 +100,7 @@ Each of the four face-card specials (Page VI) can be toggled **In Use**. While a
 | `ctg-f-code` | Code name |
 | `ctg-f-level` | Level |
 | `ctg-stats` | JSON array — attribute names, icons, scores |
+| `ctg-milestones` | JSON — milestone points assigned to `atk` / `rng` / `hp` (health is banked straight into Max HP) |
 | `ctg-harth-cur` | Current HP |
 | `ctg-harth-max` | Max HP |
 | `ctg-harth-temp` | Temp HP |
@@ -115,6 +118,7 @@ Each of the four face-card specials (Page VI) can be toggled **In Use**. While a
 | `ctg-skills` | JSON array — purchased skill IDs |
 | `ctg-custom-abilities` | JSON — custom ability entries |
 | `ctg-specials` | JSON — 4 face-card special ability slots (J/Q/K/A), each with an optional stat buff |
+| `ctg-spec-loadouts` | JSON — saved specials loadouts (snapshots of all 4 cards) + which one is live |
 | `ctg-ability-workshop` | JSON — workshop draft + saved ability library |
 | `ctg-temp-buffs` | JSON — active temp stat buffs |
 | `ctg-buff-presets` | JSON — saved buff presets |

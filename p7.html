@@ -21,6 +21,25 @@
 .spec-topbar{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
 .spec-intro{flex:1;font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);line-height:1.5;}
 #view-toggle{white-space:nowrap;flex-shrink:0;}
+/* loadouts bar — saved snapshots of all four cards */
+.spec-loadouts{margin-bottom:14px;padding:9px 12px 11px;background:var(--paper2,rgba(0,0,0,0.04));border:1.5px solid var(--border);border-left:4px solid var(--purple);clip-path:polygon(0 0,100% 0,calc(100% - 9px) 100%,0 100%);}
+.sl-head{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:9px;}
+.sl-title{font-family:'Bebas Neue',sans-serif;font-size:0.86rem;letter-spacing:2px;color:var(--purple);}
+.sl-sub{flex:1;min-width:90px;font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);}
+.sl-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.sl-empty{font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:1px;color:var(--text-dim);line-height:1.5;}
+.sl-chip{display:flex;align-items:stretch;border:1.5px solid var(--border2);background:var(--paper,rgba(0,0,0,0.02));transition:border-color .13s;}
+.sl-chip.on{border-color:var(--purple);box-shadow:2px 2px 0 var(--ink);}
+.sl-equip{flex:1;min-width:0;text-align:left;background:transparent;border:none;border-right:1.5px solid var(--border2);color:var(--text);cursor:pointer;padding:5px 10px;font-family:'Bebas Neue',sans-serif;font-size:0.86rem;letter-spacing:1px;line-height:1.15;transition:background .13s;}
+.sl-equip:hover{background:rgba(109,40,217,0.12);}
+.sl-chip.on .sl-equip{color:var(--purple);}
+.sl-glyphs{display:block;font-family:'Share Tech Mono',monospace;font-size:0.5rem;letter-spacing:2px;color:var(--text-dim);margin-top:1px;}
+.sl-glyphs b{color:var(--gold,#cf9500);font-weight:400;}
+.sl-act{background:transparent;border:none;border-left:1px solid var(--border2);color:var(--text-dim);cursor:pointer;padding:0 7px;font-size:0.72rem;line-height:1;transition:all .13s;}
+.sl-act:first-of-type{border-left:none;}
+.sl-act:hover{background:var(--purple);color:#fff;}
+.sl-act.danger:hover{background:var(--red);color:#fff;}
+.sl-live{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:0.42rem;letter-spacing:1px;padding:1px 5px;color:#fff;background:var(--purple);white-space:nowrap;}
 .spec-stage{position:relative;}
 .spec-felt,.spec-back,.spec-status{display:none;}
 
@@ -257,6 +276,8 @@
         <div class="spec-intro" id="spec-intro">Your four face cards hold your special abilities — Jack (weakest) through Ace (strongest). Hover a card to peek, click to pull it out and edit.</div>
         <button id="view-toggle" class="mini-btn" onclick="toggleSpecView()" title="Switch between the fanned hand and a flat grid">▦ GRID VIEW</button>
       </div>
+      <!-- LOADOUTS — snapshot all four cards, swap the whole hand in one tap -->
+      <div class="spec-loadouts" id="spec-loadouts"></div>
       <div class="spec-stage grid" id="spec-stage">
         <div class="spec-felt" aria-hidden="true"></div>
         <button class="spec-back" id="spec-back" onclick="unfocusCard()" style="display:none;">◂ back to hand</button>
@@ -423,7 +444,7 @@ function showTab(t){
   document.querySelectorAll('.cat-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===t));
   document.getElementById('tab-specials').style.display=t==='specials'?'':'none';
   document.getElementById('tab-workshop').style.display=t==='workshop'?'':'none';
-  if(t==='specials'){SPEC=loadSpecials();renderSpecials();}
+  if(t==='specials'){SPEC=loadSpecials();renderSpecials();LOAD=loadLoadouts();renderLoadouts();}
   else{renderWorkshop();}
 }
 
@@ -534,6 +555,95 @@ function renderSpecials(){
   applySpecView();
 }
 
+/* ── LOADOUTS ────────────────────────────────────────────
+   A loadout is a snapshot of all four cards. Equipping one swaps the whole
+   hand in a single tap. Equipping never carries the In Use flag over — a
+   swap shouldn't silently re-apply someone's stat buffs. */
+function loadLoadouts(){
+  let L=null;try{L=JSON.parse(load('ctg-spec-loadouts'));}catch(e){}
+  if(Array.isArray(L))L={active:null,list:L};
+  if(!L||typeof L!=='object')L={active:null,list:[]};
+  if(!Array.isArray(L.list))L.list=[];
+  L.list=L.list.filter(x=>x&&typeof x==='object').map(x=>({
+    id:x.id||uid(),name:(x.name||'Loadout')+'',cards:(x.cards&&typeof x.cards==='object')?x.cards:{}
+  }));
+  if(L.active&&!L.list.some(x=>x.id===L.active))L.active=null;
+  return L;
+}
+let LOAD=loadLoadouts();
+function saveLoadouts(){store('ctg-spec-loadouts',JSON.stringify(LOAD));}
+function snapshotCards(){const o={};RANKS.forEach(r=>{o[r.key]=clone(SPEC[r.key]);});return o;}
+
+function renderLoadouts(){
+  const box=document.getElementById('spec-loadouts');if(!box)return;
+  const chips=LOAD.list.length?LOAD.list.map(lo=>{
+    const filled=RANKS.map(r=>{const c=lo.cards[r.key];return (c&&(c.name||'').trim())?`<b>${r.glyph}</b>`:r.glyph;}).join(' ');
+    const tip=RANKS.map(r=>{const c=lo.cards[r.key];return r.label+': '+(((c&&c.name)||'').trim()||'—');}).join('\n');
+    const on=LOAD.active===lo.id;
+    return `<div class="sl-chip${on?' on':''}">
+      <button class="sl-equip" data-equip="${lo.id}" title="${esc(tip)}" aria-label="Equip loadout ${esc(lo.name)}">${esc(lo.name)}${on?' <span class="sl-live">ON TABLE</span>':''}<span class="sl-glyphs">${filled}</span></button>
+      <button class="sl-act" data-update="${lo.id}" title="Overwrite this loadout with the cards on the table now" aria-label="Update loadout ${esc(lo.name)}">⟳</button>
+      <button class="sl-act" data-rename="${lo.id}" title="Rename" aria-label="Rename loadout ${esc(lo.name)}">✎</button>
+      <button class="sl-act danger" data-del="${lo.id}" title="Delete this loadout" aria-label="Delete loadout ${esc(lo.name)}">✕</button>
+    </div>`;
+  }).join(''):'<div class="sl-empty">No loadouts yet — set your four cards up how you like, then hit SAVE CURRENT. After that you can flip the whole hand between presets in one tap.</div>';
+  box.innerHTML=`
+    <div class="sl-head">
+      <span class="sl-title">🎛 LOADOUTS</span>
+      <span class="sl-sub">saved sets of all four cards — swap the whole hand at once</span>
+      <button class="mini-btn acc" data-save-loadout title="Snapshot the four cards on the table as a new loadout">＋ SAVE CURRENT</button>
+    </div>
+    <div class="sl-chips">${chips}</div>`;
+  box.querySelector('[data-save-loadout]').addEventListener('click',saveLoadout);
+  box.querySelectorAll('[data-equip]').forEach(b=>b.addEventListener('click',()=>equipLoadout(b.dataset.equip)));
+  box.querySelectorAll('[data-update]').forEach(b=>b.addEventListener('click',()=>updateLoadout(b.dataset.update)));
+  box.querySelectorAll('[data-rename]').forEach(b=>b.addEventListener('click',()=>renameLoadout(b.dataset.rename)));
+  box.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',()=>deleteLoadout(b.dataset.del)));
+}
+function saveLoadout(){
+  const name=(window.prompt('Name this loadout:','Loadout '+(LOAD.list.length+1))||'').trim();
+  if(!name)return;
+  const lo={id:uid(),name,cards:snapshotCards()};
+  LOAD.list.push(lo);LOAD.active=lo.id;saveLoadouts();renderLoadouts();
+  toast('✓ SAVED '+name.toUpperCase(),true);
+}
+function updateLoadout(id){
+  const lo=LOAD.list.find(x=>x.id===id);if(!lo)return;
+  if(!confirm('Overwrite "'+lo.name+'" with the four cards on the table right now?'))return;
+  lo.cards=snapshotCards();LOAD.active=id;saveLoadouts();renderLoadouts();
+  toast('✓ UPDATED '+lo.name.toUpperCase(),true);
+}
+function renameLoadout(id){
+  const lo=LOAD.list.find(x=>x.id===id);if(!lo)return;
+  const name=(window.prompt('Rename loadout:',lo.name)||'').trim();
+  if(!name)return;
+  lo.name=name;saveLoadouts();renderLoadouts();
+}
+function deleteLoadout(id){
+  const lo=LOAD.list.find(x=>x.id===id);if(!lo)return;
+  if(!confirm('Delete the loadout "'+lo.name+'"? The cards on the table are left alone.'))return;
+  LOAD.list=LOAD.list.filter(x=>x.id!==id);
+  if(LOAD.active===id)LOAD.active=null;
+  saveLoadouts();renderLoadouts();
+}
+function equipLoadout(id){
+  const lo=LOAD.list.find(x=>x.id===id);if(!lo)return;
+  if(!confirm('Swap all four cards to "'+lo.name+'"?\n\nWhatever is on the table now is replaced — save it as a loadout first if you want to keep it.'))return;
+  RANKS.forEach(r=>{
+    const src=lo.cards[r.key];
+    const c=src?clone(src):{name:'',desc:'',mode:'freeform',build:null,apCap:r.cap,buff:{stat:'',value:0}};
+    c.active=false;
+    SPEC[r.key]=c;
+  });
+  saveSpecials(SPEC);
+  SPEC=loadSpecials();          // fills in anything an older snapshot predates…
+  saveSpecials(SPEC);           // …and the filled-in version is what we keep
+  LOAD.active=id;saveLoadouts();
+  renderSpecials();renderLoadouts();
+  if(window.CTGSound)CTGSound.play('select');
+  toast('✓ EQUIPPED '+lo.name.toUpperCase(),true);
+}
+
 /* ── SPECIALS VIEW: fanned hand ↔ flat grid ─────────────── */
 let specViewMode='grid',focusedRank=null;
 const _rmQuery=window.matchMedia?window.matchMedia('(prefers-reduced-motion: reduce)'):{matches:false};
@@ -608,6 +718,7 @@ let _specResizeT;window.addEventListener('resize',()=>{clearTimeout(_specResizeT
 // keep in sync if specials change in another tab (e.g. Combat deactivating them on a new round)
 window.addEventListener('storage',e=>{
   if(e.key==='ctg-specials'){SPEC=loadSpecials();if(document.getElementById('tab-specials').style.display!=='none')renderSpecials();}
+  if(e.key==='ctg-spec-loadouts'){LOAD=loadLoadouts();renderLoadouts();}
 });
 
 /* ── LIBRARY PICKER (paste into slot) ───────────────────── */
@@ -899,7 +1010,7 @@ document.getElementById('wk-text').addEventListener('input',function(){W.draft.t
 (function(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();
 document.querySelectorAll('[data-nav]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const h=a.getAttribute('href');document.getElementById('page-wrap').classList.add('exit');setTimeout(()=>location.href=h,180);});});
 
-renderSpecials();
+renderSpecials();renderLoadouts();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="ctg-motion.js"></script>
