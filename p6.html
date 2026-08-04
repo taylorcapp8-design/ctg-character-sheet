@@ -21,6 +21,12 @@ details>summary::marker{display:none;}
 .calc-btn.calc-eq:hover{filter:brightness(1.15);}
 .c2d-cell{font-family:'Share Tech Mono',monospace;font-size:0.56rem;letter-spacing:0.5px;color:var(--text2);background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);padding:3px 7px;white-space:nowrap;}
 .c2d-cell b{font-family:'Anton',sans-serif;font-size:0.8rem;color:var(--purple2);}
+/* Specials — activate straight from the combat page (same flag as Page VI) */
+.c-spec-use{display:block;width:100%;margin-top:8px;font-family:'Bebas Neue',sans-serif;font-size:0.76rem;letter-spacing:1.5px;padding:4px 8px;border:1.5px solid var(--green3);background:transparent;color:var(--green3);cursor:pointer;transform:skewX(-6deg);transition:all .13s;}
+.c-spec-use:hover{background:rgba(46,160,67,0.14);}
+.c-spec-use.on{background:var(--green3);color:#062a10;}
+.c-spec-use.on:hover{filter:brightness(1.1);}
+@media (pointer:coarse){.c-spec-use{padding:7px 8px;font-size:0.84rem;}}
 /* Round tracker gets bigger tap targets on tablets (iPad portrait ≈768px,
    landscape ≈1024px) and on any touch-only screen big enough to take it. */
 @media (min-width:700px) and (max-width:1200px),(pointer:coarse) and (min-width:600px){
@@ -178,7 +184,7 @@ details>summary::marker{display:none;}
 
   <!-- ROW 3a: SPECIALS (face-card abilities from Page VI) -->
   <div class="block">
-    <div class="sec-label"><span class="mk">✦</span>SPECIALS <span class="note">— your face-card abilities · set on Page VI</span></div>
+    <div class="sec-label"><span class="mk">✦</span>SPECIALS <span class="note">— tap to activate · buffs hit your stats &amp; attack rolls · written on Page VI</span></div>
     <div class="panel">
       <div id="c-specials" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;"></div>
     </div>
@@ -847,9 +853,22 @@ function buildSpecials(){
         ${inUse?`<span style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:#062a10;background:var(--green3);padding:1px 5px;white-space:nowrap;">◉ IN USE</span>`:''}
         ${buff?`<span style="font-family:'Anton',sans-serif;font-size:0.6rem;color:var(--gold,#cf9500);white-space:nowrap;">⚡${parseInt(buff.value)>=0?'+':''}${parseInt(buff.value)} ${escS(buff.stat)}</span>`:''}
         ${ap!=null?`<span style="font-family:'Share Tech Mono',monospace;font-size:0.5rem;color:var(--gold,#cf9500);">${ap} AP</span>`:''}</div>
-      ${c.desc?`<div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.35;">${escS(c.desc)}</div>`:''}`;
+      ${c.desc?`<div style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);line-height:1.35;">${escS(c.desc)}</div>`:''}
+      <button class="c-spec-use${inUse?' on':''}" data-use="${r[0]}" aria-pressed="${inUse?'true':'false'}" title="${inUse?'In use — its buff is applied to your stats and attack rolls. Tap to stop.':'Activate while you’re using this special — any buff it grants is applied to your stats and attack rolls.'}">${inUse?'◉ STOP USING':'▶ ACTIVATE'}</button>`;
     el.appendChild(card);
+    card.querySelector('[data-use]').addEventListener('click',()=>toggleSpecial(r[0]));
   });
+}
+// Activating here writes the same ctg-specials flag the Specials page uses, so
+// the card's buff lands on the stat panel and the attack calculator right away.
+function toggleSpecial(rankKey){
+  let spec=null;try{const s=load('ctg-specials');if(s)spec=JSON.parse(s);}catch(e){}
+  if(!spec||!spec[rankKey])return;
+  const on=!spec[rankKey].active;
+  spec[rankKey].active=on;
+  store('ctg-specials',JSON.stringify(spec));
+  if(window.CTGSound)CTGSound.play(on?'stat-up':'stat-down');
+  buildSpecials();buildStats();buildLoadout();
 }
 
 // ── FACULTIES ──

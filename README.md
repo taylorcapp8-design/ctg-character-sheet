@@ -71,7 +71,7 @@ Handled by `ctg-sync.js`. Each user logs in with a **username + PIN**. Data is s
 
 ## Specials — Activation
 
-Each of the four face-card specials (Page VI) can be toggled **In Use**. While a special is active, any stat buff it grants is applied to the character's stats (Page I) and combat rolls (Page V), and removed when deactivated.
+Each of the four face-card specials (Page VI) can be toggled **In Use** — either from its card on Page VI, or from the Specials panel on the Combat page (Page V) so you can flip one mid-fight without leaving the table. While a special is active, any stat buff it grants is applied to the character's stats (Page I) and combat rolls (Page V), and removed when deactivated. Resetting the round turns every active special back off.
 
 ---
 
