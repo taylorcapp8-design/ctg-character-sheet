@@ -128,8 +128,12 @@
       <div>
         <div class="sec-label"><span class="mk">♣&#xFE0E;</span>ATTRIBUTES</div>
         <div class="panel">
+          <div class="stat-lock-bar">
+            <span class="stat-lock-note" id="stat-lock-note">Scores stay editable — unlock to add or remove attributes.</span>
+            <button class="stat-lock-btn" id="stat-lock-btn" type="button" aria-pressed="false" onclick="toggleStatsEdit()" title="Unlock to add or remove attributes">🔒 LOCKED</button>
+          </div>
           <div class="stat-bars" id="stat-bars"></div>
-          <button class="add-btn add-row" onclick="addStat()">ADD ATTRIBUTE</button>
+          <button class="add-btn add-row" id="add-stat-btn" onclick="addStat()" style="display:none;">ADD ATTRIBUTE</button>
           <div class="standard-array">STANDARD ARRAY: <span>5,4,3,3,2,1,0</span></div>
           <div class="milestone-box" id="milestone-box"></div>
         </div>
@@ -260,7 +264,7 @@ function renderStats(){
         </div>
         ${buffBadge}
         <span class="stat-sp">${sp(score)}<span>SP</span></span>
-        <button class="mini-del" title="Remove" data-del="${i}">✕</button>
+        ${statsEditMode?`<button class="mini-del" title="Remove ${esc(st.name)}" aria-label="Remove the attribute ${esc(st.name)}" data-del="${i}">✕</button>`:''}
       </div>${srcLine}`;
     w.appendChild(row);
     const scoreInput=row.querySelector('.stat-score-input');
@@ -268,14 +272,42 @@ function renderStats(){
     function applyScore(v){st.score=Math.max(0,v);scoreInput.value=st.score;spEl.innerHTML=sp(st.score)+'<span>SP</span>';saveStats();renderMilestones();}
     scoreInput.addEventListener('input',()=>applyScore(parseInt(scoreInput.value)||0));
     row.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>applyScore((parseInt(scoreInput.value)||0)+parseInt(b.dataset.d))));
-    row.querySelector('[data-del]').addEventListener('click',()=>{stats.splice(i,1);saveStats();renderStats();});
+    row.querySelector('[data-del]')?.addEventListener('click',()=>{
+      if(!confirm('Remove the attribute "'+(st.name||'—')+'"? Its score goes with it, which can cost you milestone bonuses.'))return;
+      stats.splice(i,1);saveStats();renderStats();
+    });
   });
   renderMilestones();
 }
 function addStat(){
+  if(!statsEditMode)return;
   const name=(window.prompt('Attribute name:','')||'').trim();
   if(!name)return;
   stats.push({name,icon:'◆',score:0});saveStats();renderStats();
+}
+
+/* ── ATTRIBUTE EDIT MODE ─────────────────────────────────
+   The list is locked by default so a stray tap can't delete an attribute
+   mid-session. Scores stay editable either way — only add/remove is gated.
+   Always starts locked; it's a guard rail, not a preference. */
+let statsEditMode=false;
+function applyStatsEditMode(){
+  const btn=document.getElementById('stat-lock-btn');
+  const note=document.getElementById('stat-lock-note');
+  const add=document.getElementById('add-stat-btn');
+  if(btn){
+    btn.textContent=statsEditMode?'🔓 DONE':'🔒 LOCKED';
+    btn.classList.toggle('on',statsEditMode);
+    btn.setAttribute('aria-pressed',statsEditMode?'true':'false');
+    btn.title=statsEditMode?'Lock the list again':'Unlock to add or remove attributes';
+  }
+  if(note)note.textContent=statsEditMode?'Editing — ✕ removes an attribute.':'Scores stay editable — unlock to add or remove attributes.';
+  if(add)add.style.display=statsEditMode?'':'none';
+}
+function toggleStatsEdit(){
+  statsEditMode=!statsEditMode;
+  applyStatsEditMode();renderStats();
+  if(window.CTGSound)CTGSound.play(statsEditMode?'open':'close');
 }
 
 /* ── MILESTONE BONUSES ───────────────────────────────────
@@ -492,7 +524,7 @@ window.addEventListener('storage',e=>{
 });
 
 /* init */
-renderStats();renderCarryMirror();renderAbilities();refreshTracks();updateNavName();
+applyStatsEditMode();renderStats();renderCarryMirror();renderAbilities();refreshTracks();updateNavName();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
 <script src="ctg-motion.js"></script>

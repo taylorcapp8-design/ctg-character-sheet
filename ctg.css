@@ -171,6 +171,14 @@ select.wstat-sel option{background:var(--paper,#fff);color:var(--text,#15131a);}
 [data-theme="dark"] .stat-score-input{border-color:rgba(255,255,255,0.2);}
 .standard-array{font-family:'Share Tech Mono',monospace;font-size:0.64rem;color:var(--text-dim);text-align:right;margin-top:10px;letter-spacing:1px;}
 .standard-array span{color:var(--green2);}
+/* Attribute list lock — add/remove is gated behind an edit mode */
+.stat-lock-bar{display:flex;align-items:center;gap:9px;margin-bottom:9px;padding-bottom:8px;border-bottom:1.5px dashed var(--border);}
+.stat-lock-note{flex:1;min-width:0;font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);line-height:1.4;}
+.stat-lock-btn{flex-shrink:0;font-family:'Bebas Neue',sans-serif;font-size:0.76rem;letter-spacing:1.5px;padding:4px 11px;border:1.5px solid var(--border2);background:transparent;color:var(--text-dim);cursor:pointer;transform:skewX(-7deg);transition:all .13s;}
+.stat-lock-btn:hover{border-color:var(--purple);color:var(--purple);}
+.stat-lock-btn.on{background:var(--gold,#cf9500);border-color:var(--gold,#cf9500);color:#000;}
+.stat-lock-btn.on:hover{filter:brightness(1.1);color:#000;}
+@media (pointer:coarse){.stat-lock-btn{padding:7px 13px;font-size:0.84rem;}}
 /* Milestone bonuses — every 3 attribute points past the standard array */
 .milestone-box{margin-top:12px;padding:10px 12px 11px;background:var(--paper2,rgba(0,0,0,0.04));border:1.5px solid var(--border);border-left:4px solid var(--gold,#cf9500);clip-path:polygon(0 0,100% 0,calc(100% - 9px) 100%,0 100%);}
 .ms-head{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:8px;}

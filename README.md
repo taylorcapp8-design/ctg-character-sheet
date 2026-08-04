@@ -49,6 +49,7 @@ ctg-character-sheet/
 | Accessories — equip up to 4, each can grant a stat bonus | P4 |
 | Skill Tree with point budget | P5 |
 | Combat page — conditions (with round countdown), damage calc, attack rolls, buffs | P6 |
+| Attribute list locked by default — adding/removing needs the edit-mode unlock (scores always editable) | P1 |
 | Stat modifiers with source breakdown (buffs + accessories + specials) | P1, P6 |
 | Milestone bonuses — every 3 attribute points past the standard array = +1 attack dmg / range dmg / health | P1, P6 |
 | Temp buffs with multi-stat support and presets | P6 |
