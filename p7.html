@@ -205,6 +205,10 @@
 .kw-picker h3{font-family:'Anton',sans-serif;font-style:italic;font-size:1.3rem;letter-spacing:1px;color:var(--ink);margin-bottom:3px;}
 .kw-ap-disc{color:var(--green3)!important;}
 .kw-chip.on .kw-ap-disc{color:#c9f5cf!important;}
+.wk-over{margin:-6px 0 12px;padding:9px 13px;background:rgba(168,16,44,0.1);border:2px solid var(--red);border-left-width:5px;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.86rem;line-height:1.45;color:var(--red);clip-path:polygon(0 0,100% 0,calc(100% - 9px) 100%,0 100%);}
+.wk-over b{font-family:'Anton',sans-serif;font-weight:400;letter-spacing:0.5px;}
+.kw-chip.over{border-color:var(--red);border-style:dashed;color:var(--red);}
+.kw-chip.over .kw-ap{opacity:1;}
 /* rules reference */
 .kw-ref .ref-block{margin-bottom:16px;}
 .kw-ref h4{font-family:'Anton',sans-serif;font-style:italic;font-size:1.05rem;letter-spacing:1px;color:var(--ink);margin:0 0 6px;padding-bottom:3px;border-bottom:2px solid var(--border);}
@@ -302,6 +306,7 @@
         </div>
         <div class="wk-pips" id="wk-pips"></div>
       </div>
+      <div class="wk-over" id="wk-over" style="display:none;"></div>
 
       <div class="wk-layout">
         <div class="wk-rail" id="wk-rail"></div>
@@ -310,7 +315,7 @@
           <div class="wk-chips" id="wk-chips"></div>
 
           <div class="kw-effstrip">
-            <div class="lab">☣ DEBUFFS / BUFFS <span style="color:var(--text-dim);">— always available</span></div>
+            <div class="lab">☣ DEBUFFS / BUFFS <span style="color:var(--text-dim);">— always available · equip one</span></div>
             <div class="wk-chips" id="wk-effects"></div>
           </div>
 
@@ -407,7 +412,7 @@ const CTG_AI={
 
 /* ── STATE ──────────────────────────────────────────────── */
 const RANKS=[{key:'jack',label:'Jack',glyph:'J',suit:'♠',sc:'spade',cap:6},{key:'queen',label:'Queen',glyph:'Q',suit:'♣',sc:'club',cap:10},{key:'king',label:'King',glyph:'K',suit:'♦',sc:'diamond',cap:14},{key:'ace',label:'Ace',glyph:'A',suit:'♥',sc:'heart',cap:20}];
-function emptySel(){return {action:null,target:[],operation:[],domain:[],condition:null,duration:null,modifier:null,effects:[]};}
+function emptySel(){return {action:null,target:[],operation:[],domain:[],condition:[],duration:null,modifier:null,effects:[]};}
 
 function loadSpecials(){
   let s=null;try{s=JSON.parse(load('ctg-specials'));}catch(e){}
@@ -759,12 +764,12 @@ function pick(catKey,id){
   const cat=catByKey(catKey);const it=CTG.item(catKey,id);
   if(cat.select==='single'){
     if(sel[catKey]===id)sel[catKey]=null;
-    else{if(CTG.ruleReason(catKey,it,sel))return;if(overCapIfAdd(catKey,id))return;sel[catKey]=id;}
+    else{if(CTG.ruleReason(catKey,it,sel))return;sel[catKey]=id;}
   }else{
     sel[catKey]=sel[catKey]||[];
     const i=sel[catKey].indexOf(id);
     if(i!==-1)sel[catKey].splice(i,1);
-    else{if(CTG.ruleReason(catKey,it,sel))return;if(cat.max&&sel[catKey].length>=cat.max)return;if(overCapIfAdd(catKey,id))return;sel[catKey].push(id);}
+    else{if(CTG.ruleReason(catKey,it,sel))return;if(cat.max&&sel[catKey].length>=cat.max)return;sel[catKey].push(id);}
   }
   CTG.prune(sel);saveWorkshop();renderWorkshop();
 }
@@ -780,10 +785,16 @@ function addRulesToDesc(){
   W.draft.text=cur?(cur+'\n\n'+t):t;W.draft.edited=true;saveWorkshop();renderOutput();toast('Rules added to flavour.',true);
 }
 
+function overBy(){const ap=CTG.totalAP(sel);const cap=W.draft.apCap;return (cap>0&&ap>cap)?(ap-cap):0;}
 function renderBudget(){
   const ap=CTG.totalAP(sel);const cap=W.draft.apCap;
   const over=cap>0&&ap>cap;
   const apEl=document.getElementById('wk-ap');apEl.textContent=ap;apEl.classList.toggle('over',over);
+  const warn=document.getElementById('wk-over');
+  if(warn){
+    warn.style.display=over?'':'none';
+    if(over)warn.innerHTML=`⚠ OVER LIMIT — this build is <b>${ap} AP</b> against a <b>${cap} AP</b> cap, <b>${ap-cap} over</b>. Drop a keyword, take another Condition, or raise the cap. Saving or sending it will ask you to confirm.`;
+  }
   const pips=document.getElementById('wk-pips');pips.innerHTML='';
   const shown=Math.max(cap>0?cap:ap,ap);
   for(let i=0;i<shown;i++){const p=document.createElement('span');p.className='wk-pip'+(i<ap?(over?' over':' on'):'');pips.appendChild(p);}
@@ -805,14 +816,15 @@ function chipEl(catKey,id){
   const it=CTG.item(catKey,id);const cat=catByKey(catKey);
   const on=cat.select==='single'?sel[catKey]===id:(sel[catKey]||[]).indexOf(id)!==-1;
   const reason=on?null:CTG.ruleReason(catKey,it,sel);
-  const capBlock=on?false:overCapIfAdd(catKey,id);
   const maxBlock=on?false:(cat.select!=='single'&&cat.max&&(sel[catKey]||[]).length>=cat.max);
-  const blocked=!!(reason||capBlock||maxBlock);
+  const blocked=!!(reason||maxBlock);
+  // over the cap is a warning, not a wall — you can overclock a build and get told about it
+  const capOver=(!on&&!blocked)&&overCapIfAdd(catKey,id);
   const el=document.createElement('span');
-  el.className='kw-chip'+(on?' on':'')+(blocked?' blocked':'');
+  el.className='kw-chip'+(on?' on':'')+(blocked?' blocked':'')+(capOver?' over':'');
   const apTxt=cat.discount?`−${it.ap} AP`:`${it.ap} AP`;
   el.innerHTML=`${esc(it.name)}<span class="kw-ap${cat.discount?' kw-ap-disc':''}">${apTxt}</span>`;
-  if(reason)el.title=reason;else if(capBlock)el.title='Would exceed the AP cap.';else if(maxBlock)el.title='Max '+cat.max+' selected — remove one first.';else el.title=(cat.discount?'Gives back '+it.ap+' AP. ':'')+it.desc;
+  if(reason)el.title=reason;else if(maxBlock)el.title='Max '+cat.max+' selected — remove one first.';else el.title=(cat.discount?'Gives back '+it.ap+' AP. ':'')+it.desc+(capOver?' ⚠ Picking this pushes the build over its AP cap.':'');
   if(!blocked||on)el.onclick=()=>pick(catKey,id);
   return el;
 }
@@ -850,7 +862,7 @@ function renderLibrary(){
       <button class="mini-btn" data-dup>⧉</button>
       <button class="mini-btn" data-del style="border-color:var(--red);color:var(--red);">✕</button>`;
     row.querySelector('[data-load]').addEventListener('click',()=>{
-      sel=Object.assign(emptySel(),clone(entry.sel));W.draft.sel=sel;W.draft.name=entry.name;W.draft.text=entry.text;W.draft.edited=true;saveWorkshop();renderWorkshop();
+      sel=CTG.normalizeSel(Object.assign(emptySel(),clone(entry.sel)));W.draft.sel=sel;W.draft.name=entry.name;W.draft.text=entry.text;W.draft.edited=true;saveWorkshop();renderWorkshop();
     });
     row.querySelector('[data-dup]').addEventListener('click',()=>{W.library.unshift(Object.assign({},clone(entry),{id:uid(),name:entry.name+' (copy)'}));saveWorkshop();renderLibrary();});
     row.querySelector('[data-del]').addEventListener('click',()=>{if(confirm('Delete "'+entry.name+'" from library?')){W.library=W.library.filter(x=>x.id!==entry.id);saveWorkshop();renderLibrary();}});
@@ -948,7 +960,12 @@ function renderWorkshop(){
   renderBudget();renderRail();renderChips();renderEffects();renderOutput();renderRules();renderLibrary();renderReference();renderSendMenu();
 }
 
+function confirmOverLimit(what){
+  const o=overBy();if(!o)return true;
+  return confirm('⚠ OVER LIMIT\n\nThis build costs '+CTG.totalAP(sel)+' AP against a cap of '+W.draft.apCap+' AP — '+o+' over.\n\n'+what+' anyway?');
+}
 function saveToLibrary(){
+  if(!confirmOverLimit('Save it'))return;
   const name=W.draft.name||'Untitled Ability';
   W.library.unshift({id:uid(),name:name,sel:clone(sel),text:W.draft.text,ap:CTG.totalAP(sel)});
   saveWorkshop();renderLibrary();flashSaved();
@@ -958,6 +975,7 @@ function clearBuild(){
   sel=emptySel();W.draft.sel=sel;W.draft.name='';W.draft.text='';W.draft.edited=false;saveWorkshop();renderWorkshop();
 }
 function sendToSlot(rankKey){
+  if(!confirmOverLimit('Send it'))return;
   const c=SPEC[rankKey];const r=RANKS.find(x=>x.key===rankKey);const ap=CTG.totalAP(sel);
   if(c.apCap>0&&ap>c.apCap&&!confirm('This build is '+ap+' AP, but the '+r.label+' card is capped at '+c.apCap+' AP.\n\nSend it anyway?'))return;
   c.mode='workshop';

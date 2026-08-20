@@ -18,10 +18,12 @@
   /* ── CATEGORY DATA ──────────────────────────────────────────────────
      select : 'single' | 'multi'
      max    : cap on picks for a multi-select category (optional)
-     items  : { id, name, ap, desc, phrase?, clause?, physical? }
+     items  : { id, name, ap, desc, phrase?, clause?, physical?, stat? }
        phrase  — short generator clause (falls back to name)
        clause  — full sentence a Condition contributes to generated text
        physical— Domain only: false = abstract (stat / mind), true = tangible
+       stat    — Domain only: true = it IS one of the sheet's stats. Paired with
+                 Increase / Decrease it reads as bolstering that stat by the dice.
   ─────────────────────────────────────────────────────────────────────── */
   var CATEGORIES = [
     {
@@ -72,16 +74,16 @@
     },
     {
       key: 'domain', label: 'Domain', icon: '✦', select: 'multi', max: 2,
-      note: 'What you are manipulating. Abstract domains have no physical form. Blend up to two.',
+      note: 'What you are manipulating. Stat domains are for bolstering — pair them with Increase or Decrease. Blend up to two.',
       items: [
-        { id: 'force', name: 'Force', ap: 5, physical: false, desc: 'Pure strength and power.' },
-        { id: 'finesse', name: 'Finesse', ap: 5, physical: false, desc: 'Pure agility and reaction.' },
-        { id: 'endurance', name: 'Endurance', ap: 5, physical: false, desc: 'Pure defence and stoutness.' },
-        { id: 'logic', name: 'Logic', ap: 5, physical: false, desc: 'Pure intelligence and mind.' },
-        { id: 'sense', name: 'Sense', ap: 3, physical: false, desc: 'Pure intuition and instinct.' },
-        { id: 'velvet', name: 'Velvet', ap: 2, physical: false, desc: 'Pure charisma and charm.' },
-        { id: 'shine', name: 'Shine', ap: 2, physical: false, desc: 'Pure luck and bedazzling.' },
-        { id: 'memory', name: 'Memory', ap: 3, physical: false, desc: 'Stored thoughts — taking in, keeping, and recalling facts and past events.' },
+        { id: 'force', name: 'Force', ap: 5, physical: false, stat: true, desc: 'Pure strength and power. Pair it with Increase or Decrease to bolster or sap the Force stat.' },
+        { id: 'finesse', name: 'Finesse', ap: 5, physical: false, stat: true, desc: 'Pure agility and reaction. Pair it with Increase or Decrease to bolster or sap the Finesse stat.' },
+        { id: 'endurance', name: 'Endurance', ap: 5, physical: false, stat: true, desc: 'Pure defence and stoutness. Pair it with Increase or Decrease to bolster or sap the Endurance stat.' },
+        { id: 'logic', name: 'Logic', ap: 5, physical: false, stat: true, desc: 'Pure intelligence and mind. Pair it with Increase or Decrease to bolster or sap the Logic stat.' },
+        { id: 'sense', name: 'Sense', ap: 3, physical: false, stat: true, desc: 'Pure intuition and instinct. Pair it with Increase or Decrease to bolster or sap the Sense stat.' },
+        { id: 'velvet', name: 'Velvet', ap: 2, physical: false, stat: true, desc: 'Pure charisma and charm. Pair it with Increase or Decrease to bolster or sap the Velvet stat.' },
+        { id: 'shine', name: 'Shine', ap: 2, physical: false, stat: true, desc: 'Pure luck and bedazzling. Pair it with Increase or Decrease to bolster or sap the Shine stat.' },
+        { id: 'memory', name: 'Mind', ap: 3, physical: false, desc: 'The thinking self — attention, thought, and stored memory: taking in, keeping, and recalling facts and past events.' },
         { id: 'fire', name: 'Fire', ap: 2, physical: true, desc: 'A burning blaze of combustion.' },
         { id: 'ice', name: 'Ice', ap: 2, physical: true, desc: 'A rigid, stone-like substance that is also slippery and wet.' },
         { id: 'water', name: 'Water', ap: 2, physical: true, desc: 'A flowing, clear, pure liquid.' },
@@ -95,17 +97,17 @@
         { id: 'blood', name: 'Blood', ap: 3, physical: true, desc: 'The vital fluid circulating through living creatures.' },
         { id: 'air', name: 'Air', ap: 2, physical: true, desc: 'A mix of life itself, flowing through the smallest holes and filling the widest rooms.' },
         { id: 'metal', name: 'Metal', ap: 2, physical: true, desc: 'A hard, lustrous material — man’s true best friend.' },
+        { id: 'matter', name: 'Matter', ap: 3, physical: true, desc: 'Raw material and made things — wood, stone, glass, cloth, and the objects built out of them.' },
         { id: 'space', name: 'Space', ap: 5, physical: true, desc: 'A combination of the cosmos themselves.' }
       ]
     },
     {
-      key: 'condition', label: 'Condition', icon: '⌖', select: 'single', discount: true,
-      note: 'Where strategy comes from — accepting one drawback gives AP back.',
+      key: 'condition', label: 'Condition', icon: '⌖', select: 'multi', discount: true,
+      note: 'Where strategy comes from — every drawback you accept gives AP back. Stack as many as you can live with.',
       items: [
-        { id: 'onlymoving', name: 'Only While Moving', ap: 2, clause: 'It can only target a moving character.', desc: 'You can only target a moving character.' },
+        { id: 'onlymoving', name: 'Only While Moving', ap: 2, clause: 'It can only target a moving character.', desc: 'You can only target a moving character. Requires a Reaction — you catch them mid-move.' },
         { id: 'onlyinjured', name: 'Only While Injured', ap: 1, clause: 'It can only be used after you have taken damage.', desc: 'You can only activate the skill once you have taken damage.' },
         { id: 'reqsight', name: 'Requires Sight', ap: 1, clause: 'You must be able to see your target.', desc: 'You must be able to see your target.' },
-        { id: 'reqspoken', name: 'Requires Spoken Word', ap: 1, clause: 'You must call out the ability’s name aloud, like in an anime.', desc: 'You have to say your ability name aloud.' },
         { id: 'clutch', name: 'Clutch', ap: 1, clause: 'You must take your time using it.', desc: 'You must take your time using your ability.' },
         { id: 'remainstill', name: 'Must Remain Still', ap: 1, clause: 'You cannot move while using it.', desc: 'You can’t move while using this.' },
         { id: 'reqhp', name: 'Requires HP', ap: 1, clause: 'It costs HP equal to one quarter of its total AP.', desc: 'Uses HP equal to ¼ of the AP used to make this skill.' },
@@ -125,19 +127,19 @@
     },
     {
       key: 'modifier', label: 'Modifier', icon: '🎲', select: 'single',
-      note: 'How significantly the ability harms or how greatly it heals.',
+      note: 'How hard the ability hits, or how far it swings a stat. It reads as damage on an attack and as a bolster on a buff.',
       items: [
         { id: 'base', name: 'Blank', ap: 0, blank: true, desc: 'Whatever your character’s default / base damage is.' },
-        { id: 'd4', name: '1d4', ap: 4, desc: 'The four-sided dice.' },
-        { id: 'd6', name: '1d6', ap: 6, desc: 'The standard six-sided dice.' },
-        { id: 'd8', name: '1d8', ap: 8, desc: 'The eight-sided dice.' },
-        { id: 'd10', name: '1d10', ap: 10, desc: 'The ten-sided dice.' },
-        { id: 'd12', name: '1d12', ap: 12, desc: 'The twelve-sided dice.' }
+        { id: 'd4', name: '1d4', ap: 6, desc: 'The four-sided dice.' },
+        { id: 'd6', name: '1d6', ap: 8, desc: 'The standard six-sided dice.' },
+        { id: 'd8', name: '1d8', ap: 10, desc: 'The eight-sided dice.' },
+        { id: 'd10', name: '1d10', ap: 12, desc: 'The ten-sided dice.' },
+        { id: 'd12', name: '1d12', ap: 14, desc: 'The twelve-sided dice.' }
       ]
     },
     {
-      key: 'effects', label: 'Debuffs / Buffs', icon: '☣', select: 'multi',
-      note: 'The aftermath — riders the ability leaves on its target.',
+      key: 'effects', label: 'Debuffs / Buffs', icon: '☣', select: 'multi', max: 1,
+      note: 'The aftermath — the rider the ability leaves on its target. Only one may be equipped.',
       items: [
         { id: 'burning', name: 'Burning', ap: 2, kind: 'debuff', desc: 'Target takes 1 damage at the end of their turn; may roll an endurance check each turn, wearing off after 4 rounds.' },
         { id: 'freezing', name: 'Freezing', ap: 2, kind: 'debuff', desc: 'Target deals 1 less damage on their next attack; may roll an endurance check each turn, wearing off after 4 rounds.' },
@@ -191,8 +193,17 @@
     if (catKey === 'condition' && it.id === 'onlymoving' && targets.indexOf('self') !== -1) {
       return 'Can’t combine with a Self target.';
     }
+    if (catKey === 'condition' && it.id === 'onlymoving' && sel.action !== 'reaction') {
+      return 'Needs a Reaction — you catch them mid-move.';
+    }
     if (catKey === 'target' && it.id === 'self' && conds.indexOf('onlymoving') !== -1) {
       return 'Can’t combine with “Only While Moving”.';
+    }
+    if (catKey === 'target' && it.id === 'area' && targets.indexOf('chain') !== -1) {
+      return 'A burst can’t also Chain.';
+    }
+    if (catKey === 'target' && it.id === 'chain' && targets.indexOf('area') !== -1) {
+      return 'A Chain can’t also burst as an Area.';
     }
     if (catKey === 'target' && PROJECTILES.indexOf(it.id) !== -1 && targets.indexOf('touch') !== -1) {
       return 'A projectile can’t combine with Touch.';
@@ -271,6 +282,7 @@
       with Blood. It costs 4 HP to use. On Success it inflicts Restrained,
       which lasts until the start of the target's next turn."
   ─────────────────────────────────────────────────────────────────────── */
+  function nameOf(it) { return it.name; }
   function joinList(arr) {
     if (!arr.length) return '';
     if (arr.length === 1) return arr[0];
@@ -296,7 +308,6 @@
       case 'onlymoving': return 'You may only use it against a moving creature.';
       case 'onlyinjured': return 'You may only use it after you have taken damage.';
       case 'reqsight': return 'You must be able to see your target.';
-      case 'reqspoken': return 'You must call out the ability aloud to use it.';
       case 'clutch': return 'You must take your time to use it.';
       case 'remainstill': return 'You cannot move while using it.';
       case 'reqmark': return 'You must have a mark already placed to use it there.';
@@ -313,56 +324,100 @@
     }
   }
 
+  /* Where the ability lands, as one noun phrase. Area and Cone each carry
+     their own band — Close for the burst, Medium for the cone — so picking
+     both has to name both. */
+  function subjectPhrase(hasT) {
+    var scope = [];
+    if (hasT('area')) scope.push('every creature and ally in Close range');
+    if (hasT('cone')) scope.push('every creature and ally in a Cone at Medium range');
+    if (hasT('self')) return 'yourself';
+    if (scope.length === 2) return 'every creature and ally in Close range and in a Cone at Medium range';
+    if (scope.length) return scope[0];
+    if (hasT('object') && !hasT('touch') && !hasT('medproj') && !hasT('longproj') && !hasT('trueproj') && !hasT('chain')) {
+      return 'a Target Object or Item';
+    }
+    return hasT('touch') ? 'any Target Creature or Object' : 'a Target Creature or Object';
+  }
+
   function generate(sel) {
     sel = sel || {};
     var action = sel.action ? item('action', sel.action) : null;
     var ops = asList(sel.operation).map(function (id) { return item('operation', id); }).filter(Boolean);
     var doms = asList(sel.domain).map(function (id) { return item('domain', id); }).filter(Boolean);
     var targets = asList(sel.target).map(function (id) { return item('target', id); }).filter(Boolean);
-    var cond = asList(sel.condition).map(function (id) { return item('condition', id); }).filter(Boolean)[0] || null;
+    var conds = asList(sel.condition).map(function (id) { return item('condition', id); }).filter(Boolean);
     var dur = sel.duration ? item('duration', sel.duration) : null;
     var mod = sel.modifier ? item('modifier', sel.modifier) : null;
     var effs = asList(sel.effects).map(function (id) { return item('effects', id); }).filter(Boolean);
 
-    if (!action && !ops.length && !doms.length && !targets.length && !cond && !dur && !mod && !effs.length) return '';
+    if (!action && !ops.length && !doms.length && !targets.length && !conds.length && !dur && !mod && !effs.length) return '';
 
     var tids = targets.map(function (t) { return t.id; });
     function hasT(id) { return tids.indexOf(id) !== -1; }
+    var opIds = ops.map(function (o) { return o.id; });
+    var boosting = opIds.indexOf('increase') !== -1;
+    var sapping = opIds.indexOf('decrease') !== -1;
 
-    // opener + operation verb
-    var s = (action ? ACTION_OPENER[action.id] : '');
-    var verb = ops.length ? ops.map(function (o) { return OP_RULE[o.id] || o.name; }).join(' and ') : 'affect';
-    s += 'You may ' + verb;
+    // Stat Domains + Increase / Decrease = a bolster, not an attack. That clause
+    // owns the dice, so the Modifier reads "by 1d8" instead of "1d8 damage".
+    var statDoms = doms.filter(function (d) { return d.stat; });
+    var freeDoms = doms.filter(function (d) { return !d.stat; });
+    var statMode = statDoms.length > 0 && (boosting || sapping);
+    var restOps = statMode
+      ? ops.filter(function (o) { return o.id !== 'increase' && o.id !== 'decrease'; })
+      : ops;
 
-    // target subject
-    var subject = '';
-    if (targets.length) {
-      if (hasT('self')) subject = 'yourself';
-      else if (hasT('area')) subject = 'every creature and ally in Close range';
-      else if (hasT('cone')) subject = 'every creature and ally in a Cone at Medium range';
-      else if (hasT('object') && !hasT('touch') && !hasT('medproj') && !hasT('longproj') && !hasT('trueproj') && !hasT('chain')) subject = 'a Target Object or Item';
-      else subject = (hasT('touch') ? 'any Target Creature or Object' : 'a Target Creature or Object');
-    }
+    var subject = targets.length ? subjectPhrase(hasT) : '';
     var rangeId = ['trueproj', 'longproj', 'medproj', 'touch'].filter(hasT)[0];
     var rangeWord = rangeId ? RANGE_WORD[rangeId] : null;
     var chain = hasT('chain');
-    if (subject) {
-      s += ' ' + subject;
-      if (rangeWord && !chain && !hasT('self') && !hasT('area') && !hasT('cone')) {
-        s += (rangeId === 'touch' ? ' in ' : ' at ') + rangeWord + ' range';
-      }
+    var showRange = !!rangeWord && !chain && !hasT('self') && !hasT('area') && !hasT('cone');
+    var rangeTail = showRange ? ((rangeId === 'touch' ? ' in ' : ' at ') + rangeWord + ' range') : '';
+
+    var sentences = [];
+
+    // ── the bolster clause ──
+    if (statMode) {
+      var statList = joinList(statDoms.map(function (d) { return d.name; }));
+      var b = 'You may temporarily ' + (boosting ? 'bolster' : 'sap') + ' ';
+      b += (hasT('self') || !subject) ? ('your own ' + statList)
+        : ('the ' + statList + ' of ' + subject + rangeTail);
+      if (mod && !mod.blank) b += ' by ' + mod.name;
+      if (freeDoms.length) b += ', channelled through ' + joinList(freeDoms.map(nameOf));
+      sentences.push(b + '.');
     }
 
-    // domain
-    if (doms.length) s += ' with ' + joinList(doms.map(function (d) { return d.name; }));
-    // chain rider
-    if (chain) s += ', on Success it jumps to the nearest creature' + (rangeWord ? ' at ' + rangeWord + ' range' : '');
-    // modifier / dice
-    if (mod && !mod.blank) s += ', dealing ' + mod.name + ' Additional Damage on Success';
-    s += '.';
+    // ── the ordinary clause ──
+    if (restOps.length || !statMode) {
+      var verb = restOps.length
+        ? restOps.map(function (o) { return OP_RULE[o.id] || o.name; }).join(' and ')
+        : 'affect';
+      var n = 'You may ' + verb;
+      if (subject) n += ' ' + subject + rangeTail;
+      var nDoms = statMode ? freeDoms : doms;
+      if (nDoms.length) n += ' with ' + joinList(nDoms.map(nameOf));
+      if (chain) n += ', on Success it jumps to the nearest creature' + (rangeWord ? ' at ' + rangeWord + ' range' : '');
+      // the dice speaks as a buff, a drain, or damage — whichever the ops call for
+      if (mod && !mod.blank && !statMode) {
+        if (boosting) n += ', bolstering it by ' + mod.name;
+        else if (sapping) n += ', weakening it by ' + mod.name;
+        else n += ', dealing ' + mod.name + ' Additional Damage on Success';
+      }
+      sentences.push(n + '.');
+    } else if (chain) {
+      sentences.push('On Success it jumps to the nearest creature' + (rangeWord ? ' at ' + rangeWord + ' range' : '') + '.');
+    }
 
-    // condition (single drawback)
-    if (cond) s += ' ' + conditionRule(cond, totalAP(sel));
+    var body = sentences.join(' ');
+    var opener = action ? ACTION_OPENER[action.id] : '';
+    // the opener already ends in a comma, so the clause after it runs lower-case
+    if (opener) body = body.charAt(0).toLowerCase() + body.slice(1);
+    var s = opener + body;
+
+    // drawbacks — as many as the build accepts
+    var ap = totalAP(sel);
+    conds.forEach(function (c) { s += ' ' + conditionRule(c, ap); });
 
     // debuffs + duration
     var debuffs = effs.filter(function (e) { return e.kind === 'debuff'; });
@@ -375,7 +430,6 @@
     } else if (dur && DUR_RULE[dur.id]) {
       s += ' The effect lasts ' + DUR_RULE[dur.id] + '.';
     }
-    // buffs
     buffs.forEach(function (b) { s += ' ' + buffRule(b); });
 
     return s.trim();
@@ -539,7 +593,7 @@
     sel = sel || {}; ans = ans || {};
     var doms = asList(sel.domain).map(function (id) { return item('domain', id); }).filter(Boolean);
     var dom = doms[0] || null;
-    var domName = doms.length ? joinList(doms.map(function (d) { return d.name; })) : 'raw power';
+    var domName = doms.length ? joinList(doms.map(nameOf)) : 'raw power';
     var name = (ans.name || '').trim();
     var colour = ans.colour || null;
     var style = ans.style || null;
@@ -568,13 +622,17 @@
   }
 
   /* Plain-language rules for the reference panel. */
-  var AP_NOTE = 'Every keyword adds AP — except Conditions, which give AP back, since a drawback earns you room. Keep the running total at or under your cap. A higher total means a bigger, costlier ability.';
+  var AP_NOTE = 'Every keyword adds AP — except Conditions, which give AP back, since a drawback earns you room. Keep the running total at or under your cap. You can push past the cap while you experiment — the build is flagged as OVER LIMIT and you have to confirm the warning before it saves. A higher total means a bigger, costlier ability.';
   var COMBINATION_RULES = [
     'Elements can’t contradict — Ice can’t inflict Burning, and Fire or Light can’t inflict Freezing.',
-    'Size and shape need substance — Expand, Compress and Transform need at least one physical Domain, never only an abstract one like Force, Logic or Memory.',
+    'Size and shape need substance — Expand, Compress and Transform need at least one physical Domain, never only an abstract one like Force, Logic or Mind.',
     'A target is one place at a time — Self can’t pair with “Only While Moving”, and Touch can’t pair with any Projectile.',
+    'A burst is not an arc — Area and Chain can’t both be picked.',
+    'You can only catch a moving target on the turn they move — “Only While Moving” needs a Reaction.',
+    'One rider at a time — an ability carries a single Debuff or Buff.',
     'Riders need their source — Burning needs Fire or Light, Freezing needs Ice, Shocked needs Electricity, and Restrained needs the Bind operation.',
-    'Conditions pay you back — each Condition you accept lowers the ability’s AP rather than raising it.'
+    'Stat Domains are for bolstering — pair Force, Finesse, Endurance, Logic, Sense, Velvet or Shine with Increase or Decrease and the dice swings that stat instead of dealing damage.',
+    'Conditions pay you back — stack as many drawbacks as you can live with; every one lowers the ability’s AP rather than raising it.'
   ];
 
   /* ── PUBLIC API ─────────────────────────────────────────────────────── */
