@@ -121,7 +121,7 @@
   <!-- the word pile = the menu -->
   <nav class="word-pile" id="pile">
     <a class="word w1" href="p1.html" data-nav data-word="STATS"><span class="num">I</span></a>
-    <a class="word w2" href="p3.html" data-nav data-word="FACULTIES"><span class="num">II</span></a>
+    <a class="word w2" href="p3.html" data-nav data-word="CHARACTER"><span class="num">II</span></a>
     <a class="word w3" href="p4.html" data-nav data-word="ARSENAL"><span class="num">III</span></a>
     <a class="word w4" href="p5.html" data-nav data-word="SKILLS"><span class="num">IV</span></a>
     <a class="word" href="p6.html" data-nav data-word="COMBAT" style="font-size:3rem;transform:rotate(1.5deg);margin-left:110px;margin-top:-4px;background:var(--red-deep,#a8102c);box-shadow:5px 5px 0 var(--ink);"><span class="num">V</span></a>
@@ -138,7 +138,7 @@
       <div style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;letter-spacing:2px;color:var(--gold);margin-bottom:7px;">▸ SETUP CHECKLIST</div>
       <div style="display:flex;flex-direction:column;gap:4px;">
         <a id="sc-p1" href="p1.html" style="display:flex;align-items:center;justify-content:flex-end;gap:8px;font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:1.5px;text-decoration:none;padding:3px 0;transition:color .15s;" onmouseover="this.style.color='var(--purple)'" onmouseout="this.style.color=''"><span id="sc-p1-tick" style="font-size:0.6rem;color:var(--text-dim);">○</span> I · STATS</a>
-        <a id="sc-p3" href="p3.html" style="display:flex;align-items:center;justify-content:flex-end;gap:8px;font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:1.5px;text-decoration:none;padding:3px 0;transition:color .15s;" onmouseover="this.style.color='var(--purple)'" onmouseout="this.style.color=''"><span id="sc-p3-tick" style="font-size:0.6rem;color:var(--text-dim);">○</span> II · FACULTIES</a>
+        <a id="sc-p3" href="p3.html" style="display:flex;align-items:center;justify-content:flex-end;gap:8px;font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:1.5px;text-decoration:none;padding:3px 0;transition:color .15s;" onmouseover="this.style.color='var(--purple)'" onmouseout="this.style.color=''"><span id="sc-p3-tick" style="font-size:0.6rem;color:var(--text-dim);">○</span> II · CHARACTER</a>
         <a id="sc-p4" href="p4.html" style="display:flex;align-items:center;justify-content:flex-end;gap:8px;font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:1.5px;text-decoration:none;padding:3px 0;transition:color .15s;" onmouseover="this.style.color='var(--purple)'" onmouseout="this.style.color=''"><span id="sc-p4-tick" style="font-size:0.6rem;color:var(--text-dim);">○</span> III · ARSENAL &amp; GEAR</a>
         <a id="sc-p5" href="p5.html" style="display:flex;align-items:center;justify-content:flex-end;gap:8px;font-family:'Bebas Neue',sans-serif;font-size:0.75rem;letter-spacing:1.5px;text-decoration:none;padding:3px 0;transition:color .15s;" onmouseover="this.style.color='var(--purple)'" onmouseout="this.style.color=''"><span id="sc-p5-tick" style="font-size:0.6rem;color:var(--text-dim);">○</span> IV · SKILLS</a>
       </div>
@@ -233,7 +233,7 @@
       </a>
       <a href="p3.html" style="display:flex;align-items:center;gap:12px;padding:9px 14px;border:2px solid var(--border);background:var(--paper2,rgba(0,0,0,0.05));text-decoration:none;color:inherit;transition:border-color .15s;" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'">
         <span style="font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--purple);min-width:28px;">II</span>
-        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;color:var(--ink);">FACULTIES</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);">Pick up to 2 active faculties and choose their tuning style</div></div>
+        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:2px;color:var(--ink);">CHARACTER</div><div style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;color:var(--text-dim);">Faculties, lore and the full roleplay sheet — who they are off the battlefield</div></div>
         <span style="font-family:'Bebas Neue',sans-serif;font-size:0.9rem;color:var(--purple);margin-left:auto;">→</span>
       </a>
       <a href="p4.html" style="display:flex;align-items:center;gap:12px;padding:9px 14px;border:2px solid var(--border);background:var(--paper2,rgba(0,0,0,0.05));text-decoration:none;color:inherit;transition:border-color .15s;" onmouseover="this.style.borderColor='var(--purple)'" onmouseout="this.style.borderColor='var(--border)'">
@@ -286,7 +286,7 @@ document.querySelectorAll('.word').forEach(w=>{
 });
 
 // char line + HUD + data dots + setup checklist
-const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-accessories','ctg-inventory','ctg-mula'],p5:['ctg-skills'],p6:['ctg-combat-notes'],p7:['ctg-specials','ctg-ability-workshop']};
+const map={p1:['ctg-f-name','ctg-stats','ctg-f-notes'],p3:['ctg-faculties','ctg-lore','ctg-roleplay'],p4:['ctg-weapons','ctg-accessories','ctg-inventory','ctg-mula'],p5:['ctg-skills'],p6:['ctg-objective','ctg-combat-notes'],p7:['ctg-specials','ctg-ability-workshop']};
 const checkMap={p1:['ctg-f-name'],p3:['ctg-faculties'],p4:['ctg-weapons','ctg-inventory'],p5:['ctg-skills']};
 function updateHUD(){
   const n=lg('ctg-f-name'),c=lg('ctg-f-code');

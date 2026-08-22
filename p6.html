@@ -45,7 +45,7 @@ details>summary::marker{display:none;}
   <a class="ctg-nav-home" href="index.html" data-nav>CTG</a>
   <div class="ctg-nav-links">
     <a href="p1.html" data-nav>I·STATS</a>
-    <a href="p3.html" data-nav>II·FAC</a>
+    <a href="p3.html" data-nav>II·CHAR</a>
     <a href="p4.html" data-nav>III·ARMS</a>
     <a href="p5.html" data-nav>IV·SKILL</a>
     <a href="p6.html" class="active" style="color:#fff;background:var(--red);border-color:var(--red);">V·COMBAT</a>
@@ -299,11 +299,21 @@ details>summary::marker{display:none;}
     </div>
   </div>
 
-  <!-- ROW 5: COMBAT NOTES -->
+  <!-- ROW 5: OBJECTIVE -->
   <div class="block">
-    <div class="sec-label"><span class="mk">◆</span>COMBAT NOTES</div>
-    <div class="panel">
-      <textarea id="c-notes" class="notes-area" placeholder="Turn order, enemy HP, terrain notes, anything mid-combat..."></textarea>
+    <div class="sec-label"><span class="mk">◆</span>OBJECTIVE <span class="note">&mdash; write the goal, flip the switch when it lands</span></div>
+    <div class="panel" id="obj-panel">
+      <textarea id="c-objective" class="notes-area" placeholder="Drop the chandelier on the Marionette. Get Vex out alive. Hold the stairwell for three rounds..."></textarea>
+      <div id="obj-switch-row" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;padding:9px 12px;border:2px solid var(--border);background:var(--paper2,rgba(0,0,0,0.05));clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);">
+        <button id="obj-switch" onclick="toggleObjective()" title="Objective complete — doubles your stats, attack modifiers and weapon damage" style="position:relative;width:62px;height:28px;flex-shrink:0;padding:0;border:2px solid var(--ink);background:var(--paper,#fff);cursor:pointer;transition:background .16s;">
+          <span id="obj-knob" style="position:absolute;top:2px;left:2px;width:26px;height:20px;background:var(--text-dim);transition:left .16s,background .16s;"></span>
+        </button>
+        <div style="flex:1;min-width:150px;">
+          <div id="obj-switch-lbl" style="font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;color:var(--text-dim);">OBJECTIVE INCOMPLETE</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.44rem;letter-spacing:1px;color:var(--text-dim);">FLIP FOR 2× DAMAGE &amp; STATS</div>
+        </div>
+        <div id="obj-badge" style="display:none;font-family:'Anton',sans-serif;font-style:italic;font-size:1.5rem;color:var(--gold,#cf9500);letter-spacing:1px;">2× SURGE</div>
+      </div>
     </div>
   </div>
 
@@ -425,6 +435,12 @@ function refreshVitals(){
   }
 }
 // Direct HP reduction — eats temp HP first, no EF involved
+// ── OBJECTIVE BOOST ──
+// Set from the Objective box at the bottom of the page. While the objective is
+// marked complete every stat, attack modifier and weapon damage figure doubles.
+let objBoost=false;
+const objX=()=>objBoost?2:1;
+
 // ── TEMP BUFFS ──
 let tempBuffs=[];
 let _selBuffStats=new Set();
@@ -602,15 +618,16 @@ function buildStats(){
   stats.forEach(st=>{
     const buffBonus=buffBonusFor(st.name);
     const base=st.score||0;
-    const total=base+buffBonus;
-    const scoreHtml=buffBonus
-      ?`<span style="font-family:'Anton',sans-serif;font-size:1rem;color:var(--green3);flex-shrink:0;text-decoration:line-through;opacity:0.5;">${base}</span><span style="font-family:'Share Tech Mono',monospace;font-size:0.55rem;color:var(--gold,#cf9500);margin:0 2px;">→</span><span style="font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--gold,#cf9500);flex-shrink:0;line-height:1;">${total}</span>`
+    const total=(base+buffBonus)*objX();
+    const lifted=buffBonus||objBoost;
+    const scoreHtml=lifted
+      ?`<span style="font-family:'Anton',sans-serif;font-size:1rem;color:var(--green3);flex-shrink:0;text-decoration:line-through;opacity:0.5;">${base}</span><span style="font-family:'Share Tech Mono',monospace;font-size:0.55rem;color:var(--gold,#cf9500);margin:0 2px;">${objBoost?'⇒':'→'}</span><span style="font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--gold,#cf9500);flex-shrink:0;line-height:1;">${total}</span>`
       :`<span style="font-family:'Anton',sans-serif;font-size:1.1rem;color:var(--green3);flex-shrink:0;">${base}</span>`;
     const row=document.createElement('div');
-    row.style.cssText=buffBonus
+    row.style.cssText=lifted
       ?'display:flex;align-items:center;gap:5px;padding:4px 7px;background:rgba(207,149,0,0.08);border:1.5px solid var(--gold,#cf9500);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);'
       :'display:flex;align-items:center;gap:5px;padding:4px 7px;background:var(--paper2,rgba(0,0,0,0.05));border:1px solid var(--border);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%);';
-    row.innerHTML=`<span style="color:${buffBonus?'var(--gold,#cf9500)':'var(--purple2)'};font-size:0.78rem;width:14px;flex-shrink:0;">${st.icon||'◆'}</span><span style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:1px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${st.name||'—'}</span><span style="display:flex;align-items:baseline;gap:2px;">${scoreHtml}</span>`;
+    row.innerHTML=`<span style="color:${lifted?'var(--gold,#cf9500)':'var(--purple2)'};font-size:0.78rem;width:14px;flex-shrink:0;">${st.icon||'◆'}</span><span style="font-family:'Bebas Neue',sans-serif;font-size:0.82rem;letter-spacing:1px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${st.name||'—'}</span><span style="display:flex;align-items:baseline;gap:2px;">${scoreHtml}</span>`;
     wrap.appendChild(row);
   });
   el.appendChild(wrap);
@@ -638,11 +655,11 @@ function buildLoadout(){
   function getMod(w){
     if(!w) return null;
     const bonus=parseInt(w.rollBonus)||0;
-    if(!w.rollStat) return {base:null,bonus,buffBonus:0,total:bonus,statName:null,noStat:true};
+    if(!w.rollStat) return {base:null,bonus,buffBonus:0,total:bonus*objX(),statName:null,noStat:true};
     const st=stats.find(x=>x.name&&x.name.toLowerCase()===w.rollStat.toLowerCase());
     const base=st?parseInt(st.score)||0:null;
     const buffBonus=buffBonusFor(w.rollStat);
-    return {base,bonus,buffBonus,total:(base||0)+bonus+buffBonus,statName:w.rollStat,notFound:base===null};
+    return {base,bonus,buffBonus,total:((base||0)+bonus+buffBonus)*objX(),statName:w.rollStat,notFound:base===null};
   }
 
   function slotHtml(w,label,accentCss,slotKey){
@@ -650,6 +667,7 @@ function buildLoadout(){
     const ac=w.type==='melee'?'var(--red)':'var(--purple)';
     const baseDmg=parseInt(w.dmg)||1;
     const msBonus=w.type==='melee'?MS.atk:MS.rng;
+    const totalDmg=(baseDmg+msBonus)*objX();
     const tagHtml=(w.tags||'').split(',').map(t=>`<span class="tag dist-tag" style="font-size:0.5rem;padding:1px 5px;">${t.trim()}</span>`).join('');
     const mod=getMod(w);
     const total=mod?mod.total:0;
@@ -669,6 +687,7 @@ function buildLoadout(){
         <span class="roll-op">+</span>
         <div class="roll-box rb-bonus"><span class="roll-lbl">BONUS</span><span class="roll-num">+${mod.bonus}</span></div>
         ${buffRow}
+        ${objBoost?'<span class="roll-op">×</span><div class="roll-box" style="border-color:var(--gold,#cf9500);"><span class="roll-lbl" style="color:var(--gold,#cf9500);">OBJ</span><span class="roll-num" style="color:var(--gold,#cf9500);">2</span></div>':''}
         <span class="roll-op">=</span>
         <div class="roll-box rb-total"><span class="roll-lbl">MOD</span><span class="roll-num">+${mod.total}</span></div>
       </div>`;
@@ -706,10 +725,11 @@ function buildLoadout(){
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
         <span style="font-size:1rem;color:${ac};">${w.type==='melee'?'⚔':'🎯'}</span>
         <span style="font-family:'Anton',sans-serif;font-style:italic;font-size:1.2rem;color:var(--text);flex:1;">${w.name||'Unnamed'}</span>
-        <div style="text-align:center;padding:5px 12px;background:var(--paper,#fff);border:2px solid ${msBonus?'var(--gold,#cf9500)':'var(--ink)'};clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%);">
-          <span style="font-family:'Anton',sans-serif;font-size:1.5rem;color:var(--green3);display:block;line-height:1;">${baseDmg+msBonus}</span>
+        <div style="text-align:center;padding:5px 12px;background:var(--paper,#fff);border:2px solid ${(msBonus||objBoost)?'var(--gold,#cf9500)':'var(--ink)'};clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%);">
+          <span style="font-family:'Anton',sans-serif;font-size:1.5rem;color:${objBoost?'var(--gold,#cf9500)':'var(--green3)'};display:block;line-height:1;">${totalDmg}</span>
           <span style="font-family:'Share Tech Mono',monospace;font-size:0.46rem;color:var(--text-dim);">DMG</span>
           ${msBonus?`<span style="display:block;font-family:'Share Tech Mono',monospace;font-size:0.42rem;letter-spacing:0.5px;color:var(--gold,#cf9500);white-space:nowrap;" title="${baseDmg} weapon damage + ${msBonus} from milestone bonuses on the Stats page">${baseDmg} ⬢+${msBonus}</span>`:''}
+          ${objBoost?`<span style="display:block;font-family:'Share Tech Mono',monospace;font-size:0.42rem;letter-spacing:0.5px;color:var(--gold,#cf9500);white-space:nowrap;" title="Objective complete — damage doubled">${baseDmg+msBonus} ×2</span>`:''}
         </div>
       </div>
       ${buffStrip}${rollBreak}${calcHtml}
@@ -776,25 +796,54 @@ function buildLoadout(){
 
 // ── SKILLS ──
 const SKILL_DATA={
-  tb1:'Advance on Unarmed melee',tb2:'Advantage on Unarmed melee',tb3:'Adv+Advantage Unarmed melee',
-  gorey:'Rip off a limb on a Crit',
-  '1togo':'Counter while being attacked',
-  ls1:'Tick range +1',ls2:'Tick range +2',
-  sneaky:'Move a Distance free',mistersmooth:'Finesse for defence checks',
-  slick:'2 cards Defence, no counter',nightkiller:'2x dmg attacking unseen',
-  bulletcritic:'2 body parts on Crit (2pt)',gunbeater:'Auto guns +1 die',
-  td1:'Advance when defending',td2:'Advantage when defending',td3:'Adv+Advantage defending',
-  boozehound:'No alcohol negatives',stimlegend:'Stims heal 2 HP',
-  drunktrain:'Advance melee while drunk',drunkmaster:'Advantage melee while drunk',drunkshifu:'Adv+Advantage melee drunk',
-  mistakemaker:'Add Spades to Defence vs counters',
-  goblinkg:'Junk rounds neutral',hs1:'Guess count +1',hs2:'Guess count +2',
-  wandsmith:'Modify weapons anywhere',lonescient:'Research anywhere',labmade:'Immediately gain +2 Harth',
-  lr1:'Advance Far shots',lr2:'Advantage Far shots',lr3:'Adv+Advantage Far shots',
-  precshot:'Gun range −1 dist (2pt)',predict:'1st attack = Crit (2pt)',bulletpitch:'Counter ranged at max dist',
-  inscope:'Gun range +1 dist (3pt)',
-  hh1:'Crit head: min 2 dmg',hh2:'Crit head: min 3 dmg',hh3:'Crit head: min 4 dmg',hh4:'Crit head: always max',
-  fourleaf:'Reroll loot (must keep)',fiveleaf:'Reroll loot (pick either)',
-  cheater:'Crit on 19-20 (2pt)',
+  // name + short combat-table blurb, mirroring the Skill Tree on Page IV
+  tb1:['Tavern Brawler I','Advance on Unarmed melee'],tb2:['Tavern Brawler II','Advantage on Unarmed melee'],tb3:['Tavern Brawler III','Adv+Advantage Unarmed melee'],
+  gorey:['Gorey','Break a limb on a Crit'],
+  '1togo':['1 to Go','Skip your Defense card to Counter instantly'],
+  ragingbull:['Raging Bullfish','Move + attack on one Clubs/Diamonds card'],
+  tacstrike:['Tactical Strikes','Melee ignores 1 EF (2pt)'],tacstrike2:['Tactical Strikes II','Melee ignores 2 EF'],
+  maim:['Maim','Crit to head rolls 1d8 (3pt)'],
+  demolition:['Demolition','2x dmg to walls, structures, objects'],
+  slipnroll:['Slip N Roll','Nat 20 defence: counter dmg, no roll (3pt)'],
+  mightyleap:['Mighty Leap','Extra card to leap the nearest Range'],
+  ls1:['Lock-Smith I','Tick range +1'],ls2:['Lock-Smith II','Tick range +2'],
+  sneaky:['Sneaky Bullfish','Move a Distance free'],mistersmooth:['Mister Smooth','Finesse for defence checks'],
+  slick:['Slick','2 cards Defence, no counter'],nightkiller:['Night Killer','2x dmg attacking unseen'],
+  bulletcritic:['Bullet Critic','2 body parts on Crit (2pt)'],gunbeater:['Gun Beater','Automatic attacks +1 die'],
+  seepin:['Seep In','Your poisons last +1 Round'],
+  tacshots:['Tactical Shots','Ranged ignores 1 EF (2pt)'],
+  letsmove:['Let\'s Move','Drag a willing ally 1 Distance (2 cards)'],
+  stepout:['Step Out','Finesse contest vs Area effects (3pt)'],
+  slippery:['Slippery','No Attacks of Opportunity when moving'],
+  td1:['Tavern Defender I','Advance when defending'],td2:['Tavern Defender II','Advantage when defending'],td3:['Tavern Defender III','Adv+Advantage defending'],
+  boozehound:['Booze Hound','No alcohol negatives'],stimlegend:['Stim Legend','Stims heal 2 HP'],
+  drunktrain:['Drunken Trainer','Advance melee while drunk'],drunkmaster:['Drunken Master','Advantage melee while drunk'],drunkshifu:['Drunken Shifu','+1 dmg & Adv+Advantage melee drunk'],
+  mistakemaker:['Mistake Maker','Add Spades to Defence vs counters'],
+  ivegotyou:['I\'ve Got You','Block for an ally in Close Range'],
+  shrugitoff:['Shrug It Off','Cut a Negative Effect by 1 Round'],
+  budgeout:['Budge Out','Endurance contest vs Area effects (2pt)'],
+  juggernaut:['Juggernaut','Reduce Crit damage by 1d4 (4pt)'],
+  stillstanding:['Still Standing','Ignore forced Prone'],
+  hs1:['Hack-Smith I','Guess count +1'],hs2:['Hack-Smith II','Guess count +2'],
+  wandsmith:['Wandering Smith','Modify weapons anywhere'],lonescient:['Lone Scientist','Research anywhere'],labmade:['Lab Made','Immediately gain +2 Harth'],
+  precshot:['Precise Shot','Gun range -1 dist (2pt)'],predict:['Predictable','1st attack = Crit (2pt)'],
+  tacspells:['Tactical Spells','Magic ignores 1 EF (2pt)'],
+  ecowizard:['Eco Wizard','Recover Hearth on a Crit'],
+  critmancer:['Crit-Mancer','Crit dice becomes 1d8 (2pt)'],critmancer2:['Crit-Mancer II','Crit dice becomes 1d10 (2pt)'],
+  specialist:['Specialist','Roll 1d10 on a Special (2pt)'],
+  lr1:['Long Ranger I','Advance Far shots'],lr2:['Long Ranger II','Advantage Far shots'],lr3:['Long Ranger III','Adv+Advantage Far shots'],
+  bulletpitch:['Bullet Pitcher','Counter ranged at max dist'],inscope:['In My Scope','Ranged range +1 (3pt)'],
+  holddat:['Hold Dat','Swap a card once per Encounter'],
+  teamtarget:['Team Target','Allies in Close Range get half your heal (2pt)'],
+  prepared:['Pre-Pared','+1 Hand Size on Round 1 (2pt)'],
+  allin:['All In','Wording pending — check the doc (3pt)'],
+  wideawake:['Wide Awake','First Counter each Round is free (2pt)'],
+  hh1:['Head Hunter I','Crit head: min 2 dmg'],hh2:['Head Hunter II','Crit head: min 3 dmg'],hh3:['Head Hunter III','Crit head: min 4 dmg'],hh4:['Head Hunter IV','Crit head: always max'],
+  cheater:['Cheater','Crit on 19-20 (2pt)'],
+  lettingslide:['Letting That Slide','Reroll a nat 1 on the d20 (3pt)'],
+  lettingroll:['Letting That Roll','Reroll a nat 1 on the card dice (2pt)'],
+  next1:['Next I','Redraw 1 card on the combat draw'],next2:['Next II','Redraw 2 cards on the combat draw'],next3:['Next III','Redraw 3 cards on the combat draw'],
+  mulligan:['Mulligan','Redraw up to your full hand'],
 };
 function buildSkills(){
   const el=document.getElementById('c-skills');el.innerHTML='';
@@ -802,10 +851,11 @@ function buildSkills(){
   const s=load('ctg-skills');if(s){try{selected=JSON.parse(s);}catch(e){}}
   if(!selected.length){el.innerHTML='<div style="font-family:\'Share Tech Mono\',monospace;font-size:0.62rem;color:var(--text-dim);">No skills purchased yet — unlock them on Page IV</div>';return;}
   selected.forEach(id=>{
-    const desc=SKILL_DATA[id]||id;
+    const entry=SKILL_DATA[id];
+    const desc=entry?entry[1]:'';
     const row=document.createElement('div');
     row.style.cssText='display:flex;align-items:center;gap:8px;padding:5px 10px;background:var(--paper2,rgba(0,0,0,0.05));border:1.5px solid var(--border);margin-bottom:4px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);';
-    const name=id.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/\d+$/,' $&').replace(/^./,c=>c.toUpperCase());
+    const name=entry?entry[0]:id.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/\d+$/,' $&').replace(/^./,c=>c.toUpperCase());
     row.innerHTML=`<span style="color:var(--green-bright,#22c451);font-size:0.6rem;">✓</span><span style="font-family:'Bebas Neue',sans-serif;font-size:0.88rem;letter-spacing:1px;color:var(--text);min-width:120px;">${name}</span><span style="font-family:'Rajdhani',sans-serif;font-weight:500;font-size:0.82rem;color:var(--text2);">${desc}</span>`;
     el.appendChild(row);
   });
@@ -1088,10 +1138,37 @@ function cardToDie(raw){
   });
 })();
 
-// ── COMBAT NOTES ──
-const noteEl=document.getElementById('c-notes');
-const savedNotes=load('ctg-combat-notes');if(savedNotes)noteEl.value=savedNotes;
-noteEl.addEventListener('input',()=>store('ctg-combat-notes',noteEl.value));
+// ── OBJECTIVE ──
+// The old COMBAT NOTES box became the objective box. Its text carries over the
+// first time so nothing anyone had written is lost.
+const objEl=document.getElementById('c-objective');
+(function(){
+  let saved=null;
+  try{saved=JSON.parse(load('ctg-objective'));}catch(e){}
+  if(!saved||typeof saved!=='object'){saved={text:load('ctg-combat-notes')||'',done:false};}
+  objEl.value=saved.text||'';
+  objBoost=!!saved.done;
+})();
+function saveObjective(){store('ctg-objective',JSON.stringify({text:objEl.value,done:objBoost}));}
+objEl.addEventListener('input',saveObjective);
+function paintObjective(){
+  const sw=document.getElementById('obj-switch'),knob=document.getElementById('obj-knob');
+  const lbl=document.getElementById('obj-switch-lbl'),badge=document.getElementById('obj-badge');
+  const row=document.getElementById('obj-switch-row');
+  sw.style.background=objBoost?'var(--gold,#cf9500)':'var(--paper,#fff)';
+  knob.style.left=objBoost?'30px':'2px';
+  knob.style.background=objBoost?'var(--ink)':'var(--text-dim)';
+  lbl.textContent=objBoost?'OBJECTIVE COMPLETE':'OBJECTIVE INCOMPLETE';
+  lbl.style.color=objBoost?'var(--gold,#cf9500)':'var(--text-dim)';
+  row.style.borderColor=objBoost?'var(--gold,#cf9500)':'var(--border)';
+  badge.style.display=objBoost?'':'none';
+}
+function toggleObjective(){
+  objBoost=!objBoost;
+  saveObjective();paintObjective();
+  buildStats();buildLoadout();
+  if(objBoost&&typeof CTGSound!=='undefined'&&CTGSound.play)try{CTGSound.play('confirm');}catch(e){}
+}
 
 // ── NAV NAME ──
 (function(){const n=load('ctg-f-name');const c=load('ctg-f-code');document.getElementById('nav-name').innerHTML='<span>OPERATIVE //</span> '+((n||'')+(c?' "'+c+'"':'')||'—');})();
@@ -1105,7 +1182,7 @@ function applyHearthName(){
   const lbl=document.getElementById('c-hearth-label');if(lbl)lbl.textContent=nm.toUpperCase();
   const rl=document.getElementById('restore-hearth-lbl');if(rl)rl.textContent=nm;
 }
-pullData();renderConditions();applyHearthName();
+pullData();renderConditions();applyHearthName();paintObjective();
 
 // Cross-tab sync — pick up HP/temp changes made on the stats page
 window.addEventListener('storage',e=>{

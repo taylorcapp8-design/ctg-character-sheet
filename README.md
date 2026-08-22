@@ -19,7 +19,7 @@ Browser-based, no build step, no server required. Cloud sync via Supabase.
 ctg-character-sheet/
 ├── index.html          Hub — login, character overview, session management
 ├── p1.html             Page I   — Identity, Stats, HP, Hearth, Carry
-├── p3.html             Page II  — Core Faculties & Tunings
+├── p3.html             Page II  — Character (Faculties · Lore · Roleplay)
 ├── p4.html             Page III — Arsenal & Gear: Weapons / Accessories tabs, Carry, Mula, Catalog, Glossary
 ├── p5.html             Page IV  — Skill Tree
 ├── p6.html             Page V   — Combat: vitals, attack calculator, skills, buffs
@@ -45,10 +45,13 @@ ctg-character-sheet/
 | Character name synced across all pages | All pages |
 | HP, Hearth (mana) & EF (armour) trackers with pip display | P1, P6 |
 | Core Faculties + Tuning selection (max 2 active) | P3 |
+| Lore tab — freeform, retitleable, addable lore entries | P3 |
+| Roleplay sheet — identity, pillars, sliders, speech, morals, upbringing, relationships, habits | P3 |
 | Weapon catalog with stat/dice/quirk editor | P4 |
 | Accessories — equip up to 4, each can grant a stat bonus | P4 |
 | Skill Tree with point budget | P5 |
 | Combat page — conditions (with round countdown), damage calc, attack rolls, buffs | P6 |
+| Objective box + 2x switch — doubles every stat, attack modifier and weapon damage while the objective is marked complete | P6 |
 | Attribute list locked by default — adding/removing needs the edit-mode unlock (scores always editable) | P1 |
 | Stat modifiers with source breakdown (buffs + accessories + specials) | P1, P6 |
 | Milestone bonuses — every 3 attribute points past the standard array = +1 attack dmg / range dmg / health | P1, P6 |
@@ -116,6 +119,9 @@ Each of the four face-card specials (Page VI) can be toggled **In Use** — eith
 | `ctg-catalog` | JSON — weapon catalog |
 | `ctg-item-catalog` | JSON — gear/consumable item catalog |
 | `ctg-faculties` | JSON — active faculties + tuning selections |
+| `ctg-lore` | JSON — lore entries (title + text) |
+| `ctg-roleplay` | JSON — every roleplay-sheet answer, keyed by field |
+| `ctg-char-tab` | Last open tab on the Character page |
 | `ctg-skills` | JSON array — purchased skill IDs |
 | `ctg-custom-abilities` | JSON — custom ability entries |
 | `ctg-specials` | JSON — 4 face-card special ability slots (J/Q/K/A), each with an optional stat buff |
@@ -123,7 +129,8 @@ Each of the four face-card specials (Page VI) can be toggled **In Use** — eith
 | `ctg-ability-workshop` | JSON — workshop draft + saved ability library |
 | `ctg-temp-buffs` | JSON — active temp stat buffs |
 | `ctg-buff-presets` | JSON — saved buff presets |
-| `ctg-combat-notes` | Combat notes textarea |
+| `ctg-objective` | JSON — combat objective text + whether the 2x switch is on |
+| `ctg-combat-notes` | Legacy combat notes — migrated into `ctg-objective` on first load |
 | `ctg-theme` | Active theme name |
 | `ctg-portrait` | Base64 portrait image |
 | `ctg-last-edit` | Timestamp of last local save |
