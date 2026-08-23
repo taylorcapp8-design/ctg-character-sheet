@@ -55,6 +55,7 @@ ctg-character-sheet/
 | Attribute list locked by default — adding/removing needs the edit-mode unlock (scores always editable) | P1 |
 | Stat modifiers with source breakdown (buffs + accessories + specials) | P1, P6 |
 | Milestone bonuses — every 3 attribute points past the standard array = +1 attack dmg / range dmg / health | P1, P6 |
+| Every character number capped at 1000, and pip tracks capped at 60 segments, so big builds stay responsive | P1, P5, P6 |
 | Temp buffs with multi-stat support and presets | P6 |
 | Specials — 4 face-card ability slots (J/Q/K/A) with freeform / workshop toggle + optional stat buff | P7 |
 | Specials loadouts — save the whole four-card hand as a preset, swap all cards at once | P7 |

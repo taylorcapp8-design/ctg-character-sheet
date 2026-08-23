@@ -384,22 +384,40 @@ function store(k,v){try{localStorage.setItem(k,v);localStorage.setItem('ctg-last
 let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
 
 // ── COMBAT STATE ──
+// Hard ceiling on every character number — matches the Stats page. Past this the
+// pip tracks build thousands of nodes and the page locks up.
+const STAT_MAX=1000;
+const TRACK_SEGS=60;
+const clampStat=v=>Math.max(0,Math.min(STAT_MAX,parseInt(v)||0));
 const cstate={harth:6,harthMax:6,temp:0,ef:0,round:1,conditions:new Set(),condRounds:{},hearth:6,hearthMax:6};
 
 // ── PULL DATA FROM OTHER PAGES ──
 function pullData(){
-  cstate.harthMax=parseInt(load('ctg-harth-max'))||6;
-  cstate.harth=parseInt(load('ctg-harth-cur'))||cstate.harthMax;
-  cstate.temp=parseInt(load('ctg-harth-temp'))||0;
-  cstate.ef=parseInt(load('ctg-ef'))||0;
-  cstate.hearthMax=parseInt(load('ctg-hearth-max'))||6;
-  {const hc=parseInt(load('ctg-hearth-cur'));cstate.hearth=isNaN(hc)?cstate.hearthMax:hc;}
+  cstate.harthMax=clampStat(load('ctg-harth-max'))||6;
+  cstate.harth=clampStat(load('ctg-harth-cur'))||cstate.harthMax;
+  cstate.temp=clampStat(load('ctg-harth-temp'));
+  cstate.ef=clampStat(load('ctg-ef'));
+  cstate.hearthMax=clampStat(load('ctg-hearth-max'))||6;
+  {const hc=parseInt(load('ctg-hearth-cur'));cstate.hearth=isNaN(hc)?cstate.hearthMax:clampStat(hc);}
   refreshVitals();
   buildStats();buildLoadout();buildSkills();buildFaculties();buildCustomAbilities();buildSpecials();buildTempBuffs();buildBuffPresets();
 }
 function saveCS(){store('ctg-harth-cur',cstate.harth);store('ctg-harth-temp',cstate.temp);store('ctg-hearth-cur',cstate.hearth);}
 
 // ── VITALS ──
+// Above TRACK_SEGS one segment covers `per` points, so a 1000 Max HP draws 60
+// segments rather than 1000 of them.
+function buildSegs(trackId,cur,max,onSet){
+  const track=document.getElementById(trackId);track.innerHTML='';
+  const segs=Math.min(max,TRACK_SEGS),per=max/segs;
+  for(let i=0;i<segs;i++){
+    const s=document.createElement('div');
+    s.className='hp-seg'+(i<cur/per?' filled':'');
+    if(per>1)s.title=Math.round(i*per+1)+'–'+Math.round((i+1)*per);
+    s.onclick=()=>onSet((i<cur/per)?Math.round(i*per):Math.round((i+1)*per));
+    track.appendChild(s);
+  }
+}
 function refreshVitals(){
   // Snapshot before update so we know what changed
   const prevHarth =parseInt(document.getElementById('c-harth-cur').textContent)||0;
@@ -412,20 +430,10 @@ function refreshVitals(){
   document.getElementById('c-ef').textContent=cstate.ef;
   document.getElementById('dmg-ef').textContent=cstate.ef;
   calcDmg();
-  const track=document.getElementById('c-hp-track');track.innerHTML='';
-  for(let i=0;i<cstate.harthMax;i++){
-    const s=document.createElement('div');s.className='hp-seg'+(i<cstate.harth?' filled':'');
-    s.onclick=()=>{cstate.harth=i<cstate.harth?i:i+1;refreshVitals();saveCS();};
-    track.appendChild(s);
-  }
+  buildSegs('c-hp-track',cstate.harth,cstate.harthMax,v=>{cstate.harth=v;refreshVitals();saveCS();});
   document.getElementById('c-hearth-cur').textContent=cstate.hearth;
   document.getElementById('c-hearth-max').textContent=cstate.hearthMax;
-  const htrack=document.getElementById('c-hearth-track');htrack.innerHTML='';
-  for(let i=0;i<cstate.hearthMax;i++){
-    const s=document.createElement('div');s.className='hp-seg'+(i<cstate.hearth?' filled':'');
-    s.onclick=()=>{cstate.hearth=i<cstate.hearth?i:i+1;refreshVitals();saveCS();};
-    htrack.appendChild(s);
-  }
+  buildSegs('c-hearth-track',cstate.hearth,cstate.hearthMax,v=>{cstate.hearth=v;refreshVitals();saveCS();});
 
   // Stat pop animations
   if(typeof CTGMotion!=='undefined'){
@@ -548,7 +556,7 @@ function applyBuff(){
 
 
 function adjHearth(d){cstate.hearth=Math.max(0,Math.min(cstate.hearthMax,cstate.hearth+d));refreshVitals();saveCS();}
-function adjHearthMax(d){cstate.hearthMax=Math.max(1,cstate.hearthMax+d);cstate.hearth=Math.min(cstate.hearth,cstate.hearthMax);store('ctg-hearth-max',cstate.hearthMax);refreshVitals();saveCS();}
+function adjHearthMax(d){cstate.hearthMax=Math.max(1,Math.min(STAT_MAX,cstate.hearthMax+d));cstate.hearth=Math.min(cstate.hearth,cstate.hearthMax);store('ctg-hearth-max',cstate.hearthMax);refreshVitals();saveCS();}
 function doRest(){
   cstate.harth=cstate.harthMax;
   cstate.hearth=cstate.hearthMax;
@@ -564,7 +572,7 @@ function combatDmg(n){
   refreshVitals();saveCS();
 }
 function combatHeal(n){cstate.harth=Math.min(cstate.harthMax,cstate.harth+n);refreshVitals();saveCS();}
-function adjTemp(d){cstate.temp=Math.max(0,cstate.temp+d);refreshVitals();saveCS();}
+function adjTemp(d){cstate.temp=clampStat(cstate.temp+d);refreshVitals();saveCS();}
 function adjRound(d){
   cstate.round=Math.max(1,cstate.round+d);
   document.getElementById('c-round').textContent=cstate.round;
@@ -617,7 +625,7 @@ function buildStats(){
   wrap.style.cssText='display:grid;grid-template-columns:1fr 1fr;gap:4px;';
   stats.forEach(st=>{
     const buffBonus=buffBonusFor(st.name);
-    const base=st.score||0;
+    const base=clampStat(st.score);
     const total=(base+buffBonus)*objX();
     const lifted=buffBonus||objBoost;
     const scoreHtml=lifted
@@ -657,7 +665,7 @@ function buildLoadout(){
     const bonus=parseInt(w.rollBonus)||0;
     if(!w.rollStat) return {base:null,bonus,buffBonus:0,total:bonus*objX(),statName:null,noStat:true};
     const st=stats.find(x=>x.name&&x.name.toLowerCase()===w.rollStat.toLowerCase());
-    const base=st?parseInt(st.score)||0:null;
+    const base=st?clampStat(st.score):null;
     const buffBonus=buffBonusFor(w.rollStat);
     return {base,bonus,buffBonus,total:((base||0)+bonus+buffBonus)*objX(),statName:w.rollStat,notFound:base===null};
   }
@@ -1188,7 +1196,7 @@ pullData();renderConditions();applyHearthName();paintObjective();
 window.addEventListener('storage',e=>{
   if(e.key==='ctg-harth-cur'){cstate.harth=parseInt(e.newValue)||0;refreshVitals();}
   if(e.key==='ctg-harth-temp'){cstate.temp=parseInt(e.newValue)||0;refreshVitals();}
-  if(e.key==='ctg-harth-max'){cstate.harthMax=parseInt(e.newValue)||6;refreshVitals();}
+  if(e.key==='ctg-harth-max'){cstate.harthMax=clampStat(e.newValue)||6;refreshVitals();}
   if(e.key==='ctg-custom-abilities'){buildCustomAbilities();}
   if(e.key==='ctg-specials'){buildSpecials();buildStats();buildLoadout();}
   if(e.key==='ctg-accessories'){buildLoadout();buildStats();}

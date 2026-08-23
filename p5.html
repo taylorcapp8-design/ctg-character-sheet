@@ -110,7 +110,8 @@ try{const s=localStorage.getItem('ctg-skills');if(s)JSON.parse(s).forEach(id=>se
   if(dirty)try{localStorage.setItem('ctg-skills',JSON.stringify([...selected]));}catch(e){}})();
 let flashT;function flashSaved(){const f=document.getElementById('save-flash');f.classList.add('show');clearTimeout(flashT);flashT=setTimeout(()=>f.classList.remove('show'),1200);}
 function save(){try{localStorage.setItem('ctg-skills',JSON.stringify([...selected]));localStorage.setItem('ctg-last-edit',Date.now());flashSaved();}catch(e){}}
-const sp=s=>Math.floor(s/2);
+const sp=s=>Math.floor(Math.max(0,Math.min(1000,parseInt(s)||0))/2);
+const PIP_CAP=60;
 const colById=id=>COLS.find(c=>c.id===id);
 function skillById(id){for(const c of COLS){const s=c.rows.flat().find(x=>x.id===id);if(s)return{skill:s,col:c};}return null;}
 function spentIn(cid){return colById(cid).rows.flat().filter(s=>selected.has(s.id)).reduce((a,s)=>a+(s.cost||1),0);}
@@ -133,7 +134,11 @@ function renderBudget(){
   COLS.forEach(col=>{
     const tot=sp(col.stat),spent=spentIn(col.id),over=spent>tot;
     const cell=document.createElement('div');cell.className='budget-cell'+(over?' over':'');cell.style.setProperty('--col',col.color);
-    let pips='';for(let i=0;i<Math.max(tot,spent);i++)pips+=`<span class="b-pip ${i<spent?(over?'over':'on'):''}"></span>`;
+    // One pip per point up to PIP_CAP; past that the numbers above carry it, so a
+    // 1000-point attribute doesn't render 500 nodes per column.
+    const pipCount=Math.max(tot,spent);
+    let pips='';
+    if(pipCount<=PIP_CAP)for(let i=0;i<pipCount;i++)pips+=`<span class="b-pip ${i<spent?(over?'over':'on'):''}"></span>`;
     cell.innerHTML=`<span class="b-name">${col.icon} ${col.label}</span><div class="b-counts"><span class="b-spent" style="color:${over?'var(--red)':col.color}">${spent}</span><span class="b-sep"> / </span><span class="b-total">${tot}</span></div><div class="b-pips">${pips}</div>`;
     strip.appendChild(cell);
   });
@@ -194,7 +199,7 @@ function loadStatsFromStorage(){
     COLS.forEach(col=>{
       const want=[col.id,col.label.toLowerCase()];
       const match=stats.find(st=>st.name&&want.includes(st.name.toLowerCase()));
-      if(match!=null)col.stat=parseInt(match.score)||0;
+      if(match!=null)col.stat=Math.max(0,Math.min(1000,parseInt(match.score)||0));
     });
   }catch(e){}
 }

@@ -179,6 +179,13 @@ let flashT;function flashSaved(){const f=document.getElementById('save-flash');f
 const esc=s=>(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const uid=()=>'x'+Math.random().toString(36).slice(2,8);
 const sp=s=>Math.floor((parseInt(s)||0)/2);
+// Hard ceiling on every character number. Past this the pip tracks and the
+// skill-tree budget strip build thousands of nodes and the page locks up.
+const STAT_MAX=1000;
+// Never draw more than this many segments in a pip track; above it each
+// segment stands for several points instead of exactly one.
+const TRACK_SEGS=60;
+const clampStat=v=>Math.max(0,Math.min(STAT_MAX,parseInt(v)||0));
 
 /* ── ATTRIBUTES (editable + addable) ─────────────────────── */
 const DEF_STATS=[
@@ -206,6 +213,10 @@ let stats=[];
   let _nameChanged=false;
   stats.forEach(st=>{if(_nm[st.name]){st.name=_nm[st.name];_nameChanged=true;}});
   if(_nameChanged)saveStats();
+  // pull anything saved before the cap existed back under it
+  let _capped=false;
+  stats.forEach(st=>{const c=clampStat(st.score);if(c!==st.score){st.score=c;_capped=true;}});
+  if(_capped)saveStats();
 })();
 function saveStats(){save('ctg-stats',JSON.stringify(stats));}
 // Collect every modifier hitting a stat, tagged with where it comes from, so
@@ -246,7 +257,7 @@ function renderStats(){
   const w=document.getElementById('stat-bars');w.innerHTML='';
   const kindCol={buff:'var(--gold,#cf9500)',acc:'var(--purple)',spec:'var(--purple)'};
   stats.forEach((st,i)=>{
-    const score=parseInt(st.score)||0;
+    const score=clampStat(st.score);
     const srcs=getStatSources(st.name);
     const buff=srcs.reduce((s,x)=>s+x.value,0);
     const buffBadge=buff?`<span style="font-family:'Anton',sans-serif;font-size:0.65rem;color:var(--gold,#cf9500);background:rgba(207,149,0,0.12);border:1px solid var(--gold,#cf9500);padding:1px 5px;white-space:nowrap;">⚡${buff>=0?'+':''}${buff} = ${score+buff}</span>`:'';
@@ -259,7 +270,7 @@ function renderStats(){
         <span class="stat-name-label">${esc(st.name)||'—'}</span>
         <div class="stat-counter">
           <button class="counter-btn stat-adj" data-d="-1">−</button>
-          <input type="number" class="stat-score-input" value="${score}" min="0">
+          <input type="number" class="stat-score-input" value="${score}" min="0" max="${STAT_MAX}">
           <button class="counter-btn stat-adj" data-d="1">+</button>
         </div>
         ${buffBadge}
@@ -269,7 +280,7 @@ function renderStats(){
     w.appendChild(row);
     const scoreInput=row.querySelector('.stat-score-input');
     const spEl=row.querySelector('.stat-sp');
-    function applyScore(v){st.score=Math.max(0,v);scoreInput.value=st.score;spEl.innerHTML=sp(st.score)+'<span>SP</span>';saveStats();renderMilestones();}
+    function applyScore(v){st.score=clampStat(v);scoreInput.value=st.score;spEl.innerHTML=sp(st.score)+'<span>SP</span>';saveStats();renderMilestones();}
     scoreInput.addEventListener('input',()=>applyScore(parseInt(scoreInput.value)||0));
     row.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',()=>applyScore((parseInt(scoreInput.value)||0)+parseInt(b.dataset.d))));
     row.querySelector('[data-del]')?.addEventListener('click',()=>{
@@ -419,10 +430,19 @@ function renderCarryMirror(){
 
 /* ── VITALS / HP TRACK ───────────────────────────────────── */
 function buildTrack(curId,maxId,trackId,efClass){
-  const cur=parseInt(document.getElementById(curId).value)||0;
-  const max=maxId?parseInt(document.getElementById(maxId).value)||6:Math.max(parseInt(document.getElementById(curId).value)||0,3);
+  const cur=clampStat(document.getElementById(curId).value);
+  const max=maxId?clampStat(document.getElementById(maxId).value)||6:Math.max(clampStat(document.getElementById(curId).value),3);
   const c=document.getElementById(trackId);c.innerHTML='';
-  for(let i=0;i<max;i++){const s=document.createElement('div');s.className='hp-seg'+(efClass?' ef-seg':'')+(i<cur?' filled':'');s.onclick=()=>{document.getElementById(curId).value=i<cur?i:i+1;refreshTracks();saveVitals();};c.appendChild(s);}
+  // Above TRACK_SEGS one segment covers `per` points, so a 1000 Max HP draws 60
+  // segments rather than 1000 of them.
+  const segs=Math.min(max,TRACK_SEGS),per=max/segs;
+  for(let i=0;i<segs;i++){
+    const s=document.createElement('div');
+    s.className='hp-seg'+(efClass?' ef-seg':'')+(i<cur/per?' filled':'');
+    if(per>1)s.title=Math.round(i*per+1)+'–'+Math.round((i+1)*per);
+    s.onclick=()=>{document.getElementById(curId).value=(i<cur/per)?Math.round(i*per):Math.round((i+1)*per);refreshTracks();saveVitals();};
+    c.appendChild(s);
+  }
 }
 function refreshTracks(){buildTrack('harth-cur','harth-max','harth-track',false);buildTrack('ef-val',null,'ef-track',true);buildTrack('hearth-cur','hearth-max','hearth-track',false);}
 let _vitalsSnap={};
@@ -487,7 +507,18 @@ function updateNavName(){const n=load('ctg-f-name');const c=load('ctg-f-code');d
   if(ht!==null)document.getElementById('harth-temp').value=ht;const p=load('ctg-portrait');if(p){const img=document.getElementById('portrait-img');img.src=p;img.style.display='block';document.getElementById('portrait-placeholder').style.display='none';}document.getElementById('lvl-display').textContent=document.getElementById('f-level').value;
   const htc=load('ctg-hearth-cur'),htm=load('ctg-hearth-max');if(htc!==null)document.getElementById('hearth-cur').value=htc;if(htm!==null)document.getElementById('hearth-max').value=htm;
   refreshTracks();})();
-['harth-cur','harth-max','ef-val','harth-temp','hearth-cur','hearth-max'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{refreshTracks();saveVitals();}));
+function clampVital(el){
+  if(el.value==='')return;              // let the field be cleared while typing
+  const v=parseInt(el.value);if(isNaN(v))return;
+  const c=Math.max(parseInt(el.min)||0,Math.min(STAT_MAX,v));
+  if(c!==v)el.value=c;
+}
+['harth-cur','harth-max','ef-val','harth-temp','hearth-cur','hearth-max'].forEach(id=>{
+  const el=document.getElementById(id);
+  el.setAttribute('max',STAT_MAX);
+  clampVital(el);                        // pull anything already over the cap back down
+  el.addEventListener('input',()=>{clampVital(el);refreshTracks();saveVitals();});
+});
 
 /* ── CUSTOM ABILITIES ────────────────────────────────────── */
 let abilities=[];
